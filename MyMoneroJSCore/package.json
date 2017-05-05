@@ -1,0 +1,19 @@
+{
+  "name": "MyMoneroJSCore",
+  "author": "MyMonero",
+  "description": "A native interface to the MyMonero core Javascript Monero implementation code.",
+  "version": "1.0.0",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "repository": "",
+  "private": false,
+  "scripts": {},
+  "dependencies": {
+    "crypto-browserify": "^3.11.0",
+    "html5-fs": "^0.1.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
+    "webpack": "^2.3.3"
+  }
+}
