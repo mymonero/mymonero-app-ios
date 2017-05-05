@@ -7,66 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9F24AE1D1EBA7D3A00841BCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F24AE1C1EBA7D3A00841BCB /* AppDelegate.swift */; };
-		9F24AE1F1EBA7D3A00841BCB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F24AE1E1EBA7D3A00841BCB /* ViewController.swift */; };
-		9F24AE221EBA7D3A00841BCB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F24AE201EBA7D3A00841BCB /* Main.storyboard */; };
-		9F24AE241EBA7D3A00841BCB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F24AE231EBA7D3A00841BCB /* Assets.xcassets */; };
-		9F24AE271EBA7D3A00841BCB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F24AE251EBA7D3A00841BCB /* LaunchScreen.storyboard */; };
-		9F24AE321EBA7D3A00841BCB /* MyMoneroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F24AE311EBA7D3A00841BCB /* MyMoneroTests.swift */; };
-		9F24AE3D1EBA7D3A00841BCB /* MyMoneroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F24AE3C1EBA7D3A00841BCB /* MyMoneroUITests.swift */; };
-		9F83FCFD1EBC0BC2000233AE /* mymonero-js-core-build.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F83FCFC1EBC0BC2000233AE /* mymonero-js-core-build.js */; };
+		9F7ADAD91EBD2B420073C2BB /* mymonero-js-core-build.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAB51EBD2B420073C2BB /* mymonero-js-core-build.js */; };
+		9F7ADAF21EBD2BC00073C2BB /* MyMoneroJSCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF11EBD2BC00073C2BB /* MyMoneroJSCore.swift */; };
+		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
+		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
+		9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */; };
+		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
+		9F7ADB021EBD30330073C2BB /* RuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* RuntimeController.swift */; };
+		9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB031EBD30710073C2BB /* WindowController.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		9F24AE2E1EBA7D3A00841BCB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9F24AE111EBA7D3A00841BCB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9F24AE181EBA7D3A00841BCB;
-			remoteInfo = MyMonero;
-		};
-		9F24AE391EBA7D3A00841BCB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9F24AE111EBA7D3A00841BCB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9F24AE181EBA7D3A00841BCB;
-			remoteInfo = MyMonero;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		9F24AE191EBA7D3A00841BCB /* MyMonero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyMonero.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F24AE1C1EBA7D3A00841BCB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9F24AE1E1EBA7D3A00841BCB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		9F24AE211EBA7D3A00841BCB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		9F24AE231EBA7D3A00841BCB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		9F24AE261EBA7D3A00841BCB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9F24AE281EBA7D3A00841BCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9F24AE2D1EBA7D3A00841BCB /* MyMoneroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyMoneroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F24AE311EBA7D3A00841BCB /* MyMoneroTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroTests.swift; sourceTree = "<group>"; };
-		9F24AE331EBA7D3A00841BCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9F24AE381EBA7D3A00841BCB /* MyMoneroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyMoneroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F24AE3C1EBA7D3A00841BCB /* MyMoneroUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroUITests.swift; sourceTree = "<group>"; };
-		9F24AE3E1EBA7D3A00841BCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9F83FCFC1EBC0BC2000233AE /* mymonero-js-core-build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "mymonero-js-core-build.js"; path = "MyMoneroJSCore/build/mymonero-js-core-build.js"; sourceTree = "<group>"; };
+		9F7ADAB51EBD2B420073C2BB /* mymonero-js-core-build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "mymonero-js-core-build.js"; sourceTree = "<group>"; };
+		9F7ADAF11EBD2BC00073C2BB /* MyMoneroJSCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMoneroJSCore.swift; sourceTree = "<group>"; };
+		9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
+		9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9F7ADAF81EBD2C1C0073C2BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9F7ADB011EBD30330073C2BB /* RuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeController.swift; sourceTree = "<group>"; };
+		9F7ADB031EBD30710073C2BB /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		9F24AE161EBA7D3A00841BCB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9F24AE2A1EBA7D3A00841BCB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9F24AE351EBA7D3A00841BCB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -79,10 +44,7 @@
 		9F24AE101EBA7D3A00841BCB = {
 			isa = PBXGroup;
 			children = (
-				9F83FCFE1EBC0BC5000233AE /* MyMoneroJSCore */,
-				9F24AE1B1EBA7D3A00841BCB /* MyMonero */,
-				9F24AE301EBA7D3A00841BCB /* MyMoneroTests */,
-				9F24AE3B1EBA7D3A00841BCB /* MyMoneroUITests */,
+				9F7ADAA51EBD2B420073C2BB /* Modules */,
 				9F24AE1A1EBA7D3A00841BCB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,49 +53,64 @@
 			isa = PBXGroup;
 			children = (
 				9F24AE191EBA7D3A00841BCB /* MyMonero.app */,
-				9F24AE2D1EBA7D3A00841BCB /* MyMoneroTests.xctest */,
-				9F24AE381EBA7D3A00841BCB /* MyMoneroUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9F24AE1B1EBA7D3A00841BCB /* MyMonero */ = {
+		9F7ADAA51EBD2B420073C2BB /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				9F24AE1C1EBA7D3A00841BCB /* AppDelegate.swift */,
-				9F24AE1E1EBA7D3A00841BCB /* ViewController.swift */,
-				9F24AE201EBA7D3A00841BCB /* Main.storyboard */,
-				9F24AE231EBA7D3A00841BCB /* Assets.xcassets */,
-				9F24AE251EBA7D3A00841BCB /* LaunchScreen.storyboard */,
-				9F24AE281EBA7D3A00841BCB /* Info.plist */,
+				9F7ADAA61EBD2B420073C2BB /* App */,
+				9F7ADAAF1EBD2B420073C2BB /* MyMoneroJSCore */,
 			);
-			path = MyMonero;
+			path = Modules;
 			sourceTree = "<group>";
 		};
-		9F24AE301EBA7D3A00841BCB /* MyMoneroTests */ = {
+		9F7ADAA61EBD2B420073C2BB /* App */ = {
 			isa = PBXGroup;
 			children = (
-				9F24AE311EBA7D3A00841BCB /* MyMoneroTests.swift */,
-				9F24AE331EBA7D3A00841BCB /* Info.plist */,
+				9F7ADAF31EBD2C1C0073C2BB /* Controllers */,
+				9F7ADAF61EBD2C1C0073C2BB /* Resources */,
 			);
-			path = MyMoneroTests;
+			path = App;
 			sourceTree = "<group>";
 		};
-		9F24AE3B1EBA7D3A00841BCB /* MyMoneroUITests */ = {
+		9F7ADAAF1EBD2B420073C2BB /* MyMoneroJSCore */ = {
 			isa = PBXGroup;
 			children = (
-				9F24AE3C1EBA7D3A00841BCB /* MyMoneroUITests.swift */,
-				9F24AE3E1EBA7D3A00841BCB /* Info.plist */,
+				9F7ADAF11EBD2BC00073C2BB /* MyMoneroJSCore.swift */,
+				9F7ADAB41EBD2B420073C2BB /* build */,
 			);
-			path = MyMoneroUITests;
+			path = MyMoneroJSCore;
 			sourceTree = "<group>";
 		};
-		9F83FCFE1EBC0BC5000233AE /* MyMoneroJSCore */ = {
+		9F7ADAB41EBD2B420073C2BB /* build */ = {
 			isa = PBXGroup;
 			children = (
-				9F83FCFC1EBC0BC2000233AE /* mymonero-js-core-build.js */,
+				9F7ADAB51EBD2B420073C2BB /* mymonero-js-core-build.js */,
 			);
-			name = MyMoneroJSCore;
+			path = build;
+			sourceTree = "<group>";
+		};
+		9F7ADAF31EBD2C1C0073C2BB /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */,
+				9F7ADB031EBD30710073C2BB /* WindowController.swift */,
+				9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */,
+				9F7ADB011EBD30330073C2BB /* RuntimeController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9F7ADAF61EBD2C1C0073C2BB /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */,
+				9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */,
+				9F7ADAF81EBD2C1C0073C2BB /* Info.plist */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -156,42 +133,6 @@
 			productReference = 9F24AE191EBA7D3A00841BCB /* MyMonero.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9F24AE2C1EBA7D3A00841BCB /* MyMoneroTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9F24AE441EBA7D3A00841BCB /* Build configuration list for PBXNativeTarget "MyMoneroTests" */;
-			buildPhases = (
-				9F24AE291EBA7D3A00841BCB /* Sources */,
-				9F24AE2A1EBA7D3A00841BCB /* Frameworks */,
-				9F24AE2B1EBA7D3A00841BCB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9F24AE2F1EBA7D3A00841BCB /* PBXTargetDependency */,
-			);
-			name = MyMoneroTests;
-			productName = MyMoneroTests;
-			productReference = 9F24AE2D1EBA7D3A00841BCB /* MyMoneroTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		9F24AE371EBA7D3A00841BCB /* MyMoneroUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9F24AE471EBA7D3A00841BCB /* Build configuration list for PBXNativeTarget "MyMoneroUITests" */;
-			buildPhases = (
-				9F24AE341EBA7D3A00841BCB /* Sources */,
-				9F24AE351EBA7D3A00841BCB /* Frameworks */,
-				9F24AE361EBA7D3A00841BCB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9F24AE3A1EBA7D3A00841BCB /* PBXTargetDependency */,
-			);
-			name = MyMoneroUITests;
-			productName = MyMoneroUITests;
-			productReference = 9F24AE381EBA7D3A00841BCB /* MyMoneroUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -205,16 +146,6 @@
 					9F24AE181EBA7D3A00841BCB = {
 						CreatedOnToolsVersion = 8.3.2;
 						ProvisioningStyle = Automatic;
-					};
-					9F24AE2C1EBA7D3A00841BCB = {
-						CreatedOnToolsVersion = 8.3.2;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 9F24AE181EBA7D3A00841BCB;
-					};
-					9F24AE371EBA7D3A00841BCB = {
-						CreatedOnToolsVersion = 8.3.2;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 9F24AE181EBA7D3A00841BCB;
 					};
 				};
 			};
@@ -232,8 +163,6 @@
 			projectRoot = "";
 			targets = (
 				9F24AE181EBA7D3A00841BCB /* MyMonero */,
-				9F24AE2C1EBA7D3A00841BCB /* MyMoneroTests */,
-				9F24AE371EBA7D3A00841BCB /* MyMoneroUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -243,24 +172,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F24AE271EBA7D3A00841BCB /* LaunchScreen.storyboard in Resources */,
-				9F24AE241EBA7D3A00841BCB /* Assets.xcassets in Resources */,
-				9F24AE221EBA7D3A00841BCB /* Main.storyboard in Resources */,
-				9F83FCFD1EBC0BC2000233AE /* mymonero-js-core-build.js in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9F24AE2B1EBA7D3A00841BCB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9F24AE361EBA7D3A00841BCB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */,
+				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
+				9F7ADAD91EBD2B420073C2BB /* mymonero-js-core-build.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,60 +185,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F24AE1F1EBA7D3A00841BCB /* ViewController.swift in Sources */,
-				9F24AE1D1EBA7D3A00841BCB /* AppDelegate.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9F24AE291EBA7D3A00841BCB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9F24AE321EBA7D3A00841BCB /* MyMoneroTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9F24AE341EBA7D3A00841BCB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9F24AE3D1EBA7D3A00841BCB /* MyMoneroUITests.swift in Sources */,
+				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
+				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
+				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
+				9F7ADB021EBD30330073C2BB /* RuntimeController.swift in Sources */,
+				9F7ADAF21EBD2BC00073C2BB /* MyMoneroJSCore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		9F24AE2F1EBA7D3A00841BCB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9F24AE181EBA7D3A00841BCB /* MyMonero */;
-			targetProxy = 9F24AE2E1EBA7D3A00841BCB /* PBXContainerItemProxy */;
-		};
-		9F24AE3A1EBA7D3A00841BCB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9F24AE181EBA7D3A00841BCB /* MyMonero */;
-			targetProxy = 9F24AE391EBA7D3A00841BCB /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		9F24AE201EBA7D3A00841BCB /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9F24AE211EBA7D3A00841BCB /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		9F24AE251EBA7D3A00841BCB /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9F24AE261EBA7D3A00841BCB /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		9F24AE3F1EBA7D3A00841BCB /* Debug */ = {
@@ -424,7 +293,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = MyMonero/Info.plist;
+				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -436,65 +305,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = MyMonero/Info.plist;
+				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
-		9F24AE451EBA7D3A00841BCB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = MyMoneroTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.MyMoneroTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyMonero.app/MyMonero";
-			};
-			name = Debug;
-		};
-		9F24AE461EBA7D3A00841BCB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = MyMoneroTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.MyMoneroTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyMonero.app/MyMonero";
-			};
-			name = Release;
-		};
-		9F24AE481EBA7D3A00841BCB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = MyMoneroUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.MyMoneroUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = MyMonero;
-			};
-			name = Debug;
-		};
-		9F24AE491EBA7D3A00841BCB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = MyMoneroUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.MyMoneroUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = MyMonero;
 			};
 			name = Release;
 		};
@@ -515,24 +330,6 @@
 			buildConfigurations = (
 				9F24AE421EBA7D3A00841BCB /* Debug */,
 				9F24AE431EBA7D3A00841BCB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9F24AE441EBA7D3A00841BCB /* Build configuration list for PBXNativeTarget "MyMoneroTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9F24AE451EBA7D3A00841BCB /* Debug */,
-				9F24AE461EBA7D3A00841BCB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9F24AE471EBA7D3A00841BCB /* Build configuration list for PBXNativeTarget "MyMoneroUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9F24AE481EBA7D3A00841BCB /* Debug */,
-				9F24AE491EBA7D3A00841BCB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
