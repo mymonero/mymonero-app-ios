@@ -25,5 +25,12 @@ class RuntimeController
 	func setup_mymoneroJSCore()
 	{
 		mymoneroJSCore = MyMoneroCoreJS(window: windowController.window)
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
+		{
+			self.mymoneroJSCore.New_PaymentID({ paymentID in
+				NSLog("pid: \(paymentID)")
+			})
+		}
 	}
 }
