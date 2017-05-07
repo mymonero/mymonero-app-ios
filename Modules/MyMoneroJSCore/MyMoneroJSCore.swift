@@ -8,21 +8,41 @@
 
 import UIKit // because we use a WKWebView
 import WebKit
-
+//
+// Accessory types
 enum MyMoneroCoreJS_ModuleName: String
 {
-	case moneroUtils = "monero_utils"
+	case core = "monero_utils"
 	case wallet = "monero_wallet_utils"
+	case walletLocale = "monero_wallet_locale"
 	case paymentID = "monero_paymentID_utils"
 }
-
+typealias MoneroMnemonicSeed = String
+typealias MoneroAddress = String
 typealias MoneroPaymentID = String
-struct MoneroKeyPair
+typealias MoneroKey = String
+struct MoneroKeyDuo
 {
-	var view: String
-	var spend: String
+	var view: MoneroKey
+	var spend: MoneroKey
 }
-
+struct MoneroNewWalletDescription
+{
+	var mnemonic: MoneroMnemonicSeed
+	var seed: String
+	var publicAddress: MoneroAddress
+	var publicKeys: MoneroKeyDuo
+	var privateKeys: MoneroKeyDuo
+}
+enum MoneroMnemonicWordsetName: String
+{
+	case English = "english"
+	case Japanese = "japanese"
+	case Spanish = "spanish"
+	case Portuguese = "portuguese"
+}
+//
+// Principal type
 class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 {
 	let window: UIWindow!
@@ -51,7 +71,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			return
 		}
 		//
-		
 		let configuration = WKWebViewConfiguration()
 		configuration.userContentController.add(self, name: "javascriptEmissions")
 		self.webView = WKWebView(frame: .zero, configuration: configuration)
@@ -75,42 +94,78 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	
 	//
 	// Accessors
-	func New_PaymentID(_ fn: @escaping (MoneroPaymentID) -> Void)
+	func NewlyCreatedWallet(_ fn: @escaping (MoneroNewWalletDescription) -> Void)
 	{
-		self._callSync(
-			.paymentID,
-			"New_TransactionID",
-			nil,
+		self.MnemonicWordsetNameWithCurrentLocale({ wordsetName in
+			self._callSync(.wallet, "NewlyCreatedWallet", [ wordsetName.rawValue ])
 			{ (any, err) in
-				if let any = any {
-					fn(any as! MoneroPaymentID)
+				if let dict = any as? [String: AnyObject] {
+					let seed = dict["seed"] as! String
+					let keys = dict["keys"] as! [String: AnyObject]
+					let spendKeys = keys["spend"] as! [String: AnyObject]
+					let viewKeys = keys["view"] as! [String: AnyObject]
+					let publicAddress = keys["public_addr"] as! MoneroAddress
+					let publicKeys = MoneroKeyDuo(
+						view: viewKeys["pub"] as! MoneroKey,
+						spend: spendKeys["pub"] as! MoneroKey
+					)
+					let privateKeys = MoneroKeyDuo(
+						view: viewKeys["sec"] as! MoneroKey,
+						spend: spendKeys["sec"] as! MoneroKey
+					)
+					let description = MoneroNewWalletDescription(
+						mnemonic: dict["mnemonicString"] as! MoneroMnemonicSeed,
+						seed: seed,
+						publicAddress: publicAddress,
+						publicKeys: publicKeys,
+						privateKeys: privateKeys
+					)
+					fn(description)
 				}
 			}
-		)
+		})
+	}
+	func MnemonicWordsetNameWithCurrentLocale(_ fn: @escaping (MoneroMnemonicWordsetName) -> Void)
+	{
+		let locale = NSLocale.current
+		let languageCode = locale.languageCode ?? "en" // default to en
+		self._callSync(.walletLocale, "MnemonicWordsetNameWithLocale", [ languageCode ])
+		{ (any, err) in
+			let wordsetName = MoneroMnemonicWordsetName(rawValue: any as! String) // just going to assume it matches; TODO? check?
+			fn(wordsetName!)
+		}
+	}
+	func New_PaymentID(_ fn: @escaping (MoneroPaymentID) -> Void)
+	{
+		self._callSync(.paymentID, "New_TransactionID", nil)
+		{ (any, err) in
+			if let any = any {
+				let paymentID = any as! MoneroPaymentID
+				fn(paymentID)
+			}
+			// TODO: throw?
+		}
 	}
 	func DecodeAddress(
 		_ address: String,
-		_ fn: @escaping (Error?, MoneroKeyPair?) -> Void
+		_ fn: @escaping (Error?, MoneroKeyDuo?) -> Void
 	)
 	{
-		self._callSync(
-			.moneroUtils,
-			"decode_address",
-			[ address ],
-			{ (any, err) in
-				if let err = err {
-					NSLog("err \(err)")
-					fn(err, nil)
-					return
-				}
-				if let dict = any as? [String: AnyObject] {
-					let view = dict["view"] as! String
-					let spend = dict["spend"] as! String
-					let keypair = MoneroKeyPair(view: view, spend: spend)
-					fn(nil, keypair)
-				}
+		self._callSync(.core, "decode_address", [ address ])
+		{ (any, err) in
+			if let err = err {
+				NSLog("err \(err)")
+				fn(err, nil)
+				return
 			}
-		)
+			if let dict = any as? [String: AnyObject] {
+				let view = dict["view"] as! MoneroKey
+				let spend = dict["spend"] as! MoneroKey
+				let keypair = MoneroKeyDuo(view: view, spend: spend)
+				fn(nil, keypair)
+			}
+			// TODO: throw?
+		}
 	}
 	//
 	// Internal - Imperatives - Function calling

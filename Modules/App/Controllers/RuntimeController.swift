@@ -38,6 +38,10 @@ class RuntimeController
 					NSLog("err, keypair: \(err), \(keypair)")
 				}
 			)
+			//
+			self.mymoneroJSCore.NewlyCreatedWallet({ walletDescription in
+				NSLog("wallet desc \(walletDescription)")
+			})
 		}
 	}
 }
