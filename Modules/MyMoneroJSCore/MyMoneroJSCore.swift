@@ -231,15 +231,17 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		let args = argsAsJSStrings ?? []
 		let joined_args = args.joined(separator: "\",\"")
 		let argsAreaString = "\"\(joined_args)\""
-		NSLog("argsAreaString \(argsAreaString)")
 		let javaScriptString = "mymonero_core_js.\(moduleName.rawValue).\(functionName)(\(argsAreaString))"
-		// TODO: investigate how to get the results of an async fn
 		self._evaluateJavaScript(
 			javaScriptString,
 			completionHandler:
 			{ (any, err) in
-				NSLog("err \(err.debugDescription)")
-				NSLog("any \(any.debugDescription)")
+				if let err = err {
+					NSLog("err \(err)")
+				}
+				if let any = any {
+					NSLog("any \(any.debugDescription)")
+				}
 				if let completionHandler = completionHandler {
 					completionHandler(any, err)
 				}
@@ -288,7 +290,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	// Internal - Delegation - WKScriptMessageHandler
 	//
 	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage)
-	{
+	{ // not really used currently - possibly in the future for any necessarily async stuff
 		NSLog("received message: \(message), \(message.body)")
 	}
 }
