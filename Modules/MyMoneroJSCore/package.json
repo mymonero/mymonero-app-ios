@@ -8,6 +8,7 @@
   "private": false,
   "scripts": {},
   "dependencies": {
+    "async": "^2.4.0",
     "crypto-browserify": "^3.11.0",
     "html5-fs": "^0.1.1"
   },

@@ -11,19 +11,28 @@ import WebKit
 
 enum MyMoneroCoreJS_ModuleName: String
 {
+	case moneroUtils = "monero_utils"
 	case wallet = "monero_wallet_utils"
 	case paymentID = "monero_paymentID_utils"
 }
 
-class MyMoneroCoreJS
+typealias MoneroPaymentID = String
+struct MoneroKeyPair
+{
+	var view: String
+	var spend: String
+}
+
+class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 {
 	let window: UIWindow!
-	let webView = WKWebView()
+	var webView: WKWebView!
 	var hasBooted = false
 	//
 	init(window: UIWindow)
 	{
 		self.window = window
+		super.init()
 		self.setup()
 	}
 	func setup()
@@ -32,7 +41,7 @@ class MyMoneroCoreJS
 	}
 	func setup_webView()
 	{
-		let filename = "mymonero-js-core-build"
+		let filename = "mymonero-js-core-ios-build"
 		guard let filepath = Bundle.main.path(forResource: filename, ofType: "js") else {
 			NSLog("❌  Can't find js file named \(filename)")
 			return
@@ -42,6 +51,10 @@ class MyMoneroCoreJS
 			return
 		}
 		//
+		
+		let configuration = WKWebViewConfiguration()
+		configuration.userContentController.add(self, name: "javascriptEmissions")
+		self.webView = WKWebView(frame: .zero, configuration: configuration)
 		webView.isHidden = true
 		self.window.addSubview(webView)
 		let htmlString = "<html><head></head><body></body></html>"
@@ -62,30 +75,56 @@ class MyMoneroCoreJS
 	
 	//
 	// Accessors
-	
-	func New_PaymentID(_ fn: @escaping (String) -> Void)
+	func New_PaymentID(_ fn: @escaping (MoneroPaymentID) -> Void)
 	{
-		self._call(
+		self._callSync(
 			.paymentID,
 			"New_TransactionID",
 			nil,
 			{ (any, err) in
 				if let any = any {
-					fn(any as! String)
+					fn(any as! MoneroPaymentID)
+				}
+			}
+		)
+	}
+	func DecodeAddress(
+		_ address: String,
+		_ fn: @escaping (Error?, MoneroKeyPair?) -> Void
+	)
+	{
+		self._callSync(
+			.moneroUtils,
+			"decode_address",
+			[ address ],
+			{ (any, err) in
+				if let err = err {
+					NSLog("err \(err)")
+					fn(err, nil)
+					return
+				}
+				if let dict = any as? [String: AnyObject] {
+					let view = dict["view"] as! String
+					let spend = dict["spend"] as! String
+					let keypair = MoneroKeyPair(view: view, spend: spend)
+					fn(nil, keypair)
 				}
 			}
 		)
 	}
 	//
 	// Internal - Imperatives - Function calling
-	func _call(
+	func _callSync(
 		_ moduleName: MyMoneroCoreJS_ModuleName,
 		_ functionName: String,
-		_ args: [Any]?,
+		_ argsAsJSStrings: [String]?,
 		_ completionHandler: ((Any?, Error?) -> Void)?
 	)
 	{
-		let argsAreaString = "" // TODO
+		let args = argsAsJSStrings ?? []
+		let joined_args = args.joined(separator: "\",\"")
+		let argsAreaString = "\"\(joined_args)\""
+		NSLog("argsAreaString \(argsAreaString)")
 		let javaScriptString = "mymonero_core_js.\(moduleName.rawValue).\(functionName)(\(argsAreaString))"
 		// TODO: investigate how to get the results of an async fn
 		self._evaluateJavaScript(
@@ -136,5 +175,13 @@ class MyMoneroCoreJS
 			javaScriptString,
 			completionHandler: completionHandler
 		)
+	}
+	//
+	//
+	// Internal - Delegation - WKScriptMessageHandler
+	//
+	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage)
+	{
+		NSLog("received message: \(message), \(message.body)")
 	}
 }

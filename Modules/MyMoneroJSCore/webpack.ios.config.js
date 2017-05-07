@@ -34,10 +34,10 @@ module.exports =
 {
 	devtool: "inline-source-map",
 	context: __dirname,
-	entry: "./index.js",
+	entry: "./index.webkit.js",
 	output: {
 		path: path.resolve(__dirname, "build"),
-		filename: "mymonero-js-core-build.js",
+		filename: "mymonero-js-core-ios-build.js",
         library: "mymonero_core_js",
         libraryTarget: "umd"
 	},

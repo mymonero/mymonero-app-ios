@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9F7ADAD91EBD2B420073C2BB /* mymonero-js-core-build.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAB51EBD2B420073C2BB /* mymonero-js-core-build.js */; };
 		9F7ADAF21EBD2BC00073C2BB /* MyMoneroJSCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF11EBD2BC00073C2BB /* MyMoneroJSCore.swift */; };
 		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
 		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
@@ -15,11 +14,11 @@
 		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
 		9F7ADB021EBD30330073C2BB /* RuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* RuntimeController.swift */; };
 		9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB031EBD30710073C2BB /* WindowController.swift */; };
+		9F7ADB061EBE64100073C2BB /* mymonero-js-core-ios-build.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADB051EBE64100073C2BB /* mymonero-js-core-ios-build.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		9F24AE191EBA7D3A00841BCB /* MyMonero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyMonero.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F7ADAB51EBD2B420073C2BB /* mymonero-js-core-build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "mymonero-js-core-build.js"; sourceTree = "<group>"; };
 		9F7ADAF11EBD2BC00073C2BB /* MyMoneroJSCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMoneroJSCore.swift; sourceTree = "<group>"; };
 		9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
@@ -28,6 +27,7 @@
 		9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9F7ADB011EBD30330073C2BB /* RuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeController.swift; sourceTree = "<group>"; };
 		9F7ADB031EBD30710073C2BB /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		9F7ADB051EBE64100073C2BB /* mymonero-js-core-ios-build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "mymonero-js-core-ios-build.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +87,7 @@
 		9F7ADAB41EBD2B420073C2BB /* build */ = {
 			isa = PBXGroup;
 			children = (
-				9F7ADAB51EBD2B420073C2BB /* mymonero-js-core-build.js */,
+				9F7ADB051EBE64100073C2BB /* mymonero-js-core-ios-build.js */,
 			);
 			path = build;
 			sourceTree = "<group>";
@@ -172,9 +172,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F7ADB061EBE64100073C2BB /* mymonero-js-core-ios-build.js in Resources */,
 				9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
-				9F7ADAD91EBD2B420073C2BB /* mymonero-js-core-build.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

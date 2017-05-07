@@ -1,8 +1,0 @@
-echo "🔁  mkdir -p ./build";
-mkdir -p ./build;
-
-# echo "🔁  browserify index.js -o build/mymonero-js-core-build.js --standalone monero_utils";
-# browserify index.js -o build/mymonero-js-core-build.js --standalone monero_utils;
-
-echo "🔁  node_modules/.bin/webpack --config webpack.config.js --display-modules";
-node_modules/.bin/webpack --config webpack.config.js --display-modules;

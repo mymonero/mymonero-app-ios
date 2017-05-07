@@ -28,9 +28,16 @@ class RuntimeController
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
-			self.mymoneroJSCore.New_PaymentID({ paymentID in
-				NSLog("pid: \(paymentID)")
-			})
+//			self.mymoneroJSCore.New_PaymentID({ paymentID in
+//				NSLog("pid: \(paymentID)")
+//			})
+			let address = "49ntR6oy9JQBWUKcsk7i7a1m4JA7WsK1cNDAhRmzLmvkUGbv3xGhM5UCvGmymLt2Jw2Pqz7PAvLLRAMYd84nnsnLKSWGd7h"
+			self.mymoneroJSCore.DecodeAddress(
+				address,
+				{ (err, keypair) in
+					NSLog("err, keypair: \(err), \(keypair)")
+				}
+			)
 		}
 	}
 }
