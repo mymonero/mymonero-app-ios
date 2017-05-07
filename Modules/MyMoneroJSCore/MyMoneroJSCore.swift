@@ -91,7 +91,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 		}
 	}
-	
 	//
 	// Accessors
 	func NewlyCreatedWallet(_ fn: @escaping (MoneroNewWalletDescription) -> Void)
@@ -125,6 +124,22 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 		})
 	}
+	func MnemonicStringFromSeed(
+		_ account_seed: String,
+		_ mnemonic_wordsetName: MoneroMnemonicWordsetName,
+		_ fn: @escaping (Error?, MoneroMnemonicSeed?) -> Void
+	)
+	{
+		self._callSync(.wallet, "MnemonicStringFromSeed", [ account_seed, mnemonic_wordsetName.rawValue ])
+		{ (any, err) in
+			if let err = err {
+				fn(err, nil)
+				return
+			}
+			let mnemonicString = any as! MoneroMnemonicSeed
+			fn(nil, mnemonicString)
+		}
+	}
 	func MnemonicWordsetNameWithCurrentLocale(_ fn: @escaping (MoneroMnemonicWordsetName) -> Void)
 	{
 		let locale = NSLocale.current
@@ -142,6 +157,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			if let any = any {
 				let paymentID = any as! MoneroPaymentID
 				fn(paymentID)
+				return
 			}
 			// TODO: throw?
 		}
@@ -163,6 +179,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				let spend = dict["spend"] as! MoneroKey
 				let keypair = MoneroKeyDuo(view: view, spend: spend)
 				fn(nil, keypair)
+				return
 			}
 			// TODO: throw?
 		}
@@ -186,8 +203,8 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			javaScriptString,
 			completionHandler:
 			{ (any, err) in
-				NSLog("err \(err)")
-				NSLog("any \(any)")
+				NSLog("err \(err.debugDescription)")
+				NSLog("any \(any.debugDescription)")
 				if let completionHandler = completionHandler {
 					completionHandler(any, err)
 				}

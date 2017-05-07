@@ -31,16 +31,31 @@ class RuntimeController
 //			self.mymoneroJSCore.New_PaymentID({ paymentID in
 //				NSLog("pid: \(paymentID)")
 //			})
-			let address = "49ntR6oy9JQBWUKcsk7i7a1m4JA7WsK1cNDAhRmzLmvkUGbv3xGhM5UCvGmymLt2Jw2Pqz7PAvLLRAMYd84nnsnLKSWGd7h"
-			self.mymoneroJSCore.DecodeAddress(
-				address,
-				{ (err, keypair) in
-					NSLog("err, keypair: \(err), \(keypair)")
-				}
-			)
 			//
-			self.mymoneroJSCore.NewlyCreatedWallet({ walletDescription in
-				NSLog("wallet desc \(walletDescription)")
+			let address = "49ntR6oy9JQBWUKcsk7i7a1m4JA7WsK1cNDAhRmzLmvkUGbv3xGhM5UCvGmymLt2Jw2Pqz7PAvLLRAMYd84nnsnLKSWGd7h"
+			let account_seed = "bc83e30aed0656998e7e0d5ae4701fb8"
+			let mnemonic_wordsetName = MoneroMnemonicWordsetName.English
+			let seedAsMnemonicString = "union younger algebra emulate extra tribal awoken memoir tunnel wolf hamburger awning awning"
+//			self.mymoneroJSCore.DecodeAddress(
+//				address,
+//				{ (err, keypair) in
+//					NSLog("err, keypair: \(err), \(keypair)")
+//				}
+//			)
+			//
+//			self.mymoneroJSCore.NewlyCreatedWallet({ walletDescription in
+//				NSLog("wallet desc \(walletDescription)")
+//			})
+			//
+			self.mymoneroJSCore.MnemonicStringFromSeed(account_seed, mnemonic_wordsetName, { (err, mnemonicString) in
+				NSLog("err \(err.debugDescription)")
+				NSLog("mnemonicString \(mnemonicString.debugDescription)")
+				guard let mnemonicString = mnemonicString else {
+					return
+				}
+				if seedAsMnemonicString != mnemonicString {
+					NSLog("err: strings unequal")
+				}
 			})
 		}
 	}
