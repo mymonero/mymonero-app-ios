@@ -26,7 +26,7 @@ struct MoneroKeyDuo
 	var view: MoneroKey
 	var spend: MoneroKey
 }
-struct MoneroNewWalletDescription
+struct MoneroWalletDescription
 {
 	var mnemonic: MoneroMnemonicSeed
 	var seed: String
@@ -92,33 +92,41 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		}
 	}
 	//
-	// Accessors
-	func NewlyCreatedWallet(_ fn: @escaping (MoneroNewWalletDescription) -> Void)
+	// Internal - Accessors
+	func _new_moneroWalletDescription_byParsing_dict(_ dict: [String: AnyObject], _ optl_passThrough_mnemonicString: MoneroMnemonicSeed?) -> MoneroWalletDescription
+	{
+		let mnemonicString = optl_passThrough_mnemonicString ?? dict["mnemonicString"] as! MoneroMnemonicSeed
+		let seed = dict["seed"] as! String
+		let keys = dict["keys"] as! [String: AnyObject]
+		let spendKeys = keys["spend"] as! [String: AnyObject]
+		let viewKeys = keys["view"] as! [String: AnyObject]
+		let publicAddress = keys["public_addr"] as! MoneroAddress
+		let publicKeys = MoneroKeyDuo(
+			view: viewKeys["pub"] as! MoneroKey,
+			spend: spendKeys["pub"] as! MoneroKey
+		)
+		let privateKeys = MoneroKeyDuo(
+			view: viewKeys["sec"] as! MoneroKey,
+			spend: spendKeys["sec"] as! MoneroKey
+		)
+		let description = MoneroWalletDescription(
+			mnemonic: mnemonicString,
+			seed: seed,
+			publicAddress: publicAddress,
+			publicKeys: publicKeys,
+			privateKeys: privateKeys
+		)
+		return description
+	}
+	//
+	// Interface - Accessors
+	func NewlyCreatedWallet(_ fn: @escaping (MoneroWalletDescription) -> Void)
 	{
 		self.MnemonicWordsetNameWithCurrentLocale({ wordsetName in
 			self._callSync(.wallet, "NewlyCreatedWallet", [ wordsetName.rawValue ])
 			{ (any, err) in
 				if let dict = any as? [String: AnyObject] {
-					let seed = dict["seed"] as! String
-					let keys = dict["keys"] as! [String: AnyObject]
-					let spendKeys = keys["spend"] as! [String: AnyObject]
-					let viewKeys = keys["view"] as! [String: AnyObject]
-					let publicAddress = keys["public_addr"] as! MoneroAddress
-					let publicKeys = MoneroKeyDuo(
-						view: viewKeys["pub"] as! MoneroKey,
-						spend: spendKeys["pub"] as! MoneroKey
-					)
-					let privateKeys = MoneroKeyDuo(
-						view: viewKeys["sec"] as! MoneroKey,
-						spend: spendKeys["sec"] as! MoneroKey
-					)
-					let description = MoneroNewWalletDescription(
-						mnemonic: dict["mnemonicString"] as! MoneroMnemonicSeed,
-						seed: seed,
-						publicAddress: publicAddress,
-						publicKeys: publicKeys,
-						privateKeys: privateKeys
-					)
+					let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
 					fn(description)
 				}
 			}
@@ -126,11 +134,11 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	}
 	func MnemonicStringFromSeed(
 		_ account_seed: String,
-		_ mnemonic_wordsetName: MoneroMnemonicWordsetName,
+		_ wordsetName: MoneroMnemonicWordsetName,
 		_ fn: @escaping (Error?, MoneroMnemonicSeed?) -> Void
 	)
 	{
-		self._callSync(.wallet, "MnemonicStringFromSeed", [ account_seed, mnemonic_wordsetName.rawValue ])
+		self._callSync(.wallet, "MnemonicStringFromSeed", [ account_seed, wordsetName.rawValue ])
 		{ (any, err) in
 			if let err = err {
 				fn(err, nil)
@@ -138,6 +146,33 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			let mnemonicString = any as! MoneroMnemonicSeed
 			fn(nil, mnemonicString)
+		}
+	}
+	func WalletDescriptionFromMnemonicSeed(
+		_ mnemonicString: MoneroMnemonicSeed,
+		_ wordsetName: MoneroMnemonicWordsetName,
+		_ fn: @escaping (Error?, MoneroWalletDescription?) -> Void
+	)
+	{
+		self._callSync(.wallet, "SeedAndKeysFromMnemonic_sync", [ mnemonicString, wordsetName.rawValue ])
+		{ (any, err) in
+			if let err = err {
+				fn(err, nil)
+				return
+			}
+			guard let dict = any as? [String: AnyObject] else {
+				// return err?
+				return
+			}
+			if let dict_err = dict["err"] {
+				guard let _ = dict_err as? NSNull else {
+					let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err": dict_err as! String ]) // not sure what dict_err really is going to be yet, so this is TBD
+					fn(err, nil)
+					return
+				}
+			}
+			let description = self._new_moneroWalletDescription_byParsing_dict(dict, mnemonicString)
+			fn(nil, description)
 		}
 	}
 	func MnemonicWordsetNameWithCurrentLocale(_ fn: @escaping (MoneroMnemonicWordsetName) -> Void)

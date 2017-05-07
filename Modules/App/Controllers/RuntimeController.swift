@@ -47,16 +47,21 @@ class RuntimeController
 //				NSLog("wallet desc \(walletDescription)")
 //			})
 			//
-			self.mymoneroJSCore.MnemonicStringFromSeed(account_seed, mnemonic_wordsetName, { (err, mnemonicString) in
-				NSLog("err \(err.debugDescription)")
-				NSLog("mnemonicString \(mnemonicString.debugDescription)")
-				guard let mnemonicString = mnemonicString else {
-					return
-				}
-				if seedAsMnemonicString != mnemonicString {
-					NSLog("err: strings unequal")
-				}
-			})
+//			self.mymoneroJSCore.MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
+//			{ (err, mnemonicString) in
+//				NSLog("err \(err.debugDescription)")
+//				NSLog("mnemonicString \(mnemonicString.debugDescription)")
+//				guard let mnemonicString = mnemonicString else {
+//					return
+//				}
+//				if seedAsMnemonicString != mnemonicString {
+//					NSLog("err: strings unequal")
+//				}
+//			}
+			self.mymoneroJSCore.WalletDescriptionFromMnemonicSeed(seedAsMnemonicString, mnemonic_wordsetName)
+			{ (err, walletDescription) in
+				NSLog("walletDescription \(walletDescription)")
+			}
 		}
 	}
 }
