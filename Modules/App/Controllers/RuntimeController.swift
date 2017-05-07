@@ -44,7 +44,7 @@ class RuntimeController
 //			)
 			//
 //			self.mymoneroJSCore.NewlyCreatedWallet({ walletDescription in
-//				NSLog("wallet desc \(walletDescription)")
+//				NSLog("newly generated wallet: \(walletDescription)")
 //			})
 			//
 //			self.mymoneroJSCore.MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
