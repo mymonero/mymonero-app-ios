@@ -170,11 +170,12 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			guard let dict = any as? [String: AnyObject] else {
 				// return err?
+				NSLog("Error: Couldn't cast return value as [String: AnyObject]")
 				return
 			}
-			if let dict_err = dict["err"] {
-				guard let _ = dict_err as? NSNull else {
-					let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err": dict_err as! String ]) // not sure what dict_err really is going to be yet, so this is TBD
+			if let dict_err_str = dict["err_str"] {
+				guard let _ = dict_err_str as? NSNull else {
+					let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err_str": dict_err_str as! String ])
 					fn(err, nil)
 					return
 				}
@@ -240,9 +241,9 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				return
 			}
 			if let dict = any as? [String: AnyObject] {
-				if let dict_err = dict["err"] {
-					guard let _ = dict_err as? NSNull else {
-						let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err": dict_err as! String ]) // not sure what dict_err really is going to be yet, so this is TBD
+				if let dict_err_str = dict["err_str"] {
+					guard let _ = dict_err_str as? NSNull else {
+						let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err_str": dict_err_str as! String ])
 						fn(err, nil)
 						return
 					}
@@ -259,7 +260,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 					view: private_keys["view"] as! MoneroKey,
 					spend: private_keys["spend"] as! MoneroKey
 				)
-				let isInViewOnlyMode = NSString(string: dict["isInViewOnlyMode"] as! String).boolValue
+				let isInViewOnlyMode = dict["isInViewOnlyMode"] as! Bool
 				let components = MoneroVerifiedComponentsForLogIn(
 					seed: seed,
 					publicAddress: publicAddress,
