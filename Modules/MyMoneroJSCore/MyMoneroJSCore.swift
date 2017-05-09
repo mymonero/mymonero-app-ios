@@ -55,6 +55,26 @@ enum MoneroMnemonicWordsetName: String
 	case Portuguese = "portuguese"
 }
 //
+// Constants
+struct MoneroConstants
+{
+	static let currency_name = "Monero"
+	static let currency_symbol = "XMR"
+	static let currency_requestURIPrefix = "monero:"
+	static let currency_openAliasPrefix = "xmr" // OpenAlias prefix
+	//
+	static let addressPrefix = 18 // Prefix code for addresses; 18 => addresses start with "4"
+	static let integratedAddressPrefix = 19 // Prefix code for addresses
+	//
+	static let currency_unitPlaces = 12 // Number of atomic units in one unit of currency. e.g. 12 => 10^12 = 1000000000000
+	static let txMinConfirms = 10 // Minimum number of confirmations for a transaction to show as confirmed
+	static let maxBlockNumber = 500000000 // Maximum block number, used for tx unlock time
+	static let avgBlockTime = 60 // Average block time in seconds, used for unlock time estimation
+	//
+	static let feePerKB = MoneroAmount("2000000000")! // 0.002 XMR; Network per kb fee in atomic units
+	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
+}
+//
 // Principal type
 class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 {
