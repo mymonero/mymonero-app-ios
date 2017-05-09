@@ -9,6 +9,7 @@
 import UIKit // because we use a WKWebView
 import WebKit
 import BigInt
+import SwiftDate
 //
 // Accessory types
 enum MyMoneroCoreJS_ModuleName: String
@@ -81,6 +82,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	let window: UIWindow!
 	var webView: WKWebView!
 	var hasBooted = false
+	var colloquial_dateFormatter: DateInRegionFormatter!
 	//
 	init(window: UIWindow)
 	{
@@ -125,34 +127,9 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		}
 	}
 	//
-	// Internal - Accessors
-	func _new_moneroWalletDescription_byParsing_dict(_ dict: [String: AnyObject], _ optl_passThrough_mnemonicString: MoneroSeedAsMnemonic?) -> MoneroWalletDescription
-	{
-		let mnemonicString = optl_passThrough_mnemonicString ?? dict["mnemonicString"] as! MoneroSeedAsMnemonic
-		let seed = dict["seed"] as! MoneroSeed
-		let keys = dict["keys"] as! [String: AnyObject]
-		let spendKeys = keys["spend"] as! [String: AnyObject]
-		let viewKeys = keys["view"] as! [String: AnyObject]
-		let publicAddress = keys["public_addr"] as! MoneroAddress
-		let publicKeys = MoneroKeyDuo(
-			view: viewKeys["pub"] as! MoneroKey,
-			spend: spendKeys["pub"] as! MoneroKey
-		)
-		let privateKeys = MoneroKeyDuo(
-			view: viewKeys["sec"] as! MoneroKey,
-			spend: spendKeys["sec"] as! MoneroKey
-		)
-		let description = MoneroWalletDescription(
-			mnemonic: mnemonicString,
-			seed: seed,
-			publicAddress: publicAddress,
-			publicKeys: publicKeys,
-			privateKeys: privateKeys
-		)
-		return description
-	}
 	//
 	// Interface - Accessors
+	//
 	func NewlyCreatedWallet(_ fn: @escaping (MoneroWalletDescription) -> Void)
 	{
 		self.MnemonicWordsetNameWithCurrentLocale({ wordsetName in
@@ -355,8 +332,97 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, any as? String)
 		}
 	}
+	// The following Transaction-centric functions are implemented in Swift to avoid asynchrony
+	func IsTransactionConfirmed(_ tx_height: Int, _ blockchain_height: Int) -> Bool
+	{
+		return (blockchain_height - tx_height) > MoneroConstants.txMinConfirms
+	}
+	func IsTransactionUnlocked(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> Bool
+	{
+		return self.isTxUnlocked(tx_unlockTime ?? 0, blockchain_height)
+	}
+	func TransactionLockedReason(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> String
+	{
+		return self.txLockedReason(tx_unlockTime ?? 0, blockchain_height)
+	}
+	//
+	//
+	// Internal - Accessors - Parsing/Factories
+	//
+	func _new_moneroWalletDescription_byParsing_dict(_ dict: [String: AnyObject], _ optl_passThrough_mnemonicString: MoneroSeedAsMnemonic?) -> MoneroWalletDescription
+	{
+		let mnemonicString = optl_passThrough_mnemonicString ?? dict["mnemonicString"] as! MoneroSeedAsMnemonic
+		let seed = dict["seed"] as! MoneroSeed
+		let keys = dict["keys"] as! [String: AnyObject]
+		let spendKeys = keys["spend"] as! [String: AnyObject]
+		let viewKeys = keys["view"] as! [String: AnyObject]
+		let publicAddress = keys["public_addr"] as! MoneroAddress
+		let publicKeys = MoneroKeyDuo(
+			view: viewKeys["pub"] as! MoneroKey,
+			spend: spendKeys["pub"] as! MoneroKey
+		)
+		let privateKeys = MoneroKeyDuo(
+			view: viewKeys["sec"] as! MoneroKey,
+			spend: spendKeys["sec"] as! MoneroKey
+		)
+		let description = MoneroWalletDescription(
+			mnemonic: mnemonicString,
+			seed: seed,
+			publicAddress: publicAddress,
+			publicKeys: publicKeys,
+			privateKeys: privateKeys
+		)
+		return description
+	}
+	//
+	//
+	// Internal - Accessors - Transaction state parsing implementations
+	//
+	func isTxUnlocked(_ tx_unlockTime: Double, _ blockchain_height: Int) -> Bool
+	{
+		if (tx_unlockTime < Double(MoneroConstants.maxBlockNumber)) { // then unlock time is block height
+			return Double(blockchain_height) >= tx_unlockTime
+		} else { // then unlock time is s timestamp as TimeInterval
+			let currentTime_s = round(Date().timeIntervalSince1970) // TODO: round was ported from cryptonote_utils.js; Do we need it?
+			return currentTime_s >= tx_unlockTime
+		}
+	}
+	func txLockedReason(_ tx_unlockTime: Double, _ blockchain_height: Int) -> String
+	{
+		func colloquiallyFormattedDate(_ date: Date) -> String
+		{
+			let date_DateInRegion = DateInRegion(absoluteDate: date)
+			let date_fromNow_resultTuple = try! date_DateInRegion.colloquialSinceNow(style: .full) // is try! ok? (do we expect failures?)
+			let date_fromNow_String = date_fromNow_resultTuple.colloquial
+			//
+			return date_fromNow_String
+		}
+		if (tx_unlockTime < Double(MoneroConstants.maxBlockNumber)) { // then unlock time is block height
+			let numBlocks = tx_unlockTime - Double(blockchain_height)
+			if (numBlocks <= 0) {
+				return "Transaction is unlocked"
+			}
+			let timeUntilUnlock_s = numBlocks * Double(MoneroConstants.avgBlockTime)
+			let unlockPrediction_Date = Date().addingTimeInterval(timeUntilUnlock_s)
+			let unlockPrediction_fromNow_String = colloquiallyFormattedDate(unlockPrediction_Date)
+			//
+			return "Will be unlocked in \(numBlocks) blocks, about \(unlockPrediction_fromNow_String)"
+		}
+		// then unlock time is s timestamp as TimeInterval
+		let currentTime_s = round(Date().timeIntervalSince1970) // TODO: round was ported from cryptonote_utils.js; Do we need it?
+		let time_difference = tx_unlockTime - currentTime_s
+		if(time_difference <= 0) {
+			return "Transaction is unlocked"
+		}
+		let unlockTime_Date = Date(timeIntervalSince1970: tx_unlockTime)
+		let unlockTime_fromNow_String = colloquiallyFormattedDate(unlockTime_Date)
+		//
+		return "Will be unlocked \(unlockTime_fromNow_String)"
+	}
+	//
 	//
 	// Internal - Imperatives - Function calling
+	//
 	func _callSync(
 		_ moduleName: MyMoneroCoreJS_ModuleName,
 		_ functionName: String,
@@ -385,7 +451,9 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		)
 	}
 	//
+	//
 	// Internal - Imperatives - Javascript evaluating
+	//
 	func _evaluateJavaScript(
 		_ javaScriptString: String,
 		completionHandler: ((Any?, Error?) -> Void)?

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftDate
 
 class RuntimeController
 {
@@ -99,14 +100,34 @@ class RuntimeController
 //				}
 //			)
 			//
-			let outputAmount = MoneroAmount("100000000000")! // 0.1 XMR
-			self.mymoneroJSCore.MoneroAmountFormattedString(
-				outputAmount,
-				{ (err, string) in
-					NSLog("err \(err)")
-					NSLog("string \(string!) XMR")
-				}
-			)
+//			let outputAmount = MoneroAmount("100000000000")! // 0.1 XMR
+//			self.mymoneroJSCore.MoneroAmountFormattedString(
+//				outputAmount,
+//				{ (err, string) in
+//					NSLog("err \(err)")
+//					NSLog("string \(string!) XMR")
+//				}
+//			)
+			//
+//			let blockchain_height = 1306517
+//			let mock_tx_json: [String: Any] =
+//			[
+//				"hash": "253813442512d384d70453842bab22283b7a371e1f559ff3b8edf3b03379f01f",
+//				"height": 1300696,
+//				"unlock_time": Double(0), // parser should supply Double for this
+//				"timestamp": Date().timeIntervalSince1970 - 999, // Double or TimeInterval
+//				"total_received": "50000000000",
+//				"total_sent": "0",
+//				"amount": MoneroAmount("50000000000")!
+//			]
+//			let tx_height = mock_tx_json["height"] as! Int
+//			let tx_unlockTime = mock_tx_json["unlock_time"] as! Double
+//			let isConfirmed = self.mymoneroJSCore.IsTransactionConfirmed(tx_height, blockchain_height)
+//			let isUnlocked = self.mymoneroJSCore.IsTransactionUnlocked(tx_unlockTime, blockchain_height)
+//			let lockedReason = self.mymoneroJSCore.TransactionLockedReason(tx_unlockTime, blockchain_height)
+//			NSLog("isConfirmed \(isConfirmed)")
+//			NSLog("isUnlocked \(isUnlocked)")
+//			NSLog("lockedReason \(lockedReason)")
 		}
 	}
 }
