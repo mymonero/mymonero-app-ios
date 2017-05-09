@@ -16,12 +16,14 @@ enum MyMoneroCoreJS_ModuleName: String
 	case wallet = "monero_wallet_utils"
 	case walletLocale = "monero_wallet_locale"
 	case paymentID = "monero_paymentID_utils"
+	case keyImageCache = "monero_keyImage_cache_utils"
 }
 typealias MoneroSeed = String
 typealias MoneroSeedAsMnemonic = String
 typealias MoneroAddress = String
 typealias MoneroPaymentID = String
 typealias MoneroKey = String
+typealias MoneroKeyImage = String
 struct MoneroKeyDuo
 {
 	var view: MoneroKey
@@ -284,6 +286,35 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				return
 			}
 			// TODO: throw?
+		}
+	}
+	func Lazy_KeyImage(
+		tx_pub_key: String,
+		out_index: Int,
+		publicAddress: MoneroAddress,
+		view_key__private: MoneroKey,
+		spend_key__public: MoneroKey,
+		spend_key__private: MoneroKey,
+		_ fn: @escaping (Error?, MoneroKeyImage?) -> Void
+	)
+	{
+		let args =
+		[
+			"\"\(tx_pub_key)\"",
+			"\(out_index)",
+			"\"\(publicAddress)\"",
+			"\"\(view_key__private)\"",
+			"\"\(spend_key__public)\"",
+			"\"\(spend_key__private)\""
+		]
+		self._callSync(.keyImageCache, "Lazy_KeyImage", args)
+		{ (any, err) in
+			if let err = err {
+				NSLog("err \(err)")
+				fn(err, nil)
+				return
+			}
+			fn(nil, any as? MoneroKeyImage)
 		}
 	}
 	//
