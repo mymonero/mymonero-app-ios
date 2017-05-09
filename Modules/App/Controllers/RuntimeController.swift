@@ -99,12 +99,12 @@ class RuntimeController
 //				}
 //			)
 			//
-			let outputAmount = MoneroAmount(100000000000)
+			let outputAmount = MoneroAmount("100000000000")! // 0.1 XMR
 			self.mymoneroJSCore.MoneroAmountFormattedString(
 				outputAmount,
 				{ (err, string) in
 					NSLog("err \(err)")
-					NSLog("string \(string)")
+					NSLog("string \(string!) XMR")
 				}
 			)
 		}
