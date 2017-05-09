@@ -8,6 +8,7 @@
 
 import UIKit // because we use a WKWebView
 import WebKit
+import BigInt
 //
 // Accessory types
 enum MyMoneroCoreJS_ModuleName: String
@@ -24,6 +25,7 @@ typealias MoneroAddress = String
 typealias MoneroPaymentID = String
 typealias MoneroKey = String
 typealias MoneroKeyImage = String
+typealias MoneroAmount = BigInt
 struct MoneroKeyDuo
 {
 	var view: MoneroKey
@@ -315,6 +317,22 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				return
 			}
 			fn(nil, any as? MoneroKeyImage)
+		}
+	}
+	func MoneroAmountFormattedString(
+		_ amount: MoneroAmount,
+		_ fn: @escaping (Error?, String?) -> Void
+	)
+	{
+		let args = [ "new mymonero_core_js.JSBigInt(\(amount))" ]
+		self._callSync(.core, "formatMoney", args)
+		{ (any, err) in
+			if let err = err {
+				NSLog("err \(err)")
+				fn(err, nil)
+				return
+			}
+			fn(nil, any as? String)
 		}
 	}
 	//

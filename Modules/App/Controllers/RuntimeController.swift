@@ -77,25 +77,34 @@ class RuntimeController
 //				}
 //			)
 			//
-			let tx_pub_key = "0cd004e743df025b45559373fbd9010e0404f4b40b7d9d2c460ea96e23979264"
-			let out_index = 1
-			let public_address = "4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN"
-			let view_key__private = "b7f5c0663187b0a24ca88613d3ae5cfd592b9d3751dc230588c808a1fa903907"
-			let spend_key__public = "e759123b355ce4867492f73c67680b677e643c5b37673c76ad02a44684192947"
-			let spend_key__private = "7f714e8e238eda2a910b7084638404874dbd324ce6c26920d04d684e27c1560e"
-			self.mymoneroJSCore.Lazy_KeyImage(
-				tx_pub_key: tx_pub_key,
-				out_index: out_index,
-				publicAddress: public_address,
-				view_key__private: view_key__private,
-				spend_key__public: spend_key__public,
-				spend_key__private: spend_key__private,
-				{ (err, keyImage) in
-					NSLog("err \(err.debugDescription)")
-					NSLog("keyImage \(keyImage.debugDescription)")
-					if (keyImage != "a4e86abbe70116558e0d2e4079a13b46e87b1310da2819b54d99383dd9078eaa") {
-						NSLog("error: does not match")
-					}
+//			let tx_pub_key = "0cd004e743df025b45559373fbd9010e0404f4b40b7d9d2c460ea96e23979264"
+//			let out_index = 1
+//			let public_address = "4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN"
+//			let view_key__private = "b7f5c0663187b0a24ca88613d3ae5cfd592b9d3751dc230588c808a1fa903907"
+//			let spend_key__public = "e759123b355ce4867492f73c67680b677e643c5b37673c76ad02a44684192947"
+//			let spend_key__private = "7f714e8e238eda2a910b7084638404874dbd324ce6c26920d04d684e27c1560e"
+//			self.mymoneroJSCore.Lazy_KeyImage(
+//				tx_pub_key: tx_pub_key,
+//				out_index: out_index,
+//				publicAddress: public_address,
+//				view_key__private: view_key__private,
+//				spend_key__public: spend_key__public,
+//				spend_key__private: spend_key__private,
+//				{ (err, keyImage) in
+//					NSLog("err \(err.debugDescription)")
+//					NSLog("keyImage \(keyImage.debugDescription)")
+//					if (keyImage != "a4e86abbe70116558e0d2e4079a13b46e87b1310da2819b54d99383dd9078eaa") {
+//						NSLog("error: does not match")
+//					}
+//				}
+//			)
+			//
+			let outputAmount = MoneroAmount(100000000000)
+			self.mymoneroJSCore.MoneroAmountFormattedString(
+				outputAmount,
+				{ (err, string) in
+					NSLog("err \(err)")
+					NSLog("string \(string)")
 				}
 			)
 		}
