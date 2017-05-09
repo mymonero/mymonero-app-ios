@@ -6,7 +6,8 @@
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
 
-import UIKit
+import Foundation
+import UIKit // because we use a WKWebView
 import SwiftDate
 //
 // Principal type
@@ -21,7 +22,17 @@ class MyMoneroCore : MyMoneroCoreJS
 	//
 	//
 	// Interface - Accessors
-	// The following Transaction-centric functions are implemented in Swift to avoid asynchrony
+	// The following functions are implemented in Swift to avoid asynchrony
+	override func IsValidPaymentIDOrNoPaymentID(paymentId: String?) -> Bool
+	{
+		if let paymentId = paymentId {
+			let pattern = "^[0-9a-fA-F]{64}$"
+			if paymentId.characters.count != 64 || paymentId.range(of: pattern, options: .regularExpression) == nil { // not a valid 64 char pid
+				return false // then not valid
+			}
+		}
+		return true // then either no pid or is a valid one
+	}
 	override func IsTransactionConfirmed(_ tx_height: Int, _ blockchain_height: Int) -> Bool
 	{
 		return (blockchain_height - tx_height) > MoneroConstants.txMinConfirms

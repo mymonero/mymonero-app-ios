@@ -6,6 +6,7 @@
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
 
+import Foundation
 import UIKit // because we use a WKWebView
 import WebKit
 import BigInt
@@ -331,14 +332,19 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, any as? String)
 		}
 	}
+	func IsValidPaymentIDOrNoPaymentID(paymentId: String?) -> Bool
+	{
+		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
+		return false
+	}
 	func IsTransactionConfirmed(_ tx_height: Int, _ blockchain_height: Int) -> Bool
 	{
-		NSLog("Error: This method is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
+		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
 		return false
 	}
 	func IsTransactionUnlocked(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> Bool
 	{
-		NSLog("Error: This method is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
+		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
 		return false
 	}
 	func TransactionLockedReason(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> String

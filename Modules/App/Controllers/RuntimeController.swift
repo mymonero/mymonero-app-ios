@@ -30,19 +30,21 @@ class RuntimeController
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
-//			self.mymoneroCore.New_PaymentID({ paymentID in
-//				NSLog("pid: \(paymentID)")
-//			})
+			self.mymoneroCore.New_PaymentID({ paymentID in
+				NSLog("pid: \(paymentID)")
+			})
+			let isValidPID = self.mymoneroCore.IsValidPaymentIDOrNoPaymentID(paymentId: "3d2af3d25ddeedb8e679a6217043a6acc3949eeadd818cba2ede9abdfa3b7538")
+			NSLog("Is valid PID? \(isValidPID)")
 			//
 			//
 //			let mnemonic_wordsetName = MoneroMnemonicWordsetName.English
 //			let seedAsMnemonicString = "1union younger algebra emulate extra tribal awoken memoir tunnel wolf hamburger awning awning"
 //			//
-			let account_seed = "1bc83e30aed0656998e7e0d5ae4701fb8"
+//			let account_seed = "1bc83e30aed0656998e7e0d5ae4701fb8"
 //			//
-			let address = "45zapp8CdfW5Q3j8EFbyDoeKQXCCvJNQ99g4Y8DBuETx6cL8bUKW17WAbjaoUzqvb5E3Hiim91UQWJDeu6RYXzcj7Gfwdpp"
-			let private_viewKey = "c1146dd8fd04501ae1e640b27663cecf2fbb93407a8faf5d49f0393a7276110b"
-			let private_spendKey = "f3174dc0c2a623e07be6d3e90572d4ab67a72f134865eecbc7798d930f26ca06"
+//			let address = "45zapp8CdfW5Q3j8EFbyDoeKQXCCvJNQ99g4Y8DBuETx6cL8bUKW17WAbjaoUzqvb5E3Hiim91UQWJDeu6RYXzcj7Gfwdpp"
+//			let private_viewKey = "c1146dd8fd04501ae1e640b27663cecf2fbb93407a8faf5d49f0393a7276110b"
+//			let private_spendKey = "f3174dc0c2a623e07be6d3e90572d4ab67a72f134865eecbc7798d930f26ca06"
 //			self.mymoneroCore.DecodeAddress(
 //				address,
 //				{ (err, keypair) in
@@ -68,17 +70,17 @@ class RuntimeController
 //				NSLog("err \(err.debugDescription)")
 //				NSLog("walletDescription \(walletDescription.debugDescription)")
 //			}
-			self.mymoneroCore.New_VerifiedComponentsForLogIn(
-				address,
-				private_viewKey,
-				spend_key_orNilForViewOnly: private_spendKey,
-				seed_orUndefined: account_seed,
-				wasAGeneratedWallet: false,
-				{ (err, verifiedComponents) in
-					NSLog("err: \(err)")
-					NSLog("verifiedComponents: \(verifiedComponents)")
-				}
-			)
+//			self.mymoneroCore.New_VerifiedComponentsForLogIn(
+//				address,
+//				private_viewKey,
+//				spend_key_orNilForViewOnly: private_spendKey,
+//				seed_orUndefined: account_seed,
+//				wasAGeneratedWallet: false,
+//				{ (err, verifiedComponents) in
+//					NSLog("err: \(err)")
+//					NSLog("verifiedComponents: \(verifiedComponents)")
+//				}
+//			)
 			//
 //			let tx_pub_key = "0cd004e743df025b45559373fbd9010e0404f4b40b7d9d2c460ea96e23979264"
 //			let out_index = 1
