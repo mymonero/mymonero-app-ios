@@ -30,11 +30,41 @@ class RuntimeController
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
-			self.mymoneroCore.New_PaymentID({ paymentID in
-				NSLog("pid: \(paymentID)")
-			})
-			let isValidPID = self.mymoneroCore.IsValidPaymentIDOrNoPaymentID(paymentId: "3d2af3d25ddeedb8e679a6217043a6acc3949eeadd818cba2ede9abdfa3b7538")
-			NSLog("Is valid PID? \(isValidPID)")
+			
+			
+			let domain = "donate.moneroworld.com"
+			let records =
+			[
+				"oa1:xmr recipient_address=44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu; recipient_name=Moneroworld; tx_payment_id=9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed"
+			]
+			let dnssec_used = false
+			let secured = false
+			let dnssec_fail_reason: String? = nil
+			let openAliasPrefix = "xmr"
+			let (err_str, validated_descriptions) = ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
+				domain: domain,
+				records: records,
+				dnssec_used: dnssec_used,
+				secured: secured,
+				dnssec_fail_reason: dnssec_fail_reason,
+				openAliasPrefix: openAliasPrefix
+			)
+			if let err_str = err_str {
+				NSLog("err_str \(err_str)")
+			}
+			if let validated_descriptions = validated_descriptions {
+				NSLog("validated_descriptions \(validated_descriptions)")
+			}
+			//
+			let isOAAddr = IsAddressNotMoneroAddressAndThusProbablyOAAddress(domain)
+			NSLog("isOAAddr \(isOAAddr)")
+			
+			
+//			self.mymoneroCore.New_PaymentID({ paymentID in
+//				NSLog("pid: \(paymentID)")
+//			})
+//			let isValidPID = self.mymoneroCore.IsValidPaymentIDOrNoPaymentID(paymentId: "3d2af3d25ddeedb8e679a6217043a6acc3949eeadd818cba2ede9abdfa3b7538")
+//			NSLog("Is valid PID? \(isValidPID)")
 			//
 			//
 //			let mnemonic_wordsetName = MoneroMnemonicWordsetName.English
