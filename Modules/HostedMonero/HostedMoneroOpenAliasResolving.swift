@@ -19,6 +19,7 @@ struct ValidOAResolvedMoneroAddressDescription
 	let dnssec_used_and_secured: Bool
 }
 //
+// TODO: this should be encapsulated within/called by a standardized OpenAliasResolver class
 func LookupMoneroAddressInfoFromOpenAliasAddress(
 	openAliasAddress: String,
 	hostedMoneroAPIClient: HostedMoneroAPIClient, // to get TXT records
@@ -77,7 +78,7 @@ func LookupMoneroAddressInfoFromOpenAliasAddress(
 		mymoneroCore.DecodeAddress(oaRecord_address)
 		{ (err, moneroKeyDuo) in
 			if let _ = err {
-				NSLog("TODO: extract error string from error")
+				NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
 				let err_str = "Address found on DNS record for OA address was not a valid Monero address." // TODO
 				fn(err_str, nil)
 				return
