@@ -260,22 +260,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, any as? MoneroKeyImage)
 		}
 	}
-	func MoneroAmountFormattedString(
-		_ amount: MoneroAmount,
-		_ fn: @escaping (Error?, String?) -> Void
-	)
-	{
-		let args = [ "new mymonero_core_js.JSBigInt(\(amount))" ]
-		self._callSync(.core, "formatMoney", args)
-		{ (any, err) in
-			if let err = err {
-				NSLog("err \(err)")
-				fn(err, nil)
-				return
-			}
-			fn(nil, any as? String)
-		}
-	}
 	func IsValidPaymentIDOrNoPaymentID(paymentId: String?) -> Bool
 	{
 		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?

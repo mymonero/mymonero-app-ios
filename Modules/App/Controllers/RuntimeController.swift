@@ -14,6 +14,7 @@ class RuntimeController
 {
 	var windowController: WindowController!
 	var mymoneroCore: MyMoneroCore!
+	var hostedMoneroAPIClient = HostedMoneroAPIClient()
 	//
 	init(windowController: WindowController)
 	{
@@ -28,19 +29,58 @@ class RuntimeController
 	{
 		mymoneroCore = MyMoneroCore(window: windowController.window)
 		
-		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
 
+			let moneroAmount = MoneroAmountFromDouble(0.5)
+			NSLog("m \(moneroAmount)")
+			let formattedMoney = FormattedStringFromMoneroAmount(moneroAmount: outputAmount)
+			NSLog("f \(formattedMoney)")
 			
-			let url = New_RequestFunds_URL(
-				address: "44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu",
-				amount: "1.4", // XMR
-				description: "For you",
-				paymentId: "9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed",
-				message: "hi, here are some special chars © ひらがな ⚠️"
-			)
-			NSLog("url is \(url)")
+			
+//			// SEND FUNDS TEST
+//			let target_address = "4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN" // light grey wallet
+//			let amount = 0.01
+//			let wallet__secretMnemonic = "foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit"
+//			let wallet__wordsetName = MoneroMnemonicWordsetName.English
+//			self.mymoneroCore.WalletDescriptionFromMnemonicSeed(wallet__secretMnemonic, wallet__wordsetName)
+//			{ (err, walletDescription) in
+//				NSLog("err \(err.debugDescription)")
+//				NSLog("walletDescription \(walletDescription.debugDescription)")
+//				if err != nil {
+//					NSLog("Error \(err!)")
+//					return
+//				}
+//				guard let walletDescription = walletDescription else {
+//					NSLog("Unable to obtain wallet description")
+//					return
+//				}
+//				SendFunds(
+//					target_address: target_address,
+//					amount: amount,
+//					wallet__public_address: walletDescription.publicAddress,
+//					wallet__private_keys: walletDescription.privateKeys,
+//					wallet__public_keys: walletDescription.publicKeys,
+//					hostedMoneroAPIClient: self.hostedMoneroAPIClient,
+//					payment_id:	"",
+//					success_fn:
+//					{ (out__target_address, optl__final__payment_id, optl__tx_hash, tx_fee) in
+//					},
+//					failWithErr_fn:
+//					{ (err_str) in
+//					}
+//				)
+//			}
+			
+			
+//			let url = New_RequestFunds_URL(
+//				address: "44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu",
+//				amount: "1.4", // XMR
+//				description: "For you",
+//				paymentId: "9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed",
+//				message: "hi, here are some special chars © ひらがな ⚠️"
+//			)
+//			NSLog("url is \(url)")
 //			// alerting this because the console appears to have some kind of bug in printing escaped strings?
 //			let alertController = UIAlertController(title: "Title", message: url.absoluteString, preferredStyle: UIAlertControllerStyle.alert)
 //			let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
@@ -50,10 +90,10 @@ class RuntimeController
 //			self.windowController.window.rootViewController!.present(alertController, animated: true, completion: nil)
 			
 			
-			let (err_str, parsedRequest) = New_ParsedRequest_FromURIString("monero://44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu?tx_amount=1.4&tx_description=For%20you&tx_payment_id=9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed&tx_message=hi,%20here%20are%20some%20special%20chars%20%C2%A9%20%E3%81%B2%E3%82%89%E3%81%8C%E3%81%AA%20%E2%9A%A0%EF%B8%8F")
-			NSLog("err_str: \(err_str)")
-			NSLog("parsedRequest: \(parsedRequest)")
-			
+//			let (err_str, parsedRequest) = New_ParsedRequest_FromURIString("monero://44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu?tx_amount=1.4&tx_description=For%20you&tx_payment_id=9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed&tx_message=hi,%20here%20are%20some%20special%20chars%20%C2%A9%20%E3%81%B2%E3%82%89%E3%81%8C%E3%81%AA%20%E2%9A%A0%EF%B8%8F")
+//			NSLog("err_str: \(err_str)")
+//			NSLog("parsedRequest: \(parsedRequest)")
+//			
 			
 			
 			
@@ -159,15 +199,6 @@ class RuntimeController
 //				}
 //			)
 			//
-//			let outputAmount = MoneroAmount("100000000000")! // 0.1 XMR
-//			self.mymoneroCore.MoneroAmountFormattedString(
-//				outputAmount,
-//				{ (err, string) in
-//					NSLog("err \(err)")
-//					NSLog("string \(string!) XMR")
-//				}
-//			)
-//			
 //			let blockchain_height = 1306517
 //			let mock_tx_json: [String: Any] =
 //			[
