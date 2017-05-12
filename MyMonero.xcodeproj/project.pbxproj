@@ -21,8 +21,8 @@
 		9F7ADB021EBD30330073C2BB /* RuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* RuntimeController.swift */; };
 		9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB031EBD30710073C2BB /* WindowController.swift */; };
 		9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */; };
-		9F7E51721EC6156C001EAB3F /* HostedMoneroOpenAliasResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516F1EC6156C001EAB3F /* HostedMoneroOpenAliasResolving.swift */; };
-		9F7E51731EC6156C001EAB3F /* HostedMoneroSendFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMoneroSendFunds.swift */; };
+		9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */; };
+		9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,8 +43,8 @@
 		9F7ADB011EBD30330073C2BB /* RuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeController.swift; sourceTree = "<group>"; };
 		9F7ADB031EBD30710073C2BB /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroAPIClient.swift; sourceTree = "<group>"; };
-		9F7E516F1EC6156C001EAB3F /* HostedMoneroOpenAliasResolving.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroOpenAliasResolving.swift; sourceTree = "<group>"; };
-		9F7E51701EC6156C001EAB3F /* HostedMoneroSendFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroSendFunds.swift; sourceTree = "<group>"; };
+		9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_OpenAliasResolving.swift; sourceTree = "<group>"; };
+		9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_SendingFunds.swift; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -162,8 +162,8 @@
 			isa = PBXGroup;
 			children = (
 				9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */,
-				9F7E516F1EC6156C001EAB3F /* HostedMoneroOpenAliasResolving.swift */,
-				9F7E51701EC6156C001EAB3F /* HostedMoneroSendFunds.swift */,
+				9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */,
+				9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */,
 			);
 			path = HostedMonero;
 			sourceTree = "<group>";
@@ -302,11 +302,11 @@
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
-				9F7E51721EC6156C001EAB3F /* HostedMoneroOpenAliasResolving.swift in Sources */,
+				9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */,
 				9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
-				9F7E51731EC6156C001EAB3F /* HostedMoneroSendFunds.swift in Sources */,
+				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,

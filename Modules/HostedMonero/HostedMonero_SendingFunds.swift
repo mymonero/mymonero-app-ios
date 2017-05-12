@@ -1,5 +1,5 @@
 //
-//  MyMoneroSendFunds.swift
+//  HostedMonero_SendingFunds.swift
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/9/17.
