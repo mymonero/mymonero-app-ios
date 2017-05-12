@@ -16,7 +16,7 @@ struct ParsedOARecipientDescription
 	var tx_description: String?
 }
 //
-func IsAddressNotMoneroAddressAndThusProbablyOAAddress(_ address: MoneroAddress) -> Bool // i.e. we already believe it to be an address
+func IsAddressNotMoneroAddressAndThusProbablyOAAddress(_ address: String) -> Bool // i.e. we already believe it to be an address
 {
 	if address.range(of: ".") != nil { // assumed to be an OA address as XMR addresses do not have periods, and OA addrs must
 		return true

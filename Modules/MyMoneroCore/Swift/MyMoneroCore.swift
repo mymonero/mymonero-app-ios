@@ -54,6 +54,7 @@ struct MoneroConstants
 	static let currency_name = "Monero"
 	static let currency_symbol = "XMR"
 	static let currency_requestURIPrefix = "monero:"
+	static let currency_requestURIPrefix_sansColon = "monero"
 	static let currency_openAliasPrefix = "xmr" // OpenAlias prefix
 	//
 	static let addressPrefix = 18 // Prefix code for addresses; 18 => addresses start with "4"

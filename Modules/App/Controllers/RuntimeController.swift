@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import SwiftDate
 
 class RuntimeController
@@ -30,34 +31,58 @@ class RuntimeController
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
+
 			
-			
-			let domain = "donate.moneroworld.com"
-			let records =
-			[
-				"oa1:xmr recipient_address=44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu; recipient_name=Moneroworld; tx_payment_id=9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed"
-			]
-			let dnssec_used = false
-			let secured = false
-			let dnssec_fail_reason: String? = nil
-			let openAliasPrefix = "xmr"
-			let (err_str, validated_descriptions) = ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
-				domain: domain,
-				records: records,
-				dnssec_used: dnssec_used,
-				secured: secured,
-				dnssec_fail_reason: dnssec_fail_reason,
-				openAliasPrefix: openAliasPrefix
+			let url = New_RequestFunds_URL(
+				address: "44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu",
+				amount: "1.4", // XMR
+				description: "For you",
+				paymentId: "9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed",
+				message: "hi, here are some special chars © ひらがな ⚠️"
 			)
-			if let err_str = err_str {
-				NSLog("err_str \(err_str)")
-			}
-			if let validated_descriptions = validated_descriptions {
-				NSLog("validated_descriptions \(validated_descriptions)")
-			}
-			//
-			let isOAAddr = IsAddressNotMoneroAddressAndThusProbablyOAAddress(domain)
-			NSLog("isOAAddr \(isOAAddr)")
+			NSLog("url is \(url)")
+//			// alerting this because the console appears to have some kind of bug in printing escaped strings?
+//			let alertController = UIAlertController(title: "Title", message: url.absoluteString, preferredStyle: UIAlertControllerStyle.alert)
+//			let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
+//			{ (result: UIAlertAction) -> Void in
+//			}
+//			alertController.addAction(okAction)
+//			self.windowController.window.rootViewController!.present(alertController, animated: true, completion: nil)
+			
+			
+			let (err_str, parsedRequest) = New_ParsedRequest_FromURIString("monero://44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu?tx_amount=1.4&tx_description=For%20you&tx_payment_id=9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed&tx_message=hi,%20here%20are%20some%20special%20chars%20%C2%A9%20%E3%81%B2%E3%82%89%E3%81%8C%E3%81%AA%20%E2%9A%A0%EF%B8%8F")
+			NSLog("err_str: \(err_str)")
+			NSLog("parsedRequest: \(parsedRequest)")
+			
+			
+			
+			
+//			let domain = "donate.moneroworld.com"
+//			let records =
+//			[
+//				"oa1:xmr recipient_address=44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu; recipient_name=Moneroworld; tx_payment_id=9117db7d3a7bb4e4bdf0518715ecea1030b7b3fe44a59ff6c0497f971f4b18ed"
+//			]
+//			let dnssec_used = false
+//			let secured = false
+//			let dnssec_fail_reason: String? = nil
+//			let openAliasPrefix = "xmr"
+//			let (err_str, validated_descriptions) = ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
+//				domain: domain,
+//				records: records,
+//				dnssec_used: dnssec_used,
+//				secured: secured,
+//				dnssec_fail_reason: dnssec_fail_reason,
+//				openAliasPrefix: openAliasPrefix
+//			)
+//			if let err_str = err_str {
+//				NSLog("err_str \(err_str)")
+//			}
+//			if let validated_descriptions = validated_descriptions {
+//				NSLog("validated_descriptions \(validated_descriptions)")
+//			}
+//			//
+//			let isOAAddr = IsAddressNotMoneroAddressAndThusProbablyOAAddress(domain)
+//			NSLog("isOAAddr \(isOAAddr)")
 			
 			
 //			self.mymoneroCore.New_PaymentID({ paymentID in
