@@ -99,8 +99,9 @@ func FormattedStringFromMoneroAmount(moneroAmount: MoneroAmount) -> String
 			Character("0")
 		) as NSString
 	}
+	let lengthOf_substring_beforeDecimal = max(moneroAmount_NSString_length - MoneroConstants.currency_unitPlaces, 0)
 	let raw_substring_beforeDecimal = moneroAmount_NSString.substring(
-		with: NSMakeRange(0, moneroAmount_NSString_length - MoneroConstants.currency_unitPlaces)
+		with: NSMakeRange(0, lengthOf_substring_beforeDecimal) // will come out as empty string if nothing before decimal
 	)
 	let final_substring_beforeDecimal = raw_substring_beforeDecimal != "" ? raw_substring_beforeDecimal : "0"
 	let fullyFormatted = "\(symbol)\(final_substring_beforeDecimal).\(final_substring_afterDecimal!)"

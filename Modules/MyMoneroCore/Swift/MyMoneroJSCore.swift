@@ -141,7 +141,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	}
 	func DecodeAddress(
 		_ address: String,
-		_ fn: @escaping (Error?, MoneroKeyDuo?) -> Void
+		_ fn: @escaping (Error?, MoneroDecodedAddress?) -> Void
 	)
 	{
 		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
@@ -154,8 +154,13 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			if let dict = any as? [String: AnyObject] {
 				let view = dict["view"] as! MoneroKey
 				let spend = dict["spend"] as! MoneroKey
+				var intPaymentId = dict["intPaymentId"] as? MoneroPaymentID
+				if intPaymentId == "" { // normalize
+					intPaymentId = nil
+				}
 				let keypair = MoneroKeyDuo(view: view, spend: spend)
-				fn(nil, keypair)
+				let decodedAddress = MoneroDecodedAddress(publicKeys: keypair, intPaymentId: intPaymentId)
+				fn(nil, decodedAddress)
 				return
 			}
 			// TODO: throw?
@@ -259,26 +264,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			fn(nil, any as? MoneroKeyImage)
 		}
-	}
-	func IsValidPaymentIDOrNoPaymentID(paymentId: String?) -> Bool
-	{
-		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
-		return false
-	}
-	func IsTransactionConfirmed(_ tx_height: Int, _ blockchain_height: Int) -> Bool
-	{
-		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
-		return false
-	}
-	func IsTransactionUnlocked(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> Bool
-	{
-		NSLog("Error: This method \(#function) is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
-		return false
-	}
-	func TransactionLockedReason(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> String
-	{
-		NSLog("Error: This method is not implemented in the JS bridge. See MyMoneroCore.swift.") // TODO: throw? what is compile-time equiv?
-		return ""
 	}
 	//
 	//

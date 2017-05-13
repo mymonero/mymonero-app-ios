@@ -18,7 +18,11 @@ typealias MoneroPaymentID = String
 typealias MoneroTransactionHash = String
 typealias MoneroKey = String
 typealias MoneroKeyImage = String
-
+struct MoneroDecodedAddress
+{
+	var publicKeys: MoneroKeyDuo
+	var intPaymentId: MoneroPaymentID? // would be encrypted, i.e. an integrated address
+}
 struct MoneroKeyDuo
 {
 	var view: MoneroKey
@@ -70,6 +74,9 @@ struct MoneroConstants
 	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 }
 //
+// Namespaces
+struct MyMoneroCoreUtils {}
+//
 // Principal type
 class MyMoneroCore : MyMoneroCoreJS
 // TODO? alternative to subclassing MyMoneroCoreJS would be to hold an instance of it and provide proxy fns as interface.
@@ -79,34 +86,4 @@ class MyMoneroCore : MyMoneroCoreJS
 	{
 		super.init(window: window)
 	}
-	//
-	//
-	// Interface - Accessors
-	// The following functions are implemented in Swift to avoid asynchrony
-	override func IsValidPaymentIDOrNoPaymentID(paymentId: String?) -> Bool
-	{
-		if let paymentId = paymentId {
-			let pattern = "^[0-9a-fA-F]{64}$"
-			if paymentId.characters.count != 64 || paymentId.range(of: pattern, options: .regularExpression) == nil { // not a valid 64 char pid
-				return false // then not valid
-			}
-		}
-		return true // then either no pid or is a valid one
-	}
-	override func IsTransactionConfirmed(_ tx_height: Int, _ blockchain_height: Int) -> Bool
-	{
-		return Monero_isTransactionConfirmed(tx_height, blockchain_height)
-	}
-	override func IsTransactionUnlocked(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> Bool
-	{
-		return Monero_isTxUnlocked(tx_unlockTime ?? 0, blockchain_height)
-	}
-	override func TransactionLockedReason(_ tx_unlockTime: Double?, _ blockchain_height: Int) -> String
-	{
-		return Monero_txLockedReason(tx_unlockTime ?? 0, blockchain_height)
-	}
-	//
-	//
-	// Internal - Accessors - Transaction state parsing implementations
-	//
 }

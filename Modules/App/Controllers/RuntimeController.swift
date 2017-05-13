@@ -32,45 +32,45 @@ class RuntimeController
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
 
-			let moneroAmount = MoneroAmountFromDouble(0.5)
-			NSLog("m \(moneroAmount)")
-			let formattedMoney = FormattedStringFromMoneroAmount(moneroAmount: outputAmount)
-			NSLog("f \(formattedMoney)")
+//			let moneroAmount = MoneroAmountFromDouble(0.5)
+//			NSLog("m \(moneroAmount)")
+//			let formattedMoney = FormattedStringFromMoneroAmount(moneroAmount: moneroAmount)
+//			NSLog("f \(formattedMoney)")
 			
 			
-//			// SEND FUNDS TEST
-//			let target_address = "4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN" // light grey wallet
-//			let amount = 0.01
-//			let wallet__secretMnemonic = "foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit"
-//			let wallet__wordsetName = MoneroMnemonicWordsetName.English
-//			self.mymoneroCore.WalletDescriptionFromMnemonicSeed(wallet__secretMnemonic, wallet__wordsetName)
-//			{ (err, walletDescription) in
-//				NSLog("err \(err.debugDescription)")
-//				NSLog("walletDescription \(walletDescription.debugDescription)")
-//				if err != nil {
-//					NSLog("Error \(err!)")
-//					return
-//				}
-//				guard let walletDescription = walletDescription else {
-//					NSLog("Unable to obtain wallet description")
-//					return
-//				}
-//				SendFunds(
-//					target_address: target_address,
-//					amount: amount,
-//					wallet__public_address: walletDescription.publicAddress,
-//					wallet__private_keys: walletDescription.privateKeys,
-//					wallet__public_keys: walletDescription.publicKeys,
-//					hostedMoneroAPIClient: self.hostedMoneroAPIClient,
-//					payment_id:	"",
-//					success_fn:
-//					{ (out__target_address, optl__final__payment_id, optl__tx_hash, tx_fee) in
-//					},
-//					failWithErr_fn:
-//					{ (err_str) in
-//					}
-//				)
-//			}
+			let target_address = "4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN" // light grey wallet
+			let amount = 0.01
+			let wallet__secretMnemonic = "foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit"
+			let wallet__wordsetName = MoneroMnemonicWordsetName.English
+			self.mymoneroCore.WalletDescriptionFromMnemonicSeed(wallet__secretMnemonic, wallet__wordsetName)
+			{ (err, walletDescription) in
+				NSLog("err \(err.debugDescription)")
+				NSLog("walletDescription \(walletDescription.debugDescription)")
+				if err != nil {
+					NSLog("Error \(err!)")
+					return
+				}
+				guard let walletDescription = walletDescription else {
+					NSLog("Unable to obtain wallet description")
+					return
+				}
+				SendFunds(
+					target_address: target_address,
+					amount: amount,
+					wallet__public_address: walletDescription.publicAddress,
+					wallet__private_keys: walletDescription.privateKeys,
+					wallet__public_keys: walletDescription.publicKeys,
+					mymoneroCore: self.mymoneroCore,
+					hostedMoneroAPIClient: self.hostedMoneroAPIClient,
+					payment_id:	"",
+					success_fn:
+					{ (out__target_address, optl__final__payment_id, optl__tx_hash, tx_fee) in
+					},
+					failWithErr_fn:
+					{ (err_str) in
+					}
+				)
+			}
 			
 			
 //			let url = New_RequestFunds_URL(
