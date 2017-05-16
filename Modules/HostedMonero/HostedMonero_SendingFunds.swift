@@ -19,6 +19,46 @@ func FixedMixin() -> Int
 {
 	return 9 // for now
 }
+struct HostedMonero_SendFunds
+{
+	static func estimatedRingCTSize(
+		_ numberOfInputs: Int,
+		_ mixin: Int,
+		_ numberOfOutputs: Int
+	) -> Int
+	{
+		var size = 0
+		size += numberOfOutputs * 6306
+		size += ((mixin + 1) * 4 + 32 + 8) * numberOfInputs //key offsets + key image + amount
+		size += 64 * (mixin + 1) * numberOfInputs + 64 * numberOfInputs //signature + pseudoOuts/cc
+		size += 74 //extra + whatever, assume long payment ID
+		//
+		return size
+	}
+	static func estimatedRingCTSize_numKB(
+		_ numberOfInputs: Int,
+		_ mixin: Int,
+		_ numberOfOutputs: Int
+	) -> Int
+	{
+		let numKB = Int(ceil(
+			Double(estimatedRingCTSize(numberOfInputs, mixin, numberOfOutputs)) / 1024.0
+		))
+		//
+		return numKB
+	}
+	static func estimatedRingCT_neededNetworkFee(
+		_ numberOfInputs: Int,
+		_ mixin: Int,
+		_ numberOfOutputs: Int
+	) -> MoneroAmount
+	{
+		let est_numKB = estimatedRingCTSize_numKB(numberOfInputs, mixin, numberOfOutputs)
+		let est_amount = MoneroAmount("\(est_numKB)")! * MoneroConstants.feePerKB
+		//
+		return est_amount
+	}
+}
 //
 func SendFunds(
 	target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
@@ -77,6 +117,11 @@ func SendFunds(
 	// Derive/finalize some values…
 	var final__payment_id = payment_id == "" ? nil : payment_id
 	var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one
+	let final__mixin = FixedMixin()
+	if final__mixin < 0 {
+		__trampolineFor_err_withStr(err_str: "Invalid mixin")
+		return
+	}
 	mymoneroCore.DecodeAddress(target_address)
 	{ (err, decodedAddress) in
 		if let _ = err {
@@ -104,20 +149,19 @@ func SendFunds(
 	}
 	func _proceedTo_getUnspentOutsUsableForMixin()
 	{
-		let mixin = FixedMixin()
 		let _ = hostedMoneroAPIClient.UnspentOuts(
 			address: wallet__public_address,
 			view_key__private: wallet__private_keys.view,
 			spend_key__public: wallet__public_keys.spend,
 			spend_key__private: wallet__private_keys.spend,
-			mixinNumber: mixin,
+			mixinNumber: final__mixin,
 			{ (err_str, result) in
 				if let err_str = err_str {
 					__trampolineFor_err_withStr(err_str: err_str)
 					return
 				}
 				_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-					result.unusedOutputs
+					result!.unusedOutputs
 				)
 			}
 		)
@@ -142,11 +186,11 @@ func SendFunds(
 	)
 	{ // Now we need to establish some values for balance validation and to construct the transaction
 		NSLog("Entered re-enterable tx building codepath…", unusedOuts)
-		let attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
+		var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
 		let _/*hostingService_chargeAmount*/ = HostedMoneroAPIClient_HostConfig.HostingServiceChargeForTransaction(
 			with: attemptAt_network_minimumFee
 		)
-		let totalAmountIncludingFees = totalMoneroAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
+		var totalAmountIncludingFees = totalMoneroAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
 		let usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
 			target_amount: totalAmountIncludingFees,
 			unusedOuts: unusedOuts
@@ -154,220 +198,224 @@ func SendFunds(
 		
 		NSLog("usableOutputsAndAmounts \(usableOutputsAndAmounts)")
 		
-		
-//		// v-- now if RingCT compute fee as closely as possible before hand
-//		var usingOuts = usableOutputsAndAmounts.usingOuts
-//		var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
-//		var remaining_unusedOuts = usingOutsAmount.remaining_unusedOuts
-//		if (isRingCT) {
-//			if (usingOuts.length > 1) {
-//				var newNeededFee = new JSBigInt(Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(monero_config.feePerKB_JSBigInt)
-//				totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
-//				// add outputs 1 at a time till we either have them all or can meet the fee
-//				while (usingOutsAmount.compare(totalAmountIncludingFees) < 0 && remaining_unusedOuts.length > 0) {
-//					let out = _popAndReturnRandomElementFromList(remaining_unusedOuts)
-//					usingOuts.push(out)
-//					usingOutsAmount = usingOutsAmount.add(out.amount)
-//					NSLog("Using output: " + monero_utils.formatMoney(out.amount) + " - " + JSON.stringify(out))
-//					newNeededFee = new JSBigInt(
-//						Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)
-//						).multiply(monero_config.feePerKB_JSBigInt)
-//					totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
-//				}
-//				NSLog("New fee: " + monero_utils.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs")
-//				attemptAt_network_minimumFee = newNeededFee
-//			}
+		// v-- now, since isRingCT=true, compute fee as closely as possible before hand
+		var usingOuts = usableOutputsAndAmounts.usingOuts
+		var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
+		var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
+		if usingOuts.count > 1 {
+			var newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+			totalAmountIncludingFees = totalMoneroAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
+			// add outputs 1 at a time till we either have them all or can meet the fee
+			while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
+				// pop and return random element from list
+				let idx = __randomIndex(remaining_unusedOuts)
+				let out = remaining_unusedOuts[idx]
+				remaining_unusedOuts.remove(at: idx)
+				//
+				usingOuts.append(out)
+				usingOutsAmount = usingOutsAmount + out.amount
+				NSLog("Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
+				newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+				totalAmountIncludingFees = totalMoneroAmountWithoutFee + newNeededFee
+			}
+			NSLog("New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
+			attemptAt_network_minimumFee = newNeededFee
+		}
+		NSLog("~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
+		// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
+		if usingOutsAmount < totalAmountIncludingFees {
+			__trampolineFor_err_withStr(err_str:
+				"Not enough spendable outputs / balance too low (have: \(FormattedString(fromMoneroAmount: usingOutsAmount)), need: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees)))"
+			)
+			return
+		}
+		// Now we can put together the list of fund transfers we need to perform
+		var fundTransferDescriptions: [SendFundsTargetDescription] = [] // to build…
+		// I. the actual transaction the user is asking to do
+		fundTransferDescriptions.append(
+			SendFundsTargetDescription(
+				address: target_address,
+				amount: totalMoneroAmountWithoutFee
+			)
+		)
+		// II. the fee that the hosting provider charges
+		// NOTE: The fee has been removed for RCT until a later date
+		// fundTransferDescriptions.push({
+		//             address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
+		//             amount: hostingService_chargeAmount
+		// })
+		// III. some amount of the total outputs will likely need to be returned to the user as "change":
+		func ___proceed()
+		{
+			__proceedTo__getRandomOutsAndCreateTx(
+				fundTransferDescriptions: fundTransferDescriptions,
+				usingOuts: usingOuts
+			)
+		}
+		if usingOutsAmount > totalAmountIncludingFees {
+			let changeAmount = usingOutsAmount - totalAmountIncludingFees
+			NSLog("changeAmount \(changeAmount)")
+			// for RCT we don't presently care about dustiness so add entire change amount
+			NSLog("Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address)")
+			fundTransferDescriptions.append(
+				SendFundsTargetDescription(
+					address: wallet__public_address,
+					amount: changeAmount
+				)
+			)
+			___proceed()
+			//
+			return
+		}
+		if usingOutsAmount == totalMoneroAmountWithoutFee {
+			// because isRingCT=true, create random destination to keep 2 outputs always in case of 0 change
+			// TODO: would be nice to avoid this asynchrony so ___proceed() can be dispensed with
+			mymoneroCore.New_FakeAddressForRCTTx({ (err_str, fakeAddress) in
+				NSLog("Sending 0 XMR to a fake address to keep tx uniform (no change exists): \(fakeAddress.debugDescription)")
+				if let err_str = err_str {
+					__trampolineFor_err_withStr(err_str: err_str)
+					return
+				}
+				fundTransferDescriptions.append(
+					SendFundsTargetDescription(
+						address: fakeAddress!,
+						amount: 0
+					)
+				)
+				___proceed()
+			})
+			//
+			return
+		}
+		___proceed()
+	}
+	func __proceedTo__getRandomOutsAndCreateTx(
+		fundTransferDescriptions: [SendFundsTargetDescription],
+		usingOuts: [HostedMoneroAPIClient_Parsing.OutputDescription]
+	)
+	{
+		NSLog("fundTransferDescriptions so far \(fundTransferDescriptions)")
+		// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
+		let _ = hostedMoneroAPIClient.RandomOuts(
+			using_outs: usingOuts,
+			mixin: final__mixin,
+			{ (err_str, result) in
+				if let err_str = err_str {
+					__trampolineFor_err_withStr(err_str: err_str)
+					return
+				}
+				__proceedTo_createTxAndAttemptToSend(
+					mix_outs: result!.amount_outs
+				)
+			}
+		)
+	}
+	func __proceedTo_createTxAndAttemptToSend(
+		mix_outs: [HostedMoneroAPIClient_Parsing.RandomOuts_AmountAndOutputs]
+	)
+	{
+//		var signedTx;
+//		try {
+//		NSLog("Destinations: ")
+//		monero_utils.printDsts(fundTransferDescriptions)
+//		//
+//		var realDestViewKey // need to get viewkey for encrypting here, because of splitting and sorting
+//		if (final__pid_encrypt) {
+//		realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
+//		NSLog("got realDestViewKey" , realDestViewKey)
 //		}
-//		NSLog("~ Balance required: " + monero_utils.formatMoneySymbol(totalAmountIncludingFees))
-//		// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
-//		let usingOutsAmount_comparedTo_totalAmount = usingOutsAmount.compare(totalAmountIncludingFees)
-//		if (usingOutsAmount_comparedTo_totalAmount < 0) {
-//			__trampolineFor_err_withStr(
-//				"Not enough spendable outputs / balance too low (have: "
-//					+ monero_utils.formatMoneyFull(usingOutsAmount)
-//					+ " need: "
-//					+ monero_utils.formatMoneyFull(totalAmountIncludingFees)
-//					+ ")"
+//		var splitDestinations = monero_utils.decompose_tx_destinations(
+//		fundTransferDescriptions,
+//		isRingCT
+//		)
+//		NSLog("Decomposed destinations:")
+//		monero_utils.printDsts(splitDestinations)
+//		//
+//		signedTx = monero_utils.create_transaction(
+//		wallet__public_keys,
+//		wallet__private_keys,
+//		splitDestinations,
+//		usingOuts,
+//		mix_outs,
+//		mixin,
+//		attemptAt_network_minimumFee,
+//		final__payment_id,
+//		final__pid_encrypt,
+//		realDestViewKey,
+//		0,
+//		isRingCT
+//		)
+//		} catch (e) {
+//		var errStr;
+//		if (e) {
+//		errStr = typeof e == "string" ? e : e.toString()
+//		} else {
+//		errStr = "Failed to create transaction with unknown error."
+//		}
+//		__trampolineFor_err_withStr(errStr)
+//		return
+//		}
+//		NSLog("signed tx: ", JSON.stringify(signedTx))
+//		//
+//		var serialized_signedTx;
+//		var tx_hash;
+//		if (signedTx.version === 1) {
+//			serialized_signedTx = monero_utils.serialize_tx(signedTx)
+//			tx_hash = monero_utils.cn_fast_hash(raw_tx)
+//		} else {
+//			let raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
+//			serialized_signedTx = raw_tx_and_hash.raw
+//			tx_hash = raw_tx_and_hash.hash
+//		}
+//		NSLog("tx serialized: " + serialized_signedTx)
+//		NSLog("Tx hash: " + tx_hash)
+//		//
+//		// work out per-kb fee for transaction and verify that it's enough
+//		var txBlobBytes = serialized_signedTx.length / 2
+//		var numKB = Math.floor(txBlobBytes / 1024)
+//		if (txBlobBytes % 1024) {
+//			numKB++
+//		}
+//		NSLog(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + ")")
+//		let feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
+//		// if we need a higher fee
+//		if (feeActuallyNeededByNetwork.compare(attemptAt_network_minimumFee) > 0) {
+//			NSLog("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
+//			__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
+//				moneroReady_targetDescription_address,
+//				totalAmountWithoutFee_JSBigInt,
+//				final__payment_id,
+//				final__pid_encrypt,
+//				unusedOuts,
+//				feeActuallyNeededByNetwork // we are re-entering this codepath after changing this feeActuallyNeededByNetwork
 //			)
+//			//
 //			return
 //		}
-//		// Now we can put together the list of fund transfers we need to perform
-//		let fundTransferDescriptions = [] // to build…
-//		// I. the actual transaction the user is asking to do
-//		fundTransferDescriptions.push({
-//			address: moneroReady_targetDescription_address,
-//			amount: totalAmountWithoutFee_JSBigInt
-//		})
-//		// II. the fee that the hosting provider charges
-//		// NOTE: The fee has been removed for RCT until a later date
-//		// fundTransferDescriptions.push({
-//		//             address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
-//		//             amount: hostingService_chargeAmount
-//		// })
-//		// III. some amount of the total outputs will likely need to be returned to the user as "change":
-//		if (usingOutsAmount_comparedTo_totalAmount > 0) {
-//			var changeAmount = usingOutsAmount.subtract(totalAmountIncludingFees)
-//			NSLog("changeAmount" , changeAmount)
-//			if (isRingCT) { // for RCT we don't presently care about dustiness so add entire change amount
-//				NSLog("Sending change of " + monero_utils.formatMoneySymbol(changeAmount) + " to " + wallet__public_address)
-//				fundTransferDescriptions.push({
-//					address: wallet__public_address,
-//					amount: changeAmount
-//				})
-//			} else { // pre-ringct
-//				// do not give ourselves change < dust threshold
-//				var changeAmountDivRem = changeAmount.divRem(monero_config.dustThreshold)
-//				NSLog("💬  changeAmountDivRem", changeAmountDivRem)
-//				if (changeAmountDivRem[1].toString() !== "0") {
-//					// miners will add dusty change to fee
-//					NSLog("💬  Miners will add change of " + monero_utils.formatMoneyFullSymbol(changeAmountDivRem[1]) + " to transaction fee (below dust threshold)")
+//		//
+//		// generated with correct per-kb fee
+//		let final_networkFee = attemptAt_network_minimumFee // just to make things clear
+//		NSLog("💬  Successful tx generation, submitting tx. Going with final_networkFee of ", monero_utils.formatMoney(final_networkFee))
+//		// status: submitting…
+//		hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
+//			wallet__public_address,
+//			wallet__private_keys.view,
+//			serialized_signedTx,
+//			{ (err) in
+//				if (err) {
+//					__trampolineFor_err_withStr("Something unexpected occurred when submitting your transaction:", err)
+//					return
 //				}
-//				if (changeAmountDivRem[0].toString() !== "0") {
-//					// send non-dusty change to our address
-//					var usableChange = changeAmountDivRem[0].multiply(monero_config.dustThreshold)
-//					NSLog("💬  Sending change of " + monero_utils.formatMoneySymbol(usableChange) + " to " + wallet__public_address)
-//					fundTransferDescriptions.push({
-//						address: wallet__public_address,
-//						amount: usableChange
-//					})
-//				}
-//			}
-//		} else if (usingOutsAmount_comparedTo_totalAmount == 0) {
-//			if (isRingCT) { // then create random destination to keep 2 outputs always in case of 0 change
-//				var fakeAddress = monero_utils.create_address(monero_utils.random_scalar()).public_addr
-//				NSLog("Sending 0 XMR to a fake address to keep tx uniform (no change exists): " + fakeAddress)
-//				fundTransferDescriptions.push({
-//					address: fakeAddress,
-//					amount: 0
-//				})
-//			}
-//		}
-//		NSLog("fundTransferDescriptions so far", fundTransferDescriptions)
-//		if (mixin < 0 || isNaN(mixin)) {
-//			__trampolineFor_err_withStr("Invalid mixin")
-//			return
-//		}
-//		if (mixin > 0) { // first, grab RandomOuts, then enter __createTx
-//			hostedMoneroAPIClient.RandomOuts(
-//				usingOuts,
-//				mixin,
-//				{ (err, amount_outs) in
-//					if (err) {
-//						__trampolineFor_err_withErr(err)
-//						return
-//					}
-//					__createTxAndAttemptToSend(amount_outs)
-//				}
-//			)
-//			return
-//		} else { // mixin === 0: -- PSNOTE: is that even allowed?
-//			__createTxAndAttemptToSend()
-//		}
-//		func __createTxAndAttemptToSend(mix_outs)
-//		{
-//			var signedTx;
-//			try {
-//			NSLog('Destinations: ')
-//			monero_utils.printDsts(fundTransferDescriptions)
-//			//
-//			var realDestViewKey // need to get viewkey for encrypting here, because of splitting and sorting
-//			if (final__pid_encrypt) {
-//			realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
-//			NSLog("got realDestViewKey" , realDestViewKey)
-//			}
-//			var splitDestinations = monero_utils.decompose_tx_destinations(
-//			fundTransferDescriptions,
-//			isRingCT
-//			)
-//			NSLog('Decomposed destinations:')
-//			monero_utils.printDsts(splitDestinations)
-//			//
-//			signedTx = monero_utils.create_transaction(
-//			wallet__public_keys,
-//			wallet__private_keys,
-//			splitDestinations,
-//			usingOuts,
-//			mix_outs,
-//			mixin,
-//			attemptAt_network_minimumFee,
-//			final__payment_id,
-//			final__pid_encrypt,
-//			realDestViewKey,
-//			0,
-//			isRingCT
-//			)
-//			} catch (e) {
-//			var errStr;
-//			if (e) {
-//			errStr = typeof e == "string" ? e : e.toString()
-//			} else {
-//			errStr = "Failed to create transaction with unknown error."
-//			}
-//			__trampolineFor_err_withStr(errStr)
-//			return
-//			}
-//			NSLog("signed tx: ", JSON.stringify(signedTx))
-//			//
-//			var serialized_signedTx;
-//			var tx_hash;
-//			if (signedTx.version === 1) {
-//				serialized_signedTx = monero_utils.serialize_tx(signedTx)
-//				tx_hash = monero_utils.cn_fast_hash(raw_tx)
-//			} else {
-//				let raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
-//				serialized_signedTx = raw_tx_and_hash.raw
-//				tx_hash = raw_tx_and_hash.hash
-//			}
-//			NSLog("tx serialized: " + serialized_signedTx)
-//			NSLog("Tx hash: " + tx_hash)
-//			//
-//			// work out per-kb fee for transaction and verify that it's enough
-//			var txBlobBytes = serialized_signedTx.length / 2
-//			var numKB = Math.floor(txBlobBytes / 1024)
-//			if (txBlobBytes % 1024) {
-//				numKB++
-//			}
-//			NSLog(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + ")")
-//			let feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
-//			// if we need a higher fee
-//			if (feeActuallyNeededByNetwork.compare(attemptAt_network_minimumFee) > 0) {
-//				NSLog("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
-//				__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
+//				let tx_fee = final_networkFee/*.add(hostingService_chargeAmount) NOTE: Service charge removed to reduce bloat for now */
+//				__trampolineFor_success(
 //					moneroReady_targetDescription_address,
-//					totalAmountWithoutFee_JSBigInt,
+//					amount,
 //					final__payment_id,
-//					final__pid_encrypt,
-//					unusedOuts,
-//					feeActuallyNeededByNetwork // we are re-entering this codepath after changing this feeActuallyNeededByNetwork
-//				)
-//				//
-//				return
+//					tx_hash,
+//					tx_fee
+//				) // 🎉
 //			}
-//			//
-//			// generated with correct per-kb fee
-//			let final_networkFee = attemptAt_network_minimumFee // just to make things clear
-//			NSLog("💬  Successful tx generation, submitting tx. Going with final_networkFee of ", monero_utils.formatMoney(final_networkFee))
-//			// status: submitting…
-//			hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
-//				wallet__public_address,
-//				wallet__private_keys.view,
-//				serialized_signedTx,
-//				{ (err) in
-//					if (err) {
-//						__trampolineFor_err_withStr("Something unexpected occurred when submitting your transaction:", err)
-//						return
-//					}
-//					let tx_fee = final_networkFee/*.add(hostingService_chargeAmount) NOTE: Service charge removed to reduce bloat for now */
-//					__trampolineFor_success(
-//						moneroReady_targetDescription_address,
-//						amount,
-//						final__payment_id,
-//						tx_hash,
-//						tx_fee
-//					) // 🎉
-//				}
-//			)
-//		}
+//		)
 	}
 }
 //
@@ -385,7 +433,7 @@ func _outputsAndAmountToUseForMixin(
 	remaining_unusedOuts: [HostedMoneroAPIClient_Parsing.OutputDescription]
 )
 {
-	NSLog("Selecting outputs to use. target: \(FormattedStringFromMoneroAmount(moneroAmount: target_amount))")
+	NSLog("Selecting outputs to use. target: \(FormattedString(fromMoneroAmount: target_amount))")
 	var toFinalize_usingOutsAmount = MoneroAmount(0)
 	var toFinalize_usingOuts: [HostedMoneroAPIClient_Parsing.OutputDescription] = []
 	var remaining_unusedOuts = unusedOuts // take 'copy' instead of using original so as to prevent issue if we must re-enter tx building fn if fee too low after building
@@ -398,7 +446,7 @@ func _outputsAndAmountToUseForMixin(
 		let out_amount = out.amount
 		toFinalize_usingOuts.append(out)
 		toFinalize_usingOutsAmount = toFinalize_usingOutsAmount + out_amount
-		NSLog("Using output: \(FormattedStringFromMoneroAmount(moneroAmount: out_amount)) - \(out)")
+		NSLog("Using output: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")
 	}
 	return (
 		usingOuts: toFinalize_usingOuts,

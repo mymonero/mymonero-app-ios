@@ -76,7 +76,7 @@ struct MoneroAmounts
 		return retStr
 	}
 }
-func FormattedStringFromMoneroAmount(moneroAmount: MoneroAmount) -> String
+func FormattedString(fromMoneroAmount moneroAmount: MoneroAmount) -> String
 { // aka monero_utils.formatMoneyFull + monero_utils.formatMoney
 	let signed_moneroAmount_NSString = String(moneroAmount, radix: 10) as NSString
 	// now first strip off and hang onto any '-' sign
@@ -116,5 +116,5 @@ func FormattedStringFromMoneroAmount(moneroAmount: MoneroAmount) -> String
 }
 func DoubleFromMoneroAmount(moneroAmount: MoneroAmount) -> HumanUnderstandableCurrencyAmountDouble
 {
-	return Double(FormattedStringFromMoneroAmount(moneroAmount: moneroAmount))!
+	return Double(FormattedString(fromMoneroAmount: moneroAmount))!
 }

@@ -16,8 +16,10 @@ typealias MoneroSeedAsMnemonic = String
 typealias MoneroAddress = String
 typealias MoneroPaymentID = String
 typealias MoneroTransactionHash = String
-typealias MoneroKey = String
+typealias MoneroTransactionPubKey = String
+typealias MoneroTransactionPrefixHash = String
 typealias MoneroKeyImage = String
+typealias MoneroKey = String
 struct MoneroDecodedAddress
 {
 	var publicKeys: MoneroKeyDuo

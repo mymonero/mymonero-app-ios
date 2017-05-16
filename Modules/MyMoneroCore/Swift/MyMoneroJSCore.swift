@@ -265,6 +265,40 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, any as? MoneroKeyImage)
 		}
 	}
+	func New_FakeAddressForRCTTx(
+		_ fn: @escaping (_ err_str: String?, MoneroAddress?) -> Void
+	)
+	{
+		self._callSync(.core, "random_scalar", [])
+		{ (any, err) in
+			if let err = err {
+				NSLog("err \(err)")
+				fn("Error generating random scalar.", nil)
+				return
+			}
+			guard let scalar = any as? String else {
+				fn("No result of public_addr found on result of random_scalar.", nil)
+				return
+			}
+			self._callSync(.core, "create_address", [ scalar ])
+			{ (any, err) in
+				if let err = err {
+					NSLog("err \(err)")
+					fn("Error creating address with random scalar.", nil)
+					return
+				}
+				guard let dict = any as? [String: AnyObject] else {
+					fn("No result of create_address found", nil)
+					return
+				}
+				guard let address = dict["public_addr"] as? MoneroAddress else {
+					fn("No result of public_addr found on result of create_address.", nil)
+					return
+				}
+				fn(nil, address)
+			}
+		}
+	}
 	//
 	//
 	// Internal - Accessors - Parsing/Factories

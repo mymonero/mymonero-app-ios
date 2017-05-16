@@ -132,7 +132,7 @@ class HostedMoneroAPIClient
 		mixinNumber: Int,
 		_ fn: @escaping (
 			_ err_str: String?,
-			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_UnspentOuts
+			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_UnspentOuts?
 		) -> Void
 	) -> HostedMoneroAPIClient_RequestHandle?
 	{
@@ -228,14 +228,14 @@ class HostedMoneroAPIClient
 	}
 	func RandomOuts(
 		using_outs: [HostedMoneroAPIClient_Parsing.OutputDescription],
-		mixinNumber: Int,
+		mixin: Int,
 		_ fn: @escaping (
 			_ err_str: String?,
 			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_RandomOuts?
 		) -> Void
 	) -> HostedMoneroAPIClient_RequestHandle?
 	{
-		if (mixinNumber < 0) {
+		if (mixin < 0) {
 			fn("Invalid mixin - must be >= 0", nil)
 			return nil
 		}
@@ -247,7 +247,7 @@ class HostedMoneroAPIClient
 		let parameters: [String: Any] =
 		[
 			"amounts": amounts,
-			"count": mixinNumber + 1 // Add one to mixin so we can skip real output key if necessary
+			"count": mixin + 1 // Add one to mixin so we can skip real output key if necessary
 		]
 		let endpointPath = HostedMoneroAPI_Endpoints.RandomOuts
 		let requestHandle = "" // TODO

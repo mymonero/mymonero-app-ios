@@ -34,7 +34,7 @@ class RuntimeController
 
 //			let moneroAmount = MoneroAmountFromDouble(0.5)
 //			NSLog("m \(moneroAmount)")
-//			let formattedMoney = FormattedStringFromMoneroAmount(moneroAmount: moneroAmount)
+//			let formattedMoney = FormattedString(fromMoneroAmount: moneroAmount)
 //			NSLog("f \(formattedMoney)")
 			
 			

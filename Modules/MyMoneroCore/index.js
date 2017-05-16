@@ -32,11 +32,8 @@ const mymonero_core_js = {}
 mymonero_core_js.monero_utils = require('./local_modules/monero_utils/monero_cryptonote_utils_instance')
 mymonero_core_js.monero_wallet_utils = require('./local_modules/monero_utils/monero_wallet_utils')
 mymonero_core_js.monero_wallet_locale = require('./local_modules/monero_utils/monero_wallet_locale')
-mymonero_core_js.monero_txParsing_utils = require('./local_modules/monero_utils/monero_txParsing_utils')
 mymonero_core_js.monero_keyImage_cache_utils = require('./local_modules/monero_utils/monero_keyImage_cache_utils')
 mymonero_core_js.monero_paymentID_utils = require('./local_modules/monero_utils/monero_paymentID_utils')
-mymonero_core_js.monero_sendingFunds_utils = require('./local_modules/monero_utils/monero_sendingFunds_utils')
-mymonero_core_js.monero_requestURI_utils = require('./local_modules/monero_utils/monero_requestURI_utils')
 mymonero_core_js.JSBigInt = require('./local_modules/cryptonote_utils/biginteger').BigInteger // so that it is available to the web context for constructing arguments to the above modules
 //
 module.exports = mymonero_core_js
