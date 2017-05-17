@@ -50,7 +50,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		}
 		//
 		let configuration = WKWebViewConfiguration()
-		configuration.userContentController.add(self, name: "javascriptEmissions")
+		configuration.userContentController.add(self, name: "javascriptEmissions") // not currently used - to (probably) be removed 
 		self.webView = WKWebView(frame: .zero, configuration: configuration)
 		webView.isHidden = true
 		self.window.addSubview(webView)
@@ -141,7 +141,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	}
 	func DecodeAddress(
 		_ address: String,
-		_ fn: @escaping (Error?, MoneroDecodedAddress?) -> Void
+		_ fn: @escaping (Error?, _ decodedAddressComponents: MoneroDecodedAddressComponents?) -> Void
 	)
 	{
 		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
@@ -159,8 +159,11 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 					intPaymentId = nil
 				}
 				let keypair = MoneroKeyDuo(view: view, spend: spend)
-				let decodedAddress = MoneroDecodedAddress(publicKeys: keypair, intPaymentId: intPaymentId)
-				fn(nil, decodedAddress)
+				let components = MoneroDecodedAddressComponents(
+					publicKeys: keypair,
+					intPaymentId: intPaymentId
+				)
+				fn(nil, components)
 				return
 			}
 			// TODO: throw?
@@ -299,6 +302,54 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 		}
 	}
+	func CreateTransaction(
+		wallet__public_keys: MoneroKeyDuo,
+		wallet__private_keys: MoneroKeyDuo,
+		splitDestinations: [SendFundsTargetDescription], // in RingCT=true, splitDestinations can equal fundTransferDescriptions
+		usingOuts: [MoneroOutputDescription],
+		mix_outs: [MoneroRandomAmountAndOutputs],
+		fake_outputs_count: Int,
+		fee_amount: MoneroAmount,
+		payment_id: MoneroPaymentID?,
+		pid_encrypt: Bool? = false,
+		ifPIDEncrypt_realDestViewKey: MoneroKey?,
+		unlock_time: Int,
+		isRingCT: Bool? = true,
+		_ fn: @escaping (_ err_str: String?, _ signedTx: MoneroSignedTransaction?) -> Void
+	) -> Void
+	{
+		// Now serialize all arguments into good inputs to .core.create_transaction
+		let args: [String] =
+		[
+			wallet__public_keys.jsRepresentationString,
+			wallet__private_keys.jsRepresentationString,
+			SendFundsTargetDescription.jsArrayString(splitDestinations),
+			MoneroOutputDescription.jsArrayString(usingOuts),
+			MoneroRandomAmountAndOutputs.jsArrayString(mix_outs),
+			"\(fake_outputs_count)",
+			fee_amount.jsRepresentationString,
+			payment_id != nil ? payment_id! : "undefined", // undefined rather than "undefined"
+			"\(pid_encrypt != nil ? pid_encrypt! : false)",
+			ifPIDEncrypt_realDestViewKey != nil ? ifPIDEncrypt_realDestViewKey! : "undefined", // undefined rather than "undefined" - tho the undefined case here should be able to be a garbage value
+			"\(unlock_time)",
+			"\(isRingCT != nil ? isRingCT! : true)",
+		]
+		// might be nice to assert arg length here or centrally via some fn name -> length map
+		self._callSync(.core, "create_transaction", args)
+		{ (any, err) in
+			if let err = err {
+				NSLog("err \(err)")
+				fn("Error creating signed transaction.", nil)
+				return
+			}
+			guard let signedTx = any as? MoneroSignedTransaction else {
+				fn("No result of create_transaction found.", nil)
+				return
+			}
+			fn(nil, signedTx)
+		}
+
+	}
 	//
 	//
 	// Internal - Accessors - Parsing/Factories
@@ -342,6 +393,8 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		let args = argsAsJSFormattedStrings ?? []
 		let joined_args = args.joined(separator: ",")
 		let argsAreaString = joined_args
+		NSLog("argsAreaString")
+		print(argsAreaString)
 		let javaScriptString = "mymonero_core_js.\(moduleName.rawValue).\(functionName)(\(argsAreaString))"
 		self._evaluateJavaScript(
 			javaScriptString,
@@ -403,7 +456,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	// Internal - Delegation - WKScriptMessageHandler
 	//
 	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage)
-	{ // not really used currently - possibly in the future for any necessarily async stuff
+	{ // not really used currently - possibly in the future for any necessarily async & JS stuff
 		NSLog("received message: \(message), \(message.body)")
 	}
 }

@@ -10,6 +10,13 @@ import Foundation
 import BigInt
 
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
+extension MoneroAmount
+{
+	var jsRepresentationString:String
+	{ // because we need to convert it back for calls like create_transaction 
+		return "new mymonero_core_js.JSBigInt(\"\(self)\")"
+	}
+}
 typealias HumanUnderstandableCurrencyAmountDouble = Double // TODO: impl formatMoney as MoneroAmount -> this?
 //
 func MoneroAmountFromDouble(_ doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount

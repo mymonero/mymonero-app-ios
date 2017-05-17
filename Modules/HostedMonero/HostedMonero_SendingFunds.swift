@@ -9,16 +9,6 @@
 import Foundation
 import BigInt
 //
-struct SendFundsTargetDescription
-{
-	let address: MoneroAddress
-	let amount: MoneroAmount
-}
-//
-func FixedMixin() -> Int
-{
-	return 9 // for now
-}
 struct HostedMonero_SendFunds
 {
 	static func estimatedRingCTSize(
@@ -123,22 +113,22 @@ func SendFunds(
 		return
 	}
 	mymoneroCore.DecodeAddress(target_address)
-	{ (err, decodedAddress) in
+	{ (err, decodedAddressComponents) in
 		if let _ = err {
 			NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
 			__trampolineFor_err_withStr(err_str: "Error decoding recipient Monero address.")
 			return
 		}
-		guard let decodedAddress = decodedAddress else {
-			__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address.")
+		guard let decodedAddressComponents = decodedAddressComponents else {
+			__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components.")
 			return
 		}
-		if decodedAddress.intPaymentId != nil && payment_id != nil {
+		if decodedAddressComponents.intPaymentId != nil && payment_id != nil {
 			__trampolineFor_err_withStr(err_str: "Payment ID field must be blank when using an Integrated Address")
 			return
 		}
-		if decodedAddress.intPaymentId != nil {
-			final__payment_id = decodedAddress.intPaymentId
+		if decodedAddressComponents.intPaymentId != nil {
+			final__payment_id = decodedAddressComponents.intPaymentId
 			final__pid_encrypt = true // we do want to encrypt if using an integrated address
 		}
 		if MyMoneroCoreUtils.IsValidPaymentIDOrNoPaymentID(final__payment_id) == false { // Validation
@@ -167,7 +157,7 @@ func SendFunds(
 		)
 	}
 	func _proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-		_ unusedOuts: [HostedMoneroAPIClient_Parsing.OutputDescription]
+		_ unusedOuts: [MoneroOutputDescription]
 	)
 	{ // status: constructing transaction…
 		let feePerKB = MoneroConstants.feePerKB
@@ -181,7 +171,7 @@ func SendFunds(
 		)
 	}
 	func __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-		_ unusedOuts: [HostedMoneroAPIClient_Parsing.OutputDescription],
+		_ unusedOuts: [MoneroOutputDescription],
 		_ passedIn_attemptAt_network_minimumFee: MoneroAmount
 	)
 	{ // Now we need to establish some values for balance validation and to construct the transaction
@@ -249,6 +239,7 @@ func SendFunds(
 		{
 			__proceedTo__getRandomOutsAndCreateTx(
 				fundTransferDescriptions: fundTransferDescriptions,
+				passedIn_attemptAt_network_minimumFee: attemptAt_network_minimumFee, // note: using actual local attemptAt_network_minimumFee
 				usingOuts: usingOuts
 			)
 		}
@@ -291,10 +282,11 @@ func SendFunds(
 	}
 	func __proceedTo__getRandomOutsAndCreateTx(
 		fundTransferDescriptions: [SendFundsTargetDescription],
-		usingOuts: [HostedMoneroAPIClient_Parsing.OutputDescription]
+		passedIn_attemptAt_network_minimumFee: MoneroAmount,
+		usingOuts: [MoneroOutputDescription]
 	)
 	{
-		NSLog("fundTransferDescriptions so far \(fundTransferDescriptions)")
+//		NSLog("fundTransferDescriptions so far \(fundTransferDescriptions)")
 		// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
 		let _ = hostedMoneroAPIClient.RandomOuts(
 			using_outs: usingOuts,
@@ -304,69 +296,97 @@ func SendFunds(
 					__trampolineFor_err_withStr(err_str: err_str)
 					return
 				}
-				__proceedTo_createTxAndAttemptToSend(
+				__proceedTo_getViewKeyThenCreateTxAndAttemptToSend(
+					fundTransferDescriptions: fundTransferDescriptions,
+					passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
+					usingOuts: usingOuts,
 					mix_outs: result!.amount_outs
 				)
 			}
 		)
 	}
-	func __proceedTo_createTxAndAttemptToSend(
-		mix_outs: [HostedMoneroAPIClient_Parsing.RandomOuts_AmountAndOutputs]
+	func __proceedTo_getViewKeyThenCreateTxAndAttemptToSend(
+		fundTransferDescriptions: [SendFundsTargetDescription],
+		passedIn_attemptAt_network_minimumFee: MoneroAmount,
+		usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
+		mix_outs: [MoneroRandomAmountAndOutputs]
 	)
 	{
-//		var signedTx;
-//		try {
-//		NSLog("Destinations: ")
-//		monero_utils.printDsts(fundTransferDescriptions)
-//		//
-//		var realDestViewKey // need to get viewkey for encrypting here, because of splitting and sorting
-//		if (final__pid_encrypt) {
-//		realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
-//		NSLog("got realDestViewKey" , realDestViewKey)
-//		}
-//		var splitDestinations = monero_utils.decompose_tx_destinations(
-//		fundTransferDescriptions,
-//		isRingCT
-//		)
-//		NSLog("Decomposed destinations:")
-//		monero_utils.printDsts(splitDestinations)
-//		//
-//		signedTx = monero_utils.create_transaction(
-//		wallet__public_keys,
-//		wallet__private_keys,
-//		splitDestinations,
-//		usingOuts,
-//		mix_outs,
-//		mixin,
-//		attemptAt_network_minimumFee,
-//		final__payment_id,
-//		final__pid_encrypt,
-//		realDestViewKey,
-//		0,
-//		isRingCT
-//		)
-//		} catch (e) {
-//		var errStr;
-//		if (e) {
-//		errStr = typeof e == "string" ? e : e.toString()
-//		} else {
-//		errStr = "Failed to create transaction with unknown error."
-//		}
-//		__trampolineFor_err_withStr(errStr)
-//		return
-//		}
-//		NSLog("signed tx: ", JSON.stringify(signedTx))
-//		//
-//		var serialized_signedTx;
-//		var tx_hash;
-//		if (signedTx.version === 1) {
-//			serialized_signedTx = monero_utils.serialize_tx(signedTx)
-//			tx_hash = monero_utils.cn_fast_hash(raw_tx)
-//		} else {
-//			let raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
-//			serialized_signedTx = raw_tx_and_hash.raw
-//			tx_hash = raw_tx_and_hash.hash
-//		}
+		// Implementation note: per advice, in RingCT txs, decompose_tx_destinations should no longer necessary
+		//
+		func ___proceed(
+			realDestViewKey: MoneroKey?
+		)
+		{
+			__proceedTo_createTxAndAttemptToSend(
+				fundTransferDescriptions: fundTransferDescriptions,
+				passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
+				usingOuts: usingOuts,
+				mix_outs: mix_outs,
+				realDestViewKey: nil
+			)
+		}
+		if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
+			mymoneroCore.DecodeAddress(target_address)
+			{ (err, decodedAddressComponents) in
+				if let _ = err {
+					NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
+					__trampolineFor_err_withStr(err_str: "Error decoding recipient Monero address while creating transaction.")
+					return
+				}
+				guard let decodedAddressComponents = decodedAddressComponents else {
+					__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components while creating transaction.")
+					return
+				}
+				let realDestViewKey = decodedAddressComponents.publicKeys.view
+				NSLog("got realDestViewKey \(realDestViewKey)")
+				___proceed(realDestViewKey: realDestViewKey)
+			}
+			return
+		}
+		___proceed(realDestViewKey: nil)
+	}
+	func __proceedTo_createTxAndAttemptToSend(
+		fundTransferDescriptions: [SendFundsTargetDescription],
+		passedIn_attemptAt_network_minimumFee: MoneroAmount,
+		usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
+		mix_outs: [MoneroRandomAmountAndOutputs],
+		realDestViewKey: MoneroKey?
+	)
+	{
+		mymoneroCore.CreateTransaction(
+			wallet__public_keys: wallet__public_keys,
+			wallet__private_keys: wallet__private_keys,
+			splitDestinations: fundTransferDescriptions, // in RingCT=true, splitDestinations can equal fundTransferDescriptions
+			usingOuts: usingOuts,
+			mix_outs: mix_outs,
+			fake_outputs_count: final__mixin,
+			fee_amount: passedIn_attemptAt_network_minimumFee,
+			payment_id: final__payment_id,
+			pid_encrypt: final__pid_encrypt,
+			ifPIDEncrypt_realDestViewKey: realDestViewKey,
+			unlock_time: 0,
+			isRingCT: true
+		)
+		{ (err_str, signedTx) in
+			
+			if let err_str = err_str {
+				__trampolineFor_err_withStr(err_str: err_str)
+				return
+			}
+			NSLog("signed tx: \(signedTx!.debugDescription)")
+			__proceedTo_serializeSignedTxAndAttemptToSend(
+				signedTx: signedTx!
+			)
+		}
+	}
+	func __proceedTo_serializeSignedTxAndAttemptToSend(
+		signedTx: MoneroSignedTransaction
+	)
+	{
+//		let raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
+//		let serialized_signedTx = raw_tx_and_hash.raw
+//		let tx_hash = raw_tx_and_hash.hash
 //		NSLog("tx serialized: " + serialized_signedTx)
 //		NSLog("Tx hash: " + tx_hash)
 //		//
@@ -426,16 +446,16 @@ func __randomIndex(_ list: [Any]) -> Int
 }
 func _outputsAndAmountToUseForMixin(
 	target_amount: MoneroAmount,
-	unusedOuts: [HostedMoneroAPIClient_Parsing.OutputDescription]
+	unusedOuts: [MoneroOutputDescription]
 ) -> (
-	usingOuts: [HostedMoneroAPIClient_Parsing.OutputDescription],
+	usingOuts: [MoneroOutputDescription],
 	usingOutsAmount: MoneroAmount,
-	remaining_unusedOuts: [HostedMoneroAPIClient_Parsing.OutputDescription]
+	remaining_unusedOuts: [MoneroOutputDescription]
 )
 {
 	NSLog("Selecting outputs to use. target: \(FormattedString(fromMoneroAmount: target_amount))")
 	var toFinalize_usingOutsAmount = MoneroAmount(0)
-	var toFinalize_usingOuts: [HostedMoneroAPIClient_Parsing.OutputDescription] = []
+	var toFinalize_usingOuts: [MoneroOutputDescription] = []
 	var remaining_unusedOuts = unusedOuts // take 'copy' instead of using original so as to prevent issue if we must re-enter tx building fn if fee too low after building
 	while toFinalize_usingOutsAmount < target_amount && remaining_unusedOuts.count > 0 {
 		// now select and remove a random element from the unused outputs

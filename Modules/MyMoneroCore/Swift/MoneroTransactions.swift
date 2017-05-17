@@ -8,9 +8,10 @@
 
 import Foundation
 import SwiftDate
-
+//
+typealias MoneroSignedTransaction = String
 typealias MoneroSerializedSignedTransaction = String
-
+//
 extension MyMoneroCoreUtils
 {
 	static func IsTransactionConfirmed(_ tx_height: Int, _ blockchain_height: Int) -> Bool

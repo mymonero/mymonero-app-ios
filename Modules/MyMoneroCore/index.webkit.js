@@ -30,21 +30,22 @@
 //
 const index = require('./index')
 //
-index.callAndEmitBackToNative = function(
-	call_uuid,
-	moduleName, 
-	functionName,
-	args
-)
-{
-	const payload =
-	{
-		call_uuid: call_uuid,
-		moduleName: moduleName,
-		functionName: functionName,
+// not currently used
+// index.callAndEmitBackToNative = function(
+// 	call_uuid,
+// 	moduleName, 
+// 	functionName,
+// 	args
+// )
+// {
+// 	const payload =
+// 	{
+// 		call_uuid: call_uuid,
+// 		moduleName: moduleName,
+// 		functionName: functionName,
 		
-	}
-    window.webkit.messageHandlers.javascriptEmissions.postMessage(payload)
-}
+// 	}
+//     window.webkit.messageHandlers.javascriptEmissions.postMessage(payload)
+// }
 //
 module.exports = index

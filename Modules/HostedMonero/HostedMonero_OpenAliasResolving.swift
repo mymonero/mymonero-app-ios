@@ -76,7 +76,7 @@ func LookupMoneroAddressInfoFromOpenAliasAddress(
 		}
 		// now verify address is decodable for currency
 		mymoneroCore.DecodeAddress(oaRecord_address)
-		{ (err, decodedAddress) in
+		{ (err, decodedAddressComponents) in
 			if let _ = err {
 				NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
 				let err_str = "Address found on DNS record for OA address was not a valid Monero address." // TODO
