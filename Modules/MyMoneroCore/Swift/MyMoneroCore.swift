@@ -87,6 +87,24 @@ struct MoneroOutputDescription
 	let timestamp: Date
 	let height: Int
 	//
+	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroOutputDescription
+	{
+		let outputDescription = MoneroOutputDescription(
+			amount: MoneroAmount("\(dict["amount"] as! String)")!,
+			public_key: dict["public_key"] as! String,
+			index: dict["index"] as! Int,
+			globalIndex: dict["global_index"] as! Int,
+			rct: dict["rct"] as? String,
+			tx_id: dict["tx_id"] as! Int,
+			tx_hash: dict["tx_hash"] as! String,
+			tx_pub_key: dict["tx_pub_key"] as! String,
+			tx_prefix_hash: dict["tx_prefix_hash"] as! String,
+			spend_key_images: dict["spend_key_images"] as? [String] ?? [],
+			timestamp: MyMoneroJSON_dateFormatter.date(from: "\(dict["timestamp"] as! String)")!,
+			height: dict["height"] as! Int
+		)
+		return outputDescription
+	}
 	static func jsArrayString(_ array: [MoneroOutputDescription]) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
@@ -120,6 +138,16 @@ struct MoneroRandomAmountAndOutputs
 	let amount: MoneroAmount
 	let outputs: [MoneroRandomOutputDescription]
 	//
+	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomAmountAndOutputs
+	{
+		let dict_outputs = dict["outputs"] as! [[String: Any]]
+		let outputs = MoneroRandomOutputDescription.newArray(withCoreParsed_jsonDicts: dict_outputs)
+		let amountAndOutputs = MoneroRandomAmountAndOutputs(
+			amount: MoneroAmount("\(dict["amount"] as! String)")!,
+			outputs: outputs
+		)
+		return amountAndOutputs
+	}
 	static func jsArrayString(_ array: [MoneroRandomAmountAndOutputs]) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
@@ -135,6 +163,19 @@ struct MoneroRandomOutputDescription
 	let public_key: MoneroTransactionPubKey
 	let rct: String?
 	//
+	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroRandomOutputDescription]
+	{
+		return dicts.map{ new(withCoreParsed_jsonDict: $0) }
+	}
+	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomOutputDescription
+	{
+		let outputDescription = MoneroRandomOutputDescription(
+			globalIndex: dict["global_index"] as! String,
+			public_key: dict["public_key"] as! MoneroTransactionPubKey,
+			rct: dict["rct"] as? String
+		)
+		return outputDescription
+	}
 	static func jsArrayString(_ array: [MoneroRandomOutputDescription]) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"

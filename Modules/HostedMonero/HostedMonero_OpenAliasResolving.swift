@@ -28,7 +28,7 @@ func LookupMoneroAddressInfoFromOpenAliasAddress(
 		_ err_str: String?,
 		_ validResolvedDescription: ValidOAResolvedMoneroAddressDescription?
 	) -> Void
-) -> HostedMoneroAPIClient_RequestHandle?
+) -> HostedMoneroAPIClient.RequestHandle?
 {
 	if IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) == false {
 		let err_str = "Asked to resolve non-OpenAlias address"

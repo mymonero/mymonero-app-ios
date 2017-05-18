@@ -14,7 +14,7 @@ class RuntimeController
 {
 	var windowController: WindowController!
 	var mymoneroCore: MyMoneroCore!
-	var hostedMoneroAPIClient = HostedMoneroAPIClient()
+	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
 	init(windowController: WindowController)
 	{
@@ -28,6 +28,7 @@ class RuntimeController
 	func setup_mymoneroCore()
 	{
 		mymoneroCore = MyMoneroCore(window: windowController.window)
+		hostedMoneroAPIClient = HostedMoneroAPIClient(mymoneroCore: mymoneroCore)
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{

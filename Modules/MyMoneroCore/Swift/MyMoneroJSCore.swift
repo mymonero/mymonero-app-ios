@@ -17,7 +17,7 @@ enum MyMoneroCoreJS_ModuleName: String
 	case wallet = "monero_wallet_utils"
 	case walletLocale = "monero_wallet_locale"
 	case paymentID = "monero_paymentID_utils"
-	case keyImageCache = "monero_keyImage_cache_utils"
+	case responseParser = "api_response_parser_utils"
 }
 //
 // Principal type
@@ -239,35 +239,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			// TODO: throw?
 		}
 	}
-	func Lazy_KeyImage(
-		tx_pub_key: String,
-		out_index: Int,
-		publicAddress: MoneroAddress,
-		view_key__private: MoneroKey,
-		spend_key__public: MoneroKey,
-		spend_key__private: MoneroKey,
-		_ fn: @escaping (Error?, MoneroKeyImage?) -> Void
-	)
-	{
-		let args =
-		[
-			"\"\(tx_pub_key)\"",
-			"\(out_index)",
-			"\"\(publicAddress)\"",
-			"\"\(view_key__private)\"",
-			"\"\(spend_key__public)\"",
-			"\"\(spend_key__private)\""
-		]
-		self._callSync(.keyImageCache, "Lazy_KeyImage", args)
-		{ (any, err) in
-			if let err = err {
-				NSLog("err \(err)")
-				fn(err, nil)
-				return
-			}
-			fn(nil, any as? MoneroKeyImage)
-		}
-	}
 	func New_FakeAddressForRCTTx(
 		_ fn: @escaping (_ err_str: String?, MoneroAddress?) -> Void
 	)
@@ -315,7 +286,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		ifPIDEncrypt_realDestViewKey: MoneroKey?,
 		unlock_time: Int,
 		isRingCT: Bool? = true,
-		_ fn: @escaping (_ err_str: String?, _ signedTx: MoneroSignedTransaction?) -> Void
+		_ fn: @escaping (_ err_str: String?, _ signedTxDescription_dict: MoneroSignedTransaction?) -> Void
 	) -> Void
 	{
 		// Now serialize all arguments into good inputs to .core.create_transaction
@@ -342,13 +313,12 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				fn("Error creating signed transaction.", nil)
 				return
 			}
-			guard let signedTx = any as? MoneroSignedTransaction else {
+			guard let signedTxDescription_dict = any as? MoneroSignedTransaction else {
 				fn("No result of create_transaction found.", nil)
 				return
 			}
-			fn(nil, signedTx)
+			fn(nil, signedTxDescription_dict)
 		}
-
 	}
 	//
 	//

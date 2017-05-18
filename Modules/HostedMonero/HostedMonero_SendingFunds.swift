@@ -101,7 +101,7 @@ func SendFunds(
 		address: target_address,
 		amount: totalMoneroAmountWithoutFee
 	)
-	NSLog("targetDescription \(targetDescription)")
+//	NSLog("targetDescription \(targetDescription)")
 	NSLog("💬  Total to send, before fee: \(totalMoneroAmountWithoutFee)")
 	//
 	// Derive/finalize some values…

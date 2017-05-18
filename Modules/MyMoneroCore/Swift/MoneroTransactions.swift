@@ -9,7 +9,7 @@
 import Foundation
 import SwiftDate
 //
-typealias MoneroSignedTransaction = String
+typealias MoneroSignedTransaction = [String: Any]
 typealias MoneroSerializedSignedTransaction = String
 //
 extension MyMoneroCoreUtils
