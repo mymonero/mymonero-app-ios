@@ -1,0 +1,11 @@
+echo "🔁  cd Modules/MyMoneroCore/";
+cd Modules/MyMoneroCore/;
+
+echo "🔁  Modules/MyMoneroCore/bin/setup";
+bin/setup;
+
+echo "🔁  cd ../..";
+cd ../..;
+
+echo "🔁  pod install";
+pod install;
