@@ -10,14 +10,18 @@
 
 ## Next milestones
 
-1. Business logic, persistence
+1. Minor cleanups & review
+
+2. Business logic, persistence
+
+3. UI
 
 ## Installation
 
 ### Pre-requisites
 
 1. Xcode
-2. Cocoapods (installable via brew)
+2. Cocoapods (installable with `sudo gem install cocoapods`)
 3. Node.JS and npm
 
 ### Instructions
