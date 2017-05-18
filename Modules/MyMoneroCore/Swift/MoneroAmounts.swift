@@ -17,13 +17,13 @@ extension MoneroAmount
 		return "new mymonero_core_js.JSBigInt(\"\(self)\")"
 	}
 }
-typealias HumanUnderstandableCurrencyAmountDouble = Double // TODO: impl formatMoney as MoneroAmount -> this?
+typealias HumanUnderstandableCurrencyAmountDouble = Double // TODO: improve name
 //
 func MoneroAmountFromDouble(_ doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
 {
 	return MoneroAmountFromString("\(doubleValue)")
 }
-func MoneroAmountFromString(_  string: String) -> MoneroAmount
+func MoneroAmountFromString(_  string: String) -> MoneroAmount // TODO: make func sig more swifty, i.e. new MoneroAmount initializer or func on MoneroAmount
 { // aka monero_utils.parseMoney
 	if string == "" {
 		return MoneroAmount(0)
