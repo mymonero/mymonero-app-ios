@@ -320,6 +320,39 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, signedTxDescription_dict)
 		}
 	}
+	func SerializeTransaction(
+		signedTx: MoneroSignedTransaction,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ serialized_signedTx: MoneroSerializedSignedTransaction?,
+			_ tx_hash: String?
+		) -> Void
+	) -> Void
+	{
+		let json_String = __jsonStringForArg(fromJSONDict: signedTx)
+		self._callSync(.core, "serialize_rct_tx_with_hash", [ json_String ])
+		{ (any, err) in
+			if let err = err {
+				NSLog("err \(err)")
+				fn("Error creating signed transaction.", nil, nil)
+				return
+			}
+			guard let raw_tx_and_hash = any as? [String: Any] else {
+				fn("No result of serialize_rct_tx_with_hash found.", nil, nil)
+				return
+			}
+			guard let serialized_signedTx = raw_tx_and_hash["raw"] as? MoneroSerializedSignedTransaction else {
+				fn("Couldn't get raw serialized signed transaction.", nil, nil)
+				return
+			}
+			guard let tx_hash = raw_tx_and_hash["hash"] as? MoneroTransactionHash else {
+				fn("Couldn't get raw serialized signed transaction.", nil, nil)
+				return
+			}
+			fn(nil, serialized_signedTx, tx_hash)
+
+		}
+	}
 	//
 	//
 	// Internal - Accessors - Parsing/Factories
@@ -363,8 +396,8 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		let args = argsAsJSFormattedStrings ?? []
 		let joined_args = args.joined(separator: ",")
 		let argsAreaString = joined_args
-		NSLog("argsAreaString")
-		print(argsAreaString)
+//		NSLog("argsAreaString")
+//		print(argsAreaString)
 		let javaScriptString = "mymonero_core_js.\(moduleName.rawValue).\(functionName)(\(argsAreaString))"
 		self._evaluateJavaScript(
 			javaScriptString,
@@ -373,14 +406,27 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				if let err = err {
 					NSLog("err \(err)")
 				}
-				if let any = any {
-					NSLog("any \(any)")
-				}
+//				if let any = any {
+//					NSLog("any \(any)")
+//				}
 				if let completionHandler = completionHandler {
 					completionHandler(any, err)
 				}
 			}
 		)
+	}
+	//
+	//
+	// Internal - Accessors - Shared
+	//
+	func __jsonStringForArg(fromJSONDict jsonDict: [String: Any]) -> String
+	{
+		let json_Data =  try! JSONSerialization.data(
+			withJSONObject: jsonDict,
+			options: []
+		)
+		let json_String = String(data: json_Data, encoding: .utf8)!
+		return json_String
 	}
 	//
 	//

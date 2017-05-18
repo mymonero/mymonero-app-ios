@@ -39,9 +39,11 @@ class RuntimeController
 //			NSLog("f \(formattedMoney)")
 			
 			
-			let target_address = "4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN" // light grey wallet
+			let target_address = "43zxvpcj5Xv9SEkNXbMCG7LPQStHMpFCQCmkmR4u5nzjWwq5Xkv5VmGgYEsHXg4ja2FGRD5wMWbBVMijDTqmmVqm93wHGkg" // dark grey
+//			"4APbcAKxZ2KPVPMnqa5cPtJK25tr7maE7LrJe67vzumiCtWwjDBvYnHZr18wFexJpih71Mxsjv8b7EpQftpB9NjPPXmZxHN" // light grey wallet
 			let amount = 0.01
-			let wallet__secretMnemonic = "foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit"
+			let wallet__secretMnemonic = "idiom lumber jeans duration update selfish aunt hesitate buzzer volcano goat leech leech" // light grey
+			// "foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit" // dark grey
 			let wallet__wordsetName = MoneroMnemonicWordsetName.English
 			self.mymoneroCore.WalletDescriptionFromMnemonicSeed(wallet__secretMnemonic, wallet__wordsetName)
 			{ (err, walletDescription) in
@@ -65,10 +67,12 @@ class RuntimeController
 					hostedMoneroAPIClient: self.hostedMoneroAPIClient,
 					payment_id:	"",
 					success_fn:
-					{ (out__target_address, optl__final__payment_id, optl__tx_hash, tx_fee) in
+					{ (tx_hash, tx_fee) in
+						NSLog("✅ Funds sent.")
 					},
 					failWithErr_fn:
 					{ (err_str) in
+						NSLog("❌ Error while sending funds: '\(err_str)'")
 					}
 				)
 			}

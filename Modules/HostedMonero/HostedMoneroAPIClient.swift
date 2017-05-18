@@ -214,7 +214,6 @@ class HostedMoneroAPIClient
 			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
 				fn(nil, result)
 			}
-
 		}
 		return requestHandle
 	}
@@ -227,9 +226,25 @@ class HostedMoneroAPIClient
 		) -> Void
 	) -> RequestHandle?
 	{
-		
-		let requestHandle: RequestHandle? = nil // TODO
-		fn(nil)
+		let parameters: [String: Any] =
+		[
+			"address": address,
+			"view_key": view_key__private,
+			"tx": serializedSignedTx
+		]
+		let endpoint = HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction
+		let requestHandle = self._request(endpoint, parameters)
+		{ (err_str, response_data, response_jsonDict) in
+			if let err_str = err_str {
+				print(err_str)
+				fn(err_str)
+				return
+			}
+			DispatchQueue.main.async
+			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
+				fn(nil)
+			}
+		}
 		return requestHandle
 	}
 	//
@@ -253,6 +268,7 @@ class HostedMoneroAPIClient
 			"Content-Type": "application/json",
 		]
 		let url = "https://\(self.api_hostname)/\(endpoint.rawValue)"
+		NSLog("📡  \(url)")
 		let requestHandle = self.manager.request(
 			url,
 			method: .post,
@@ -260,22 +276,21 @@ class HostedMoneroAPIClient
 			encoding: JSONEncoding.default,
 			headers: headers
 			// these sorts of things shouldn't be necessary but bit us in JS/web
-			//			, useXDR: true, // CORS
-			//			withCredentials: true // CORS
+//			, useXDR: true, // CORS
+//			withCredentials: true // CORS
 		).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
 		.responseJSON
 		{ response in
-//			print(response.request)  // original URL request
-//			print(response.response) // HTTP URL response
-//			print(response.data)     // server data
-//			print(response.result)   // result of response serialization
+			let statusCode = response.response?.statusCode ?? -1
 			switch response.result
 			{
 				case .failure(let error):
 					print(error)
+					NSLog("❌  \(url) \(statusCode)")
 					fn(error.localizedDescription, nil, nil) // localized description ok here?
 					return
-				case .success(let result):
+				case .success:
+					NSLog("✅  \(url) \(statusCode)")
 					break
 			}
 			guard let result_value = response.result.value else {
@@ -295,16 +310,6 @@ class HostedMoneroAPIClient
 //
 extension MyMoneroCoreJS // for Parsing
 {
-	func __jsonString(fromJSONDict jsonDict: [String: Any]) -> String
-	{
-		let json_Data =  try! JSONSerialization.data(
-			withJSONObject: jsonDict,
-			options: []
-		)
-		let json_String = String(data: json_Data, encoding: .utf8)!
-		return json_String
-	}
-	
 	func Parsed_UnspentOuts(
 		response_jsonDict: [String: Any],
 		address: MoneroAddress,
@@ -317,7 +322,7 @@ extension MyMoneroCoreJS // for Parsing
 		) -> Void
 	)
 	{
-		let json_String = __jsonString(fromJSONDict: response_jsonDict)
+		let json_String = __jsonStringForArg(fromJSONDict: response_jsonDict)
 		let args =
 		[
 			json_String,
