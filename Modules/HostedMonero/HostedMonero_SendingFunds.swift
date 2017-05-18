@@ -50,7 +50,7 @@ struct HostedMonero_SendFunds
 	}
 }
 //
-func SendFunds(
+func SendFunds( // assumes isRingCT=true - not intended to support non-rct nor sweep_all-like txs
 	target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 	amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 	wallet__public_address: MoneroAddress,
