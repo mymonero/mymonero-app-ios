@@ -8,7 +8,10 @@
 
 import Foundation
 import BigInt
-
+//
+typealias HumanUnderstandableCurrencyAmountDouble = Double // e.g. -0.5 for -0.5 XMR
+// TODO: ^-- improve name? must be a proper term for this
+//
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
 extension MoneroAmount
 {
@@ -16,54 +19,54 @@ extension MoneroAmount
 	{ // because we need to convert it back for calls like create_transaction 
 		return "new mymonero_core_js.JSBigInt(\"\(self)\")"
 	}
-}
-typealias HumanUnderstandableCurrencyAmountDouble = Double // TODO: improve name
-//
-func MoneroAmountFromDouble(_ doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
-{
-	return MoneroAmountFromString("\(doubleValue)")
-}
-func MoneroAmountFromString(_  string: String) -> MoneroAmount // TODO: make func sig more swifty, i.e. new MoneroAmount initializer or func on MoneroAmount
-{ // aka monero_utils.parseMoney
-	if string == "" {
-		return MoneroAmount(0)
-	}
-	let signed_NSString = string as NSString
-	let isNegative = signed_NSString.substring(to: 1) == "-" ? true : false
-	var unsignedDouble_NSString: NSString
-	if isNegative {
-		unsignedDouble_NSString = signed_NSString.substring(from: 1) as NSString
-	} else {
-		unsignedDouble_NSString = signed_NSString
-	}
-	let decimalLocation = unsignedDouble_NSString.range(of: ".").location
-	if decimalLocation == NSNotFound { // no decimal
-		unsignedDouble_NSString = "\(unsignedDouble_NSString).0" as NSString // so that we have single codepath for int and double
-	}
-	let maxDecimalUnits_stringLength = decimalLocation + MoneroConstants.currency_unitPlaces + 1
-	if (unsignedDouble_NSString.length > maxDecimalUnits_stringLength) { // if precision too great
-		unsignedDouble_NSString = unsignedDouble_NSString.substring( // chop
-			with: NSMakeRange(0, maxDecimalUnits_stringLength)
-			) as NSString
-	}
-	let string_beforeDecimal = unsignedDouble_NSString.substring(with: NSMakeRange(0, decimalLocation))
-	let moneroAmount_beforeDecimal = BigUInt(string_beforeDecimal)! * BigUInt(10).power(MoneroConstants.currency_unitPlaces)
-	let afterDecimal_location = decimalLocation + 1
-	let string_afterDecimal = unsignedDouble_NSString.substring( // chop
-		with: NSMakeRange(
-			afterDecimal_location,
-			unsignedDouble_NSString.length - afterDecimal_location
-		)
-	)
-	let moneroAmount_afterDecimal = BigUInt(string_afterDecimal)! * BigUInt(10).power(
-		decimalLocation + MoneroConstants.currency_unitPlaces - unsignedDouble_NSString.length + 1
-	)
-	let unsigned_moneroAmount = moneroAmount_beforeDecimal + moneroAmount_afterDecimal
-	let unsigned_moneroAmount_String = String(unsigned_moneroAmount, radix: 10) // converting to string in order to convert to BigInt in order to negate... better way?
-	let signed_moneroAmount = isNegative ? MoneroAmount("-\(unsigned_moneroAmount_String)") : MoneroAmount(unsigned_moneroAmount_String)
 	//
-	return signed_moneroAmount!
+	static func new(withDouble doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
+	{
+		return new(withBigIntString: "\(doubleValue)")
+	}
+	static func new(withBigIntString string: String) -> MoneroAmount
+	{ // aka monero_utils.parseMoney
+		if string == "" {
+			return MoneroAmount(0)
+		}
+		let signed_NSString = string as NSString
+		let isNegative = signed_NSString.substring(to: 1) == "-" ? true : false
+		var unsignedDouble_NSString: NSString
+		if isNegative {
+			unsignedDouble_NSString = signed_NSString.substring(from: 1) as NSString
+		} else {
+			unsignedDouble_NSString = signed_NSString
+		}
+		let decimalLocation = unsignedDouble_NSString.range(of: ".").location
+		if decimalLocation == NSNotFound { // no decimal
+			unsignedDouble_NSString = "\(unsignedDouble_NSString).0" as NSString // so that we have single codepath for int and double
+		}
+		let maxDecimalUnits_stringLength = decimalLocation + MoneroConstants.currency_unitPlaces + 1
+		if (unsignedDouble_NSString.length > maxDecimalUnits_stringLength) { // if precision too great
+			unsignedDouble_NSString = unsignedDouble_NSString.substring( // chop
+				with: NSMakeRange(0, maxDecimalUnits_stringLength)
+				) as NSString
+		}
+		let string_beforeDecimal = unsignedDouble_NSString.substring(with: NSMakeRange(0, decimalLocation))
+		let moneroAmount_beforeDecimal = BigUInt(string_beforeDecimal)! * BigUInt(10).power(MoneroConstants.currency_unitPlaces)
+		let afterDecimal_location = decimalLocation + 1
+		let string_afterDecimal = unsignedDouble_NSString.substring( // chop
+			with: NSMakeRange(
+				afterDecimal_location,
+				unsignedDouble_NSString.length - afterDecimal_location
+			)
+		)
+		let moneroAmount_afterDecimal = BigUInt(string_afterDecimal)! * BigUInt(10).power(
+			decimalLocation + MoneroConstants.currency_unitPlaces - unsignedDouble_NSString.length + 1
+		)
+		let unsigned_moneroAmount = moneroAmount_beforeDecimal + moneroAmount_afterDecimal
+		let unsigned_moneroAmount_String = String(unsigned_moneroAmount, radix: 10) // converting to string in order to convert to BigInt in order to negate... better way?
+		let signed_moneroAmount = isNegative ? MoneroAmount("-\(unsigned_moneroAmount_String)") : MoneroAmount(unsigned_moneroAmount_String)
+		//
+		return signed_moneroAmount!
+	}
 }
+//
 struct MoneroAmounts
 {
 	static func trimRight(_ str: String, _ char: Character) -> String

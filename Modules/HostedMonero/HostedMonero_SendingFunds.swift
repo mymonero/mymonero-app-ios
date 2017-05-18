@@ -90,7 +90,7 @@ func SendFunds( // assumes isRingCT=true - not intended to support non-rct nor s
 		__trampolineFor_err_withStr(err_str: "The amount you've entered is too low")
 		return
 	}
-	let totalAmountWithoutFee = MoneroAmountFromDouble(amount)
+	let totalAmountWithoutFee = MoneroAmount.new(withDouble: amount)
 	let targetDescription = SendFundsTargetDescription(
 		address: target_address,
 		amount: totalAmountWithoutFee

@@ -33,7 +33,7 @@ class RuntimeController
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1)
 		{
 
-//			let moneroAmount = MoneroAmountFromDouble(0.5)
+//			let moneroAmount = MoneroAmount.new(withDouble: 0.5)
 //			NSLog("m \(moneroAmount)")
 //			let formattedMoney = FormattedString(fromMoneroAmount: moneroAmount)
 //			NSLog("f \(formattedMoney)")
@@ -76,7 +76,6 @@ class RuntimeController
 //					}
 //				)
 //			}
-			
 			
 //			let url = New_RequestFunds_URL(
 //				address: "44UW4sPKb4XbWHm8PXr6K8GQi7jUs9i7t2mTsjDn2zK7jYZwNERfoHaC1Yy4PYs1eTCZ9766hkB6RLUf1y95EvCQNpCZnuu",
