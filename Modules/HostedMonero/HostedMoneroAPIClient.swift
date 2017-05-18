@@ -76,12 +76,11 @@ class HostedMoneroAPIClient
 	{
 		let serverTrustPolicies_byDomain: [String: ServerTrustPolicy] =
 		[
-//			api_hostname: .pinCertificates(
-//				certificates: ServerTrustPolicy.certificates(),
-//				validateCertificateChain: true,
-//				validateHost: true
-//			)
-			api_hostname: .disableEvaluation
+			api_hostname: .pinCertificates(
+				certificates: ServerTrustPolicy.certificates(),
+				validateCertificateChain: true,
+				validateHost: true
+			)
 		]
 		self.manager = SessionManager(
 			configuration: URLSessionConfiguration.default,
