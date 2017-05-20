@@ -32,7 +32,7 @@ const path = require('path')
 //
 module.exports = 
 {
-	devtool: "inline-source-map",
+	// devtool: "inline-source-map", // commented to keep size down
 	context: __dirname,
 	entry: "./index.webkit.js",
 	output: {

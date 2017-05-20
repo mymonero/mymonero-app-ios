@@ -14,16 +14,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	var window: UIWindow?
 	var windowController = WindowController()
-	var runtimeController: RuntimeController!
+	var appRuntimeController: AppRuntimeController!
 	
 	func application(
 		_ application: UIApplication,
 		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
 	) -> Bool
 	{
-		window = windowController.window
-		runtimeController = RuntimeController(windowController: windowController)
-		windowController.makeKeyAndVisible()
+		self.window = self.windowController.window
+		self.appRuntimeController = AppRuntimeController(
+			windowController: self.windowController
+		)
+		self.windowController.makeKeyAndVisible()
 		//
 		return true
 	}

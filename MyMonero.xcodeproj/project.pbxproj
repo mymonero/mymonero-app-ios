@@ -20,11 +20,18 @@
 		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
 		9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */; };
 		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
-		9F7ADB021EBD30330073C2BB /* RuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* RuntimeController.swift */; };
+		9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */; };
 		9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB031EBD30710073C2BB /* WindowController.swift */; };
 		9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */; };
 		9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */; };
 		9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */; };
+		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
+		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
+		9FC366EB1ECFA101006CE743 /* WalletsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */; };
+		9FC367081ECFAA76006CE743 /* PersistedListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC367031ECFAA76006CE743 /* PersistedListController.swift */; };
+		9FC367091ECFAA76006CE743 /* PersistedListedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC367051ECFAA76006CE743 /* PersistedListedObject.swift */; };
+		9FC3670A1ECFAA76006CE743 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC367071ECFAA76006CE743 /* ListViewController.swift */; };
+		9FC3670C1ECFCA0F006CE743 /* UnlockableRuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC3670B1ECFCA0F006CE743 /* UnlockableRuntimeController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,11 +51,18 @@
 		9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9F7ADAF81EBD2C1C0073C2BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9F7ADB011EBD30330073C2BB /* RuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeController.swift; sourceTree = "<group>"; };
+		9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppRuntimeController.swift; sourceTree = "<group>"; };
 		9F7ADB031EBD30710073C2BB /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroAPIClient.swift; sourceTree = "<group>"; };
 		9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_OpenAliasResolving.swift; sourceTree = "<group>"; };
 		9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_SendingFunds.swift; sourceTree = "<group>"; };
+		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
+		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
+		9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewController.swift; sourceTree = "<group>"; };
+		9FC367031ECFAA76006CE743 /* PersistedListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedListController.swift; sourceTree = "<group>"; };
+		9FC367051ECFAA76006CE743 /* PersistedListedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedListedObject.swift; sourceTree = "<group>"; };
+		9FC367071ECFAA76006CE743 /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
+		9FC3670B1ECFCA0F006CE743 /* UnlockableRuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnlockableRuntimeController.swift; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,6 +126,8 @@
 				9F7ADAA61EBD2B420073C2BB /* App */,
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
+				9FC367011ECFAA76006CE743 /* PersistedLists */,
+				9FC366DC1ECF9F90006CE743 /* Wallets */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -149,7 +165,8 @@
 				9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */,
 				9F7ADB031EBD30710073C2BB /* WindowController.swift */,
 				9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */,
-				9F7ADB011EBD30330073C2BB /* RuntimeController.swift */,
+				9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */,
+				9FC3670B1ECFCA0F006CE743 /* UnlockableRuntimeController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -172,6 +189,74 @@
 				9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */,
 			);
 			path = HostedMonero;
+			sourceTree = "<group>";
+		};
+		9FC366DC1ECF9F90006CE743 /* Wallets */ = {
+			isa = PBXGroup;
+			children = (
+				9FC366DD1ECF9F90006CE743 /* Controllers */,
+				9FC366DE1ECF9F90006CE743 /* Models */,
+				9FC366DF1ECF9F90006CE743 /* Views */,
+			);
+			path = Wallets;
+			sourceTree = "<group>";
+		};
+		9FC366DD1ECF9F90006CE743 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9FC366DE1ECF9F90006CE743 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9FC366E41ECFA0E0006CE743 /* Wallet.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9FC366DF1ECF9F90006CE743 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9FC367011ECFAA76006CE743 /* PersistedLists */ = {
+			isa = PBXGroup;
+			children = (
+				9FC367021ECFAA76006CE743 /* Controllers */,
+				9FC367041ECFAA76006CE743 /* Models */,
+				9FC367061ECFAA76006CE743 /* Views */,
+			);
+			path = PersistedLists;
+			sourceTree = "<group>";
+		};
+		9FC367021ECFAA76006CE743 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9FC367031ECFAA76006CE743 /* PersistedListController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9FC367041ECFAA76006CE743 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9FC367051ECFAA76006CE743 /* PersistedListedObject.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9FC367061ECFAA76006CE743 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9FC367071ECFAA76006CE743 /* ListViewController.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		B1FD17CA08A86496EC2BCADE /* Frameworks */ = {
@@ -306,6 +391,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
+				9FC366EB1ECFA101006CE743 /* WalletsListViewController.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
@@ -315,10 +401,16 @@
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
+				9FC367081ECFAA76006CE743 /* PersistedListController.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
+				9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
-				9F7ADB021EBD30330073C2BB /* RuntimeController.swift in Sources */,
+				9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */,
+				9FC367091ECFAA76006CE743 /* PersistedListedObject.swift in Sources */,
+				9FC3670A1ECFAA76006CE743 /* ListViewController.swift in Sources */,
+				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
+				9FC3670C1ECFCA0F006CE743 /* UnlockableRuntimeController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
