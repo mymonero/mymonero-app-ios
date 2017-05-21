@@ -92,9 +92,7 @@ class DocumentPersister
 		ids: [DocumentId]?
 	)
 	{
-		let (err_str, fileDescriptions) = self._read_documentFileDescriptions(
-			inCollectionNamed: collectionName
-		)
+		let (err_str, fileDescriptions) = self._read_documentFileDescriptions(inCollectionNamed: collectionName)
 		if err_str != nil {
 			return (err_str, nil)
 		}
@@ -107,13 +105,19 @@ class DocumentPersister
 		return (nil, ids)
 	}
 	func AllDocuments(
-		inCollectionNamed collectionName: CollectionName,
-		_ fn: @escaping (
-			_ err_str: String,
-			_ documents: [DocumentJSON]?
-		) -> Void
-	) -> Void
+		inCollectionNamed collectionName: CollectionName
+	) -> (
+		err_str: String?,
+		documentJSONs: [DocumentJSON]?
+	)
 	{
+		let (err_str, fileDescriptions) = self._read_documentFileDescriptions(inCollectionNamed: collectionName)
+		if err_str != nil {
+			return (err_str, nil)
+		}
+		assert(fileDescriptions != nil, "nil fileDescriptions")
+		//
+		return self._read_existentDocumentJSONs(withDocumentFileDescriptions: fileDescriptions)
 	}
 	//
 	//
@@ -122,26 +126,91 @@ class DocumentPersister
 	func Insert(
 		document: DocumentJSON,
 		intoCollectionNamed collectionName: CollectionName
-	) -> Void
+	) -> (
+		err_str: String?,
+		insertedDocument: DocumentJSON? // returned because it may now contain a _id field
+	)
 	{
+		var final_document = document // mutable copy
+		var id = document["_id"] as? DocumentId
+		if id == nil {
+			id = DocumentPersister.new_DocumentId()
+			final_document["_id"] = id
+		}
+		let fileDescription = DocumentFileDescription(
+			inCollectionName: collectionName,
+			documentId: id!
+		)
+		do {
+			try self._write_fileDescriptionDocumentData(
+				fileDescription: fileDescription,
+				jsonToWrite: final_document
+			)
+		} catch let e {
+			return (e.localizedDescription, nil)
+		}
+		return (nil, final_document)
 	}
 	func UpdateDocument(
 		withId id: DocumentId,
 		inCollectionNamed collectionName: CollectionName,
 		withDocument updatedDocument: DocumentJSON
-	) -> Void
+	) -> (
+		err_str: String?,
+		insertedDocument: DocumentJSON? // returned because it may now contain a _id field
+	)
 	{
+		let fileDescription = DocumentFileDescription(
+			inCollectionName: collectionName,
+			documentId: id
+		)
+		var final_document = updatedDocument // mutable copy
+		let document_id = updatedDocument["_id"] as? DocumentId
+		if document_id == nil {
+			final_document["_id"] = document_id // just as a safeguard against consumers submitting a different document
+		}
+		do {
+			try self._write_fileDescriptionDocumentData(
+				fileDescription: fileDescription,
+				jsonToWrite: final_document
+			)
+		} catch let e {
+			return (e.localizedDescription, nil)
+		}
+		return (nil, final_document)
+
 	}
 	func RemoveDocuments(
 		withIds ids: [DocumentId],
 		inCollectionNamed collectionName: CollectionName
-	) -> Void
+	) -> (err_str: String?, numRemoved: Int?)
 	{
+		var numRemoved = 0
+		for (_, id) in ids.enumerated() {
+			let fileDescription = DocumentFileDescription(
+				inCollectionName: collectionName,
+				documentId: id
+			)
+			let fileURL = fileDescription.new_fileURL
+			do {
+				try FileManager.default.removeItem(at: fileURL)
+			} catch let e {
+				return (e.localizedDescription, numRemoved)
+			}
+			numRemoved += 1
+		}
+		return (nil, numRemoved)
 	}
 	func RemoveAllDocuments(
 		inCollectionNamed collectionName: CollectionName
-	) -> Void
+	) -> (err_str: String?, numRemoved: Int?)
 	{
+		let (err_str, ids) = self.IdsOfAllDocuments(inCollectionNamed: collectionName)
+		if err_str != nil {
+			return (err_str, nil)
+		}
+		//
+		return self.RemoveDocuments(withIds: ids!, inCollectionNamed: collectionName)
 	}
 	//
 	//
@@ -179,13 +248,13 @@ class DocumentPersister
 		var fileData: Data
 		do {
 			fileData = try Data(contentsOf: expected_fileURL, options: [])
-		} catch (let e) {
+		} catch let e {
 			return (e.localizedDescription, nil)
 		}
 		var json: [String: Any]
 		do {
 			json = try JSONSerialization.jsonObject(with: fileData) as! [String: Any]
-		} catch (let e) {
+		} catch let e {
 			return (e.localizedDescription, nil)
 		}
 		return (nil, json)
