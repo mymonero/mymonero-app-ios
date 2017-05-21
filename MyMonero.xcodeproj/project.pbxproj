@@ -28,10 +28,13 @@
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
 		9FC366EB1ECFA101006CE743 /* WalletsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */; };
-		9FC367081ECFAA76006CE743 /* PersistedListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC367031ECFAA76006CE743 /* PersistedListController.swift */; };
-		9FC367091ECFAA76006CE743 /* PersistedListedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC367051ECFAA76006CE743 /* PersistedListedObject.swift */; };
-		9FC3670A1ECFAA76006CE743 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC367071ECFAA76006CE743 /* ListViewController.swift */; };
 		9FC3670C1ECFCA0F006CE743 /* UnlockableRuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC3670B1ECFCA0F006CE743 /* UnlockableRuntimeController.swift */; };
+		9FEC04F31ECFD8C4009256BD /* PersistedListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedListController.swift */; };
+		9FEC04F41ECFD8C4009256BD /* ListedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F01ECFD8C4009256BD /* ListedObject.swift */; };
+		9FEC04F51ECFD8C4009256BD /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F21ECFD8C4009256BD /* ListViewController.swift */; };
+		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
+		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
+		9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,10 +62,13 @@
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
 		9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewController.swift; sourceTree = "<group>"; };
-		9FC367031ECFAA76006CE743 /* PersistedListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedListController.swift; sourceTree = "<group>"; };
-		9FC367051ECFAA76006CE743 /* PersistedListedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedListedObject.swift; sourceTree = "<group>"; };
-		9FC367071ECFAA76006CE743 /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		9FC3670B1ECFCA0F006CE743 /* UnlockableRuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnlockableRuntimeController.swift; sourceTree = "<group>"; };
+		9FEC04EE1ECFD8C4009256BD /* PersistedListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedListController.swift; sourceTree = "<group>"; };
+		9FEC04F01ECFD8C4009256BD /* ListedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListedObject.swift; sourceTree = "<group>"; };
+		9FEC04F21ECFD8C4009256BD /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
+		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
+		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
+		9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentCryptor.swift; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -126,7 +132,8 @@
 				9F7ADAA61EBD2B420073C2BB /* App */,
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
-				9FC367011ECFAA76006CE743 /* PersistedLists */,
+				9FEC04F61ECFD8D3009256BD /* Persistence */,
+				9FEC04EC1ECFD8C4009256BD /* Lists */,
 				9FC366DC1ECF9F90006CE743 /* Wallets */,
 			);
 			path = Modules;
@@ -225,38 +232,48 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		9FC367011ECFAA76006CE743 /* PersistedLists */ = {
+		9FEC04EC1ECFD8C4009256BD /* Lists */ = {
 			isa = PBXGroup;
 			children = (
-				9FC367021ECFAA76006CE743 /* Controllers */,
-				9FC367041ECFAA76006CE743 /* Models */,
-				9FC367061ECFAA76006CE743 /* Views */,
+				9FEC04ED1ECFD8C4009256BD /* Controllers */,
+				9FEC04EF1ECFD8C4009256BD /* Models */,
+				9FEC04F11ECFD8C4009256BD /* Views */,
 			);
-			path = PersistedLists;
+			path = Lists;
 			sourceTree = "<group>";
 		};
-		9FC367021ECFAA76006CE743 /* Controllers */ = {
+		9FEC04ED1ECFD8C4009256BD /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				9FC367031ECFAA76006CE743 /* PersistedListController.swift */,
+				9FEC04EE1ECFD8C4009256BD /* PersistedListController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
 		};
-		9FC367041ECFAA76006CE743 /* Models */ = {
+		9FEC04EF1ECFD8C4009256BD /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				9FC367051ECFAA76006CE743 /* PersistedListedObject.swift */,
+				9FEC04F01ECFD8C4009256BD /* ListedObject.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		9FC367061ECFAA76006CE743 /* Views */ = {
+		9FEC04F11ECFD8C4009256BD /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				9FC367071ECFAA76006CE743 /* ListViewController.swift */,
+				9FEC04F21ECFD8C4009256BD /* ListViewController.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		9FEC04F61ECFD8D3009256BD /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				9FEC04F81ECFD94B009256BD /* PersistableObject.swift */,
+				9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */,
+				9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 		B1FD17CA08A86496EC2BCADE /* Frameworks */ = {
@@ -393,24 +410,27 @@
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
 				9FC366EB1ECFA101006CE743 /* WalletsListViewController.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
+				9FEC04F31ECFD8C4009256BD /* PersistedListController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */,
 				9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */,
 				9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
+				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
-				9FC367081ECFAA76006CE743 /* PersistedListController.swift in Sources */,
+				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
 				9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */,
-				9FC367091ECFAA76006CE743 /* PersistedListedObject.swift in Sources */,
-				9FC3670A1ECFAA76006CE743 /* ListViewController.swift in Sources */,
+				9FEC04F41ECFD8C4009256BD /* ListedObject.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
+				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
 				9FC3670C1ECFCA0F006CE743 /* UnlockableRuntimeController.swift in Sources */,
+				9FEC04F51ECFD8C4009256BD /* ListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

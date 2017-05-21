@@ -29,6 +29,16 @@ class UnlockableRuntimeController
 	}
 	func setup()
 	{
+		// TODO: where to put this?
+//		// per https://realm.io/docs/swift/latest/
+//		let realm = try! Realm()
+//		// Get our Realm file's parent directory
+//		let folderPath = realm.configuration.fileURL!.deletingLastPathComponent().path
+//		// Disable file protection for this directory
+//		try! FileManager.default.setAttributes([FileAttributeKey(rawValue: NSFileProtectionKey): NSFileProtectionNone],
+//		                                       ofItemAtPath: folderPath)
+		
+		
 		self._awaitAppUnlock()
 		
 		

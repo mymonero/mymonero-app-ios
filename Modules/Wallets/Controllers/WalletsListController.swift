@@ -19,6 +19,8 @@ class WalletsListController: PersistedListController
 		hostedMoneroAPIClient: HostedMoneroAPIClient
 	)
 	{
-		super.init(listedObjectType: Wallet.self)
+		super.init(
+			listedObjectType: Wallet.self
+		)
 	}
 }

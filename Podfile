@@ -1,4 +1,4 @@
-stsource 'https://github.com/CocoaPods/Specs.git'
+source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '10.0'
 use_frameworks!
 
@@ -6,7 +6,7 @@ target 'MyMonero' do
 	pod 'BigInt', '~> 2.1'
 	pod 'SwiftDate', '~> 4.0'
 	pod 'Alamofire', '~> 4.4'
-	pod 'RealmSwift', '~> 2.7.0'
+	pod 'RNCryptor'
 end
 
 post_install do |installer|
