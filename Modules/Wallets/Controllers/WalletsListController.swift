@@ -16,11 +16,19 @@ class WalletsListController: PersistedListController
 	//
 	init(
 		mymoneroCore: MyMoneroCore,
-		hostedMoneroAPIClient: HostedMoneroAPIClient
+		hostedMoneroAPIClient: HostedMoneroAPIClient,
+		passwordController: PasswordController
 	)
 	{
 		super.init(
-			listedObjectType: Wallet.self
+			listedObjectType: Wallet.self,
+			passwordController: passwordController
 		)
+	}
+	//
+	// Overrides
+	override func overridable_sortRecords()
+	{
+		NSLog("TODO: sort on date added/inserted")
 	}
 }

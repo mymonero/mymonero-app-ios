@@ -10,12 +10,14 @@ import Foundation
 //
 struct WalletInsertDescription: ListedObjectInsertDescription
 {
+	// all of:
 	var walletLabel: String
-	// and
+	//
+	// and either:
 	var generateNewWallet: Bool? // default to no
-	// or
+	// or,
 	var mnemonicString: MoneroSeedAsMnemonic?
-	// or
+	// or,
 	var address: MoneroAddress?
 	var privateKeys: MoneroKeyDuo?
 }
@@ -34,21 +36,32 @@ class Wallet: PersistableObject, ListedObject
 		return dict
 	}
 	//
-	// Protocols - Listed Object
-	static func new(withInsertDescription description: ListedObjectInsertDescription) -> ListedObject
+	// Protocols - Listed Object - Generating a new document
+	static func new(
+		withInsertDescription description: ListedObjectInsertDescription
+	) -> (
+		err_str: String?,
+		listedObject: ListedObject?
+	)
 	{
-		return self.init(withInsertDescription: description)
+		do {
+			guard let listedObject = try self.init(withInsertDescription: description) else {
+				return ("Unknown error while adding wallet", nil) // would be a code fault
+			}
+			return (nil, listedObject)
+		} catch let e {
+			return (e.localizedDescription, nil)
+		}
 	}
 	//
-	// Lifecycle - Init
-	required init(withInsertDescription description: ListedObjectInsertDescription)
+	// Lifecycle - Init - Generating a new wallet
+	required init?(withInsertDescription description: ListedObjectInsertDescription) throws
 	{
 		super.init()
-		self.setupAndInsert(withInsertDescription: description as! WalletInsertDescription)
+		try self.setupAndInsert(withInsertDescription: description as! WalletInsertDescription)
 	}
-	func setupAndInsert(withInsertDescription description: WalletInsertDescription)
+	func setupAndInsert(withInsertDescription description: WalletInsertDescription) throws
 	{ // TODO: need way to pass error back to new.(withInsertDescription)
-		self._id = DocumentPersister.new_DocumentId() // generating a new UUID
 		self.walletLabel = description.walletLabel
 		//
 		let generateNewWallet = description.generateNewWallet != nil ? description.generateNewWallet! : false
@@ -67,10 +80,10 @@ class Wallet: PersistableObject, ListedObject
 		NSLog("Setting up wallet with address \(address) and privateKeys \(privateKeys)")
 		// TODO: continue, then save
 	}
-	//
-	required init(withDictRepresentation dictRepresentation: [String: Any])
+	// Lifecycle - Init - Existing (already saved) document
+	required init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{
-		super.init(withDictRepresentation: dictRepresentation) // this will set _id for us
+		try super.init(withDictRepresentation: dictRepresentation) // this will set _id for us
 		// TODO: hydrate with doc contents, converting where necessary
 		NSLog("hydrate with \(dictRepresentation)")
 	}
