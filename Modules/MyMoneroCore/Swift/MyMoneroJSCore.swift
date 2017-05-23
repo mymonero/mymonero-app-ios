@@ -75,15 +75,14 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	//
 	func NewlyCreatedWallet(_ fn: @escaping (MoneroWalletDescription) -> Void)
 	{
-		self.MnemonicWordsetNameWithCurrentLocale({ wordsetName in
-			self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
-			{ (any, err) in
-				if let dict = any as? [String: AnyObject] {
-					let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
-					fn(description)
-				}
+		let wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
+		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
+		{ (any, err) in
+			if let dict = any as? [String: AnyObject] {
+				let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
+				fn(description)
 			}
-		})
+		}
 	}
 	func MnemonicStringFromSeed(
 		_ account_seed: String,
@@ -127,16 +126,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			let description = self._new_moneroWalletDescription_byParsing_dict(dict, mnemonicString)
 			fn(nil, description)
-		}
-	}
-	func MnemonicWordsetNameWithCurrentLocale(_ fn: @escaping (MoneroMnemonicWordsetName) -> Void)
-	{
-		let locale = NSLocale.current
-		let languageCode = locale.languageCode ?? "en" // default to en
-		self._callSync(.walletLocale, "MnemonicWordsetNameWithLocale", [ "\"\(languageCode)\"" ])
-		{ (any, err) in
-			let wordsetName = MoneroMnemonicWordsetName(rawValue: any as! String) // just going to assume it matches; TODO? check?
-			fn(wordsetName!)
 		}
 	}
 	func DecodeAddress(

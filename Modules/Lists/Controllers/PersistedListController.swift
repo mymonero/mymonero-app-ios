@@ -28,7 +28,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	// inputs
 	var listedObjectType: ListedObject.Type!
 	var documentCollectionName: DocumentPersister.CollectionName!
-	var passwordController: PasswordController!
+	var passwordController = PasswordController.shared
 	//
 	var results = [ListedObject]()
 	// runtime
@@ -37,14 +37,10 @@ class PersistedListController: DeleteEverythingRegistrant
 	//
 	// Lifecycle - Setup
 	//
-	init(
-		listedObjectType type: ListedObject.Type,
-		passwordController: PasswordController
-	)
+	init(listedObjectType type: ListedObject.Type)
 	{
 		self.listedObjectType = type
 		self.documentCollectionName = "\(type)" as DocumentPersister.CollectionName
-		self.passwordController = passwordController
 		self.setup()
 	}
 	func setup()
@@ -144,9 +140,13 @@ class PersistedListController: DeleteEverythingRegistrant
 			}
 			for (_, documentJSON) in documentJSONs!.enumerated() {
 				// TODO: decrypt documentJSON here (?) or put that in objects? tend to think it's better to centralize here so listedobjects can be written more easily
+				
+				NSLog("TODO: decrypt JSON document here \(documentJSON)")
+				let plaintext_documentJSON = documentJSON // TODO
+				//
 				var listedObjectInstance: ListedObject?
 				do {
-					listedObjectInstance = try self.listedObjectType.init(withDictRepresentation: documentJSON)
+					listedObjectInstance = try self.listedObjectType.init(withDictRepresentation: plaintext_documentJSON)
 				} catch let e {
 					self._setup_didFailToBoot(withErrStr: e.localizedDescription)
 					return
@@ -243,39 +243,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	//
 	// Imperatives - Overridable
 	func overridable_sortRecords() {}
-	//
-	//
-	// Interface - Imperatives - Insertions
-	//
-	func InsertOne(
-		withInitDescription initDescription: ListedObjectInsertDescription,
-		_ fn: @escaping (
-			_ err_str: String?,
-			_ item: ListedObject?
-		) -> Void
-	) -> Void
-	{
-		self.passwordController.OncePasswordObtained( // this will 'block' until we have access to the pw
-			{ (obtainedPasswordString, passwordType) in
-				_proceed(withPassword: obtainedPasswordString)
-			}
-		)
-		func _proceed(withPassword: PasswordController.Password)
-		{
-			// TODO: dispatch async?
-			if self.hasBooted == false {
-				assert(false, "\(#function) should only be called when hasBooted=true")
-				fn("Unknown error: app not ready to add row.", nil)
-			}
-			let (err_str, listedObject) = self.listedObjectType.new(withInsertDescription: initDescription)
-			if err_str != nil {
-				fn(err_str, nil)
-			}
-			self._atRuntime__recordAdded(listedObject!)
-			//
-			fn(nil, listedObject)
-		}
-	}
+
 	//
 	// Internal - Imperatives - Queue entry
 	func _dispatchAsync_listUpdated_records()
@@ -289,7 +257,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	func _atRuntime__recordAdded(_ listedObject: ListedObject)
 	{
 		self.results.insert(listedObject, at: 0) // so we add it to the top
-//		self.overridable_startObserving_record(recordInstance) // TODO (?)
+//		self.overridable_startObserving_record(recordInstance) // TODO
 		//
 		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true {
 			self.overridable_sortRecords()

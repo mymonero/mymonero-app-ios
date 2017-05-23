@@ -11,12 +11,6 @@ import UIKit
 class AppRuntimeController
 {
 	var windowController: WindowController!
-	//
-	var mymoneroCore: MyMoneroCore!
-	var hostedMoneroAPIClient: HostedMoneroAPIClient!
-	//
-	var passwordController: PasswordController!
-	//
 	var walletsListController: WalletsListController!
 	//
 	init(windowController: WindowController)
@@ -26,38 +20,17 @@ class AppRuntimeController
 	}
 	func setup()
 	{
-		setup_mymoneroCore()
-	}
-	func setup_mymoneroCore()
-	{
-		self.mymoneroCore = MyMoneroCore(window: self.windowController.window)
-		self.hostedMoneroAPIClient = HostedMoneroAPIClient(mymoneroCore: self.mymoneroCore)
-		//
-		self.passwordController = PasswordController()
-		//
-		self.walletsListController = WalletsListController(
-			mymoneroCore: self.mymoneroCore,
-			hostedMoneroAPIClient: self.hostedMoneroAPIClient,
-			passwordController: self.passwordController
-		)
-		
+		self.walletsListController = WalletsListController()
 		DispatchQueue.main.async
 		{
-			let listedObjectInsertDescription = WalletInsertDescription(
-				walletLabel: "M'Wallet",
-				generateNewWallet: true,
-				mnemonicString: nil,
-				address: nil,
-				privateKeys: nil
-			)
-			self.walletsListController.InsertOne(withInitDescription: listedObjectInsertDescription)
-			{ (err_str, listedObject) in
-				if err_str != nil {
-					NSLog("err \(err_str!)")
-				} else {
-					NSLog("inserted instance: \(listedObject!)")
-				}
-			}
+//			self.walletsListController.CreateNewWallet_NoBootNoListAdd()
+//			{ (err_str, listedObject) in
+//				if err_str != nil {
+//					NSLog("err \(err_str!)")
+//				} else {
+//					NSLog("inserted instance: \(listedObject!)")
+//				}
+//			}
 		}
 	}
 }

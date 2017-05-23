@@ -14,16 +14,9 @@ class WalletsListController: PersistedListController
 	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
-	init(
-		mymoneroCore: MyMoneroCore,
-		hostedMoneroAPIClient: HostedMoneroAPIClient,
-		passwordController: PasswordController
-	)
+	init()
 	{
-		super.init(
-			listedObjectType: Wallet.self,
-			passwordController: passwordController
-		)
+		super.init(listedObjectType: Wallet.self)
 	}
 	//
 	// Overrides

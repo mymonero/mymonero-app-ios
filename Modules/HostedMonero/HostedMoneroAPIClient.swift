@@ -53,7 +53,7 @@ struct HostedMoneroAPIClient_HostConfig
 	}
 }
 //
-class HostedMoneroAPIClient
+final class HostedMoneroAPIClient
 {
 	// Types
 	typealias RequestHandle = Alamofire.DataRequest
@@ -61,11 +61,12 @@ class HostedMoneroAPIClient
 	let api_hostname = "api.mymonero.com:8443"
 	// Properties
 	var manager: SessionManager!
-	var mymoneroCore: MyMoneroCore!
+	var mymoneroCore = MyMoneroCore.shared
 	//
-	init(mymoneroCore: MyMoneroCore)
+	// Lifecycle - Singleton Init
+	static let shared = HostedMoneroAPIClient()
+	private init()
 	{
-		self.mymoneroCore = mymoneroCore
 		setup()
 	}
 	func setup()

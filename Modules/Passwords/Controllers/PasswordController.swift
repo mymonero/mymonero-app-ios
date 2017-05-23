@@ -13,7 +13,7 @@ protocol DeleteEverythingRegistrant
 //	func …()
 }
 //
-class PasswordController
+final class PasswordController
 {
 	// Types/Constants
 	typealias Password = String
@@ -23,14 +23,10 @@ class PasswordController
 		case Password
 	}
 	//
-	// Lifecycle - Init
-	init() {
-		
-	}
-	//
-	// Lifecycle - Teardown
-	deinit {
-		
+	// Lifecycle - Singleton Init
+	static let shared = PasswordController()
+	private init()
+	{
 	}
 	//
 	// Accessors - Deferring execution convenience methods

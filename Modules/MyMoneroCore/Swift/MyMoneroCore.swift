@@ -70,6 +70,22 @@ enum MoneroMnemonicWordsetName: String
 	case Japanese = "japanese"
 	case Spanish = "spanish"
 	case Portuguese = "portuguese"
+	static func new_withCurrentLocale() -> MoneroMnemonicWordsetName
+	{
+		let locale = NSLocale.current
+		let languageCode_NSString = (locale.languageCode ?? "en") as NSString // default to en
+		if languageCode_NSString.range(of: "en").location == 0 {
+			return .English
+		} else if languageCode_NSString.range(of: "es").location == 0 {
+			return .Spanish
+		} else if languageCode_NSString.range(of: "pt").location == 0 {
+			return .Portuguese
+		} else if languageCode_NSString.range(of: "js").location == 0 {
+			return .Japanese
+		}
+		// default
+		return .English
+	}
 }
 //
 struct MoneroOutputDescription
@@ -242,10 +258,15 @@ struct MoneroConstants
 struct MyMoneroCoreUtils {}
 //
 // Principal type
-class MyMoneroCore : MyMoneroCoreJS
+final class MyMoneroCore : MyMoneroCoreJS
 // TODO? alternative to subclassing MyMoneroCoreJS would be to hold an instance of it and provide proxy fns as interface.
 // 
 {
+	static let shared = MyMoneroCore()
+	private convenience init()
+	{
+		self.init(window: UIApplication.shared.delegate!.window!!)
+	}
 	override init(window: UIWindow)
 	{
 		super.init(window: window)

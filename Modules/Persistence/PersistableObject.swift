@@ -29,7 +29,7 @@ class PersistableObject
 		return dict as DocumentPersister.DocumentJSON
 	}
 	//
-	init()
+	required init()
 	{ // placed here for inserts
 	}
 	required init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws

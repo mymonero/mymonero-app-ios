@@ -8,83 +8,86 @@
 //
 import Foundation
 //
-struct WalletInsertDescription: ListedObjectInsertDescription
-{
-	// all of:
-	var walletLabel: String
-	//
-	// and either:
-	var generateNewWallet: Bool? // default to no
-	// or,
-	var mnemonicString: MoneroSeedAsMnemonic?
-	// or,
-	var address: MoneroAddress?
-	var privateKeys: MoneroKeyDuo?
-}
-//
 class Wallet: PersistableObject, ListedObject
 {
-	// Properties
+	//
+	// Types
+	enum Currency: String
+	{
+		case Monero = "xmr"
+		//
+		func jsonRepresentation() -> String
+		{
+			return self.rawValue
+		}
+		static func fromJSONRepresentation(jsonRepresentation: String) -> Currency
+		{
+			return self.init(rawValue: jsonRepresentation)!
+		}
+		func humanReadable(currency: Currency) -> String
+		{
+			switch currency {
+				case .Monero:
+					return "Monero"
+			}
+		}
+	}
+	enum DictKeys: String
+	{
+		case currency = "currency"
+		case walletLabel = "walletLabel"
+		case mnemonic_wordsetName = "mnemonic_wordsetName"
+	}
+	//
+	// Properties - Values
+	var currency: Currency!
 	var walletLabel: String!
+	var mnemonic_wordsetName: MoneroMnemonicWordsetName!
+	var generatedOnInit_walletDescription: MoneroWalletDescription?
+	//
+	// Properties - Boolean State
+	var isBooted = false
+	var isLoggedIn = false
+	var isLoggingIn = false
 	//
 	// 'Protocols' - Persistable Object
 	override func dictRepresentation() -> [String: Any]
 	{
 		var dict = super.dictRepresentation() // since it already has _id on it
-		dict["walletLabel"] = self.walletLabel
-		// Note: Override this method and add data you would like encrypted
+		dict[DictKeys.currency.rawValue] = self.currency.jsonRepresentation()
+		dict[DictKeys.walletLabel.rawValue] = self.walletLabel
+		//
 		return dict
 	}
 	//
-	// Protocols - Listed Object - Generating a new document
-	static func new(
-		withInsertDescription description: ListedObjectInsertDescription
-	) -> (
-		err_str: String?,
-		listedObject: ListedObject?
-	)
+	// Lifecycle - Init - For adding wallet to app
+	required init()
 	{
-		do {
-			guard let listedObject = try self.init(withInsertDescription: description) else {
-				return ("Unknown error while adding wallet", nil) // would be a code fault
-			}
-			return (nil, listedObject)
-		} catch let e {
-			return (e.localizedDescription, nil)
+		super.init()
+	}
+	convenience init?(
+		ifGeneratingNewWallet_walletDescription: MoneroWalletDescription? // this is left to the consumer to generate because currently to generate it is asynchronous and that would make this init code a bit messy
+	) throws
+	{
+		self.init()
+		self.currency = .Monero // for now
+		self.mnemonic_wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
+		if ifGeneratingNewWallet_walletDescription != nil {
+			self.generatedOnInit_walletDescription = ifGeneratingNewWallet_walletDescription
 		}
 	}
 	//
-	// Lifecycle - Init - Generating a new wallet
-	required init?(withInsertDescription description: ListedObjectInsertDescription) throws
-	{
-		super.init()
-		try self.setupAndInsert(withInsertDescription: description as! WalletInsertDescription)
-	}
-	func setupAndInsert(withInsertDescription description: WalletInsertDescription) throws
-	{ // TODO: need way to pass error back to new.(withInsertDescription)
-		self.walletLabel = description.walletLabel
-		//
-		let generateNewWallet = description.generateNewWallet != nil ? description.generateNewWallet! : false
-		if generateNewWallet == true {
-			// TODO: continue, then save
-			return
-		}
-		// look for mnemonic, or addr + keys
-		if let mnemonicString = description.mnemonicString {
-			NSLog("Setting up wallet with mnemonicString \(mnemonicString)")
-			// TODO: continue, then save
-			return
-		}
-		let address = description.address! // just going to assume it exists by this point
-		let privateKeys = description.privateKeys!
-		NSLog("Setting up wallet with address \(address) and privateKeys \(privateKeys)")
-		// TODO: continue, then save
-	}
-	// Lifecycle - Init - Existing (already saved) document
+	// Lifecycle - Init - Reading existing (already saved) wallet
 	required init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{
 		try super.init(withDictRepresentation: dictRepresentation) // this will set _id for us
-		// TODO: hydrate with doc contents, converting where necessary
-		NSLog("hydrate with \(dictRepresentation)")
+		//
+		self.currency = Currency.fromJSONRepresentation(
+			jsonRepresentation: dictRepresentation[DictKeys.currency.rawValue] as! String
+		)
+		self.walletLabel = dictRepresentation[DictKeys.walletLabel.rawValue] as! String
 	}
+	//
+	// (Booting) Post init, pre-runtime - Imperatives
+	
 }
