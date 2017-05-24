@@ -17,7 +17,7 @@ class PersistableObject
 		assert(false, "You must override PersistableObject/collectionName")
 		return ""
 	}
-	func dictRepresentation() -> DocumentPersister.DocumentJSON
+	func dictRepresentation(withPassword password: PasswordController.Password) -> DocumentPersister.DocumentJSON
 	{
 		var dict: [String: Any] = [:]
 		dict["_id"] = self._id
@@ -58,6 +58,7 @@ class PersistableObject
 		}
 		return self._saveToDisk_update()
 	}
+	// For these, we presume consumers/parents/instantiators have only created this wallet if they have gotten the password
 	func _saveToDisk_insert() -> String? // -> err_str?
 	{
 		assert(self._id == nil, "non-nil _id in \(#function)")
@@ -66,7 +67,7 @@ class PersistableObject
 		// and since we know this is an insertion, let's any other initial centralizable data
 		self.insertedAt_date = Date()
 		// and now that those values have been placed, we can generate the dictRepresentation
-		let jsonDict = self.dictRepresentation()
+		let jsonDict = self.dictRepresentation(withPassword: PasswordController.shared.password!)
 		let (err_str, _/*insertedDocumentJSON*/) = DocumentPersister.shared().Insert(
 			document: jsonDict,
 			intoCollectionNamed: self.collectionName()
@@ -76,7 +77,7 @@ class PersistableObject
 	func _saveToDisk_update() -> String?
 	{
 		assert(self._id != nil, "nil _id in \(#function)")
-		let jsonDict = self.dictRepresentation()
+		let jsonDict = self.dictRepresentation(withPassword: PasswordController.shared.password!)
 		let (err_str, _/*updatedDocumentJSON*/) = DocumentPersister.shared().UpdateDocument(
 			withId: self._id!,
 			inCollectionNamed: self.collectionName(),

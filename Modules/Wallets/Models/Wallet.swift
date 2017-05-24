@@ -11,7 +11,9 @@ import Foundation
 class Wallet: PersistableObject, ListedObject
 {
 	//
+	//
 	// Types
+	//
 	enum Currency: String
 	{
 		case Monero = "xmr"
@@ -20,7 +22,7 @@ class Wallet: PersistableObject, ListedObject
 		{
 			return self.rawValue
 		}
-		static func fromJSONRepresentation(jsonRepresentation: String) -> Currency
+		static func new(from_jsonRepresentation jsonRepresentation: String) -> Currency
 		{
 			return self.init(rawValue: jsonRepresentation)!
 		}
@@ -32,35 +34,95 @@ class Wallet: PersistableObject, ListedObject
 			}
 		}
 	}
+	enum SwatchColor: String
+	{
+		case DarkGrey = "#6B696B"
+		case LightGrey = "#CFCECF"
+		case Teal = "#00F4CD"
+		case Purple = "#D975E1"
+		case Salmon = "#F97777"
+		case Orange = "#EB8316"
+		case Yellow = "#EACF12"
+		case Blue = "#00C6FF"
+		//
+		func colorHexString() -> String { return self.rawValue }
+		func jsonRepresentation() -> String { return self.rawValue }
+		static func new(from_jsonRepresentation jsonRepresentation: String) -> SwatchColor
+		{
+			return self.init(rawValue: jsonRepresentation)!
+		}
+	}
 	enum DictKeys: String
 	{
+		// Encrypted:
 		case currency = "currency"
 		case walletLabel = "walletLabel"
+		case swatchColorHexString = "swatchColorHexString"
 		case mnemonic_wordsetName = "mnemonic_wordsetName"
+		case publicAddress = "publicAddress"
+		case privateKeys = "privateKeys"
+		case publicKeys = "publicKeys"
+		case accountSeed = "accountSeed"
+		// we do not save the mnemonic-encoded seed to disk, only accountSeed
+		case heights = "heights"
+		case totals = "totals"
+		case transactions = "transactions"
+		case spent_outputs = "spent_outputs"
+		//
+		// Not encrypted:
+		case isLoggedIn = "isLoggedIn"
+		case isInViewOnlyMode = "isInViewOnlyMode"
+		case shouldDisplayImportAccountOption = "shouldDisplayImportAccountOption"
 	}
 	//
+	//
 	// Properties - Values
+	//
 	var currency: Currency!
 	var walletLabel: String!
+	var swatchColor: SwatchColor!
+	var mnemonicString: MoneroSeedAsMnemonic!
 	var mnemonic_wordsetName: MoneroMnemonicWordsetName!
 	var generatedOnInit_walletDescription: MoneroWalletDescription?
+	var account_seed: MoneroSeed?
+	var private_keys: MoneroKeyDuo!
+	var public_keys: MoneroKeyDuo!
+	var public_address: MoneroAddress!
+	//
 	//
 	// Properties - Boolean State
+	//
 	var isBooted = false
 	var isLoggedIn = false
 	var isLoggingIn = false
+	var wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed: Bool?
+	var didFailToBoot_flag: Bool?
+	var didFailToBoot_errStr: String?
+	var shouldDisplayImportAccountOption: Bool?
+	var isInViewOnlyMode: Bool?
+	//
+	//
+	// Properties - Objects
+	//
+	//	var hostPollingController: WalletHostPollingController?
+	//
 	//
 	// 'Protocols' - Persistable Object
-	override func dictRepresentation() -> [String: Any]
+	//
+	override func dictRepresentation(withPassword password: PasswordController.Password) -> [String: Any]
 	{
-		var dict = super.dictRepresentation() // since it already has _id on it
-		dict[DictKeys.currency.rawValue] = self.currency.jsonRepresentation()
-		dict[DictKeys.walletLabel.rawValue] = self.walletLabel
-		//
+		var dict = super.dictRepresentation(withPassword: password) // since it constructs the base object for us
+		do {
+			dict[DictKeys.currency.rawValue] = self.currency.jsonRepresentation()
+			dict[DictKeys.walletLabel.rawValue] = self.walletLabel
+			dict[DictKeys.swatchColorHexString.rawValue] = self.swatchColor.jsonRepresentation()
+		}
 		return dict
 	}
 	//
+	//
 	// Lifecycle - Init - For adding wallet to app
+	//
 	required init()
 	{
 		super.init()
@@ -77,17 +139,276 @@ class Wallet: PersistableObject, ListedObject
 		}
 	}
 	//
+	//
 	// Lifecycle - Init - Reading existing (already saved) wallet
+	//
+	override func collectionName() -> String
+	{
+		return "Wallet"
+	}
 	required init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{
 		try super.init(withDictRepresentation: dictRepresentation) // this will set _id for us
 		//
-		self.currency = Currency.fromJSONRepresentation(
-			jsonRepresentation: dictRepresentation[DictKeys.currency.rawValue] as! String
+//		self.isLoggedIn = encryptedDocument.isLoggedIn
+//		self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
+//		self.shouldDisplayImportAccountOption = encryptedDocument.shouldDisplayImportAccountOption
+//		do {
+//			const dateStr = encryptedDocument.dateThatLast_fetchedAccountInfo
+//			self.dateThatLast_fetchedAccountInfo = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null
+//		}
+//		do {
+//			const dateStr = encryptedDocument.dateThatLast_fetchedAccountTransactions
+//			self.dateThatLast_fetchedAccountTransactions = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null
+//		}
+//		do {
+//			const dateStr = encryptedDocument.dateWalletFirstSavedLocally
+//			self.dateWalletFirstSavedLocally = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null
+//		}
+		//
+		self.currency = Currency.new(
+			from_jsonRepresentation: dictRepresentation[DictKeys.currency.rawValue] as! String
 		)
 		self.walletLabel = dictRepresentation[DictKeys.walletLabel.rawValue] as! String
+		self.swatchColor = SwatchColor.new(
+			from_jsonRepresentation: dictRepresentation[DictKeys.swatchColorHexString.rawValue] as! String
+		)
+		// Not going to check whether the acct seed is nil/'' here because if the wallet was
+		// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
+		// cannot obtain the seed.
+//		self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
+		self.public_address = dictRepresentation[DictKeys.publicAddress.rawValue] as! String
+//		self.public_keys
+//		self.private_keys
+//		self.account_seed = plaintextDocument.account_seed
+//		self.private_keys = plaintextDocument.private_keys
+//		self.public_address = plaintextDocument.public_address
+//		self.public_keys = plaintextDocument.public_keys
+//		self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+//		//
+//		self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
+//		self.transactions.forEach(
+//			function(tx, i)
+//			{ // we must fix up what JSON stringifying did to the data
+//				tx.timestamp = new Date(tx.timestamp)
+//			}
+//		)
+//		//
+//		// unpacking heights…
+//		const heights = plaintextDocument.heights // no || {} because we always persist at least {}
+//		self.account_scanned_height = heights.account_scanned_height
+//		self.account_scanned_tx_height = heights.account_scanned_tx_height
+//		self.account_scanned_block_height = heights.account_scanned_block_height
+//		self.account_scan_start_height = heights.account_scan_start_height
+//		self.transaction_height = heights.transaction_height
+//		self.blockchain_height = heights.blockchain_height
+//		//
+//		// unpacking totals -- these are stored as strings
+//		const totals = plaintextDocument.totals
+//		self.total_received = new JSBigInt(totals.total_received) // persisted as string
+//		self.locked_balance = new JSBigInt(totals.locked_balance) // persisted as string
+//		self.total_sent = new JSBigInt(totals.total_sent) // persisted as string
+//		//
+//		self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
 	}
 	//
-	// (Booting) Post init, pre-runtime - Imperatives
+	//
+	// Post init, pre-runtime - Imperatives - Booting - When creating or adding a wallet
+	//
+	func Boot_byLoggingIn_givenNewlyCreatedWallet(
+		walletLabel: String,
+		swatchColor: SwatchColor,
+		_ fn: @escaping (_ err_str: String?) -> Void
+	) -> Void
+	{
+		self.walletLabel = walletLabel
+		self.swatchColor = swatchColor
+		//
+		assert(self.generatedOnInit_walletDescription != nil, "nil generatedOnInit_walletDescription")
+		let generatedOnInit_walletDescription = self.generatedOnInit_walletDescription!
+		self._boot_byLoggingIn(
+			address: generatedOnInit_walletDescription.publicAddress,
+			view_key__private: generatedOnInit_walletDescription.privateKeys.view,
+			spend_key_orNilForViewOnly: generatedOnInit_walletDescription.privateKeys.spend,
+			seed_orNil: generatedOnInit_walletDescription.seed,
+			wasAGeneratedWallet: true, // in this case
+			fn
+		)
+	}
+	func Boot_byLoggingIn_existingWallet_withMnemonic(
+		walletLabel: String,
+		swatchColor: SwatchColor,
+		mnemonicString: MoneroSeedAsMnemonic,
+		_ fn: @escaping (_ err_str: String?) -> Void
+	) -> Void
+	{
+		self.walletLabel = walletLabel
+		self.swatchColor = swatchColor
+		//
+		let (wordsetName__err_str, wordsetName) = WordsetName(accordingToMnemonicString: mnemonicString)
+		if wordsetName__err_str != nil {
+			NSLog("Error while detecting mnemonic wordset from mnemonic string: \(wordsetName__err_str.debugDescription)")
+			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: wordsetName__err_str)
+			return
+		}
+		self.mnemonic_wordsetName = wordsetName!
+		//
+		// We're not going to set self.mnemonicString here because we re-derive it from seed in _trampolineFor_successfullyBooted
+		//
+		MyMoneroCore.shared.WalletDescriptionFromMnemonicSeed(
+			mnemonicString,
+			self.mnemonic_wordsetName,
+			{ (err, walletDescription) in
+				if err != nil {
+					self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err!.localizedDescription)
+					return
+				}
+				self._boot_byLoggingIn(
+					address: walletDescription!.publicAddress,
+					view_key__private: walletDescription!.privateKeys.view,
+					spend_key_orNilForViewOnly: walletDescription!.privateKeys.spend,
+					seed_orNil: walletDescription!.seed,
+					wasAGeneratedWallet: false,
+					fn
+				)
+			}
+		)
+	}
+	func Boot_byLoggingIn_existingWallet_withAddressAndKeys(
+		walletLabel: String,
+		swatchColor: SwatchColor,
+		address: MoneroAddress,
+		privateKeys: MoneroKeyDuo,
+		_ fn: @escaping (_ err_str: String?) -> Void
+	)
+	{
+		self.walletLabel = walletLabel
+		self.swatchColor = swatchColor
+		//
+		self._boot_byLoggingIn(
+			address: address,
+			view_key__private: privateKeys.view,
+			spend_key_orNilForViewOnly: privateKeys.spend,
+			seed_orNil: nil,
+			wasAGeneratedWallet: false,
+			fn
+		)
+	}
 	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Booting - Reading saved wallets
+	
+	func Boot_havingLoadedDecryptedExistingInitDoc(
+		_ fn: @escaping (_ err_str: String?) -> Void
+	)
+	{ // nothing to do here as we assume validation done on init
+		self._trampolineFor_successfullyBooted(fn)
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Booting
+	
+	func __trampolineFor_failedToBootWith_fnAndErrStr(
+		fn: (_ err_str: String?) -> Void,
+		err_str: String?
+	)
+	{
+		self.didFailToBoot_flag = true
+		self.didFailToBoot_errStr = err_str
+		//
+		fn(err_str)
+	}
+	func _trampolineFor_successfullyBooted(
+		_ fn: @escaping (_ err_str: String?) -> Void
+	)
+	{
+		func __proceed_havingActuallyBooted()
+		{
+			NSLog("✅  Successfully booted \(self)")
+			self.isBooted = true
+			fn(nil)
+			DispatchQueue.main.async {
+				self._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
+			}
+		}
+		if self.account_seed == nil || self.account_seed!.characters.count < 1 {
+			NSLog("⚠️  Wallet initialized without an account_seed.")
+			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
+			__proceed_havingActuallyBooted()
+			//
+			return
+		}
+		// re-derive mnemonic string from account seed
+		MyMoneroCore.shared.MnemonicStringFromSeed(
+			self.account_seed!,
+			self.mnemonic_wordsetName!
+		)
+		{ (err, seedAsMnemonic) in
+			if let err = err {
+				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err.localizedDescription)
+				return
+			}
+			self.mnemonicString = seedAsMnemonic!
+			__proceed_havingActuallyBooted()
+		}
+	}
+	func _atRuntime_setup_hostPollingController()
+	{
+		NSLog("TODO: instantiate host polling controller")
+//		self.hostPollingController = WalletHostPollingController(wallet: self)
+	}
+	func _boot_byLoggingIn(
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		spend_key_orNilForViewOnly: MoneroKey?,
+		seed_orNil: MoneroSeed?,
+		wasAGeneratedWallet: Bool,
+		_ fn: @escaping (_ err_str: String?) -> Void
+	)
+	{
+		self.isLoggingIn = true
+		//
+		MyMoneroCore.shared.New_VerifiedComponentsForLogIn(
+			address,
+			view_key__private,
+			spend_key_orNilForViewOnly: spend_key_orNilForViewOnly,
+			seed_orNil: seed_orNil,
+			wasAGeneratedWallet: wasAGeneratedWallet
+		)
+		{ (err, verifiedComponentsForLogIn) in
+			if let err = err {
+				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err.localizedDescription)
+				return
+			}
+			HostedMoneroAPIClient.shared.LogIn(
+				address: address,
+				view_key__private: view_key__private,
+				{ (err_str, isANewAddressToServer) in
+					if err_str != nil {
+						self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
+						return
+					}
+					self.public_address = verifiedComponentsForLogIn!.publicAddress
+					self.account_seed = verifiedComponentsForLogIn!.seed
+					self.public_keys = verifiedComponentsForLogIn!.publicKeys
+					self.private_keys = verifiedComponentsForLogIn!.privateKeys
+					self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
+					//
+					self.isLoggingIn = false
+					self.isLoggedIn = true
+					//
+					self.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true
+					//
+					let err_str = self.saveToDisk()
+					if err_str != nil {
+						self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
+						return
+					}
+					self._trampolineFor_successfullyBooted(fn)
+				}
+			)
+		}
+	}
 }

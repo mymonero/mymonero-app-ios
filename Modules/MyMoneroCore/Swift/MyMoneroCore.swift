@@ -64,29 +64,7 @@ struct MoneroVerifiedComponentsForLogIn
 	var privateKeys: MoneroKeyDuo
 	var isInViewOnlyMode: Bool
 }
-enum MoneroMnemonicWordsetName: String
-{
-	case English = "english"
-	case Japanese = "japanese"
-	case Spanish = "spanish"
-	case Portuguese = "portuguese"
-	static func new_withCurrentLocale() -> MoneroMnemonicWordsetName
-	{
-		let locale = NSLocale.current
-		let languageCode_NSString = (locale.languageCode ?? "en") as NSString // default to en
-		if languageCode_NSString.range(of: "en").location == 0 {
-			return .English
-		} else if languageCode_NSString.range(of: "es").location == 0 {
-			return .Spanish
-		} else if languageCode_NSString.range(of: "pt").location == 0 {
-			return .Portuguese
-		} else if languageCode_NSString.range(of: "js").location == 0 {
-			return .Japanese
-		}
-		// default
-		return .English
-	}
-}
+typealias MoneroMnemonicWordsetName = MNWords.WordsetName
 //
 struct MoneroOutputDescription
 { // TODO: would be nice to make this name more precise, like MoneroRandomOutputDescription

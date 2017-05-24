@@ -23,13 +23,31 @@ class AppRuntimeController
 		self.walletsListController = WalletsListController()
 		DispatchQueue.main.async
 		{
+			
+//			// Testing creating a new wallet:
+//			
+//			
 //			self.walletsListController.CreateNewWallet_NoBootNoListAdd()
-//			{ (err_str, listedObject) in
+//			{ (err_str, walletInstance) in
 //				if err_str != nil {
 //					NSLog("err \(err_str!)")
-//				} else {
-//					NSLog("inserted instance: \(listedObject!)")
+//					return
 //				}
+//				NSLog("Created new wallet instance but not inserted or booted yet: \(walletInstance!)")
+//				// …… gather info from user……
+//				//
+//				self.walletsListController.GivenBooted_ObtainPW_AddNewlyGeneratedWallet(
+//					walletInstance: walletInstance!,
+//					walletLabel: "Checking",
+//					swatchColor: .Salmon,
+//					{ (err_str, addedWallet) in
+//						if err_str != nil {
+//							NSLog("err \(err_str!)")
+//							return
+//						}
+//						NSLog("added/booted/logged in wallet \(addedWallet.debugDescription)")
+//					}
+//				)
 //			}
 		}
 	}

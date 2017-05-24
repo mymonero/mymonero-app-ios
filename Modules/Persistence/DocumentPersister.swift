@@ -275,14 +275,20 @@ class DocumentPersister
 				options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants, .skipsPackageDescendants]
 			)
 			// filtering to what should be JSON doc files
+			let filenameSuffix = ("."+DocumentFileDescription.filenameExt)
+			let filenameSuffix_length = filenameSuffix.characters.count
 			let dbDocumentFileURLs = directoryContents.filter{
-				$0.pathExtension == DocumentFileDescription.filenameExt
+				return $0.lastPathComponent.hasSuffix(filenameSuffix)
 			}
 			// going to assume they're not directories - probably is better way to check or pre-filter
-			let dbDocumentFileNames = dbDocumentFileURLs.map{
-				$0.deletingPathExtension().lastPathComponent
-			}
-			for (_, filename_sansExt) in dbDocumentFileNames.enumerated() {
+			for (_, fileURL) in dbDocumentFileURLs.enumerated() {
+				let filename_withExt = fileURL.lastPathComponent
+				let endIndex = filename_withExt.index(
+					filename_withExt.endIndex,
+					offsetBy: -1 * filenameSuffix_length
+				)
+				let filename_sansExt = filename_withExt.substring(to: endIndex)
+				//
 				let fileKey = filename_sansExt // assumption
 				let fileKey_components = fileKey.components(separatedBy: DocumentFileDescription.fileKeyComponentDelimiterString)
 				if fileKey_components.count != 2 {

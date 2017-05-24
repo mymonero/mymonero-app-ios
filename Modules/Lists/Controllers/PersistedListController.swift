@@ -130,6 +130,10 @@ class PersistedListController: DeleteEverythingRegistrant
 				withIds: ids!,
 				inCollectionNamed: self.documentCollectionName
 			)
+			if load__err_str != nil {
+				self._setup_didFailToBoot(withErrStr: load__err_str!)
+				return
+			}
 			if documentJSONs!.count == 0 { // just in case
 				self._setup_didBoot()
 				return
@@ -254,7 +258,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	}
 	//
 	// Delegation
-	func _atRuntime__recordAdded(_ listedObject: ListedObject)
+	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: ListedObject)
 	{
 		self.results.insert(listedObject, at: 0) // so we add it to the top
 //		self.overridable_startObserving_record(recordInstance) // TODO

@@ -73,15 +73,20 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	//
 	// Interface - Accessors
 	//
-	func NewlyCreatedWallet(_ fn: @escaping (MoneroWalletDescription) -> Void)
+	func NewlyCreatedWallet(_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void)
 	{
 		let wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
 		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
 		{ (any, err) in
+			if let err = err {
+				fn(err.localizedDescription, nil)
+				return
+			}
 			if let dict = any as? [String: AnyObject] {
 				let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
-				fn(description)
+				fn(nil, description)
 			}
+			// TODO: handle err?
 		}
 	}
 	func MnemonicStringFromSeed(
@@ -162,7 +167,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ address: MoneroAddress,
 		_ view_key: MoneroKey,
 		spend_key_orNilForViewOnly: MoneroKey?,
-		seed_orUndefined: MoneroSeed?,
+		seed_orNil: MoneroSeed?,
 		wasAGeneratedWallet: Bool,
 		_ fn: @escaping (Error?, MoneroVerifiedComponentsForLogIn?) -> Void
 	)
@@ -172,7 +177,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			"\"\(address)\"",
 			"\"\(view_key)\"",
 			"\(spend_key_orNilForViewOnly != nil ? "\"\(spend_key_orNilForViewOnly!)\"" : "undefined")",
-			"\(seed_orUndefined != nil ? "\"\(seed_orUndefined!)\"" : "undefined")",
+			"\(seed_orNil != nil ? "\"\(seed_orNil!)\"" : "undefined")",
 			"\(wasAGeneratedWallet)"
 		]
 		self._callSync(.wallet, "VerifiedComponentsForLogIn_sync", args)

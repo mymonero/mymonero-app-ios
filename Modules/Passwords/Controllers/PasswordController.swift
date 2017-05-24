@@ -20,8 +20,12 @@ final class PasswordController
 	enum PasswordType
 	{
 		case PIN
-		case Password
+		case password
 	}
+	//
+	// Properties
+	var password: Password? = "mocked password"
+	var passwordType: PasswordType? = .password
 	//
 	// Lifecycle - Singleton Init
 	static let shared = PasswordController()
@@ -30,10 +34,13 @@ final class PasswordController
 	}
 	//
 	// Accessors - Deferring execution convenience methods
-	func OncePasswordObtained(_ fn: @escaping (_ password: Password, _ passwordType: PasswordType) -> Void)
+	func OncePasswordObtained(
+		_ fn: @escaping (_ password: Password, _ passwordType: PasswordType) -> Void,
+		_ userCanceled_fn: (() -> Void)? = {}
+	)
 	{
 		NSLog("TODO: actually obtain pw from user")
-		fn("dummy pw", .Password)
+		fn(self.password!, self.passwordType!)
 	}
 	//
 	// Imperatives - Delete Everything notification registration

@@ -31,6 +31,9 @@ struct HostedMoneroAPIClient_Parsing
 //
 enum HostedMoneroAPI_Endpoint: String
 {
+	case LogIn = "login"
+	case AddressInfo = "get_address_info"
+	case AddressTxs = "get_address_txs"
 	case UnspentOuts = "get_unspent_outs"
 	case RandomOuts = "get_random_outs"
 	case TXTRecords = "get_txt_records"
@@ -90,9 +93,62 @@ final class HostedMoneroAPIClient
 	}
 	//
 	//
+	// Accessors - Shared
+	//
+	func _new_parameters_forWalletRequest(
+		address: MoneroAddress,
+		view_key__private: MoneroKey
+	) -> [String: Any]
+	{
+		return [
+			"address": address,
+			"view_key": view_key__private
+		]
+	}
+	//
+	//
+	// Login
+	//
+	@discardableResult
+	func LogIn(
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ isANewAddressToServer: Bool?
+		) -> Void
+	) -> RequestHandle?
+	{
+	
+		var parameters = self._new_parameters_forWalletRequest(
+			address: address,
+			view_key__private: view_key__private
+		)
+		parameters["create_account"] = true
+		//
+		let endpoint = HostedMoneroAPI_Endpoint.LogIn
+		let requestHandle = self._request(endpoint, parameters)
+		{ (err_str, response_data, response_jsonDict) in
+			if let err_str = err_str {
+				print(err_str)
+				fn(err_str, nil)
+				return
+			}
+			let response_jsonDict = response_jsonDict!
+			let isNewAddressToServer = response_jsonDict["new_address"] as! Bool
+			DispatchQueue.main.async
+			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
+				fn(nil, isNewAddressToServer)
+			}
+		}
+		return requestHandle
+	}
+	//
+	//
 	// Open alias lookup - this should be replaced with a lookup implemented
 	// on the client, so we can actually use DNSSEC etc
 	//
+	@discardableResult
 	func TXTRecords(
 		openAlias_domain: String,
 		_ fn: @escaping (
@@ -103,6 +159,7 @@ final class HostedMoneroAPIClient
 	{
 		let endpointPath = HostedMoneroAPI_Endpoint.TXTRecords
 		let requestHandle: RequestHandle? = nil // TODO
+
 		let err_str: String? = nil
 		let records = [String]()
 		let result = HostedMoneroAPIClient_Parsing.ParsedResult_TXTRecords(
@@ -269,6 +326,12 @@ final class HostedMoneroAPIClient
 		]
 		let url = "https://\(self.api_hostname)/\(endpoint.rawValue)"
 		NSLog("📡  \(url)")
+		
+		NSLog("TODO: put app user agent and platform name info on request:")
+//		parameters.app_name = self.appUserAgent_product
+//		parameters.app_version = self.appUserAgent_version
+
+		
 		let requestHandle = self.manager.request(
 			url,
 			method: .post,
