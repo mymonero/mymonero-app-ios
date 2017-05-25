@@ -142,84 +142,64 @@ class WalletsListController: PersistedListController
 			}
 		)
 	}
-//	func WhenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
-//		walletLabel,
-//		swatch,
-//		address,
-//		view_key__private,
-//		spend_key__private,
-//		fn, // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
-//		optl__userCanceledPasswordEntry_fn
-//		)
-//	{
-//		const userCanceledPasswordEntry_fn = optl__userCanceledPasswordEntry_fn || function() {}
-//		const self = this
-//		const context = self.context
-//		self.ExecuteWhenBooted(
-//			function()
-//				{
-//					context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
-//						function(obtainedPasswordString, userSelectedTypeOfPassword)
-//						{
-//							_proceedWithPassword(obtainedPasswordString)
-//						},
-//						function()
-//							{ // user canceled
-//								userCanceledPasswordEntry_fn()
-//						}
-//					)
-//					function _proceedWithPassword(persistencePassword)
-//					{
-//						var walletAlreadyExists = false
-//						const wallets_length = self.records.length
-//						for (let i = 0 ; i < wallets_length ; i++) {
-//							const wallet = self.records[i]
-//							if (wallet.public_address === address) {
-//								// simply return existing wallet; note: this wallet might have mnemonic and thus seed
-//								// so might not be exactly what consumer of WhenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys is expecting
-//								fn(null, wallet, true) // wasWalletAlreadyInserted: true
-//								return
-//							}
-//						}
-//						//
-//						const options =
-//							{
-//								failedToInitialize_cb: function(err, walletInstance)
-//								{
-//									fn(err)
-//								},
-//								successfullyInitialized_cb: function(walletInstance)
-//								{
-//									walletInstance.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
-//										persistencePassword,
-//										walletLabel,
-//										swatch,
-//										address,
-//										view_key__private,
-//										spend_key__private,
-//										function(err)
-//										{
-//											if (err) {
-//												fn(err)
-//												return
-//											}
-//											self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
-//											//
-//											fn(null)
-//										}
-//									)
-//								},
-//								//
-//								didReceiveUpdateToAccountInfo: function()
-//								{ // TODO: bubble?
-//								},
-//								didReceiveUpdateToAccountTransactions: function()
-//								{ // TODO: bubble?
-//								}
-//						}
-//						const wallet = new Wallet(options, context)
-//					}
-//			}
-//		)
-//	}
+	func GivenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
+		walletLabel: String,
+		swatchColor: Wallet.SwatchColor,
+		address: MoneroAddress,
+		privateKeys: MoneroKeyDuo,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ wallet: Wallet?,
+			_ wasWalletAlreadyInserted: Bool?
+		) -> Void,
+		userCanceledPasswordEntry_fn: (() -> Void)? = {}
+	)
+	{
+
+		if self.hasBooted == false {
+			assert(false, "\(#function) shouldn't be called when list controller not yet booted")
+			return
+		}
+		PasswordController.shared.OncePasswordObtained( // this will 'block' until we have access to the pw
+			{ (password, passwordType) in
+				do {
+					for (_, record) in self.records.enumerated() {
+						let wallet = record as! Wallet
+						if wallet.public_address == address {
+							// simply return existing wallet; note: this wallet might have mnemonic and thus seed
+							// so might not be exactly what consumer of GivenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys is expecting
+							fn(nil, wallet, true) // wasWalletAlreadyInserted: true
+							return
+						}
+					}
+				}
+				do {
+					guard let wallet = try Wallet(ifGeneratingNewWallet_walletDescription: nil) else {
+						fn("Unknown error while adding wallet.", nil, nil)
+						return
+					}
+					wallet.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
+						walletLabel: walletLabel,
+						swatchColor: swatchColor,
+						address: address,
+						privateKeys: privateKeys,
+						{ (err_str) in
+							if err_str != nil {
+								fn(err_str, nil, nil)
+								return
+							}
+							self._atRuntime__record_wasSuccessfullySetUp(wallet)
+							fn(nil, wallet, false) // wasWalletAlreadyInserted: false
+						}
+					)
+				} catch let e {
+					fn(e.localizedDescription, nil, nil)
+					return
+				}
+			},
+			{ // user canceled
+				(userCanceledPasswordEntry_fn ?? {})()
+			}
+		)
+	}
 }

@@ -124,7 +124,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			if let dict_err_str = dict["err_str"] {
 				guard let _ = dict_err_str as? NSNull else {
-					let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err_str": dict_err_str as! String ])
+					let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ NSLocalizedDescriptionKey: dict_err_str as! String ])
 					fn(err, nil)
 					return
 				}
@@ -190,7 +190,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			if let dict = any as? [String: AnyObject] {
 				if let dict_err_str = dict["err_str"] {
 					guard let _ = dict_err_str as? NSNull else {
-						let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ "err_str": dict_err_str as! String ])
+						let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ NSLocalizedDescriptionKey: dict_err_str as! String ])
 						fn(err, nil)
 						return
 					}
