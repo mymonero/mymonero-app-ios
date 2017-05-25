@@ -36,14 +36,14 @@ class Wallet: PersistableObject, ListedObject
 	}
 	enum SwatchColor: String
 	{
-		case DarkGrey = "#6B696B"
-		case LightGrey = "#CFCECF"
-		case Teal = "#00F4CD"
-		case Purple = "#D975E1"
-		case Salmon = "#F97777"
-		case Orange = "#EB8316"
-		case Yellow = "#EACF12"
-		case Blue = "#00C6FF"
+		case darkGrey = "#6B696B"
+		case lightGrey = "#CFCECF"
+		case teal = "#00F4CD"
+		case purple = "#D975E1"
+		case salmon = "#F97777"
+		case orange = "#EB8316"
+		case yellow = "#EACF12"
+		case blue = "#00C6FF"
 		//
 		func colorHexString() -> String { return self.rawValue }
 		func jsonRepresentation() -> String { return self.rawValue }

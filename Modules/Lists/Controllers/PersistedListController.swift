@@ -30,7 +30,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	var documentCollectionName: DocumentPersister.CollectionName!
 	var passwordController = PasswordController.shared
 	//
-	var results = [ListedObject]()
+	var records = [ListedObject]()
 	// runtime
 	var hasBooted = false
 	//
@@ -99,7 +99,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	}
 	func setup_fetchAndReconstituteExistingRecords()
 	{
-		results = [ListedObject]() // zeroing
+		records = [ListedObject]() // zeroing
 		//
 		let (err_str, ids) = self._new_idsOfPersistedRecords()
 		if let err_str = err_str {
@@ -155,7 +155,7 @@ class PersistedListController: DeleteEverythingRegistrant
 					self._setup_didFailToBoot(withErrStr: e.localizedDescription)
 					return
 				}
-				self.results.append(listedObjectInstance!)
+				self.records.append(listedObjectInstance!)
 			}
 			self.overridable_sortRecords()
 			self._setup_didBoot()
@@ -260,7 +260,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	// Delegation
 	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: ListedObject)
 	{
-		self.results.insert(listedObject, at: 0) // so we add it to the top
+		self.records.insert(listedObject, at: 0) // so we add it to the top
 //		self.overridable_startObserving_record(recordInstance) // TODO
 		//
 		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true {

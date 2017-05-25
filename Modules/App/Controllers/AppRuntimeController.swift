@@ -24,9 +24,24 @@ class AppRuntimeController
 		DispatchQueue.main.async
 		{
 			
-//			// Testing creating a new wallet:
-//			
-//			
+			
+			let seedAsMnemonicString = "foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit"
+			self.walletsListController.GivenBooted_ObtainPW_AddExtantWalletWith_MnemonicString(
+				walletLabel: "m'wallet",
+				swatchColor: .salmon,
+				mnemonicString: seedAsMnemonicString,
+				{ (err_str, wallet, wasWalletAlreadyInserted) in
+					if err_str != nil {
+						NSLog("err_str: \(err_str.debugDescription)")
+						return
+					}
+					NSLog("wallet \(wallet.debugDescription)")
+					NSLog("wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
+				}
+			)
+			
+			
+			// Testing creating a new wallet:
 //			self.walletsListController.CreateNewWallet_NoBootNoListAdd()
 //			{ (err_str, walletInstance) in
 //				if err_str != nil {
@@ -39,7 +54,7 @@ class AppRuntimeController
 //				self.walletsListController.GivenBooted_ObtainPW_AddNewlyGeneratedWallet(
 //					walletInstance: walletInstance!,
 //					walletLabel: "Checking",
-//					swatchColor: .Salmon,
+//					swatchColor: .salmon,
 //					{ (err_str, addedWallet) in
 //						if err_str != nil {
 //							NSLog("err \(err_str!)")
