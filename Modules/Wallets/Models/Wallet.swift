@@ -109,9 +109,9 @@ class Wallet: PersistableObject, ListedObject
 	//
 	// 'Protocols' - Persistable Object
 	//
-	override func dictRepresentation(withPassword password: PasswordController.Password) -> [String: Any]
+	override func new_dictRepresentation() -> [String: Any]
 	{
-		var dict = super.dictRepresentation(withPassword: password) // since it constructs the base object for us
+		var dict = super.new_dictRepresentation() // since it constructs the base object for us
 		do {
 			dict[DictKeys.currency.rawValue] = self.currency.jsonRepresentation()
 			dict[DictKeys.walletLabel.rawValue] = self.walletLabel
@@ -146,9 +146,9 @@ class Wallet: PersistableObject, ListedObject
 	{
 		return "Wallet"
 	}
-	required init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
+	required init?(withPlaintextDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{
-		try super.init(withDictRepresentation: dictRepresentation) // this will set _id for us
+		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
 //		self.isLoggedIn = encryptedDocument.isLoggedIn
 //		self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode

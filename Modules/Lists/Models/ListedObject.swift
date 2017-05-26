@@ -11,5 +11,5 @@ import Foundation
 protocol ListedObject
 {
 	// (read existing)
-	init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
+	init?(withPlaintextDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 }

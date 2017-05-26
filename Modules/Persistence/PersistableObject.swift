@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import RNCryptor
 //
 class PersistableObject
 {
@@ -17,7 +18,18 @@ class PersistableObject
 		assert(false, "You must override PersistableObject/collectionName")
 		return ""
 	}
-	func dictRepresentation(withPassword password: PasswordController.Password) -> DocumentPersister.DocumentJSON
+	func new_encrypted_dictRepresentationData(withPassword password: PasswordController.Password) throws -> Data
+	{
+		let dict = self.new_dictRepresentation() // plaintext
+		let plaintextData =  try JSONSerialization.data(
+			withJSONObject: dict,
+			options: []
+		)
+		let encryptedData = RNCryptor.encrypt(data: plaintextData, withPassword: password)
+		//
+		return encryptedData
+	}
+	func new_dictRepresentation() -> DocumentPersister.DocumentJSON
 	{
 		var dict: [String: Any] = [:]
 		dict["_id"] = self._id
@@ -32,7 +44,7 @@ class PersistableObject
 	required init()
 	{ // placed here for inserts
 	}
-	required init?(withDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
+	required init?(withPlaintextDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{
 		self._id = dictRepresentation["_id"] as? String
 		if let json__insertedAt_date = dictRepresentation["insertedAt_date"] {
@@ -67,22 +79,31 @@ class PersistableObject
 		// and since we know this is an insertion, let's any other initial centralizable data
 		self.insertedAt_date = Date()
 		// and now that those values have been placed, we can generate the dictRepresentation
-		let jsonDict = self.dictRepresentation(withPassword: PasswordController.shared.password!)
-		let (err_str, _/*insertedDocumentJSON*/) = DocumentPersister.shared().Insert(
-			document: jsonDict,
-			intoCollectionNamed: self.collectionName()
-		)
-		return err_str
+		do {
+			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
+			let err_str = DocumentPersister.shared().Write(
+				documentFileWithData: data,
+				withId: self._id!,
+				toCollectionNamed: self.collectionName()
+			)
+			return err_str
+		} catch let e {
+			return e.localizedDescription // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
+		}
 	}
 	func _saveToDisk_update() -> String?
 	{
 		assert(self._id != nil, "nil _id in \(#function)")
-		let jsonDict = self.dictRepresentation(withPassword: PasswordController.shared.password!)
-		let (err_str, _/*updatedDocumentJSON*/) = DocumentPersister.shared().UpdateDocument(
-			withId: self._id!,
-			inCollectionNamed: self.collectionName(),
-			withDocument: jsonDict
-		)
-		return err_str
+		do {
+			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
+			let err_str = DocumentPersister.shared().Write(
+				documentFileWithData: data,
+				withId: self._id!,
+				toCollectionNamed: self.collectionName()
+			)
+			return err_str
+		} catch let e {
+			return e.localizedDescription // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
+		}
 	}
 }

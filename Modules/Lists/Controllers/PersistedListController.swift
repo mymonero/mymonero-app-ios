@@ -7,6 +7,7 @@
 //
 //
 import Foundation
+import RNCryptor
 //
 class PersistedListController: DeleteEverythingRegistrant
 {
@@ -115,7 +116,7 @@ class PersistedListController: DeleteEverythingRegistrant
 				__proceedTo_loadAndBootAllExtantRecords(withPassword: obtainedPasswordString)
 			}
 		)
-		func __proceedTo_loadAndBootAllExtantRecords(withPassword obtainedPasswordString: String)
+		func __proceedTo_loadAndBootAllExtantRecords(withPassword password: String)
 		{ // now we actually want to load the ids again after we have the password - or we'll have stale ids on having deleted all data in the app and subsequently adding a record!
 			let (err_str, ids) = self._new_idsOfPersistedRecords()
 			if let err_str = err_str {
@@ -126,7 +127,7 @@ class PersistedListController: DeleteEverythingRegistrant
 				self._setup_didBoot()
 				return
 			}
-			let (load__err_str, documentJSONs) = DocumentPersister.shared().Documents(
+			let (load__err_str, documentsData) = DocumentPersister.shared().DocumentsData(
 				withIds: ids!,
 				inCollectionNamed: self.documentCollectionName
 			)
@@ -134,7 +135,7 @@ class PersistedListController: DeleteEverythingRegistrant
 				self._setup_didFailToBoot(withErrStr: load__err_str!)
 				return
 			}
-			if documentJSONs!.count == 0 { // just in case
+			if documentsData!.count == 0 { // just in case
 				self._setup_didBoot()
 				return
 			}
@@ -142,15 +143,27 @@ class PersistedListController: DeleteEverythingRegistrant
 				self._setup_didFailToBoot(withErrStr: load__err_str)
 				return
 			}
-			for (_, documentJSON) in documentJSONs!.enumerated() {
-				// TODO: decrypt documentJSON here (?) or put that in objects? tend to think it's better to centralize here so listedobjects can be written more easily
-				
-				NSLog("TODO: decrypt JSON document here \(documentJSON)")
-				let plaintext_documentJSON = documentJSON // TODO
-				//
+			for (_, encrypted_documentData) in documentsData!.enumerated() {
+				var plaintext_documentData: Data
+				do {
+					plaintext_documentData = try RNCryptor.decrypt(
+						data: encrypted_documentData,
+						withPassword: password
+					)
+				} catch let e {
+					self._setup_didFailToBoot(withErrStr: e.localizedDescription)
+					return
+				}
+				var plaintext_documentJSON: [String: Any]
+				do {
+					plaintext_documentJSON = try JSONSerialization.jsonObject(with: plaintext_documentData) as! [String: Any]
+				} catch let e {
+					self._setup_didFailToBoot(withErrStr: e.localizedDescription)
+					return
+				}
 				var listedObjectInstance: ListedObject?
 				do {
-					listedObjectInstance = try self.listedObjectType.init(withDictRepresentation: plaintext_documentJSON)
+					listedObjectInstance = try self.listedObjectType.init(withPlaintextDictRepresentation: plaintext_documentJSON)
 				} catch let e {
 					self._setup_didFailToBoot(withErrStr: e.localizedDescription)
 					return

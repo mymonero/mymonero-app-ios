@@ -85,6 +85,26 @@ class DocumentPersister
 		)
 		return documentJSONs
 	}
+	// Or if you are writing the file data directly, read with:
+	func DocumentsData(
+		withIds ids: [DocumentId],
+		inCollectionNamed collectionName: CollectionName
+	) -> (
+		err_str: String?,
+		documentsData: [Data]?
+	)
+	{
+		let fileDescriptions = ids.map{
+			DocumentFileDescription(
+				inCollectionName: collectionName,
+				documentId: $0
+			)
+		}
+		let documentsData = self._read_existentDocumentsData(
+			withDocumentFileDescriptions: fileDescriptions
+		)
+		return documentsData
+	}
 	func IdsOfAllDocuments(
 		inCollectionNamed collectionName: CollectionName
 	) -> (
@@ -178,8 +198,29 @@ class DocumentPersister
 			return (e.localizedDescription, nil)
 		}
 		return (nil, final_document)
-
 	}
+	// Or, instead of using insert/update, if you want to control the format of the fileData, say, to encrypt it, you can use:
+	func Write(
+		documentFileWithData fileData: Data, // if you're using this for Documents, be sure to set field _id to id within your fileData
+		withId id: DocumentId, // consumer must supply the document ID since we can't make assumptions about fileData
+		toCollectionNamed collectionName: CollectionName
+		) -> String? // err_str
+	{
+		let fileDescription = DocumentFileDescription(
+			inCollectionName: collectionName,
+			documentId: id
+		)
+		do {
+			try self._write_fileDescriptionDocumentData(
+				fileDescription: fileDescription,
+				fileData: fileData
+			)
+		} catch let e {
+			return e.localizedDescription
+		}
+		return nil
+	}
+	//
 	func RemoveDocuments(
 		withIds ids: [DocumentId],
 		inCollectionNamed collectionName: CollectionName
@@ -237,11 +278,51 @@ class DocumentPersister
 		}
 		return (nil, documentJSONs)
 	}
+	func _read_existentDocumentsData(
+		withDocumentFileDescriptions documentFileDescriptions: [DocumentFileDescription]?
+	) -> (
+		err_str: String?,
+		documentsData: [Data]?
+	)
+	{
+		var documentsData = [Data]()
+		guard let documentFileDescriptions = documentFileDescriptions, documentFileDescriptions.count > 0 else {
+			return (nil, documentsData)
+		}
+		for (_, documentFileDescription) in documentFileDescriptions.enumerated() {
+			let (err_str, data) = self.__read_existentDocumentData(withDocumentFileDescription: documentFileDescription)
+			if err_str != nil {
+				return (err_str, nil) // immediately
+			}
+			assert(data != nil, "nil data")
+			documentsData.append(data!)
+		}
+		return (nil, documentsData)
+	}
 	func __read_existentDocumentJSON(
 		withDocumentFileDescription documentFileDescription: DocumentFileDescription
 	) -> (
 		err_str: String?,
 		documentJSON: DocumentJSON?
+	)
+	{
+		let (err_str, fileData) = self.__read_existentDocumentData(withDocumentFileDescription: documentFileDescription)
+		if err_str != nil {
+			return (err_str, nil)
+		}
+		var json: [String: Any]
+		do {
+			json = try JSONSerialization.jsonObject(with: fileData!) as! [String: Any]
+		} catch let e {
+			return (e.localizedDescription, nil)
+		}
+		return (nil, json)
+	}
+	func __read_existentDocumentData(
+		withDocumentFileDescription documentFileDescription: DocumentFileDescription
+	) -> (
+		err_str: String?,
+		data: Data?
 	)
 	{
 		let expected_fileURL = documentFileDescription.new_fileURL
@@ -251,13 +332,7 @@ class DocumentPersister
 		} catch let e {
 			return (e.localizedDescription, nil)
 		}
-		var json: [String: Any]
-		do {
-			json = try JSONSerialization.jsonObject(with: fileData) as! [String: Any]
-		} catch let e {
-			return (e.localizedDescription, nil)
-		}
-		return (nil, json)
+		return (nil, fileData)
 	}
 	func _read_documentFileDescriptions(
 		inCollectionNamed collectionName: CollectionName
@@ -325,6 +400,21 @@ class DocumentPersister
 			options: []
 		)
 		let fileURL = fileDescription.new_fileURL
-		try json_Data.write(to: fileURL, options: .atomic)
+		try __write_dataToFileURL(fileURL, json_Data)
+	}
+	func _write_fileDescriptionDocumentData(
+		fileDescription: DocumentFileDescription,
+		fileData: Data
+	) throws
+	{
+		let fileURL = fileDescription.new_fileURL
+		try __write_dataToFileURL(fileURL, fileData)
+	}
+	func __write_dataToFileURL(
+		_ fileURL: URL,
+		_ fileData: Data
+	) throws
+	{
+		try fileData.write(to: fileURL, options: .atomic)
 	}
 }
