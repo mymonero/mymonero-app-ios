@@ -6,15 +6,14 @@
 
 2. Built initial `HostedMoneroAPIClient` implementation via Alamofire (account info and OA endpoints TODO)
 
-3. Prototype tests currently reside in `Modules/App/Controllers/RuntimeController` and will be moved to a unit test or temporary location.
+3. Built port of DocumentPersister, ListController, and created new PersistableObject
 
+  
 ## Next milestones
 
-1. Minor cleanups & review
+1. Completing lists and persisted model (wallet, contacts, funds requests) business logic
 
-2. Business logic, persistence
-
-3. UI
+2. UI
 
 ## Installation
 
