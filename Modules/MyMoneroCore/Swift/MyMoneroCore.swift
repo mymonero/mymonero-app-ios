@@ -43,9 +43,23 @@ struct MoneroKeyDuo
 	var view: MoneroKey
 	var spend: MoneroKey
 	//
-	var jsRepresentationString : String
+	var jsRepresentationString: String
 	{
 		return "{\"view\":\"\(view)\",\"spend\":\"\(spend)\"}"
+	}
+	var jsonRepresentation: [String: Any]
+	{
+		return [
+			"view": view,
+			"spend": spend
+		]
+	}
+	static func new(fromJSONRepresentation jsonRepresentation: [String: Any]) -> MoneroKeyDuo
+	{
+		return self.init(
+			view: jsonRepresentation["view"] as! MoneroKey,
+			spend: jsonRepresentation["spend"] as! MoneroKey
+		)
 	}
 }
 struct MoneroWalletDescription

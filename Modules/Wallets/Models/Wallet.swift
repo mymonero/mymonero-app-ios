@@ -69,25 +69,33 @@ class Wallet: PersistableObject, ListedObject
 		case transactions = "transactions"
 		case spent_outputs = "spent_outputs"
 		//
-		// Not encrypted:
+		case dateThatLast_fetchedAccountInfo = "dateThatLast_fetchedAccountInfo"
+		case dateThatLast_fetchedAccountTransactions = "dateThatLast_fetchedAccountTransactions"
+		//
 		case isLoggedIn = "isLoggedIn"
 		case isInViewOnlyMode = "isInViewOnlyMode"
 		case shouldDisplayImportAccountOption = "shouldDisplayImportAccountOption"
 	}
 	//
 	//
-	// Properties - Values
+	// Properties - Principal Persisted Values
 	//
 	var currency: Currency!
 	var walletLabel: String!
 	var swatchColor: SwatchColor!
-	var mnemonicString: MoneroSeedAsMnemonic!
-	var mnemonic_wordsetName: MoneroMnemonicWordsetName!
+	//
+	var mnemonicString: MoneroSeedAsMnemonic?
+	var mnemonic_wordsetName: MoneroMnemonicWordsetName?
 	var generatedOnInit_walletDescription: MoneroWalletDescription?
 	var account_seed: MoneroSeed?
 	var private_keys: MoneroKeyDuo!
 	var public_keys: MoneroKeyDuo!
 	var public_address: MoneroAddress!
+	//
+	// TODO: heights, transactions, etc
+	//
+	var dateThatLast_fetchedAccountInfo: Date?
+	var dateThatLast_fetchedAccountTransactions: Date?
 	//
 	//
 	// Properties - Boolean State
@@ -116,6 +124,33 @@ class Wallet: PersistableObject, ListedObject
 			dict[DictKeys.currency.rawValue] = self.currency.jsonRepresentation()
 			dict[DictKeys.walletLabel.rawValue] = self.walletLabel
 			dict[DictKeys.swatchColorHexString.rawValue] = self.swatchColor.jsonRepresentation()
+			dict[DictKeys.publicAddress.rawValue] = self.public_address
+			if let value = self.account_seed {
+				dict[DictKeys.accountSeed.rawValue] = value
+			}
+			dict[DictKeys.publicKeys.rawValue] = self.public_keys.jsonRepresentation
+			dict[DictKeys.privateKeys.rawValue] = self.private_keys.jsonRepresentation
+			if let value = self.shouldDisplayImportAccountOption {
+				dict[DictKeys.shouldDisplayImportAccountOption.rawValue] = value
+			}
+			dict[DictKeys.isLoggedIn.rawValue] = self.isLoggedIn
+			if let isInViewOnlyMode = self.isInViewOnlyMode {
+				dict[DictKeys.isInViewOnlyMode.rawValue] = isInViewOnlyMode
+			}
+			if let date = self.dateThatLast_fetchedAccountInfo {
+				dict[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] = date.timeIntervalSince1970
+			}
+			if let date = self.dateThatLast_fetchedAccountTransactions {
+				dict[DictKeys.dateThatLast_fetchedAccountTransactions.rawValue] = date.timeIntervalSince1970
+			}
+			
+			// TODO:
+//			case heights = "heights"
+//			case totals = "totals"
+//			case transactions = "transactions"
+//			case spent_outputs = "spent_outputs"
+//			dict[DictKeys..rawValue]
+//			dict[DictKeys..rawValue]
 		}
 		return dict
 	}
@@ -150,21 +185,23 @@ class Wallet: PersistableObject, ListedObject
 	{
 		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
-//		self.isLoggedIn = encryptedDocument.isLoggedIn
-//		self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
-//		self.shouldDisplayImportAccountOption = encryptedDocument.shouldDisplayImportAccountOption
-//		do {
-//			const dateStr = encryptedDocument.dateThatLast_fetchedAccountInfo
-//			self.dateThatLast_fetchedAccountInfo = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null
-//		}
-//		do {
-//			const dateStr = encryptedDocument.dateThatLast_fetchedAccountTransactions
-//			self.dateThatLast_fetchedAccountTransactions = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null
-//		}
-//		do {
-//			const dateStr = encryptedDocument.dateWalletFirstSavedLocally
-//			self.dateWalletFirstSavedLocally = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null
-//		}
+		self.isLoggedIn = dictRepresentation[DictKeys.isLoggedIn.rawValue] as! Bool
+		self.isInViewOnlyMode = dictRepresentation[DictKeys.isInViewOnlyMode.rawValue] as? Bool
+		self.shouldDisplayImportAccountOption = dictRepresentation[DictKeys.shouldDisplayImportAccountOption.rawValue] as? Bool
+		if let date = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
+			guard let timeInterval = date as? TimeInterval else {
+				assert(false, "not a TimeInterval")
+				return nil
+			}
+			self.dateThatLast_fetchedAccountInfo = Date(timeIntervalSince1970: timeInterval)
+		}
+		if let date = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
+			guard let timeInterval = date as? TimeInterval else {
+				assert(false, "not a TimeInterval")
+				return nil
+			}
+			self.dateThatLast_fetchedAccountInfo = Date(timeIntervalSince1970: timeInterval)
+		}
 		//
 		self.currency = Currency.new(
 			from_jsonRepresentation: dictRepresentation[DictKeys.currency.rawValue] as! String
@@ -176,16 +213,17 @@ class Wallet: PersistableObject, ListedObject
 		// Not going to check whether the acct seed is nil/'' here because if the wallet was
 		// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
 		// cannot obtain the seed.
-//		self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
-		self.public_address = dictRepresentation[DictKeys.publicAddress.rawValue] as! String
-//		self.public_keys
-//		self.private_keys
-//		self.account_seed = plaintextDocument.account_seed
-//		self.private_keys = plaintextDocument.private_keys
-//		self.public_address = plaintextDocument.public_address
-//		self.public_keys = plaintextDocument.public_keys
-//		self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
-//		//
+		self.mnemonic_wordsetName = dictRepresentation[DictKeys.mnemonic_wordsetName.rawValue] as? MoneroMnemonicWordsetName
+		self.public_address = dictRepresentation[DictKeys.publicAddress.rawValue] as! MoneroAddress
+		self.public_keys = MoneroKeyDuo.new(
+			fromJSONRepresentation: dictRepresentation[DictKeys.publicKeys.rawValue] as! [String: Any]
+		)
+		self.account_seed = dictRepresentation[DictKeys.accountSeed.rawValue] as? MoneroSeed
+		self.private_keys = MoneroKeyDuo.new(
+			fromJSONRepresentation: dictRepresentation[DictKeys.privateKeys.rawValue] as! [String: Any]
+		)
+//
+// TODO
 //		self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
 //		self.transactions.forEach(
 //			function(tx, i)
@@ -257,7 +295,7 @@ class Wallet: PersistableObject, ListedObject
 		//
 		MyMoneroCore.shared.WalletDescriptionFromMnemonicSeed(
 			mnemonicString,
-			self.mnemonic_wordsetName,
+			self.mnemonic_wordsetName!,
 			{ (err, walletDescription) in
 				if err != nil {
 					self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err!.localizedDescription)

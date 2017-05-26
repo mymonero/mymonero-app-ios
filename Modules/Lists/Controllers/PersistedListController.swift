@@ -174,8 +174,6 @@ class PersistedListController: DeleteEverythingRegistrant
 			self._setup_didBoot()
 			self._listUpdated_records() // post notification after booting, i.e. at runtime
 		}
-		NSLog("err_str \(err_str.debugDescription)")
-		NSLog("\(self.listedObjectType!) ids \(ids.debugDescription)")
 	}
 	func _setup_didBoot()
 	{
