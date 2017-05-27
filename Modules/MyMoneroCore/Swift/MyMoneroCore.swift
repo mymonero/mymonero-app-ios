@@ -82,7 +82,6 @@ typealias MoneroMnemonicWordsetName = MNWords.WordsetName
 //
 struct MoneroHistoricalTransactionRecord
 {
-	//
 	let amount: MoneroAmount
 	let totalSent: MoneroAmount
 	let totalReceived: MoneroAmount
@@ -122,6 +121,58 @@ struct MoneroHistoricalTransactionRecord
 		)
 		return instance
 	}
+	//
+	static func newSerializedDictRepresentation(withArray array: [MoneroHistoricalTransactionRecord]) -> [[String: Any]]
+	{
+		return array.map{ $0.jsonRepresentation }
+	}
+	var jsonRepresentation: [String: Any]
+	{
+		var dict: [String: Any] =
+		[
+			"amount": String(amount, radix: 10),
+			"total_sent": String(totalSent, radix: 10),
+			"total_received": String(totalReceived, radix: 10),
+			//
+			"approx_float_amount": approxFloatAmount,
+			"spent_outputs": MoneroSpentOutputDescription.newSerializedDictRepresentation(
+				withArray: spent_outputs ?? []
+			),
+			"timestamp": timestamp.timeIntervalSince1970,
+			"hash": hash,
+			"mixin": mixin,
+			"unlock_time": unlock_time,
+			"height": height
+		]
+		if let value = paymentId {
+			dict["paymentId"] = value
+		}
+		return dict
+	}
+	static func new(fromJSONRepresentation jsonRepresentation: [String: Any]) -> MoneroHistoricalTransactionRecord
+	{
+		return self.init(
+			amount: MoneroAmount(jsonRepresentation["amount"] as! String)!,
+			totalSent: MoneroAmount(jsonRepresentation["total_sent"] as! String)!,
+			totalReceived: MoneroAmount(jsonRepresentation["total_received"] as! String)!,
+			//
+			approxFloatAmount: jsonRepresentation["approx_float_amount"] as! Double,
+			spent_outputs: MoneroSpentOutputDescription.newArray(
+				fromJSONRepresentations: jsonRepresentation["approx_float_amount"] as! [[String: Any]]
+			),
+			timestamp: Date(timeIntervalSince1970: jsonRepresentation["timestamp"] as! TimeInterval),
+			hash: jsonRepresentation["hash"] as! MoneroTransactionHash,
+			paymentId: jsonRepresentation["paymentId"] as? MoneroPaymentID,
+			mixin: jsonRepresentation["mixin"] as! Int,
+			mempool: jsonRepresentation["mempool"] as! Bool,
+			unlock_time: jsonRepresentation["unlock_time"] as! Int,
+			height: jsonRepresentation["height"] as! Int
+		)
+	}
+	static func newArray(fromJSONRepresentations array: [[String: Any]]) -> [MoneroHistoricalTransactionRecord]
+	{
+		return array.map{ MoneroHistoricalTransactionRecord.new(fromJSONRepresentation: $0) }
+	}
 }
 struct MoneroSpentOutputDescription
 {
@@ -145,6 +196,35 @@ struct MoneroSpentOutputDescription
 			out_index: dict["out_index"] as! Int
 		)
 		return instance
+	}
+	//
+	static func newSerializedDictRepresentation(withArray array: [MoneroSpentOutputDescription]) -> [[String: Any]]
+	{
+		return array.map{ $0.jsonRepresentation }
+	}
+	var jsonRepresentation: [String: Any]
+	{
+		return [
+			"amount": String(amount, radix: 10),
+			"tx_pub_key": tx_pub_key,
+			"key_image": key_image,
+			"mixin": mixin,
+			"out_index": out_index
+		]
+	}
+	static func new(fromJSONRepresentation jsonRepresentation: [String: Any]) -> MoneroSpentOutputDescription
+	{
+		return self.init(
+			amount: MoneroAmount(jsonRepresentation["amount"] as! String)!,
+			tx_pub_key: jsonRepresentation["tx_pub_key"] as! MoneroTransactionPubKey,
+			key_image: jsonRepresentation["key_image"] as! MoneroKeyImage,
+			mixin: jsonRepresentation["mixin"] as! Int,
+			out_index: jsonRepresentation["out_index"] as! Int
+		)
+	}
+	static func newArray(fromJSONRepresentations array: [[String: Any]]) -> [MoneroSpentOutputDescription]
+	{
+		return array.map{ MoneroSpentOutputDescription.new(fromJSONRepresentation: $0) }
 	}
 }
 //

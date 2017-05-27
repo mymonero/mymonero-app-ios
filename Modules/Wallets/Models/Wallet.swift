@@ -64,10 +64,22 @@ class Wallet: PersistableObject, ListedObject
 		case publicKeys = "publicKeys"
 		case accountSeed = "accountSeed"
 		// we do not save the mnemonic-encoded seed to disk, only accountSeed
-		case heights = "heights"
-		case totals = "totals"
+		//
+		case totalReceived = "totalReceived"
+		case totalSent = "totalSent"
+		case lockedBalance = "lockedBalance"
+		//
+		case account_scanned_tx_height = "account_scanned_tx_height"
+		case account_scanned_height = "account_scanned_height"
+		case account_scanned_block_height = "account_scanned_block_height"
+		case account_scan_start_height = "account_scan_start_height"
+		case transaction_height = "transaction_height"
+		case blockchain_height = "blockchain_height"
+		//
+		case spentOutputs = "spentOutputs"
+		//
 		case transactions = "transactions"
-		case spent_outputs = "spent_outputs"
+
 		//
 		case dateThatLast_fetchedAccountInfo = "dateThatLast_fetchedAccountInfo"
 		case dateThatLast_fetchedAccountTransactions = "dateThatLast_fetchedAccountTransactions"
@@ -92,7 +104,19 @@ class Wallet: PersistableObject, ListedObject
 	var public_keys: MoneroKeyDuo!
 	var public_address: MoneroAddress!
 	//
-	// TODO: heights, transactions, etc
+	var totalReceived: MoneroAmount?
+	var totalSent: MoneroAmount?
+	var lockedBalance: MoneroAmount?
+	//
+	var account_scanned_tx_height: Int?
+	var account_scanned_height: Int? // TODO: it would be good to resolve account_scanned_height vs account_scanned_tx_height
+	var account_scanned_block_height: Int?
+	var account_scan_start_height: Int?
+	var transaction_height: Int?
+	var blockchain_height: Int?
+	//
+	var spentOutputs: [MoneroSpentOutputDescription]?
+	var transactions: [MoneroHistoricalTransactionRecord]?
 	//
 	var dateThatLast_fetchedAccountInfo: Date?
 	var dateThatLast_fetchedAccountTransactions: Date?
@@ -137,20 +161,42 @@ class Wallet: PersistableObject, ListedObject
 			if let isInViewOnlyMode = self.isInViewOnlyMode {
 				dict[DictKeys.isInViewOnlyMode.rawValue] = isInViewOnlyMode
 			}
+			//
 			if let date = self.dateThatLast_fetchedAccountInfo {
 				dict[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] = date.timeIntervalSince1970
 			}
 			if let date = self.dateThatLast_fetchedAccountTransactions {
 				dict[DictKeys.dateThatLast_fetchedAccountTransactions.rawValue] = date.timeIntervalSince1970
 			}
-			
-			// TODO:
-//			case heights = "heights"
-//			case totals = "totals"
-//			case transactions = "transactions"
-//			case spent_outputs = "spent_outputs"
-//			dict[DictKeys..rawValue]
-//			dict[DictKeys..rawValue]
+			//
+			if let value = self.totalReceived {
+				dict[DictKeys.totalReceived.rawValue] = String(value, radix: 10)
+			}
+			if let value = self.totalSent {
+				dict[DictKeys.totalSent.rawValue] = String(value, radix: 10)
+			}
+			if let value = self.lockedBalance {
+				dict[DictKeys.lockedBalance.rawValue] = String(value, radix: 10)
+			}
+			//
+			if let array = self.spentOutputs {
+				dict[DictKeys.spentOutputs.rawValue] = MoneroSpentOutputDescription.newSerializedDictRepresentation(
+					withArray: array
+				)
+			}
+			//
+			dict[DictKeys.account_scanned_tx_height.rawValue] = self.account_scanned_tx_height
+			dict[DictKeys.account_scanned_height.rawValue] = self.account_scanned_height
+			dict[DictKeys.account_scanned_block_height.rawValue] = self.account_scanned_block_height
+			dict[DictKeys.account_scan_start_height.rawValue] = self.account_scan_start_height
+			dict[DictKeys.transaction_height.rawValue] = self.transaction_height
+			dict[DictKeys.blockchain_height.rawValue] = self.blockchain_height
+			//
+			if let array = self.transactions {
+				dict[DictKeys.transactions.rawValue] = MoneroHistoricalTransactionRecord.newSerializedDictRepresentation(
+					withArray: array
+				)
+			}
 		}
 		return dict
 	}
@@ -222,32 +268,42 @@ class Wallet: PersistableObject, ListedObject
 		self.private_keys = MoneroKeyDuo.new(
 			fromJSONRepresentation: dictRepresentation[DictKeys.privateKeys.rawValue] as! [String: Any]
 		)
-//
-// TODO
-//		self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
-//		self.transactions.forEach(
-//			function(tx, i)
-//			{ // we must fix up what JSON stringifying did to the data
-//				tx.timestamp = new Date(tx.timestamp)
-//			}
-//		)
-//		//
-//		// unpacking heights…
-//		const heights = plaintextDocument.heights // no || {} because we always persist at least {}
-//		self.account_scanned_height = heights.account_scanned_height
-//		self.account_scanned_tx_height = heights.account_scanned_tx_height
-//		self.account_scanned_block_height = heights.account_scanned_block_height
-//		self.account_scan_start_height = heights.account_scan_start_height
-//		self.transaction_height = heights.transaction_height
-//		self.blockchain_height = heights.blockchain_height
-//		//
-//		// unpacking totals -- these are stored as strings
-//		const totals = plaintextDocument.totals
-//		self.total_received = new JSBigInt(totals.total_received) // persisted as string
-//		self.locked_balance = new JSBigInt(totals.locked_balance) // persisted as string
-//		self.total_sent = new JSBigInt(totals.total_sent) // persisted as string
-//		//
-//		self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
+		//
+		if let string = dictRepresentation[DictKeys.totalReceived.rawValue] {
+			self.totalReceived = MoneroAmount(string as! String)
+		}
+		if let string = dictRepresentation[DictKeys.totalSent.rawValue] {
+			self.totalSent = MoneroAmount(string as! String)
+		}
+		if let string = dictRepresentation[DictKeys.lockedBalance.rawValue] {
+			self.lockedBalance = MoneroAmount(string as! String)
+		}
+		//
+		self.account_scanned_tx_height = dictRepresentation[DictKeys.account_scanned_tx_height.rawValue] as? Int
+		self.account_scanned_height = dictRepresentation[DictKeys.account_scanned_height.rawValue] as? Int
+		self.account_scanned_block_height = dictRepresentation[DictKeys.account_scanned_block_height.rawValue] as? Int
+		self.account_scan_start_height = dictRepresentation[DictKeys.account_scan_start_height.rawValue] as? Int
+		self.transaction_height = dictRepresentation[DictKeys.transaction_height.rawValue] as? Int
+		self.blockchain_height = dictRepresentation[DictKeys.blockchain_height.rawValue] as? Int
+		//
+		if let jsonRepresentations = dictRepresentation[DictKeys.spentOutputs.rawValue] {
+			self.spentOutputs = MoneroSpentOutputDescription.newArray(
+				fromJSONRepresentations: jsonRepresentations as! [[String: Any]]
+			)
+		}
+		if let jsonRepresentations = dictRepresentation[DictKeys.transactions.rawValue] {
+			self.transactions = MoneroHistoricalTransactionRecord.newArray(
+				fromJSONRepresentations: jsonRepresentations as! [[String: Any]]
+			)
+		}
+		//
+		if let timeIntervalSince1970 = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
+			self.dateThatLast_fetchedAccountInfo = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
+		}
+		if let timeIntervalSince1970 = dictRepresentation[DictKeys.dateThatLast_fetchedAccountTransactions.rawValue] {
+			self.dateThatLast_fetchedAccountTransactions = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
+		}
+		NSLog("Hydrated wallet with existing doc: \(self)")
 	}
 	//
 	//
