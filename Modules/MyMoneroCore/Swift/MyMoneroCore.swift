@@ -80,8 +80,76 @@ struct MoneroVerifiedComponentsForLogIn
 }
 typealias MoneroMnemonicWordsetName = MNWords.WordsetName
 //
+struct MoneroHistoricalTransactionRecord
+{
+	//
+	let amount: MoneroAmount
+	let totalSent: MoneroAmount
+	let totalReceived: MoneroAmount
+	let approxFloatAmount: Double
+	let spent_outputs: [MoneroSpentOutputDescription]?
+	let timestamp: Date
+	let hash: MoneroTransactionHash
+	let paymentId: MoneroPaymentID?
+	let mixin: Int
+	//
+	let mempool: Bool
+	let unlock_time: Int // TODO: is this really an int?
+	let height: Int
+	//
+	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroHistoricalTransactionRecord]
+	{
+		return dicts.map{ MoneroHistoricalTransactionRecord.new(withCoreParsed_jsonDict: $0) }
+	}
+	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroHistoricalTransactionRecord
+	{
+		let instance = MoneroHistoricalTransactionRecord(
+			amount: MoneroAmount("\(dict["amount"] as! String)")!,
+			totalSent: MoneroAmount("\(dict["total_sent"] as! String)")!,
+			totalReceived: MoneroAmount("\(dict["total_received"] as! String)")!,
+			approxFloatAmount: dict["approx_float_amount"] as! Double,
+			spent_outputs: MoneroSpentOutputDescription.newArray(
+				withCoreParsed_jsonDicts: dict["spent_outputs"] as? [[String: Any]] ?? []
+			),
+			timestamp: MyMoneroJSON_dateFormatter.date(from: "\(dict["timestamp"] as! String)")!,
+			hash: dict["hash"] as! MoneroTransactionHash,
+			paymentId: dict["payment_id"] as? MoneroPaymentID,
+			mixin: dict["mixin"] as! Int,
+			//
+			mempool: dict["mempool"] as! Bool,
+			unlock_time: dict["unlock_time"] as? Int ?? 0,
+			height: dict["height"] as! Int
+		)
+		return instance
+	}
+}
+struct MoneroSpentOutputDescription
+{
+	let amount: MoneroAmount
+	let tx_pub_key: MoneroTransactionPubKey
+	let key_image: MoneroKeyImage
+	let mixin: Int
+	let out_index: Int
+	//
+	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroSpentOutputDescription]
+	{
+		return dicts.map{ MoneroSpentOutputDescription.new(withCoreParsed_jsonDict: $0) }
+	}
+	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroSpentOutputDescription
+	{
+		let instance = MoneroSpentOutputDescription(
+			amount: MoneroAmount("\(dict["amount"] as! String)")!,
+			tx_pub_key: dict["tx_pub_key"] as! String,
+			key_image: dict["key_image"] as! MoneroKeyImage,
+			mixin: dict["mixin"] as! Int,
+			out_index: dict["out_index"] as! Int
+		)
+		return instance
+	}
+}
+//
 struct MoneroOutputDescription
-{ // TODO: would be nice to make this name more precise, like MoneroRandomOutputDescription
+{ // TODO: would be good to make this name more precise, like Monero/Unspent/Unused/Usable/Random/…OutputDescription
 	let amount: MoneroAmount
 	let public_key: String
 	let index: Int

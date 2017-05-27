@@ -18,6 +18,30 @@ struct HostedMoneroAPIClient_Parsing
 		let secured: Bool
 		let dnssec_fail_reason: String?
 	}
+	struct ParsedResult_AddressInfo
+	{
+		let totalReceived: MoneroAmount
+		let totalSent: MoneroAmount
+		let lockedBalance: MoneroAmount
+		//
+		let account_scanned_tx_height: Int
+		let account_scanned_block_height: Int
+		let account_scan_start_height: Int
+		let transaction_height: Int
+		let blockchain_height: Int
+		//
+		let spentOutputs: [MoneroSpentOutputDescription] // these have a different format than MoneroOutputDescriptions (whose type's name needs to be made more precise)
+	}
+	struct ParsedResult_AddressTransactions
+	{
+		let account_scanned_height: Int
+		let account_scanned_block_height: Int
+		let account_scan_start_height: Int
+		let transaction_height: Int
+		let blockchain_height: Int
+		//
+		let transactions: [MoneroHistoricalTransactionRecord]
+	}
 	struct ParsedResult_UnspentOuts
 	{
 		let unspentOutputs: [MoneroOutputDescription]
@@ -33,7 +57,7 @@ enum HostedMoneroAPI_Endpoint: String
 {
 	case LogIn = "login"
 	case AddressInfo = "get_address_info"
-	case AddressTxs = "get_address_txs"
+	case AddressTransactions = "get_address_txs"
 	case UnspentOuts = "get_unspent_outs"
 	case RandomOuts = "get_random_outs"
 	case TXTRecords = "get_txt_records"
@@ -119,7 +143,6 @@ final class HostedMoneroAPIClient
 		) -> Void
 	) -> RequestHandle?
 	{
-	
 		var parameters = self._new_parameters_forWalletRequest(
 			address: address,
 			view_key__private: view_key__private
@@ -140,6 +163,96 @@ final class HostedMoneroAPIClient
 			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
 				fn(nil, isNewAddressToServer)
 			}
+		}
+		return requestHandle
+	}
+	//
+	//
+	// Wallet info / sync
+	//
+	@discardableResult
+	func AddressInfo(
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		spend_key__public: MoneroKey,
+		spend_key__private: MoneroKey,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo?
+		) -> Void
+	) -> RequestHandle?
+	{
+		let parameters = self._new_parameters_forWalletRequest(
+			address: address,
+			view_key__private: view_key__private
+		)
+		//
+		let endpoint = HostedMoneroAPI_Endpoint.AddressInfo
+		let requestHandle = self._request(endpoint, parameters)
+		{ (err_str, response_data, response_jsonDict) in
+			if let err_str = err_str {
+				print(err_str)
+				fn(err_str, nil)
+				return
+			}
+			let response_jsonDict = response_jsonDict!
+			self.mymoneroCore.Parsed_AddressInfo(
+				response_jsonDict: response_jsonDict,
+				address: address,
+				view_key__private: view_key__private,
+				spend_key__public: spend_key__public,
+				spend_key__private: spend_key__private
+			)
+			{ (err_str, result) in
+				DispatchQueue.main.async
+				{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
+					fn(err_str, result)
+				}
+			}
+
+		}
+		return requestHandle
+	}
+	@discardableResult
+	func AddressTransactions(
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		spend_key__public: MoneroKey,
+		spend_key__private: MoneroKey,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions?
+		) -> Void
+	) -> RequestHandle?
+	{
+		let parameters = self._new_parameters_forWalletRequest(
+			address: address,
+			view_key__private: view_key__private
+		)
+		//
+		let endpoint = HostedMoneroAPI_Endpoint.AddressTransactions
+		let requestHandle = self._request(endpoint, parameters)
+		{ (err_str, response_data, response_jsonDict) in
+			if let err_str = err_str {
+				print(err_str)
+				fn(err_str, nil)
+				return
+			}
+			let response_jsonDict = response_jsonDict!
+			self.mymoneroCore.Parsed_AddressTransactions(
+				response_jsonDict: response_jsonDict,
+				address: address,
+				view_key__private: view_key__private,
+				spend_key__public: spend_key__public,
+				spend_key__private: spend_key__private
+			)
+			{ (err_str, result) in
+				DispatchQueue.main.async
+				{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
+					fn(err_str, result)
+				}
+			}
+
 		}
 		return requestHandle
 	}
@@ -373,6 +486,146 @@ final class HostedMoneroAPIClient
 //
 extension MyMoneroCoreJS // for Parsing
 {
+	func Parsed_AddressInfo(
+		response_jsonDict: [String: Any],
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		spend_key__public: MoneroKey,
+		spend_key__private: MoneroKey,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo?
+		) -> Void
+	)
+	{
+		let json_String = __jsonStringForArg(fromJSONDict: response_jsonDict)
+		let args =
+		[
+			json_String,
+			address.jsRepresentationString,
+			view_key__private.jsRepresentationString,
+			spend_key__public.jsRepresentationString,
+			spend_key__private.jsRepresentationString
+		]
+		self._callSync(.responseParser, "Parsed_AddressInfo__sync", args)
+		{ (any, err) in
+			if let err = err {
+				fn(err.localizedDescription, nil)
+				return
+			}
+			let returnValuesByKey = any as! [String: Any]
+			//
+			func __new_MoneroAmount(fromOptlAmountStringAtKeyNamed keyName: String) -> MoneroAmount
+			{
+				var amount: MoneroAmount?
+				if let stringValue = returnValuesByKey[keyName] as? String {
+					// ^-- is `as? String` sufficient to check for NSNull/null from JS?
+					if stringValue != "" { // not sure if we really need this
+						amount = MoneroAmount(stringValue)
+					}
+				}
+				return amount ?? MoneroAmount(0)
+			}
+			//
+			let totalReceived_Amount: MoneroAmount = __new_MoneroAmount(
+				fromOptlAmountStringAtKeyNamed: "total_received_String"
+			)
+			let totalSent_Amount: MoneroAmount = __new_MoneroAmount(
+				fromOptlAmountStringAtKeyNamed: "total_sent_String"
+			)
+			let lockedBalance_Amount: MoneroAmount = __new_MoneroAmount(
+				fromOptlAmountStringAtKeyNamed: "locked_balance_String"
+			)
+			//
+			let account_scanned_tx_height = returnValuesByKey["account_scanned_tx_height"] as? Int
+			let account_scanned_block_height = returnValuesByKey["account_scanned_block_height"] as? Int
+			let account_scan_start_height = returnValuesByKey["account_scan_start_height"] as? Int
+			let transaction_height = returnValuesByKey["transaction_height"] as? Int
+			let blockchain_height = returnValuesByKey["blockchain_height"] as? Int
+			//
+			var final_spentOutputs: [MoneroSpentOutputDescription] = []
+			do {
+				if let spentOutputs = returnValuesByKey["spent_outputs"] as? [[String: Any]] {
+					do { // finalize
+						for (_, dict) in spentOutputs.enumerated() {
+							let outputDescription = MoneroSpentOutputDescription.new(withCoreParsed_jsonDict: dict)
+							final_spentOutputs.append(outputDescription)
+						}
+					}
+				}
+			}
+			let result = HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo(
+				totalReceived: totalReceived_Amount,
+				totalSent: totalSent_Amount,
+				lockedBalance: lockedBalance_Amount,
+				//
+				account_scanned_tx_height: account_scanned_tx_height ?? 0,
+				account_scanned_block_height: account_scanned_block_height ?? 0,
+				account_scan_start_height: account_scan_start_height ?? 0,
+				transaction_height: transaction_height ?? 0,
+				blockchain_height: blockchain_height ?? 0,
+				//
+				spentOutputs: final_spentOutputs
+			)
+			fn(nil, result)
+		}
+	}
+	func Parsed_AddressTransactions(
+		response_jsonDict: [String: Any],
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		spend_key__public: MoneroKey,
+		spend_key__private: MoneroKey,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions?
+		) -> Void
+	)
+	{
+		let json_String = __jsonStringForArg(fromJSONDict: response_jsonDict)
+		let args =
+			[
+				json_String,
+				address.jsRepresentationString,
+				view_key__private.jsRepresentationString,
+				spend_key__public.jsRepresentationString,
+				spend_key__private.jsRepresentationString
+		]
+		self._callSync(.responseParser, "Parsed_AddressTransactions__sync", args)
+		{ (any, err) in
+			if let err = err {
+				fn(err.localizedDescription, nil)
+				return
+			}
+			let returnValuesByKey = any as! [String: Any]
+			//
+			let account_scanned_height = returnValuesByKey["account_scanned_height"] as? Int
+			let account_scanned_block_height = returnValuesByKey["account_scanned_block_height"] as? Int
+			let account_scan_start_height = returnValuesByKey["account_scan_start_height"] as? Int
+			let transaction_height = returnValuesByKey["transaction_height"] as? Int
+			let blockchain_height = returnValuesByKey["blockchain_height"] as? Int
+			//
+			var transactions: [MoneroHistoricalTransactionRecord] = []
+			do {
+				if let serialized_transactions = returnValuesByKey["serialized_transactions"] as? [[String: Any]] {
+					for (_, dict) in serialized_transactions.enumerated() {
+						let transactionRecord = MoneroHistoricalTransactionRecord.new(withCoreParsed_jsonDict: dict)
+						transactions.append(transactionRecord)
+					}
+				}
+			}
+			let result = HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions(
+				account_scanned_height: account_scanned_height ?? 0,
+				account_scanned_block_height: account_scanned_block_height ?? 0,
+				account_scan_start_height: account_scan_start_height ?? 0,
+				transaction_height: transaction_height ?? 0,
+				blockchain_height: blockchain_height ?? 0,
+				//
+				transactions: transactions
+			)
+			fn(nil, result)
+		}
+	}
 	func Parsed_UnspentOuts(
 		response_jsonDict: [String: Any],
 		address: MoneroAddress,
@@ -402,20 +655,20 @@ extension MyMoneroCoreJS // for Parsing
 			}
 			let returnValuesByKey = any as! [String: Any]
 			let unusedOuts = returnValuesByKey["unusedOuts"] as! [[String: Any]]
-			let unspentOutputs = returnValuesByKey["unusedOuts"] as! [[String: Any]]
+			let unspentOutputs = returnValuesByKey["unspentOuts"] as! [[String: Any]]
 			//
-			var final_unspentOutputs: [MoneroOutputDescription] = []
+			var final_unusedOutputs: [MoneroOutputDescription] = []
 			do { // finalize
 				for (_, dict) in unusedOuts.enumerated() {
 					let outputDescription = MoneroOutputDescription.new(withCoreParsed_jsonDict: dict)
-					final_unspentOutputs.append(outputDescription)
+					final_unusedOutputs.append(outputDescription)
 				}
 			}
-			var final_unusedOutputs: [MoneroOutputDescription] = []
+			var final_unspentOutputs: [MoneroOutputDescription] = []
 			do { // finalize
 				for (_, dict) in unspentOutputs.enumerated() {
 					let outputDescription = MoneroOutputDescription.new(withCoreParsed_jsonDict: dict)
-					final_unusedOutputs.append(outputDescription)
+					final_unspentOutputs.append(outputDescription)
 				}
 			}
 			let result = HostedMoneroAPIClient_Parsing.ParsedResult_UnspentOuts(

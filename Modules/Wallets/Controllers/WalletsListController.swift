@@ -8,7 +8,7 @@
 
 import Foundation
 
-class WalletsListController: PersistedListController
+class WalletsListController: PersistedObjectListController
 {
 	// initial
 	var mymoneroCore: MyMoneroCore!
@@ -199,6 +199,21 @@ class WalletsListController: PersistedListController
 			},
 			{ // user canceled
 				(userCanceledPasswordEntry_fn ?? {})()
+			}
+		)
+	}
+	//
+	//
+	// Delegation - Overrides - Booting reconstitution - Instance setup
+	//
+	override func overridable_booting_didReconstitute(listedObjectInstance: ListedObject)
+	{
+		let wallet = listedObjectInstance as! Wallet
+		wallet.Boot_havingLoadedDecryptedExistingInitDoc(
+			{ err_str in
+				if let err_str = err_str {
+					NSLog("❌ Error while booting wallet: \(err_str)")
+				}
 			}
 		)
 	}

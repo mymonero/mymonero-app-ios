@@ -1,5 +1,5 @@
 //
-//  PersistedListController.swift
+//  PersistedObjectListController.swift
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/19/17.
@@ -9,17 +9,17 @@
 import Foundation
 import RNCryptor
 //
-class PersistedListController: DeleteEverythingRegistrant
+class PersistedObjectListController: DeleteEverythingRegistrant
 {
 	// constants
 	enum Notifications_Boot: String
 	{ // the raw values of Notification name enums must be globally unique, i.e. semantically specific
-		case Did = "PersistedListController_Notifications_Boot_Did"
-		case Failed = "PersistedListController_Notifications_Boot_Failed"
+		case Did = "PersistedObjectListController_Notifications_Boot_Did"
+		case Failed = "PersistedObjectListController_Notifications_Boot_Failed"
 	}
 	enum Notifications_List: String
 	{
-		case Updated = "PersistedListController_Notifications_List_Updated"
+		case Updated = "PersistedObjectListController_Notifications_List_Updated"
 	}
 	enum Notifications_userInfoKeys: String
 	{
@@ -169,6 +169,7 @@ class PersistedListController: DeleteEverythingRegistrant
 					return
 				}
 				self.records.append(listedObjectInstance!)
+				self.overridable_booting_didReconstitute(listedObjectInstance: listedObjectInstance!)
 			}
 			self.overridable_sortRecords()
 			self._setup_didBoot()
@@ -269,6 +270,7 @@ class PersistedListController: DeleteEverythingRegistrant
 	}
 	//
 	// Delegation
+	func overridable_booting_didReconstitute(listedObjectInstance: ListedObject) {} // somewhat intentionally ignores errors and values which would be returned asynchronously, e.g. by way of a callback/block
 	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: ListedObject)
 	{
 		self.records.insert(listedObject, at: 0) // so we add it to the top

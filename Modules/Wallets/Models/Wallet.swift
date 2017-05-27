@@ -112,7 +112,7 @@ class Wallet: PersistableObject, ListedObject
 	//
 	// Properties - Objects
 	//
-	//	var hostPollingController: WalletHostPollingController?
+	var hostPollingController: Wallet_HostPollingController?
 	//
 	//
 	// 'Protocols' - Persistable Object
@@ -332,22 +332,20 @@ class Wallet: PersistableObject, ListedObject
 			fn
 		)
 	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
+	//
+	//
 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
-	
+	//
 	func Boot_havingLoadedDecryptedExistingInitDoc(
 		_ fn: @escaping (_ err_str: String?) -> Void
 	)
 	{ // nothing to do here as we assume validation done on init
 		self._trampolineFor_successfullyBooted(fn)
 	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
+	//
+	//
 	// Runtime - Imperatives - Private - Booting
-	
+	//
 	func __trampolineFor_failedToBootWith_fnAndErrStr(
 		fn: (_ err_str: String?) -> Void,
 		err_str: String?
@@ -394,8 +392,7 @@ class Wallet: PersistableObject, ListedObject
 	}
 	func _atRuntime_setup_hostPollingController()
 	{
-		NSLog("TODO: instantiate host polling controller")
-//		self.hostPollingController = WalletHostPollingController(wallet: self)
+		self.hostPollingController = Wallet_HostPollingController(wallet: self)
 	}
 	func _boot_byLoggingIn(
 		address: MoneroAddress,
@@ -448,5 +445,23 @@ class Wallet: PersistableObject, ListedObject
 				}
 			)
 		}
+	}
+	//
+	//
+	// HostPollingController - Delegation / Protocol
+	// 
+	func _HostPollingController_didFetch_addressInfo(
+		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo
+	) -> Void
+	{
+//		NSLog("parsed result \(parsedResult)")
+		// TODO
+	}
+	func _HostPollingController_didFetch_addressTransactions(
+		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions
+	) -> Void
+	{
+		NSLog("addr txs \(parsedResult)")
+		// TODO
 	}
 }
