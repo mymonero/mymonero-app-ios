@@ -518,49 +518,33 @@ class Wallet: PersistableObject, ListedObject
 		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo
 	) -> Void
 	{
-//		NSLog("parsed result \(parsedResult)")
-		// TODO
-		
-		var didActuallyChange_accountBalance = false
 		let existing_totalReceived = self.totalReceived
 		let existing_totalSent = self.totalSent
 		let existing_lockedBalance = self.lockedBalance
-		if existing_totalReceived == nil || parsedResult.totalReceived != existing_totalReceived
+		let didActuallyChange_accountBalance = existing_totalReceived == nil || parsedResult.totalReceived != existing_totalReceived
 			|| existing_totalSent == nil || parsedResult.totalSent != existing_totalSent
 			|| existing_lockedBalance == nil || parsedResult.lockedBalance != existing_lockedBalance
-		{
-			didActuallyChange_accountBalance = true
-		}
 		self.totalReceived = parsedResult.totalReceived
 		self.totalSent = parsedResult.totalSent
 		self.lockedBalance = parsedResult.lockedBalance
 		//
-		var didActuallyChange_spentOutputs = false
 		let existing_spentOutputs = self.spentOutputs
-		if existing_spentOutputs == nil || (parsedResult.spentOutputs != existing_spentOutputs!) {
-			didActuallyChange_spentOutputs = true
-		}
+		let didActuallyChange_spentOutputs = existing_spentOutputs == nil || (parsedResult.spentOutputs != existing_spentOutputs!)
 		self.spentOutputs = parsedResult.spentOutputs
 		//
-		var didActuallyChange_heights = false
-		if (self.account_scanned_tx_height == nil || self.account_scanned_tx_height != parsedResult.account_scanned_tx_height)
+		let didActuallyChange_heights =
+			(self.account_scanned_tx_height == nil || self.account_scanned_tx_height != parsedResult.account_scanned_tx_height)
 			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)
 			|| (self.account_scan_start_height == nil || self.account_scan_start_height != parsedResult.account_scan_start_height)
 			|| (self.transaction_height == nil || self.transaction_height != parsedResult.transaction_height)
 			|| (self.blockchain_height == nil || self.blockchain_height != parsedResult.blockchain_height)
-		{
-			didActuallyChange_heights = true
-		}
 		self.account_scanned_tx_height = parsedResult.account_scanned_tx_height
 		self.account_scanned_block_height = parsedResult.account_scanned_block_height
 		self.account_scan_start_height = parsedResult.account_scan_start_height
 		self.transaction_height = parsedResult.transaction_height
 		self.blockchain_height = parsedResult.blockchain_height
 		//
-		var wasFirstFetchOf_accountInfo = false
-		if self.dateThatLast_fetchedAccountInfo == nil {
-			wasFirstFetchOf_accountInfo = true
-		}
+		let wasFirstFetchOf_accountInfo = self.dateThatLast_fetchedAccountInfo == nil
 		self.dateThatLast_fetchedAccountInfo = Date()
 		//
 		// Write:
@@ -603,15 +587,12 @@ class Wallet: PersistableObject, ListedObject
 		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions
 	) -> Void
 	{
-		var didActuallyChange_heights = false
-		if (self.account_scanned_height == nil || self.account_scanned_height != parsedResult.account_scanned_height)
+		let didActuallyChange_heights =
+			(self.account_scanned_height == nil || self.account_scanned_height != parsedResult.account_scanned_height)
 			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)
 			|| (self.account_scan_start_height == nil || self.account_scan_start_height != parsedResult.account_scan_start_height)
 			|| (self.transaction_height == nil || self.transaction_height != parsedResult.transaction_height)
 			|| (self.blockchain_height == nil || self.blockchain_height != parsedResult.blockchain_height)
-		{
-			didActuallyChange_heights = true
-		}
 		self.account_scanned_height = parsedResult.account_scanned_height
 		self.account_scanned_block_height = parsedResult.account_scanned_block_height
 		self.account_scan_start_height = parsedResult.account_scan_start_height
@@ -620,14 +601,11 @@ class Wallet: PersistableObject, ListedObject
 		//
 		// Transactions
 		// Note: In the JS, we do a basic/initial diff of the txs and selectively construct the actual final used list, in order to preserve local metadata (and we see how many we've added etc) - but I will not port that yet since we are not implementing local notifications yet - and since we may have a more proper syncing engine soon
-		var didActuallyChange_transactions = false
-		if self.transactions == nil || self.transactions! != parsedResult.transactions {
-			didActuallyChange_transactions = true
-		}
+		let didActuallyChange_transactions = self.transactions == nil || self.transactions! != parsedResult.transactions
 		let existing_transactions = self.transactions
 		self.transactions = parsedResult.transactions
 		//
-		var wasFirstFetchOf_transactions = self.dateThatLast_fetchedAccountTransactions == nil
+		let wasFirstFetchOf_transactions = self.dateThatLast_fetchedAccountTransactions == nil
 		self.dateThatLast_fetchedAccountTransactions = Date()
 		//
 		// Write:
