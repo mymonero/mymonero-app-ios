@@ -80,7 +80,7 @@ struct MoneroVerifiedComponentsForLogIn
 }
 typealias MoneroMnemonicWordsetName = MNWords.WordsetName
 //
-struct MoneroHistoricalTransactionRecord
+struct MoneroHistoricalTransactionRecord: Equatable
 {
 	let amount: MoneroAmount
 	let totalSent: MoneroAmount
@@ -95,6 +95,53 @@ struct MoneroHistoricalTransactionRecord
 	let mempool: Bool
 	let unlock_time: Int // TODO: is this really an int?
 	let height: Int
+	//
+	// Equatable
+	static func ==(
+		l: MoneroHistoricalTransactionRecord,
+		r: MoneroHistoricalTransactionRecord
+		) -> Bool
+	{
+		if l.amount != r.amount {
+			return false
+		}
+		if l.totalSent != r.totalSent {
+			return false
+		}
+		if l.totalReceived != r.totalReceived {
+			return false
+		}
+		if l.approxFloatAmount != r.approxFloatAmount {
+			return false
+		}
+		if l.spent_outputs == nil && r.spent_outputs == nil
+			|| l.spent_outputs! != r.spent_outputs!
+		{
+			return false
+		}
+		if l.timestamp != r.timestamp {
+			return false
+		}
+		if l.paymentId != r.paymentId {
+			return false
+		}
+		if l.hash != r.hash {
+			return false
+		}
+		if l.mixin != r.mixin {
+			return false
+		}
+		if l.mempool != r.mempool {
+			return false
+		}
+		if l.unlock_time != r.unlock_time {
+			return false
+		}
+		if l.height != r.height {
+			return false
+		}
+		return true
+	}
 	//
 	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroHistoricalTransactionRecord]
 	{
@@ -174,7 +221,7 @@ struct MoneroHistoricalTransactionRecord
 		return array.map{ MoneroHistoricalTransactionRecord.new(fromJSONRepresentation: $0) }
 	}
 }
-struct MoneroSpentOutputDescription
+struct MoneroSpentOutputDescription: Equatable
 {
 	let amount: MoneroAmount
 	let tx_pub_key: MoneroTransactionPubKey
@@ -182,6 +229,31 @@ struct MoneroSpentOutputDescription
 	let mixin: Int
 	let out_index: Int
 	//
+	// Equatable
+	static func ==(
+		l: MoneroSpentOutputDescription,
+		r: MoneroSpentOutputDescription
+	) -> Bool
+	{
+		if l.amount != r.amount {
+			return false
+		}
+		if l.tx_pub_key != r.tx_pub_key {
+			return false
+		}
+		if l.key_image != r.key_image {
+			return false
+		}
+		if l.mixin != r.mixin {
+			return false
+		}
+		if l.out_index != r.out_index {
+			return false
+		}
+		return true
+	}
+	//
+	// For API response parsing
 	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroSpentOutputDescription]
 	{
 		return dicts.map{ MoneroSpentOutputDescription.new(withCoreParsed_jsonDict: $0) }
@@ -198,6 +270,7 @@ struct MoneroSpentOutputDescription
 		return instance
 	}
 	//
+	// In-Swift serialization
 	static func newSerializedDictRepresentation(withArray array: [MoneroSpentOutputDescription]) -> [[String: Any]]
 	{
 		return array.map{ $0.jsonRepresentation }

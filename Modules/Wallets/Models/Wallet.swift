@@ -512,6 +512,28 @@ class Wallet: PersistableObject, ListedObject
 	{
 //		NSLog("parsed result \(parsedResult)")
 		// TODO
+		
+		var didActuallyChange_accountBalance = false
+		let existing_totalReceived = self.totalReceived
+		let existing_totalSent = self.totalSent
+		let existing_lockedBalance = self.lockedBalance
+		if existing_totalReceived == nil || parsedResult.totalReceived != existing_totalReceived
+			|| existing_totalSent == nil || parsedResult.totalSent != existing_totalSent
+			|| existing_lockedBalance == nil || parsedResult.lockedBalance != existing_lockedBalance
+		{
+			didActuallyChange_accountBalance = true
+		}
+		self.totalReceived = parsedResult.totalReceived
+		self.totalSent = parsedResult.totalSent
+		self.lockedBalance = parsedResult.lockedBalance
+		//
+		var didActuallyChange_spentOutputs = false
+		let existing_spentOutputs = self.spentOutputs
+		if existing_spentOutputs == nil || (parsedResult.spentOutputs != existing_spentOutputs!) {
+			didActuallyChange_spentOutputs = true
+		}
+		//
+		
 	}
 	func _HostPollingController_didFetch_addressTransactions(
 		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions
