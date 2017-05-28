@@ -188,6 +188,7 @@ struct MoneroHistoricalTransactionRecord: Equatable
 			"timestamp": timestamp.timeIntervalSince1970,
 			"hash": hash,
 			"mixin": mixin,
+			"mempool": mempool,
 			"unlock_time": unlock_time,
 			"height": height
 		]
@@ -205,7 +206,7 @@ struct MoneroHistoricalTransactionRecord: Equatable
 			//
 			approxFloatAmount: jsonRepresentation["approx_float_amount"] as! Double,
 			spent_outputs: MoneroSpentOutputDescription.newArray(
-				fromJSONRepresentations: jsonRepresentation["approx_float_amount"] as! [[String: Any]]
+				fromJSONRepresentations: jsonRepresentation["spent_outputs"] as! [[String: Any]]
 			),
 			timestamp: Date(timeIntervalSince1970: jsonRepresentation["timestamp"] as! TimeInterval),
 			hash: jsonRepresentation["hash"] as! MoneroTransactionHash,

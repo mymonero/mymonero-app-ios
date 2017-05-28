@@ -86,9 +86,16 @@ class PersistableObject
 				withId: self._id!,
 				toCollectionNamed: self.collectionName()
 			)
+			if err_str != nil {
+				NSLog("❌  Error while saving new object: \(err_str!)")
+			} else {
+				NSLog("✅  Saved new \(self).")
+			}
 			return err_str
 		} catch let e {
-			return e.localizedDescription // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
+			let err_str = e.localizedDescription
+			NSLog("Caught error while saving new object: \(err_str)")
+			return err_str // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
 		}
 	}
 	func _saveToDisk_update() -> String?
@@ -101,9 +108,16 @@ class PersistableObject
 				withId: self._id!,
 				toCollectionNamed: self.collectionName()
 			)
+			if err_str != nil {
+				NSLog("❌  Error while saving update to object: \(err_str!)")
+			} else {
+				NSLog("✅  Saved update to \(self).")
+			}
 			return err_str
 		} catch let e {
-			return e.localizedDescription // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
+			let err_str = e.localizedDescription
+			NSLog("Caught error while saving update to object: \(err_str)")
+			return err_str // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
 		}
 	}
 }

@@ -52,8 +52,16 @@ class Wallet: PersistableObject, ListedObject
 			return self.init(rawValue: jsonRepresentation)!
 		}
 	}
-	enum DictKeys: String
+	enum NotificationNames: String
 	{
+		case balanceChanged		 = "Wallet_NotificationNames_balanceChanged"
+		case spentOutputsChanged = "Wallet_NotificationNames_spentOutputsChanged"
+		case heightsUpdated		 = "Wallet_NotificationNames_heightsUpdated"
+		case transactionsChanged = "Wallet_NotificationNames_transactionsChanged"
+	}
+	// Internal
+	enum DictKeys: String
+	{ // (For persistence)
 		// Encrypted:
 		case currency = "currency"
 		case walletLabel = "walletLabel"
@@ -532,14 +540,156 @@ class Wallet: PersistableObject, ListedObject
 		if existing_spentOutputs == nil || (parsedResult.spentOutputs != existing_spentOutputs!) {
 			didActuallyChange_spentOutputs = true
 		}
+		self.spentOutputs = parsedResult.spentOutputs
 		//
-		
+		var didActuallyChange_heights = false
+		if (self.account_scanned_tx_height == nil || self.account_scanned_tx_height != parsedResult.account_scanned_tx_height)
+			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)
+			|| (self.account_scan_start_height == nil || self.account_scan_start_height != parsedResult.account_scan_start_height)
+			|| (self.transaction_height == nil || self.transaction_height != parsedResult.transaction_height)
+			|| (self.blockchain_height == nil || self.blockchain_height != parsedResult.blockchain_height)
+		{
+			didActuallyChange_heights = true
+		}
+		self.account_scanned_tx_height = parsedResult.account_scanned_tx_height
+		self.account_scanned_block_height = parsedResult.account_scanned_block_height
+		self.account_scan_start_height = parsedResult.account_scan_start_height
+		self.transaction_height = parsedResult.transaction_height
+		self.blockchain_height = parsedResult.blockchain_height
+		//
+		var wasFirstFetchOf_accountInfo = false
+		if self.dateThatLast_fetchedAccountInfo == nil {
+			wasFirstFetchOf_accountInfo = true
+		}
+		self.dateThatLast_fetchedAccountInfo = Date()
+		//
+		// Write:
+		let err_str = self.saveToDisk()
+		if err_str != nil {
+			return // there was an issue saving update… TODO: silence here ok for now?
+		}
+		//
+		// Now notify/emit/yield any actual changes
+		var anyChanges = false
+		if didActuallyChange_accountBalance == true
+			|| wasFirstFetchOf_accountInfo == true
+		{
+			anyChanges = true
+			self.___didReceiveActualChangeTo_balance(
+				old_totalReceived: existing_totalReceived,
+				old_totalSent: existing_totalSent,
+				old_lockedBalance: existing_lockedBalance
+			)
+		}
+		if didActuallyChange_spentOutputs == true
+			|| wasFirstFetchOf_accountInfo == true
+		{
+			anyChanges = true
+			self.___didReceiveActualChangeTo_spentOutputs(
+				old_spentOutputs: existing_spentOutputs
+			)
+		}
+		if didActuallyChange_heights == true
+			|| wasFirstFetchOf_accountInfo == true
+		{
+			anyChanges = true
+			self.___didReceiveActualChangeTo_heights()
+		}
+		if anyChanges == false {
+			// console.log("💬  No actual changes to balance, heights, or spent outputs")
+		}
 	}
 	func _HostPollingController_didFetch_addressTransactions(
 		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions
 	) -> Void
 	{
-		NSLog("addr txs \(parsedResult)")
-		// TODO
+		var didActuallyChange_heights = false
+		if (self.account_scanned_height == nil || self.account_scanned_height != parsedResult.account_scanned_height)
+			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)
+			|| (self.account_scan_start_height == nil || self.account_scan_start_height != parsedResult.account_scan_start_height)
+			|| (self.transaction_height == nil || self.transaction_height != parsedResult.transaction_height)
+			|| (self.blockchain_height == nil || self.blockchain_height != parsedResult.blockchain_height)
+		{
+			didActuallyChange_heights = true
+		}
+		self.account_scanned_height = parsedResult.account_scanned_height
+		self.account_scanned_block_height = parsedResult.account_scanned_block_height
+		self.account_scan_start_height = parsedResult.account_scan_start_height
+		self.transaction_height = parsedResult.transaction_height
+		self.blockchain_height = parsedResult.blockchain_height
+		//
+		// Transactions
+		// Note: In the JS, we do a basic/initial diff of the txs and selectively construct the actual final used list, in order to preserve local metadata (and we see how many we've added etc) - but I will not port that yet since we are not implementing local notifications yet - and since we may have a more proper syncing engine soon
+		var didActuallyChange_transactions = false
+		if self.transactions == nil || self.transactions! != parsedResult.transactions {
+			didActuallyChange_transactions = true
+		}
+		let existing_transactions = self.transactions
+		self.transactions = parsedResult.transactions
+		//
+		var wasFirstFetchOf_transactions = self.dateThatLast_fetchedAccountTransactions == nil
+		self.dateThatLast_fetchedAccountTransactions = Date()
+		//
+		// Write:
+		let err_str = self.saveToDisk()
+		if err_str != nil {
+			return // there was an issue saving update… TODO: silence here ok for now?
+		}
+		//
+		// Now notify/emit/yield any actual changes
+		if didActuallyChange_transactions == true
+			|| wasFirstFetchOf_transactions == true
+		{
+			self.___didReceiveActualChangeTo_transactions(
+				old_transactions: existing_transactions
+			)
+		}
+		if didActuallyChange_heights == true
+			|| wasFirstFetchOf_transactions == true
+		{
+			self.___didReceiveActualChangeTo_heights()
+		}
+	}
+	//
+	//
+	// Delegation - Internal - Data value property update events
+	//
+	func ___didReceiveActualChangeTo_balance(
+		// Not actually using these args currently…
+		old_totalReceived: MoneroAmount?,
+		old_totalSent: MoneroAmount?,
+		old_lockedBalance: MoneroAmount?
+	)
+	{
+		NotificationCenter.default.post(
+			name: Notification.Name(NotificationNames.balanceChanged.rawValue),
+			object: self
+		)
+	}
+	func ___didReceiveActualChangeTo_spentOutputs(
+		// Not actually using this arg currently…
+		old_spentOutputs: [MoneroSpentOutputDescription]?
+	)
+	{
+		NotificationCenter.default.post(
+			name: Notification.Name(NotificationNames.spentOutputsChanged.rawValue),
+			object: self
+		)
+	}
+	func ___didReceiveActualChangeTo_heights()
+	{
+		NotificationCenter.default.post(
+			name: Notification.Name(NotificationNames.heightsUpdated.rawValue),
+			object: self
+		)
+	}
+	func ___didReceiveActualChangeTo_transactions(
+		old_transactions: [MoneroHistoricalTransactionRecord]?
+	)
+	{
+		NotificationCenter.default.post(
+			name: Notification.Name(NotificationNames.transactionsChanged.rawValue),
+			object: self
+		)
 	}
 }
