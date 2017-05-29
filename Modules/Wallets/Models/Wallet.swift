@@ -136,15 +136,17 @@ class Wallet: PersistableObject, ListedObject
 	//
 	//
 	// Properties - Boolean State
-	//
-	var isBooted = false
+	// persisted
 	var isLoggedIn = false
+	var shouldDisplayImportAccountOption: Bool?
+	var isInViewOnlyMode: Bool?
+	// transient/not persisted
+	var isBooted = false
 	var isLoggingIn = false
 	var wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed: Bool?
 	var didFailToBoot_flag: Bool?
 	var didFailToBoot_errStr: String?
-	var shouldDisplayImportAccountOption: Bool?
-	var isInViewOnlyMode: Bool?
+	var isSendingFunds = false
 	//
 	//
 	// Properties - Objects
@@ -596,7 +598,7 @@ class Wallet: PersistableObject, ListedObject
 	}
 	//
 	//
-	// Runtime - Imperatives - Updates
+	// Runtime (Booted) - Imperatives - Updates
 	//
 	func SetValuesAndSave(
 		walletLabel: String,
@@ -607,6 +609,62 @@ class Wallet: PersistableObject, ListedObject
 		self.swatchColor = swatchColor
 		let err_str = self.saveToDisk()
 		return err_str
+	}
+	//
+	//
+	// Runtime (Booted) - Imperatives - Sending Funds
+	//
+	func SendFunds(
+		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
+		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		payment_id: MoneroPaymentID?,
+		success_fn: @escaping (
+			_ tx_hash: MoneroTransactionHash,
+			_ tx_fee: MoneroAmount
+		) -> Void,
+		failWithErr_fn: @escaping (
+			_ err_str: String
+		) -> Void
+	)
+	{
+		func __isLocked() -> Bool { return self.isSendingFunds }
+		if __isLocked() {
+			failWithErr_fn("Currently sending funds. Please try again when complete.")
+			return
+		}
+		func __lock()
+		{
+			self.isSendingFunds = true
+			// TODO:
+			// 1. userIdleInWindowController.TemporarilyDisable_userIdle
+			// 2. disable screen dim
+		}
+		func __unlock()
+		{
+			self.isSendingFunds = false
+			// TODO: re-enable user idle and screen dim
+		}
+		__lock()
+		HostedMoneroAPIClient.SendFunds(
+			target_address: target_address,
+			amount: amount,
+			wallet__public_address: self.public_address,
+			wallet__private_keys: self.private_keys,
+			wallet__public_keys: self.public_keys,
+			mymoneroCore: MyMoneroCore.shared,
+			hostedMoneroAPIClient: HostedMoneroAPIClient.shared,
+			payment_id: payment_id,
+			success_fn:
+			{ (tx_hash, tx_fee) in
+				__unlock()
+				success_fn(tx_hash, tx_fee)
+			},
+			failWithErr_fn:
+			{ err_str in
+				__unlock()
+				failWithErr_fn(err_str)
+			}
+		)
 	}
 	//
 	//
