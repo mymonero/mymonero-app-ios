@@ -15,6 +15,11 @@ typealias HumanUnderstandableCurrencyAmountDouble = Double // e.g. -0.5 for -0.5
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
 extension MoneroAmount
 {
+	var humanReadableString: String
+	{
+		return FormattedString(fromMoneroAmount: self)
+	}
+	//
 	var jsRepresentationString:String
 	{ // because we need to convert it back for calls like create_transaction 
 		return "new mymonero_core_js.JSBigInt(\"\(self)\")"

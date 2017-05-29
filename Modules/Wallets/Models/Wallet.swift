@@ -26,12 +26,17 @@ class Wallet: PersistableObject, ListedObject
 		{
 			return self.init(rawValue: jsonRepresentation)!
 		}
-		func humanReadable(currency: Currency) -> String
+		//
+		static func humanReadableString(currency: Currency) -> String
 		{
 			switch currency {
 				case .Monero:
 					return "Monero"
 			}
+		}
+		func humanReadableString() -> String
+		{
+			return Currency.humanReadableString(currency: self)
 		}
 	}
 	enum SwatchColor: String
@@ -395,6 +400,85 @@ class Wallet: PersistableObject, ListedObject
 			wasAGeneratedWallet: false,
 			fn
 		)
+	}
+	//
+	//
+	// Interface - Runtime - Accessors/Properties
+	//
+	var hasEverFetched_accountInfo: Bool
+	{
+		return self.dateThatLast_fetchedAccountInfo != nil
+	}
+	var hasEverFetched_transactions: Bool
+	{
+		return self.dateThatLast_fetchedAccountTransactions != nil
+	}
+	var isAccountScannerCatchingUp: Bool
+	{
+		if self.blockchain_height == nil || self.blockchain_height == 0 {
+			NSLog("Warn: .isScannerCatchingUp called while nil/0 blockchain_height")
+			return true
+		}
+		if self.account_scanned_block_height == nil || self.account_scanned_block_height == 0  {
+			NSLog("Warn: .isScannerCatchingUp called while nil/0 account_scanned_block_height")
+			return true
+		}
+		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
+		if nBlocksBehind >= 10 {
+			return true
+		} else if nBlocksBehind < 0 {
+			NSLog("Warn: nBlocksBehind < 0")
+			return false
+		}
+		return false
+	}
+	var nBlocksBehind: Int
+	{
+		if self.blockchain_height == nil || self.blockchain_height == 0 {
+			NSLog("Warn: .nBlocksBehind called while nil/0 blockchain_height")
+			return 0
+		}
+		if self.account_scanned_block_height == nil || self.account_scanned_block_height == 0  {
+			NSLog("Warn: .nBlocksBehind called while nil/0 account_scanned_block_height")
+			return 0
+		}
+		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
+		return nBlocksBehind
+	}
+	var catchingUpPercentageFloat: Double // btn 0 and 1.0
+	{
+		if self.account_scanned_height == nil || self.account_scanned_height == 0 {
+			NSLog("Warn: .catchingUpPercentageFloat accessed while nil/0 self.account_scanned_height. Bailing.")
+			return 0
+		}
+		if self.transaction_height == nil || self.transaction_height == 0 {
+			NSLog("Warn: .catchingUpPercentageFloat accessed while nil/0 self.transaction_height. Bailing.")
+			return 0
+		}
+		let pct: Double = Double(self.account_scanned_height!) / Double(self.transaction_height!)
+		NSLog("CatchingUpPercentageFloat \(self.account_scanned_height!)/\(self.transaction_height!) = \(pct)%")
+		return pct
+	}
+	//
+	var balance_formattedString: String
+	{
+		let balanceAmount = (self.totalReceived ?? MoneroAmount(0)) - (self.totalSent ?? MoneroAmount(0))
+		//
+		return balanceAmount.humanReadableString
+	}
+	var lockedBalance_formattedString: String
+	{
+		return (self.lockedBalance ?? MoneroAmount(0)).humanReadableString
+	}
+	var hasLockedFunds: Bool
+	{
+		if self.lockedBalance == nil {
+			return false
+		}
+		if self.lockedBalance == MoneroAmount(0) {
+			return false
+		}
+		return true
 	}
 	//
 	//
