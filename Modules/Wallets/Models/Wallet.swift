@@ -596,6 +596,20 @@ class Wallet: PersistableObject, ListedObject
 	}
 	//
 	//
+	// Runtime - Imperatives - Updates
+	//
+	func SetValuesAndSave(
+		walletLabel: String,
+		swatchColor: SwatchColor
+	) -> String? // err_str -- maybe port to 'throws'
+	{
+		self.walletLabel = walletLabel
+		self.swatchColor = swatchColor
+		let err_str = self.saveToDisk()
+		return err_str
+	}
+	//
+	//
 	// HostPollingController - Delegation / Protocol
 	// 
 	func _HostPollingController_didFetch_addressInfo(
