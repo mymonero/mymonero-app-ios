@@ -31,7 +31,7 @@ class AppRuntimeController
 				view: "7bea1907940afdd480eff7c4bcadb478a0fbb626df9e3ed74ae801e18f53e104",
 				spend: "4e6d43cd03812b803c6f3206689f5fcc910005fc7e91d50d79b0776dbefcd803"
 			)
-			self.walletsListController.GivenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
+			self.walletsListController.OnceBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
 				walletLabel: "m'wallet",
 				swatchColor: .salmon,
 				address: address,

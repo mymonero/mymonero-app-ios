@@ -33,7 +33,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	//
 	var records = [ListedObject]()
 	// runtime
-	var hasBooted = false
+	var hasBooted = false // can be set from true back to false
+	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
 	//
 	//
 	// Lifecycle - Setup
@@ -111,7 +112,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 			self._setup_didBoot()
 			return
 		}
-		self.passwordController.OncePasswordObtained( // this will 'block' until we have access to the pw
+		self.passwordController.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
 			{ (obtainedPasswordString, passwordType) in
 				__proceedTo_loadAndBootAllExtantRecords(withPassword: obtainedPasswordString)
 			}
@@ -180,6 +181,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	{
 		NSLog("✅ \(self) booted.")
 		self.hasBooted = true // all done!
+		self._callAndFlushAllBlocksWaitingForBootToExecute() // after hasBooted=true
 		DispatchQueue.main.async { // on next tick to avoid instantiator missing this
 			NotificationCenter.default.post(name: Notification.Name(Notifications_Boot.Did.rawValue), object: self)
 		}
@@ -266,6 +268,33 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	{
 		DispatchQueue.main.async {
 			self._listUpdated_records()
+		}
+	}
+	//
+	// Imperatives - Deferring execution
+	// NOTE: onceBooted() exists because waiting for a password to be entered by the user must be asynchronous
+	func onceBooted(
+		_ fn: @escaping ((Void) -> Void)
+	)
+	{
+		if self.hasBooted == true {
+			fn()
+			return
+		}
+		if self.__blocksWaitingForBootToExecute == nil {
+			self.__blocksWaitingForBootToExecute = []
+		}
+		self.__blocksWaitingForBootToExecute!.append(fn)
+	}
+	func _callAndFlushAllBlocksWaitingForBootToExecute()
+	{
+		if self.__blocksWaitingForBootToExecute == nil {
+			return
+		}
+		let blocks = self.__blocksWaitingForBootToExecute!
+		self.__blocksWaitingForBootToExecute = nil
+		for (_, block) in blocks.enumerated() {
+			block()
 		}
 	}
 	//

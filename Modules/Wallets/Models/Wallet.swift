@@ -217,25 +217,6 @@ class Wallet: PersistableObject, ListedObject
 	}
 	//
 	//
-	// Lifecycle - Init - For adding wallet to app
-	//
-	required init()
-	{
-		super.init()
-	}
-	convenience init?(
-		ifGeneratingNewWallet_walletDescription: MoneroWalletDescription? // this is left to the consumer to generate because currently to generate it is asynchronous and that would make this init code a bit messy
-	) throws
-	{
-		self.init()
-		self.currency = .Monero // for now
-		self.mnemonic_wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
-		if ifGeneratingNewWallet_walletDescription != nil {
-			self.generatedOnInit_walletDescription = ifGeneratingNewWallet_walletDescription
-		}
-	}
-	//
-	//
 	// Lifecycle - Init - Reading existing (already saved) wallet
 	//
 	override func collectionName() -> String
@@ -319,6 +300,25 @@ class Wallet: PersistableObject, ListedObject
 			self.dateThatLast_fetchedAccountTransactions = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
 		}
 		NSLog("Hydrated wallet with existing doc: \(self)")
+	}
+	//
+	//
+	// Lifecycle - Init - For adding wallet to app
+	//
+	required init()
+	{
+		super.init()
+	}
+	convenience init?(
+		ifGeneratingNewWallet_walletDescription: MoneroWalletDescription? // this is left to the consumer to generate because currently to generate it is asynchronous and that would make this init code a bit messy
+	) throws
+	{
+		self.init()
+		self.currency = .Monero // for now
+		self.mnemonic_wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
+		if ifGeneratingNewWallet_walletDescription != nil {
+			self.generatedOnInit_walletDescription = ifGeneratingNewWallet_walletDescription
+		}
 	}
 	//
 	//
