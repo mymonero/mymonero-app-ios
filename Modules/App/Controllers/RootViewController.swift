@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RootViewController: UIViewController
+class RootViewController: UIViewController, PasswordEntryDelegate /* just for now */
 {
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
 	{
@@ -21,10 +21,35 @@ class RootViewController: UIViewController
 	init()
 	{
 		super.init(nibName: nil, bundle: nil)
+		
+		
+		// DUMMY PW interactions
+		
+		NSLog("dummy pw")
+		
+		let passwordController = PasswordController.shared
+		passwordController.passwordEntryDelegate = self
+		
 	}	
     override func viewDidLoad()
 	{
         super.viewDidLoad()
     }
+	
+	
+	func getUserToEnterExistingPassword(
+		isForChangePassword: Bool,
+		_ fn: @escaping (Bool?, PasswordController.Password?) -> Void
+	)
+	{
+		fn(false, "dummy password")
+	}
+	func getUserToEnterNewPasswordAndType(
+		isForChangePassword: Bool,
+		_ fn: @escaping (Bool?, PasswordController.Password?, PasswordController.PasswordType?) -> Void
+	)
+	{
+		fn(false, "dummy password", .password)
+	}
 }
 

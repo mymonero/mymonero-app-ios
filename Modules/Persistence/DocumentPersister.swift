@@ -44,6 +44,7 @@ class DocumentPersister
 	//
 	// Interface - Static - Instance access
 	//
+	// TODO: migrate this to proper singleton declaration (static var .shared)
 	static func shared() -> DocumentPersister
 	{
 		if _shared_documentPersister == nil {
@@ -199,7 +200,35 @@ class DocumentPersister
 		}
 		return (nil, final_document)
 	}
-	// Or, instead of using insert/update, if you want to control the format of the fileData, say, to encrypt it, you can use:
+	func Upsert(
+		documentWithId id: DocumentId,
+		inCollectionNamed collectionName: CollectionName,
+		withUpdate updatedDocument: DocumentJSON
+	) -> (
+		err_str: String?,
+		upsertedDocument: DocumentJSON? // returned because it may now contain a _id field
+	)
+	{
+		let fileDescription = DocumentFileDescription(
+			inCollectionName: collectionName,
+			documentId: id
+		)
+		var final_document = updatedDocument // mutable copy
+		let document_id = updatedDocument["_id"] as? DocumentId
+		if document_id == nil {
+			final_document["_id"] = document_id // just as a safeguard against consumers submitting a different document
+		}
+		do {
+			try self._write_fileDescriptionDocumentData(
+				fileDescription: fileDescription,
+				jsonToWrite: final_document
+			)
+		} catch let e {
+			return (e.localizedDescription, nil)
+		}
+		return (nil, final_document)
+	}
+	// Or, instead of using insert/update/upsert, if you want to control the format of the fileData, say, to encrypt it, you can use:
 	func Write(
 		documentFileWithData fileData: Data, // if you're using this for Documents, be sure to set field _id to id within your fileData
 		withId id: DocumentId, // consumer must supply the document ID since we can't make assumptions about fileData
