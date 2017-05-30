@@ -56,7 +56,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	func startObserving_passwordController()
 	{
-		self.passwordController.AddRegistrantForDeleteEverything(self)
+		self.passwordController.addRegistrantForDeleteEverything(self)
 		//
 //		const controller = self.context.passwordController
 //			{ // EventName_ChangedPassword
@@ -317,5 +317,17 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 			name: NSNotification.Name(Notifications_List.Updated.rawValue),
 			object: self
 		)
+	}
+	//
+	// Protocol - DeleteEverythingRegistrant
+	func passwordController_DeleteEverything() -> String?
+	{
+		let (err_str, _) = DocumentPersister.shared().RemoveAllDocuments(inCollectionNamed: self.documentCollectionName)
+		if err_str != nil {
+			NSLog("❌  Error while deleting everything: \(err_str!.debugDescription)")
+		} else {
+			NSLog("🗑  Deleted all \(self.documentCollectionName).")
+		}
+		return err_str
 	}
 }

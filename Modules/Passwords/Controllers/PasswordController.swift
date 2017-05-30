@@ -11,7 +11,7 @@ import RNCryptor
 //
 protocol DeleteEverythingRegistrant
 {
-//	func …()
+	func passwordController_DeleteEverything() -> String? // return err_str:String if error. at time of writing, this was able to be kept synchronous.
 }
 protocol PasswordEntryDelegate
 {
@@ -94,6 +94,7 @@ final class PasswordController
 	enum Notification_UserInfo_Keys: String
 	{
 		case err_str = "err_str"
+		case isForADeleteEverything = "isForADeleteEverything"
 	}
 	//
 	// Properties
@@ -563,7 +564,7 @@ final class PasswordController
 			}
 			//
 			// II. hang onto new pw, pw type, and state(s)
-			NSLog("💬  Obtained \(userSelectedTypeOfPassword) \(obtainedPasswordString!.characters.count) chars long")
+			NSLog("💬  Obtained \(userSelectedTypeOfPassword!) \(obtainedPasswordString!.characters.count) chars long")
 			self._didObtainPassword(password: obtainedPasswordString!)
 			self.passwordType = userSelectedTypeOfPassword!
 			//
@@ -662,18 +663,145 @@ final class PasswordController
 		return err_str
 	}
 	//
-	// Imperatives - Delete Everything notification registration
-	func AddRegistrantForDeleteEverything(
-		_ observer: DeleteEverythingRegistrant
-		) -> Void
+	//
+	// Runtime - Imperatives - Delete everything
+	//
+	var deleteEverythingRegistrants: [DeleteEverythingRegistrant] = []
+	func addRegistrantForDeleteEverything(
+		_ registrant: DeleteEverythingRegistrant
+	) -> Void
 	{
-		NSLog("TODO: AddRegistrantForDeleteEverything")
+		NSLog("Adding registrant for 'DeleteEverything': \(registrant)")
+		self.deleteEverythingRegistrants.append(registrant)
+	}
+	func initiateDeleteEverything()
+	{ // this is used as a central initiation/sync point for delete everything like user idle
+		// maybe it should be moved, maybe not.
+		// And note we're assuming here the PW has been entered already.
+		if self.hasUserSavedAPassword != true {
+			let err_str = "initiateDeleteEverything() called but hasUserSavedAPassword != true. This should be disallowed in the UI."
+			assert(false, err_str)
+			return
+		}
+		self._deconstructBootedStateAndClearPassword(
+			isForADeleteEverything: true,
+			optl__hasFiredWill_fn:
+			{ (cb) in
+				// reset state cause we're going all the way back to pre-boot
+				self.hasBooted = false // require this pw controller to boot
+				self.password = nil // this is redundant but is here for clarity
+				self.hasUserSavedAPassword = false
+				self._id = nil
+				self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
+				//
+				// delete pw record
+				let (err_str, _) = DocumentPersister.shared().RemoveAllDocuments(inCollectionNamed: self.collectionName)
+				if err_str != nil {
+					cb(err_str)
+					return
+				}
+				NSLog("🗑  Deleted password record.")
+				// now have others delete everything else
+				for (_, registrant) in self.deleteEverythingRegistrants.enumerated() {
+					let registrant__err_str = registrant.passwordController_DeleteEverything()
+					if registrant__err_str != nil {
+						cb(err_str)
+						return
+					}
+				}
+				self.initializeRuntimeAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
+				cb(nil)
+			},
+			optl__fn:
+			{ (err_str) in
+				if err_str != nil {
+					NSLog("Error while deleting everything: \(err_str!)")
+					assert(false)
+					return
+				}
+				NotificationCenter.default.post(
+					name: NotificationNames.havingDeletedEverything_didDeconstructBootedStateAndClearPassword.notificationName,
+					object: self
+				)
+			}
+		)
 	}
 	//
-	// Delegation
+	// Runtime - Imperatives - App lock down interface (special case usage only)
+	func lockDownAppAndRequirePassword()
+	{ // just a public interface for this - special-case-usage only! (so far. see index.cordova.js.)
+		if self.hasUserEnteredValidPasswordYet == false { // this is fine, but should be used to bail
+			NSLog("⚠️  Warn: Asked to lockDownAppAndRequirePassword but no password entered yet.")
+			return
+		}
+		NSLog("💬  Will lockDownAppAndRequirePassword")
+		self._deconstructBootedStateAndClearPassword(
+			isForADeleteEverything: false,
+			optl__hasFiredWill_fn: nil,
+			optl__fn: nil
+		)
+	}
+	//
+	// Runtime - Imperatives - Boot-state deconstruction/teardown
+	func _deconstructBootedStateAndClearPassword(
+		isForADeleteEverything: Bool,
+		optl__hasFiredWill_fn: ((
+			_ cb: (_ err_str: String?) -> Void
+		) -> Void)?,
+		optl__fn: ((
+			_ err_str: String?
+		) -> Void)?
+	)
+	{
+		let hasFiredWill_fn = optl__hasFiredWill_fn ?? { (cb) in cb(nil) }
+		let fn = optl__fn ?? { (err_str) in }
+		//
+		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
+		do { // indicate to consumers they should tear down and await the "did" event to re-request
+			NotificationCenter.default.post(
+				name: NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+				object: self,
+				userInfo: [ Notification_UserInfo_Keys.isForADeleteEverything.rawValue: isForADeleteEverything ]
+			)
+		}
+		DispatchQueue.main.async
+		{ // on next "tick"
+			hasFiredWill_fn(
+				{ err_str in
+					if err_str != nil {
+						fn(err_str)
+						return
+					}
+					do { // trigger deconstruction of booted state and require password
+						self.hasBooted = false
+						self.password = nil
+					}
+					do { // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
+						NotificationCenter.default.post(
+							name: NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+							object: self
+						)
+					}
+					fn(nil)
+				}
+			)
+		}
+	}
+	//
+	// Delegation - Password
 	func _didObtainPassword(password: Password)
 	{
 		self.password = password
 		self.hasUserSavedAPassword = true // we can now flip this to true
+	}
+	//
+	// Delegation - User having become idle -> teardown booted state and require pw
+	func _didBecomeIdleAfterHavingPreviouslyEnteredPassword()
+	{
+		self._deconstructBootedStateAndClearPassword(
+			isForADeleteEverything: false,
+			optl__hasFiredWill_fn: nil,
+			optl__fn: nil
+		)
 	}
 }
