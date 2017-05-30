@@ -345,7 +345,7 @@ final class PasswordController
 				return
 			}
 			self._getUserToEnterTheirExistingPassword(isForChangePassword: isForChangePassword)
-			{ (didCancel_orNil, validationErr_orNil, obtainedPasswordString) in
+			{ [unowned self] (didCancel_orNil, validationErr_orNil, obtainedPasswordString) in
 				if validationErr_orNil != nil { // takes precedence over cancel
 					self.unguard_getNewOrExistingPassword()
 					NotificationCenter.default.post(
@@ -405,9 +405,68 @@ final class PasswordController
 		}
 	}
 	//
+	// Runtime - Imperatives - Password change
+	func initiateChangePassword()
+	{
+		self.onceBooted
+		{ [unowned self] in
+			if self.hasUserEnteredValidPasswordYet == false {
+				let err_etr = "InitiateChangePassword called but hasUserEnteredValidPasswordYet == false. This should be disallowed in the UI"
+				assert(false, err_etr)
+				return
+			}
+			do { // guard
+				if self.isAlreadyGettingExistingOrNewPWFromUser == true {
+					let err_str = "InitiateChangePassword called but isAlreadyGettingExistingOrNewPWFromUser == true. This should be precluded in the UI"
+					assert(false, err_str)
+					// only need to wait for it to be obtained
+					return
+				}
+				self.isAlreadyGettingExistingOrNewPWFromUser = true
+			}
+			// ^-- we're relying on having checked above that user has entered a valid pw already
+			let isForChangePassword = true // we'll use this in a couple places
+			self._getUserToEnterTheirExistingPassword(
+				isForChangePassword: isForChangePassword,
+				{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
+					if validationErr_orNil != nil { // takes precedence over cancel
+						self.unguard_getNewOrExistingPassword()
+						NotificationCenter.default.post(
+							name: NotificationNames.errorWhileChangingPassword.notificationName,
+							object: self,
+							userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: validationErr_orNil! ]
+						)
+						return
+					}
+					if didCancel_orNil == true {
+						self.unguard_getNewOrExistingPassword()
+						NotificationCenter.default.post(
+							name: NotificationNames.canceledWhileChangingPassword.notificationName,
+							object: self
+						)
+						return // just silently exit after unguarding
+					}
+					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
+					if self.password != entered_existingPassword {
+						self.unguard_getNewOrExistingPassword()
+						let err_str = self.new_incorrectPasswordValidationErrorMessageString
+						NotificationCenter.default.post(
+							name: NotificationNames.errorWhileChangingPassword.notificationName,
+							object: self,
+							userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str ]
+						)
+						return
+					}
+					// passwords match checked as necessary, we can proceed
+					self.obtainNewPasswordFromUser(
+						isForChangePassword: isForChangePassword
+					)
+				}
+			)
+		}
+	}
 	//
 	// Runtime - Imperatives - Private - Requesting password from user
-	//
 	func unguard_getNewOrExistingPassword()
 	{
 		self.isAlreadyGettingExistingOrNewPWFromUser = false
@@ -444,7 +503,7 @@ final class PasswordController
 //		}
 		// Now put request out
 		self.passwordEntryDelegate.getUserToEnterExistingPassword(isForChangePassword: isForChangePassword)
-		{ (didCancel_orNil, obtainedPasswordString) in
+		{ [unowned self] (didCancel_orNil, obtainedPasswordString) in
 			var validationErr_orNil: String? = nil // so far…
 			if didCancel_orNil != true { // so user did NOT cancel
 //				// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
@@ -686,7 +745,7 @@ final class PasswordController
 		self._deconstructBootedStateAndClearPassword(
 			isForADeleteEverything: true,
 			optl__hasFiredWill_fn:
-			{ (cb) in
+			{ [unowned self] (cb) in
 				// reset state cause we're going all the way back to pre-boot
 				self.hasBooted = false // require this pw controller to boot
 				self.password = nil // this is redundant but is here for clarity
@@ -713,7 +772,7 @@ final class PasswordController
 				cb(nil)
 			},
 			optl__fn:
-			{ (err_str) in
+			{ [unowned self] (err_str) in
 				if err_str != nil {
 					NSLog("Error while deleting everything: \(err_str!)")
 					assert(false)
