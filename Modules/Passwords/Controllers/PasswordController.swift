@@ -145,13 +145,13 @@ final class PasswordController
 		)
 		if err_str != nil {
 			NSLog("Fatal error while loading \(self.collectionName): \(err_str!)")
-			// TODO: throw/crash?
+			assert(false)
 			return
 		}
 		let documentJSONs_count = documentJSONs!.count
-		if documentJSONs_count >= 1 {
+		if documentJSONs_count > 1 {
 			NSLog("Unexpected state while loading \(self.collectionName): more than one saved doc.")
-			// TODO: throw/crash?
+			assert(false)
 			return
 		}
 		func _proceedTo_load(
@@ -362,8 +362,7 @@ final class PasswordController
 					self.unguard_getNewOrExistingPassword()
 					return // just silently exit after unguarding
 				}
-				
-				let encrypted_data = self.messageAsEncryptedDataForUnlockChallenge_base64String!.data(using: .utf8)!
+				let encrypted_data = Data(base64Encoded: self.messageAsEncryptedDataForUnlockChallenge_base64String!)!
 				var plaintext_data: Data?
 				do {
 					plaintext_data = try RNCryptor.decrypt(
@@ -372,7 +371,7 @@ final class PasswordController
 					)
 				} catch let e {
 					self.unguard_getNewOrExistingPassword()
-					NSLog("Error while decrypting message for unlock challenge: \(e.localizedDescription)")
+					NSLog("Error while decrypting message for unlock challenge: \(e) \(e.localizedDescription)")
 					let err_str = self.new_incorrectPasswordValidationErrorMessageString
 					NotificationCenter.default.post(
 						name: NotificationNames.erroredWhileGettingExistingPassword.notificationName,
@@ -576,7 +575,7 @@ final class PasswordController
 				NotificationCenter.default.post(
 					name: NotificationNames.erroredWhileSettingNewPassword.notificationName,
 					object: self,
-					userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str ]
+					userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str! ]
 				)
 				return
 			}
@@ -638,7 +637,7 @@ final class PasswordController
 			let err_str = "Code fault: saveToDisk musn't be called until a password has been set"
 			return err_str
 		}
-		let plaintextData = plaintextMessageToSaveForUnlockChallenges.data(using: .utf8)!
+		let plaintextData = self.plaintextMessageToSaveForUnlockChallenges.data(using: .utf8)!
 		let encryptedData = RNCryptor.encrypt(data: plaintextData, withPassword: self.password!)
 		let encryptedData_base64String = encryptedData.base64EncodedString()
 		self.messageAsEncryptedDataForUnlockChallenge_base64String = encryptedData_base64String // it's important that we hang onto this in memory so we can access it if we need to change the password later
@@ -662,7 +661,6 @@ final class PasswordController
 		//
 		return err_str
 	}
-	
 	//
 	// Imperatives - Delete Everything notification registration
 	func AddRegistrantForDeleteEverything(
