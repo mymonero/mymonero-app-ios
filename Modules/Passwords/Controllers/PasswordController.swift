@@ -480,63 +480,64 @@ final class PasswordController
 		) -> Void
 	)
 	{
-		var _passwordEntry_isCurrentlyLockedOut: Bool? = false
-		var _passwordEntry_unlock_timer: Timer?
-		var _numberOfTriesDuringThisTimePeriod: Int? = 0
-		var _dateOf_firstPWTryDuringThisTimePeriod: Date? = Date()
-//		func __cancelAnyAndRebuild_unlock_timeout()
-//		{
-//			const wasAlreadyLockedOut = unlock_timeout !== null
-//			if (unlock_timeout !== null) {
-//				// NSLog("💬  clearing existing unlock timer")
-//				clearTimeout(unlock_timeout)
-//				unlock_timeout = null // not strictly necessary
-//			}
-//			const unlockInT_s = 10 // allows them to try again every 20 s, but resets timer if they submit w/o waiting
-//			NSLog(`🚫 Too many password entry attempts within ${unlockInT_s}s. ${!wasAlreadyLockedOut ? "Locking out" : "Extending lockout." }.`)
-//			unlock_timeout = setTimeout(func()
-//			{
-//				NSLog("⭕️  Unlocking password entry.")
-//				isCurrentlyLockedOut = false
-//				self.__convenience_callWaitingCB_existingPassword(null, "", null) // this is _sort_ of a hack and should be made more explicit in API but I'm sending an empty string, and not even an Error, to clear the validation error so the user knows to try again
-//			}, unlockInT_s * 1000)
-//		}
+		var _isCurrentlyLockedOut: Bool = false
+		var _unlockTimer: Timer?
+		var _numberOfTriesDuringThisTimePeriod: Int = 0
+		var _dateOf_firstPWTryDuringThisTimePeriod: Date? = Date() // initialized to current time
+		func __cancelAnyAndRebuildUnlockTimer()
+		{
+			let wasAlreadyLockedOut = _unlockTimer != nil
+			if _unlockTimer != nil {
+				// NSLog("💬  clearing existing unlock timer")
+				_unlockTimer!.invalidate()
+				_unlockTimer = nil // not strictly necessary
+			}
+			let unlockInT_s: TimeInterval = 10.0 // allows them to try again every T sec, but resets timer if they submit w/o waiting
+			NSLog("🚫 Too many password entry attempts within \(unlockInT_s)s. \(!wasAlreadyLockedOut ? "Locking out" : "Extending lockout.").")
+			_unlockTimer = Timer.scheduledTimer(
+				withTimeInterval: unlockInT_s,
+				repeats: false,
+				block:
+				{ timer in
+					NSLog("⭕️  Unlocking password entry.")
+					_isCurrentlyLockedOut = false
+					fn(nil, "", nil) // this is _sort_ of a hack and should be made more explicit in API but I'm sending an empty string, and not even an err_str, to clear the validation error so the user knows to try again
+				}
+			)
+		}
 		// Now put request out
 		self.passwordEntryDelegate.getUserToEnterExistingPassword(isForChangePassword: isForChangePassword)
-		{ [unowned self] (didCancel_orNil, obtainedPasswordString) in
+		{ (didCancel_orNil, obtainedPasswordString) in
 			var validationErr_orNil: String? = nil // so far…
 			if didCancel_orNil != true { // so user did NOT cancel
-//				// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
-//				if self._passwordEntry_isCurrentlyLockedOut == false {
-//					if self._numberOfTriesDuringThisTimePeriod == 0 {
-//						self._dateOf_firstPWTryDuringThisTimePeriod = Date()
-//					}
-//					numberOfTriesDuringThisTimePeriod += 1
-//					let maxLegal_numberOfTriesDuringThisTimePeriod = 5
-//					if (numberOfTriesDuringThisTimePeriod > maxLegal_numberOfTriesDuringThisTimePeriod) { // rhs must be > 0
-//						numberOfTriesDuringThisTimePeriod = 0
-//						// ^- no matter what, we're going to need to reset the above state for the next 'time period'
-//						//
-//						const now = new Date()
-//						const ms_dateRange = now.getTime() - dateOf_firstPWTryDuringThisTimePeriod.getTime()
-//						const ms_since_firstPWTryDuringThisTimePeriod = Math.abs(ms_dateRange)
-//						const s_since_firstPWTryDuringThisTimePeriod = ms_since_firstPWTryDuringThisTimePeriod / 1000
-//						const noMoreThanNTriesWithin_s = 30
-//						if (s_since_firstPWTryDuringThisTimePeriod > noMoreThanNTriesWithin_s) { // enough time has passed since this group began - only reset the "time period" with tries->0 and let this pass through as valid check
-//							dateOf_firstPWTryDuringThisTimePeriod = null // not strictly necessary to do here as we reset the number of tries during this time period to zero just above
-//							NSLog(`There were more than ${maxLegal_numberOfTriesDuringThisTimePeriod} password entry attempts during this time period but the last attempt was more than ${noMoreThanNTriesWithin_s}s ago, so letting this go.`)
-//						} else { // simply too many tries!…
-//							// lock it out for the next time (supposing this try does not pass)
-//							isCurrentlyLockedOut = true
-//						}
-//					}
-//				}
-//				if (isCurrentlyLockedOut == true) { // do not try to check pw - return as validation err
-//					NSLog("🚫  Received password entry attempt but currently locked out.")
-//					validationErr_orNil = new Error("As a security precaution, please wait a few moments before trying again.")
-//					// setup or extend unlock timer - NOTE: this is pretty strict - we don't strictly need to extend the timer each time to prevent spam unlocks
-//					__cancelAnyAndRebuild_unlock_timeout()
-//				}
+				// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
+				if _isCurrentlyLockedOut == false {
+					if _numberOfTriesDuringThisTimePeriod == 0 {
+						_dateOf_firstPWTryDuringThisTimePeriod = Date()
+					}
+					_numberOfTriesDuringThisTimePeriod += 1
+					let maxLegal_numberOfTriesDuringThisTimePeriod = 5
+					if (_numberOfTriesDuringThisTimePeriod > maxLegal_numberOfTriesDuringThisTimePeriod) { // rhs must be > 0
+						_numberOfTriesDuringThisTimePeriod = 0
+						// ^- no matter what, we're going to need to reset the above state for the next 'time period'
+						//
+						let s_since_firstPWTryDuringThisTimePeriod = Date().timeIntervalSince(_dateOf_firstPWTryDuringThisTimePeriod!)
+						let noMoreThanNTriesWithin_s = TimeInterval(30)
+						if (s_since_firstPWTryDuringThisTimePeriod > noMoreThanNTriesWithin_s) { // enough time has passed since this group began - only reset the "time period" with tries->0 and let this pass through as valid check
+							_dateOf_firstPWTryDuringThisTimePeriod = nil // not strictly necessary to do here as we reset the number of tries during this time period to zero just above
+							NSLog("There were more than \(maxLegal_numberOfTriesDuringThisTimePeriod) password entry attempts during this time period but the last attempt was more than \(noMoreThanNTriesWithin_s)s ago, so letting this go.")
+						} else { // simply too many tries!…
+							// lock it out for the next time (supposing this try does not pass)
+							_isCurrentlyLockedOut = true
+						}
+					}
+				}
+				if _isCurrentlyLockedOut == true { // do not try to check pw - return as validation err
+					NSLog("🚫  Received password entry attempt but currently locked out.")
+					validationErr_orNil = "As a security precaution, please wait a few moments before trying again."
+					// setup or extend unlock timer - NOTE: this is pretty strict - we don't strictly need to extend the timer each time to prevent spam unlocks
+					__cancelAnyAndRebuildUnlockTimer()
+				}
 			}
 			// then regardless of whether user canceled…
 			fn(
