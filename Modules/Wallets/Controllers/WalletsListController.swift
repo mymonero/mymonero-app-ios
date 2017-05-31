@@ -25,6 +25,23 @@ class WalletsListController: PersistedObjectListController
 		NSLog("TODO: sort on date added/inserted")
 	}
 	//
+	// Runtime - Accessors - Derived properties
+	var givenBooted_swatchesInUse: [Wallet.SwatchColor]
+	{
+		if self.hasBooted != true {
+			NSLog("givenBooted_swatchesInUse called when \(self) not yet booted.")
+			return [] // this may be for the first wallet creation - let's say nothing in use yet
+		}
+		var inUseSwatches: [Wallet.SwatchColor] = []
+		for (_, record) in self.records.enumerated() {
+			let wallet = record as! Wallet
+			if let swatchColor = wallet.swatchColor {
+				inUseSwatches.append(swatchColor)
+			}
+		}
+		return inUseSwatches
+	}
+	//
 	//
 	// Booted - Imperatives - Public - Wallets list
 	//

@@ -50,12 +50,39 @@ class Wallet: PersistableObject, ListedObject
 		case yellow = "#EACF12"
 		case blue = "#00C6FF"
 		//
+		static func allOrdered() -> [SwatchColor]
+		{
+			let order: [SwatchColor] =
+			[
+				.darkGrey,
+				.lightGrey,
+				.teal,
+				.purple,
+				.salmon,
+				.orange,
+				.yellow,
+				.blue
+			]
+			return order
+		}
+		//
 		func colorHexString() -> String { return self.rawValue }
 		func jsonRepresentation() -> String { return self.rawValue }
 		static func new(from_jsonRepresentation jsonRepresentation: String) -> SwatchColor
 		{
 			return self.init(rawValue: jsonRepresentation)!
 		}
+		//
+		var isADarkColor: Bool
+		{
+			switch self {
+				case .darkGrey:
+					return true
+				default:
+					return false
+				}
+		}
+
 	}
 	enum NotificationNames: String
 	{
