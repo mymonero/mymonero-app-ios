@@ -8,7 +8,7 @@
 //
 import Foundation
 //
-class Wallet: PersistableObject, ListedObject
+class Wallet: PersistableObject
 {
 	//
 	//
@@ -171,8 +171,6 @@ class Wallet: PersistableObject, ListedObject
 	var isBooted = false
 	var isLoggingIn = false
 	var wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed: Bool?
-	var didFailToBoot_flag: Bool?
-	var didFailToBoot_errStr: String?
 	var isSendingFunds = false
 	//
 	//
@@ -259,6 +257,7 @@ class Wallet: PersistableObject, ListedObject
 		self.shouldDisplayImportAccountOption = dictRepresentation[DictKeys.shouldDisplayImportAccountOption.rawValue] as? Bool
 		if let date = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
 			guard let timeInterval = date as? TimeInterval else {
+				self.didFailToInitialize_flag = true
 				assert(false, "not a TimeInterval")
 				return nil
 			}
@@ -266,6 +265,7 @@ class Wallet: PersistableObject, ListedObject
 		}
 		if let date = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
 			guard let timeInterval = date as? TimeInterval else {
+				self.didFailToInitialize_flag = true
 				assert(false, "not a TimeInterval")
 				return nil
 			}

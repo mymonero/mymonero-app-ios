@@ -27,11 +27,11 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	//
 	// inputs
-	var listedObjectType: ListedObject.Type!
+	var listedObjectType: PersistableObject.Type!
 	var documentCollectionName: DocumentPersister.CollectionName!
 	var passwordController = PasswordController.shared
 	//
-	var records = [ListedObject]()
+	var records = [PersistableObject]()
 	// runtime
 	var hasBooted = false // can be set from true back to false
 	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
@@ -39,7 +39,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	//
 	// Lifecycle - Setup
 	//
-	init(listedObjectType type: ListedObject.Type)
+	init(listedObjectType type: PersistableObject.Type)
 	{
 		self.listedObjectType = type
 		self.documentCollectionName = "\(type)" as DocumentPersister.CollectionName
@@ -48,60 +48,42 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func setup()
 	{
 		self.setup_startObserving()
-		self.setup_fetchAndReconstituteExistingRecords()
+		self.setup_tryToBoot()
 	}
 	func setup_startObserving()
 	{
 		self.startObserving_passwordController()
 	}
+	func setup_tryToBoot()
+	{
+		self.setup_fetchAndReconstituteExistingRecords()
+	}
 	func startObserving_passwordController()
 	{
 		self.passwordController.addRegistrantForDeleteEverything(self)
 		//
-//		const controller = self.context.passwordController
-//			{ // EventName_ChangedPassword
-//				if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
-//					throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in " + self.constructor.name
-//				}
-//				self._passwordController_EventName_ChangedPassword_listenerFn = function()
-//					{
-//						self._passwordController_EventName_ChangedPassword()
-//				}
-//				controller.on(
-//					controller.EventName_ChangedPassword(),
-//					self._passwordController_EventName_ChangedPassword_listenerFn
-//				)
-//		}
-//		{ // EventName_willDeconstructBootedStateAndClearPassword
-//			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-//				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
-//			}
-//			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
-//				{
-//					self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
-//			}
-//			controller.on(
-//				controller.EventName_willDeconstructBootedStateAndClearPassword(),
-//				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
-//			)
-//		}
-//			{ // EventName_didDeconstructBootedStateAndClearPassword
-//				if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-//					throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
-//				}
-//				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
-//					{
-//						self._passwordController_EventName_didDeconstructBootedStateAndClearPassword()
-//				}
-//				controller.on(
-//					controller.EventName_didDeconstructBootedStateAndClearPassword(),
-//					self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
-//				)
-//		}
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(PasswordController_changedPassword),
+			name: PasswordController.NotificationNames.changedPassword.notificationName,
+			object: PasswordController.shared
+		)
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(PasswordController_willDeconstructBootedStateAndClearPassword),
+			name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+			object: PasswordController.shared
+		)
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(PasswordController_didDeconstructBootedStateAndClearPassword),
+			name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+			object: PasswordController.shared
+		)
 	}
 	func setup_fetchAndReconstituteExistingRecords()
 	{
-		records = [ListedObject]() // zeroing
+		records = [PersistableObject]() // zeroing
 		//
 		let (err_str, ids) = self._new_idsOfPersistedRecords()
 		if let err_str = err_str {
@@ -162,7 +144,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 					self._setup_didFailToBoot(withErrStr: e.localizedDescription)
 					return
 				}
-				var listedObjectInstance: ListedObject?
+				var listedObjectInstance: PersistableObject?
 				do {
 					listedObjectInstance = try self.listedObjectType.init(withPlaintextDictRepresentation: plaintext_documentJSON)
 				} catch let e {
@@ -205,45 +187,29 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Lifecycle - Teardown
 	deinit
 	{
-		self.teardown()
+		self.tearDown()
 	}
-	func teardown()
+	func tearDown()
 	{
 		self._stopObserving_passwordController()
 	}
 	func _stopObserving_passwordController()
 	{
-//		const controller = self.context.passwordController
-//			{ // EventName_ChangedPassword
-//				if (typeof self._passwordController_EventName_ChangedPassword_listenerFn === 'undefined' || self._passwordController_EventName_ChangedPassword_listenerFn === null) {
-//					throw "self._passwordController_EventName_ChangedPassword_listenerFn undefined"
-//				}
-//				controller.removeListener(
-//					controller.EventName_ChangedPassword(),
-//					self._passwordController_EventName_ChangedPassword_listenerFn
-//				)
-//				self._passwordController_EventName_ChangedPassword_listenerFn = null
-//		}
-//		{ // EventName_willDeconstructBootedStateAndClearPassword
-//			if (typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
-//				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn undefined"
-//			}
-//			controller.removeListener(
-//				controller.EventName_willDeconstructBootedStateAndClearPassword(),
-//				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
-//			)
-//			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = null
-//		}
-//			{ // EventName_didDeconstructBootedStateAndClearPassword
-//				if (typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn === null) {
-//					throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn undefined"
-//				}
-//				controller.removeListener(
-//					controller.EventName_didDeconstructBootedStateAndClearPassword(),
-//					self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
-//				)
-//				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = null
-//		}
+		NotificationCenter.default.removeObserver(
+			self,
+			name: PasswordController.NotificationNames.changedPassword.notificationName,
+			object: PasswordController.shared
+		)
+		NotificationCenter.default.removeObserver(
+			self,
+			name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+			object: PasswordController.shared
+		)
+		NotificationCenter.default.removeObserver(
+			self,
+			name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+			object: PasswordController.shared
+		)
 	}
 	//
 	// Accessors - Overridable
@@ -299,8 +265,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	//
 	// Delegation
-	func overridable_booting_didReconstitute(listedObjectInstance: ListedObject) {} // somewhat intentionally ignores errors and values which would be returned asynchronously, e.g. by way of a callback/block
-	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: ListedObject)
+	func overridable_booting_didReconstitute(listedObjectInstance: PersistableObject) {} // somewhat intentionally ignores errors and values which would be returned asynchronously, e.g. by way of a callback/block
+	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: PersistableObject)
 	{
 		self.records.insert(listedObject, at: 0) // so we add it to the top
 //		self.overridable_startObserving_record(recordInstance) // TODO
@@ -329,5 +295,42 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 			NSLog("🗑  Deleted all \(self.documentCollectionName).")
 		}
 		return err_str
+	}
+	//
+	// Delegation - Notifications - Password Controller
+	@objc
+	func PasswordController_changedPassword()
+	{
+		if self.hasBooted != true {
+			NSLog("⚠️  \(self) asked to change password but not yet booted.")
+			return // critical: not ready to get this
+		}
+		// change all record passwords by re-saving
+		for (_, record) in self.records.enumerated() {
+			if record.didFailToInitialize_flag != true && record.didFailToBoot_flag != true {
+				let err_str = record.saveToDisk()
+				if err_str != nil {
+					// err_str is logged
+					// TODO: is there any sensible strategy to handle failures here?
+					assert(false)
+				}
+			} else {
+				NSLog("This record failed to boot. Not messing with its saved data")
+				assert(false)
+			}
+		}
+	}
+	@objc
+	func PasswordController_willDeconstructBootedStateAndClearPassword()
+	{
+		self.records = [] // flash
+		self.hasBooted = false
+		// now we'll wait for the "did" event ---v before emiting anything like list updated, etc
+	}
+	@objc
+	func PasswordController_didDeconstructBootedStateAndClearPassword()
+	{
+		self._dispatchAsync_listUpdated_records() // manually emit so that the UI updates to empty list after the pw entry screen is shown
+		self.setup_tryToBoot() // this will re-request the pw and lead to loading records & booting self
 	}
 }

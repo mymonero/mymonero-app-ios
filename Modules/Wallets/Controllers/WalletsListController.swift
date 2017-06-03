@@ -216,7 +216,7 @@ class WalletsListController: PersistedObjectListController
 	//
 	// Delegation - Overrides - Booting reconstitution - Instance setup
 	//
-	override func overridable_booting_didReconstitute(listedObjectInstance: ListedObject)
+	override func overridable_booting_didReconstitute(listedObjectInstance: PersistableObject)
 	{
 		let wallet = listedObjectInstance as! Wallet
 		wallet.Boot_havingLoadedDecryptedExistingInitDoc(

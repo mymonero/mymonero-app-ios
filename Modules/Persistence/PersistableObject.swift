@@ -13,6 +13,11 @@ class PersistableObject
 {
 	var _id: String?
 	var insertedAt_date: Date?
+	//
+	var didFailToInitialize_flag: Bool?
+	var didFailToBoot_flag: Bool?
+	var didFailToBoot_errStr: String?
+	//
 	func collectionName() -> String
 	{
 		assert(false, "You must override PersistableObject/collectionName")
