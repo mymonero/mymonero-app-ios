@@ -17,14 +17,14 @@ protocol PasswordEntryDelegate
 {
 	func getUserToEnterExistingPassword(
 		isForChangePassword: Bool,
-		_ fn: @escaping (
+		_ enterExistingPassword_cb: @escaping (
 			_ didCancel_orNil: Bool?,
 			_ obtainedPasswordString: PasswordController.Password?
 		) -> Void
 	)
 	func getUserToEnterNewPasswordAndType(
 		isForChangePassword: Bool,
-		_ fn: @escaping (
+		_ enterNewPasswordAndType_cb: @escaping (
 			_ didCancel_orNil: Bool?,
 			_ obtainedPasswordString: PasswordController.Password?,
 			_ passwordType: PasswordController.PasswordType?

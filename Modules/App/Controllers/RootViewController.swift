@@ -8,8 +8,11 @@
 
 import UIKit
 
-class RootViewController: UIViewController, PasswordEntryDelegate /* just for now */
+class RootViewController: UIViewController
 {
+	var tabBarViewController: RootTabBarViewController!
+	var passwordEntryViewController: PasswordEntryViewController!
+	//
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
 	{
 		fatalError("\(#function) has not been implemented")
@@ -21,35 +24,17 @@ class RootViewController: UIViewController, PasswordEntryDelegate /* just for no
 	init()
 	{
 		super.init(nibName: nil, bundle: nil)
-		
-		
-		// DUMMY PW interactions
-		
-		NSLog("dummy pw")
-		
-		let passwordController = PasswordController.shared
-		passwordController.passwordEntryDelegate = self
-		
-	}	
-    override func viewDidLoad()
-	{
-        super.viewDidLoad()
-    }
-	
-	
-	func getUserToEnterExistingPassword(
-		isForChangePassword: Bool,
-		_ fn: @escaping (Bool?, PasswordController.Password?) -> Void
-	)
-	{
-		fn(false, "dummy password")
+		//
+		self.setup_views()
 	}
-	func getUserToEnterNewPasswordAndType(
-		isForChangePassword: Bool,
-		_ fn: @escaping (Bool?, PasswordController.Password?, PasswordController.PasswordType?) -> Void
-	)
+	func setup_views()
 	{
-		fn(false, "dummy password", .password)
+		// this passwordEntryViewController should get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
+		self.passwordEntryViewController = PasswordEntryViewController()
+		//
+		self.tabBarViewController = RootTabBarViewController()
+		self.addChildViewController(tabBarViewController)
+		self.view.addSubview(self.tabBarViewController.view)
 	}
 }
 
