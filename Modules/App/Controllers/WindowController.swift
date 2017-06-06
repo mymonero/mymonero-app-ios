@@ -15,6 +15,7 @@ class WindowController
 	//
 	init()
 	{
+		let _ = ThemeController.shared // so as to initialize it so it sets up appearance, mode, etc
 		window.rootViewController = rootViewController
 	}
 	func makeKeyAndVisible()

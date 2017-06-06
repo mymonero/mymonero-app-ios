@@ -11,7 +11,7 @@ import UIKit
 class RootViewController: UIViewController
 {
 	var tabBarViewController: RootTabBarViewController!
-	var passwordEntryViewController: PasswordEntryViewController!
+	var passwordEntryNavigationViewController: PasswordEntryNavigationViewController!
 	//
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
 	{
@@ -29,8 +29,8 @@ class RootViewController: UIViewController
 	}
 	func setup_views()
 	{
-		// this passwordEntryViewController should get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
-		self.passwordEntryViewController = PasswordEntryViewController()
+		// this passwordEntryNavigationViewController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
+		self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController()
 		//
 		self.tabBarViewController = RootTabBarViewController()
 		self.addChildViewController(tabBarViewController)

@@ -40,19 +40,22 @@ final class PasswordController
 	{
 		case PIN = "PIN" // 6-digit numerical PIN/code
 		case password = "password" // free-form, string password
-		var lengthOfPIN: Int { return 6 }
+		static var lengthOfPIN: Int { return 6 }
 		var humanReadableString: String
 		{
 			return self.rawValue
 		}
 		var capitalized_humanReadableString: String
-		{
-			return self.humanReadableString.capitalized
+		{ // this is done instead of calling .capitalize as that will convert the remainder to lowercase characters
+			let characters = self.humanReadableString.characters
+			let prefix = String(characters.prefix(1)).capitalized
+			let remainder = String(characters.dropFirst())
+			return prefix + remainder
 		}
-		func new(detectedFromPassword password: Password) -> PasswordType
+		static func new(detectedFromPassword password: Password) -> PasswordType
 		{
 			let characters = password.characters
-			if characters.count == lengthOfPIN { // if is 6 chars…
+			if characters.count == PasswordType.lengthOfPIN { // if is 6 chars…
 				let numbers: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 				if Set(characters).isSubset(of: numbers) { // and contains only numbers
 					return .PIN
