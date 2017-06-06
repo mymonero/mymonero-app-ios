@@ -329,7 +329,6 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 		_ enterExistingPassword_cb: @escaping (Bool?, PasswordController.Password?) -> Void
 	)
 	{
-		// TODO: if not view, create view
 		let shouldAnimateToNewState = isForChangePassword == true
 		do { // check legality
 			if self.taskMode != nil {
