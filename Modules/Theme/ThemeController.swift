@@ -41,7 +41,7 @@ class ThemeController
 			NSFontAttributeName: UIFont.middlingBoldSansSerif,
 			NSForegroundColorAttributeName: UIColor.white
 		]
-		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-1, for: .default)
+		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-1, for: .default) // b/c font is smaller, need to align w/nav buttons
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
 	}
 }

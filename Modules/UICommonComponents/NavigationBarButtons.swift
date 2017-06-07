@@ -12,8 +12,9 @@ class MMPushButton: UIButton
 {
 	enum PushButtonType
 	{
-		case grey
-		case blue
+		case utility
+		case action
+		case destructive
 	}
 	var pushButtonType: PushButtonType
 	init(pushButtonType: PushButtonType)
@@ -25,29 +26,32 @@ class MMPushButton: UIButton
 	func setup()
 	{
 		var image: UIImage!
-		var disabledImage: UIImage!
+		let disabledImage = UIImage(named: "navigationBarBtnBG_disabled")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+		var highlightedImage: UIImage!
 		var font: UIFont!
 		var color: UIColor!
-		var disabledColor: UIColor!
+		let disabledColor = UIColor(rgb: 0x6B696B)
 		switch self.pushButtonType
 		{
-			case .grey:
-				image = UIImage(named: "navigationBarBtnBG_grey")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
-				disabledImage = UIImage(named: "navigationBarBtnBG_disabled")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+			case .utility:
+				image = UIImage(named: "navigationBarBtnBG_utility")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+				highlightedImage = UIImage(named: "navigationBarBtnBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0xFCFBFC)
-				disabledColor = UIColor(rgb: 0x6B696B)
 				break
-			case .blue:
-				image = UIImage(named: "navigationBarBtnBG_blue")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
-				disabledImage = UIImage(named: "navigationBarBtnBG_disabled")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+			case .action:
+				image = UIImage(named: "navigationBarBtnBG_action")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+				highlightedImage = UIImage(named: "navigationBarBtnBG_action_highlighted")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
-				disabledColor = UIColor(rgb: 0x6B696B)
+				break
+			case .destructive:
+				assert(false, "TODO")
 				break
 		}
 		self.setBackgroundImage(image, for: .normal)
 		self.setBackgroundImage(disabledImage, for: .disabled)
+		self.setBackgroundImage(highlightedImage, for: .highlighted)
 		self.titleLabel!.font = font
 		self.setTitleColor(color, for: .normal)
 		self.setTitleColor(disabledColor, for: .disabled)
@@ -90,10 +94,10 @@ class MMNavigationBarButtonItem: UIBarButtonItem
 		switch type
 		{
 			case .add, .save:
-				pushButtonType = .blue
+				pushButtonType = .action
 				break
 			case .cancel, .edit, .back:
-				pushButtonType = .grey
+				pushButtonType = .utility
 				break
 			case .valueDisplayLabel: // to be exhaustive
 				assert(false)
