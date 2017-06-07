@@ -36,8 +36,6 @@
 		9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */; };
 		9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */; };
 		9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */; };
-		9F8E2F4D1EE3AA5C00F89A1D /* ThemeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F4C1EE3AA5C00F89A1D /* ThemeController.swift */; };
-		9F8E2F4F1EE3B3C600F89A1D /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F4E1EE3B3C600F89A1D /* UIColor+Hex.swift */; };
 		9F8E2F511EE488C200F89A1D /* EnterExistingPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F501EE488C200F89A1D /* EnterExistingPasswordView.swift */; };
 		9F8E2F531EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F521EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift */; };
 		9F8E2F561EE4908F00F89A1D /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */; };
@@ -46,19 +44,29 @@
 		9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */; };
 		9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */; };
 		9F8E2F621EE4BA8E00F89A1D /* EnterNewPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F611EE4BA8E00F89A1D /* EnterNewPasswordView.swift */; };
-		9F8E2F671EE5EEE500F89A1D /* textField_bg_error_xStretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F651EE5EEE500F89A1D /* textField_bg_error_xStretchable@3x.png */; };
-		9F8E2F681EE5EEE500F89A1D /* textField_bg_noErr_xStretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F661EE5EEE500F89A1D /* textField_bg_noErr_xStretchable@3x.png */; };
 		9F8E2F6A1EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F691EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift */; };
 		9F8E2F761EE84CD700F89A1D /* navigationBarBtnBG_disabled@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F731EE84CD700F89A1D /* navigationBarBtnBG_disabled@3x.png */; };
 		9F8E2F7A1EE862F000F89A1D /* navigationBarBtnBG_action_highlighted@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F781EE862F000F89A1D /* navigationBarBtnBG_action_highlighted@3x.png */; };
 		9F8E2F7B1EE862F000F89A1D /* navigationBarBtnBG_utility_highlighted@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F791EE862F000F89A1D /* navigationBarBtnBG_utility_highlighted@3x.png */; };
 		9F8E2F7E1EE862FB00F89A1D /* navigationBarBtnBG_action@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F7C1EE862FB00F89A1D /* navigationBarBtnBG_action@3x.png */; };
 		9F8E2F7F1EE862FB00F89A1D /* navigationBarBtnBG_utility@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F7D1EE862FB00F89A1D /* navigationBarBtnBG_utility@3x.png */; };
+		9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F801EE87FD600F89A1D /* ListViewController.swift */; };
+		9F8E2F831EE87FDF00F89A1D /* WalletsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F821EE87FDF00F89A1D /* WalletsListViewController.swift */; };
+		9F8E2F851EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F841EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift */; };
+		9F8E2F8F1EE880F700F89A1D /* ContactsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F8E1EE880F700F89A1D /* ContactsTabNavigationViewController.swift */; };
+		9F8E2F911EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F901EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift */; };
+		9F8E2F931EE8811000F89A1D /* SendFundsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F921EE8811000F89A1D /* SendFundsTabNavigationViewController.swift */; };
+		9F8E2F951EE8811A00F89A1D /* SettingsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F941EE8811A00F89A1D /* SettingsTabNavigationViewController.swift */; };
+		9F8E2F991EE8837300F89A1D /* icon_tabBar_wallets@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F971EE8837300F89A1D /* icon_tabBar_wallets@3x.png */; };
+		9F8E2F9A1EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F981EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png */; };
+		9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F9C1EE883B100F89A1D /* ThemeController.swift */; };
+		9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F9E1EE883B100F89A1D /* UIColor+Hex.swift */; };
+		9F8E2FA31EE883E800F89A1D /* textField_bg_error_xStretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FA11EE883E800F89A1D /* textField_bg_error_xStretchable@3x.png */; };
+		9F8E2FA41EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FA21EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png */; };
+		9F8E2FE01EE8A76200F89A1D /* tabBarBGColorImage@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FDF1EE8A76200F89A1D /* tabBarBGColorImage@3x.png */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
-		9FC366EB1ECFA101006CE743 /* WalletsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
-		9FEC04F51ECFD8C4009256BD /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F21ECFD8C4009256BD /* ListViewController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
 		9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */; };
@@ -97,8 +105,6 @@
 		9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroAPIClient.swift; sourceTree = "<group>"; };
 		9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_OpenAliasResolving.swift; sourceTree = "<group>"; };
 		9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_SendingFunds.swift; sourceTree = "<group>"; };
-		9F8E2F4C1EE3AA5C00F89A1D /* ThemeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeController.swift; sourceTree = "<group>"; };
-		9F8E2F4E1EE3B3C600F89A1D /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		9F8E2F501EE488C200F89A1D /* EnterExistingPasswordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EnterExistingPasswordView.swift; path = Modules/Passwords/Views/EnterExistingPasswordView.swift; sourceTree = SOURCE_ROOT; };
 		9F8E2F521EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryScreenBaseViewController.swift; sourceTree = "<group>"; };
 		9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
@@ -107,19 +113,29 @@
 		9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Light.otf"; sourceTree = "<group>"; };
 		9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Regular.otf"; sourceTree = "<group>"; };
 		9F8E2F611EE4BA8E00F89A1D /* EnterNewPasswordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterNewPasswordView.swift; sourceTree = "<group>"; };
-		9F8E2F651EE5EEE500F89A1D /* textField_bg_error_xStretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_xStretchable@3x.png"; sourceTree = "<group>"; };
-		9F8E2F661EE5EEE500F89A1D /* textField_bg_noErr_xStretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_xStretchable@3x.png"; sourceTree = "<group>"; };
 		9F8E2F691EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryScreenBaseView.swift; sourceTree = "<group>"; };
 		9F8E2F731EE84CD700F89A1D /* navigationBarBtnBG_disabled@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigationBarBtnBG_disabled@3x.png"; sourceTree = "<group>"; };
 		9F8E2F781EE862F000F89A1D /* navigationBarBtnBG_action_highlighted@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigationBarBtnBG_action_highlighted@3x.png"; sourceTree = "<group>"; };
 		9F8E2F791EE862F000F89A1D /* navigationBarBtnBG_utility_highlighted@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigationBarBtnBG_utility_highlighted@3x.png"; sourceTree = "<group>"; };
 		9F8E2F7C1EE862FB00F89A1D /* navigationBarBtnBG_action@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigationBarBtnBG_action@3x.png"; sourceTree = "<group>"; };
 		9F8E2F7D1EE862FB00F89A1D /* navigationBarBtnBG_utility@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navigationBarBtnBG_utility@3x.png"; sourceTree = "<group>"; };
+		9F8E2F801EE87FD600F89A1D /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
+		9F8E2F821EE87FDF00F89A1D /* WalletsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewController.swift; sourceTree = "<group>"; };
+		9F8E2F841EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsTabNavigationViewController.swift; sourceTree = "<group>"; };
+		9F8E2F8E1EE880F700F89A1D /* ContactsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsTabNavigationViewController.swift; sourceTree = "<group>"; };
+		9F8E2F901EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsTabNavigationViewController.swift; sourceTree = "<group>"; };
+		9F8E2F921EE8811000F89A1D /* SendFundsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsTabNavigationViewController.swift; sourceTree = "<group>"; };
+		9F8E2F941EE8811A00F89A1D /* SettingsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTabNavigationViewController.swift; sourceTree = "<group>"; };
+		9F8E2F971EE8837300F89A1D /* icon_tabBar_wallets@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_wallets@3x.png"; sourceTree = "<group>"; };
+		9F8E2F981EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_wallets__active@3x.png"; sourceTree = "<group>"; };
+		9F8E2F9C1EE883B100F89A1D /* ThemeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeController.swift; sourceTree = "<group>"; };
+		9F8E2F9E1EE883B100F89A1D /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
+		9F8E2FA11EE883E800F89A1D /* textField_bg_error_xStretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_xStretchable@3x.png"; sourceTree = "<group>"; };
+		9F8E2FA21EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_xStretchable@3x.png"; sourceTree = "<group>"; };
+		9F8E2FDF1EE8A76200F89A1D /* tabBarBGColorImage@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabBarBGColorImage@3x.png"; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
-		9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewController.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
-		9FEC04F21ECFD8C4009256BD /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
 		9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentCryptor.swift; sourceTree = "<group>"; };
@@ -225,9 +241,13 @@
 				9FEC04F61ECFD8D3009256BD /* Persistence */,
 				9FEC04FE1ED34B5B009256BD /* Passwords */,
 				9FEC04EC1ECFD8C4009256BD /* Lists */,
-				9FC366DC1ECF9F90006CE743 /* Wallets */,
 				9F8E2F4B1EE3AA4700F89A1D /* Theme */,
 				9F1D002C1EE345D600A4B3A5 /* UICommonComponents */,
+				9FC366DC1ECF9F90006CE743 /* Wallets */,
+				9F8E2F861EE8807500F89A1D /* Contacts */,
+				9F8E2F881EE8807500F89A1D /* FundsRequests */,
+				9F8E2F8A1EE8807500F89A1D /* SendFunds */,
+				9F8E2F8C1EE8807500F89A1D /* Settings */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -265,8 +285,8 @@
 				9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */,
 				9F7ADB031EBD30710073C2BB /* WindowController.swift */,
 				9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */,
-				9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */,
 				9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */,
+				9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -274,6 +294,7 @@
 		9F7ADAF61EBD2C1C0073C2BB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F8E2FDF1EE8A76200F89A1D /* tabBarBGColorImage@3x.png */,
 				9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */,
 				9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */,
 				9F7ADAF81EBD2C1C0073C2BB /* Info.plist */,
@@ -294,8 +315,8 @@
 		9F8E2F4B1EE3AA4700F89A1D /* Theme */ = {
 			isa = PBXGroup;
 			children = (
-				9F8E2F4C1EE3AA5C00F89A1D /* ThemeController.swift */,
-				9F8E2F4E1EE3B3C600F89A1D /* UIColor+Hex.swift */,
+				9F8E2F9B1EE883B100F89A1D /* Controllers */,
+				9F8E2F9D1EE883B100F89A1D /* Extensions */,
 				9F8E2F591EE4B3A900F89A1D /* Resources */,
 			);
 			path = Theme;
@@ -313,8 +334,6 @@
 		9F8E2F591EE4B3A900F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9F8E2F651EE5EEE500F89A1D /* textField_bg_error_xStretchable@3x.png */,
-				9F8E2F661EE5EEE500F89A1D /* textField_bg_noErr_xStretchable@3x.png */,
 				9F8E2F5A1EE4B3FB00F89A1D /* Fonts */,
 			);
 			path = Resources;
@@ -333,6 +352,8 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F8E2FA11EE883E800F89A1D /* textField_bg_error_xStretchable@3x.png */,
+				9F8E2FA21EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png */,
 				9F8E2F7C1EE862FB00F89A1D /* navigationBarBtnBG_action@3x.png */,
 				9F8E2F781EE862F000F89A1D /* navigationBarBtnBG_action_highlighted@3x.png */,
 				9F8E2F731EE84CD700F89A1D /* navigationBarBtnBG_disabled@3x.png */,
@@ -342,9 +363,99 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		9F8E2F861EE8807500F89A1D /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F871EE8807500F89A1D /* Controllers */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
+		9F8E2F871EE8807500F89A1D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F8E1EE880F700F89A1D /* ContactsTabNavigationViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9F8E2F881EE8807500F89A1D /* FundsRequests */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F891EE8807500F89A1D /* Controllers */,
+			);
+			path = FundsRequests;
+			sourceTree = "<group>";
+		};
+		9F8E2F891EE8807500F89A1D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F901EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9F8E2F8A1EE8807500F89A1D /* SendFunds */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F8B1EE8807500F89A1D /* Controllers */,
+			);
+			path = SendFunds;
+			sourceTree = "<group>";
+		};
+		9F8E2F8B1EE8807500F89A1D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F921EE8811000F89A1D /* SendFundsTabNavigationViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9F8E2F8C1EE8807500F89A1D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F8D1EE8807500F89A1D /* Controllers */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		9F8E2F8D1EE8807500F89A1D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F941EE8811A00F89A1D /* SettingsTabNavigationViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9F8E2F961EE8837300F89A1D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F971EE8837300F89A1D /* icon_tabBar_wallets@3x.png */,
+				9F8E2F981EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9F8E2F9B1EE883B100F89A1D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F9C1EE883B100F89A1D /* ThemeController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9F8E2F9D1EE883B100F89A1D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E2F9E1EE883B100F89A1D /* UIColor+Hex.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		9FC366DC1ECF9F90006CE743 /* Wallets */ = {
 			isa = PBXGroup;
 			children = (
+				9F8E2F961EE8837300F89A1D /* Resources */,
 				9FC366DD1ECF9F90006CE743 /* Controllers */,
 				9FC366DE1ECF9F90006CE743 /* Models */,
 				9FC366DF1ECF9F90006CE743 /* Views */,
@@ -357,6 +468,8 @@
 			children = (
 				9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */,
 				9F1B57481ED8F78D00410675 /* Wallet_HostPollingController.swift */,
+				9F8E2F821EE87FDF00F89A1D /* WalletsListViewController.swift */,
+				9F8E2F841EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -372,7 +485,6 @@
 		9FC366DF1ECF9F90006CE743 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				9FC366EA1ECFA101006CE743 /* WalletsListViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -390,6 +502,7 @@
 			isa = PBXGroup;
 			children = (
 				9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */,
+				9F8E2F801EE87FD600F89A1D /* ListViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -397,7 +510,6 @@
 		9FEC04F11ECFD8C4009256BD /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				9FEC04F21ECFD8C4009256BD /* ListViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -492,17 +604,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F1C4B981EC241D4004473CE /* mymonero-js-core-ios-build.js in Resources */,
-				9F8E2F671EE5EEE500F89A1D /* textField_bg_error_xStretchable@3x.png in Resources */,
-				9F8E2F681EE5EEE500F89A1D /* textField_bg_noErr_xStretchable@3x.png in Resources */,
 				9F8E2F7B1EE862F000F89A1D /* navigationBarBtnBG_utility_highlighted@3x.png in Resources */,
 				9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
 				9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */,
+				9F8E2F991EE8837300F89A1D /* icon_tabBar_wallets@3x.png in Resources */,
 				9F8E2F761EE84CD700F89A1D /* navigationBarBtnBG_disabled@3x.png in Resources */,
+				9F8E2FA41EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png in Resources */,
 				9F8E2F7A1EE862F000F89A1D /* navigationBarBtnBG_action_highlighted@3x.png in Resources */,
+				9F8E2FA31EE883E800F89A1D /* textField_bg_error_xStretchable@3x.png in Resources */,
+				9F8E2F9A1EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png in Resources */,
 				9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */,
 				9F8E2F7F1EE862FB00F89A1D /* navigationBarBtnBG_utility@3x.png in Resources */,
 				9F8E2F7E1EE862FB00F89A1D /* navigationBarBtnBG_action@3x.png in Resources */,
+				9F8E2FE01EE8A76200F89A1D /* tabBarBGColorImage@3x.png in Resources */,
 				9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -563,37 +678,43 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
-				9FC366EB1ECFA101006CE743 /* WalletsListViewController.swift in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Tables.swift in Sources */,
 				9F8E2F6A1EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
 				9F8E2F531EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
+				9F8E2F931EE8811000F89A1D /* SendFundsTabNavigationViewController.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
+				9F8E2F831EE87FDF00F89A1D /* WalletsListViewController.swift in Sources */,
+				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
 				9F1D00251EE3048800A4B3A5 /* PasswordEntryNavigationViewController.swift in Sources */,
 				9F1D002B1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
+				9F8E2F851EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */,
 				9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */,
+				9F8E2F951EE8811A00F89A1D /* SettingsTabNavigationViewController.swift in Sources */,
 				9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F8E2F511EE488C200F89A1D /* EnterExistingPasswordView.swift in Sources */,
 				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
 				9F8E2F621EE4BA8E00F89A1D /* EnterNewPasswordView.swift in Sources */,
+				9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */,
+				9F8E2F8F1EE880F700F89A1D /* ContactsTabNavigationViewController.swift in Sources */,
+				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
-				9F8E2F4D1EE3AA5C00F89A1D /* ThemeController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
 				9F1D00231EE3047000A4B3A5 /* PasswordController.swift in Sources */,
-				9F8E2F4F1EE3B3C600F89A1D /* UIColor+Hex.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9F1D00291EE31DEC00A4B3A5 /* EnterExistingPasswordViewController.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */,
 				9F8E2F561EE4908F00F89A1D /* UIColor+Random.swift in Sources */,
 				9F1B57491ED8F78D00410675 /* Wallet_HostPollingController.swift in Sources */,
+				9F8E2F911EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
 				9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */,
@@ -602,7 +723,6 @@
 				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
 				9F1B57471ED4E92D00410675 /* MoneroMnemonics.swift in Sources */,
 				9F8E2F581EE4909900F89A1D /* UIView+Debug.swift in Sources */,
-				9FEC04F51ECFD8C4009256BD /* ListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

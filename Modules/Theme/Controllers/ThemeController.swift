@@ -28,10 +28,14 @@ class ThemeController
 	//
 	func configureWithMode()
 	{
-		UIApplication.shared.statusBarStyle = .lightContent
 		self.configureAppearance()
 	}
 	func configureAppearance()
+	{
+		self.configureAppearance_navigationBar()
+		self.configureAppearance_tabBar()
+	}
+	func configureAppearance_navigationBar()
 	{
 		UINavigationBar.appearance().barTintColor = UIColor.contentBackgroundColor
 		UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
@@ -43,6 +47,9 @@ class ThemeController
 		]
 		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-1, for: .default) // b/c font is smaller, need to align w/nav buttons
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
+	}
+	func configureAppearance_tabBar()
+	{ // background color is set via an image in RootTabBarViewController, b/c
 	}
 }
 //

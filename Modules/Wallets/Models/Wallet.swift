@@ -394,7 +394,7 @@ class Wallet: PersistableObject
 		MyMoneroCore.shared.WalletDescriptionFromMnemonicSeed(
 			mnemonicString,
 			self.mnemonic_wordsetName!,
-			{ (err, walletDescription) in
+			{ [unowned self] (err, walletDescription) in
 				if err != nil {
 					self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err!.localizedDescription)
 					return
@@ -558,7 +558,7 @@ class Wallet: PersistableObject
 			self.account_seed!,
 			self.mnemonic_wordsetName!
 		)
-		{ (err, seedAsMnemonic) in
+		{ [unowned self] (err, seedAsMnemonic) in
 			if let err = err {
 				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err.localizedDescription)
 				return
@@ -589,7 +589,7 @@ class Wallet: PersistableObject
 			seed_orNil: seed_orNil,
 			wasAGeneratedWallet: wasAGeneratedWallet
 		)
-		{ (err, verifiedComponentsForLogIn) in
+		{ [unowned self] (err, verifiedComponentsForLogIn) in
 			if let err = err {
 				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err.localizedDescription)
 				return
@@ -597,7 +597,7 @@ class Wallet: PersistableObject
 			HostedMoneroAPIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
-				{ (err_str, isANewAddressToServer) in
+				{ [unowned self] (err_str, isANewAddressToServer) in
 					if err_str != nil {
 						self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
 						return

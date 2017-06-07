@@ -88,7 +88,7 @@ class Wallet_HostPollingController
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
 			spend_key__private: wallet.private_keys.spend,
-			{ (err_str, parsedResult) in
+			{ [unowned self] (err_str, parsedResult) in
 				self.requestHandleFor_addressInfo = nil // first/immediately unlock this request fetch
 				if err_str != nil {
 					return // already logged err
@@ -121,7 +121,7 @@ class Wallet_HostPollingController
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
 			spend_key__private: wallet.private_keys.spend,
-			{ (err_str, parsedResult) in
+			{ [unowned self] (err_str, parsedResult) in
 				self.requestHandleFor_addressTransactions = nil // first/immediately unlock this request fetch
 				if err_str != nil {
 					return // already logged err

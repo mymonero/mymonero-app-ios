@@ -61,6 +61,12 @@ class PersistableObject
 		}
 	}
 	//
+	// Lifecycle - Deinit
+	deinit
+	{
+		NSLog("♻️  Tearing down a \(self).")
+	}
+	//
 	// Accessors - Persistence state
 	var shouldInsertNotUpdate: Bool
 	{

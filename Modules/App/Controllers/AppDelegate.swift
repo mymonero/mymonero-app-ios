@@ -13,7 +13,7 @@ import WebKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	var window: UIWindow?
-	var windowController = WindowController()
+	var windowController: WindowController!
 	var appRuntimeController: AppRuntimeController!
 	
 	func application(
@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
 	) -> Bool
 	{
+		self.windowController = WindowController() // the window must be initialized after app finishes launching or nested UITabBarControllers will
 		self.window = self.windowController.window
 		self.appRuntimeController = AppRuntimeController(
 			windowController: self.windowController

@@ -29,6 +29,8 @@ class RootViewController: UIViewController
 	}
 	func setup_views()
 	{
+		self.view.backgroundColor = UIColor.contentBackgroundColor
+		//
 		// this passwordEntryNavigationViewController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
 		self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController()
 		//

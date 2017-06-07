@@ -58,7 +58,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		webView.loadHTMLString(htmlString, baseURL: nil)
 		//
 		webView.evaluateJavaScript(fileJSString)
-		{ (any, err) in
+		{ [unowned self] (any, err) in
 			if let err = err {
 				NSLog("Load err \(err)")
 				return
@@ -77,7 +77,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	{
 		let wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
 		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
-		{ (any, err) in
+		{ [unowned self] (any, err) in
 			if let err = err {
 				fn(err.localizedDescription, nil)
 				return
@@ -238,7 +238,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	)
 	{
 		self._callSync(.core, "random_scalar", [])
-		{ (any, err) in
+		{ [unowned self] (any, err) in
 			if let err = err {
 				NSLog("err \(err)")
 				fn("Error generating random scalar.", nil)

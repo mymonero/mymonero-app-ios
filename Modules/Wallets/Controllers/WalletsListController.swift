@@ -80,11 +80,11 @@ class WalletsListController: PersistedObjectListController
 	{
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
-				{ (password, passwordType) in
+				{ [unowned self] (password, passwordType) in
 					walletInstance.Boot_byLoggingIn_givenNewlyCreatedWallet(
 						walletLabel: walletLabel,
 						swatchColor: swatchColor,
-						{ (err_str) in
+						{ [unowned self] (err_str) in
 							if err_str != nil {
 								fn(err_str, nil)
 								return
@@ -115,7 +115,7 @@ class WalletsListController: PersistedObjectListController
 	{
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
-				{ (password, passwordType) in
+				{ [unowned self] (password, passwordType) in
 					do {
 						for (_, record) in self.records.enumerated() {
 							let wallet = record as! Wallet
@@ -135,7 +135,7 @@ class WalletsListController: PersistedObjectListController
 							walletLabel: walletLabel,
 							swatchColor: swatchColor,
 							mnemonicString: mnemonicString,
-							{ (err_str) in
+							{ [unowned self] (err_str) in
 								if err_str != nil {
 									fn(err_str, nil, nil)
 									return
@@ -170,7 +170,7 @@ class WalletsListController: PersistedObjectListController
 	{
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
-				{ (password, passwordType) in
+				{ [unowned self] (password, passwordType) in
 					do {
 						for (_, record) in self.records.enumerated() {
 							let wallet = record as! Wallet
@@ -192,7 +192,7 @@ class WalletsListController: PersistedObjectListController
 							swatchColor: swatchColor,
 							address: address,
 							privateKeys: privateKeys,
-							{ (err_str) in
+							{ [unowned self] (err_str) in
 								if err_str != nil {
 									fn(err_str, nil, nil)
 									return

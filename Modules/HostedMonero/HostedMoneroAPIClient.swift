@@ -189,7 +189,7 @@ final class HostedMoneroAPIClient
 		//
 		let endpoint = HostedMoneroAPI_Endpoint.AddressInfo
 		let requestHandle = self._request(endpoint, parameters)
-		{ (err_str, response_data, response_jsonDict) in
+		{ [unowned self] (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
 				print(err_str)
 				fn(err_str, nil)
@@ -232,7 +232,7 @@ final class HostedMoneroAPIClient
 		//
 		let endpoint = HostedMoneroAPI_Endpoint.AddressTransactions
 		let requestHandle = self._request(endpoint, parameters)
-		{ (err_str, response_data, response_jsonDict) in
+		{ [unowned self] (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
 				print(err_str)
 				fn(err_str, nil)
@@ -314,7 +314,7 @@ final class HostedMoneroAPIClient
 		]
 		let endpoint = HostedMoneroAPI_Endpoint.UnspentOuts
 		let requestHandle = self._request(endpoint, parameters)
-		{ (err_str, response_data, response_jsonDict) in
+		{ [unowned self] (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
 				print(err_str)
 				fn(err_str, nil)
