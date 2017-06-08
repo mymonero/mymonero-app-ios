@@ -92,7 +92,7 @@ class PersistableObject
 		// and now that those values have been placed, we can generate the dictRepresentation
 		do {
 			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
-			let err_str = DocumentPersister.shared().Write(
+			let err_str = DocumentPersister.shared.Write(
 				documentFileWithData: data,
 				withId: self._id!,
 				toCollectionNamed: self.collectionName()
@@ -114,7 +114,7 @@ class PersistableObject
 		assert(self._id != nil, "nil _id in \(#function)")
 		do {
 			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
-			let err_str = DocumentPersister.shared().Write(
+			let err_str = DocumentPersister.shared.Write(
 				documentFileWithData: data,
 				withId: self._id!,
 				toCollectionNamed: self.collectionName()

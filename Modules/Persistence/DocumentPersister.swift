@@ -8,9 +8,6 @@
 
 import Foundation
 //
-// Internal - Singleton - Cache - use DocumentPersister.shared()
-var _shared_documentPersister: DocumentPersister?
-//
 class DocumentPersister
 {
 	typealias DocumentId = String
@@ -41,22 +38,13 @@ class DocumentPersister
 		}
 	}
 	//
-	//
 	// Interface - Static - Instance access
-	//
-	// TODO: migrate this to proper singleton declaration (static var .shared)
-	static func shared() -> DocumentPersister
-	{
-		if _shared_documentPersister == nil {
-			_shared_documentPersister = DocumentPersister()
-		}
-		return _shared_documentPersister!
-	}
+	static let shared = DocumentPersister()
 	//
 	//
 	// Lifecycle - Init
 	//
-	init()
+	private init()
 	{
 		self.setup()
 	}

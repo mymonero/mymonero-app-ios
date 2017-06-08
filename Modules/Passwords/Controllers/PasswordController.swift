@@ -144,7 +144,7 @@ final class PasswordController
 	func initializeRuntimeAndBoot()
 	{
 		assert(self.hasBooted == false, "\(#function) called while already booted")
-		let (err_str, documentJSONs) = DocumentPersister.shared().AllDocuments(
+		let (err_str, documentJSONs) = DocumentPersister.shared.AllDocuments(
 			inCollectionNamed: self.collectionName
 		)
 		if err_str != nil {
@@ -714,7 +714,7 @@ final class PasswordController
 			DictKeys.passwordType.rawValue: self.passwordType.rawValue,
 			DictKeys.messageAsEncryptedDataForUnlockChallenge_base64String.rawValue: self.messageAsEncryptedDataForUnlockChallenge_base64String!
 		]
-		let (err_str, _) = DocumentPersister.shared().Upsert(
+		let (err_str, _) = DocumentPersister.shared.Upsert(
 			documentWithId: self._id!,
 			inCollectionNamed: self.collectionName,
 			withUpdate: persistableDocument
@@ -758,7 +758,7 @@ final class PasswordController
 				self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
 				//
 				// delete pw record
-				let (err_str, _) = DocumentPersister.shared().RemoveAllDocuments(inCollectionNamed: self.collectionName)
+				let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.collectionName)
 				if err_str != nil {
 					cb(err_str)
 					return

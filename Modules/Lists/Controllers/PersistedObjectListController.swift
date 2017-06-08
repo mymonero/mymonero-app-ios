@@ -110,7 +110,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 				self._setup_didBoot()
 				return
 			}
-			let (load__err_str, documentsData) = DocumentPersister.shared().DocumentsData(
+			let (load__err_str, documentsData) = DocumentPersister.shared.DocumentsData(
 				withIds: ids!,
 				inCollectionNamed: self.documentCollectionName
 			)
@@ -221,7 +221,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Runtime - Accessors - Private - Lookups - Documents & instances
 	func _new_idsOfPersistedRecords() -> (err_str: String?, ids: [DocumentPersister.DocumentId]?)
 	{
-		return DocumentPersister.shared().IdsOfAllDocuments(inCollectionNamed: self.documentCollectionName)
+		return DocumentPersister.shared.IdsOfAllDocuments(inCollectionNamed: self.documentCollectionName)
 	}
 	//
 	//
@@ -288,7 +288,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Protocol - DeleteEverythingRegistrant
 	func passwordController_DeleteEverything() -> String?
 	{
-		let (err_str, _) = DocumentPersister.shared().RemoveAllDocuments(inCollectionNamed: self.documentCollectionName)
+		let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.documentCollectionName)
 		if err_str != nil {
 			NSLog("❌  Error while deleting everything: \(err_str!.debugDescription)")
 		} else {
