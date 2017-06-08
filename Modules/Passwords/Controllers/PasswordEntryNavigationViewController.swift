@@ -223,7 +223,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 		//
 		let parentViewController = UIApplication.shared.delegate!.window!!.rootViewController!
 		DispatchQueue.main.async
-		{ // on next 'tick' to wait for app to finish launching, if necessary; plus good to be on main
+		{ [unowned self] in // on next 'tick' to wait for app to finish launching, if necessary; plus good to be on main
 			parentViewController.present(self, animated: animated, completion: nil)
 		}
 	}

@@ -828,7 +828,7 @@ final class PasswordController
 			)
 		}
 		DispatchQueue.main.async
-		{ // on next "tick"
+		{ [unowned self] in // on next "tick"
 			hasFiredWill_fn(
 				{ err_str in
 					if err_str != nil {
