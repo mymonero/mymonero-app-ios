@@ -447,7 +447,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			let retryAfter_s = 0.1
 			// TODO? check tryNumber * retryAfter_s < T?
 			DispatchQueue.main.asyncAfter(deadline: .now() + retryAfter_s)
-			{
+			{ [unowned self] in
 				self.__evaluateJavaScript(
 					javaScriptString,
 					completionHandler: completionHandler,
