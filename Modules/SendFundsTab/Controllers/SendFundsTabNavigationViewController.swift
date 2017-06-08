@@ -23,8 +23,8 @@ class SendFundsTabNavigationViewController: UINavigationController
 	{
 		self.tabBarItem = UITabBarItem(
 			title: nil,
-			image: UIImage(named: "icon_tabBar_wallets")!,
-			selectedImage: UIImage(named: "icon_tabBar_wallets__active")!
+			image: UIImage(named: "icon_tabBar_sendFunds")!.withRenderingMode(.alwaysOriginal),
+			selectedImage: UIImage(named: "icon_tabBar_sendFunds__active")!.withRenderingMode(.alwaysOriginal)
 		)
 	}
 }

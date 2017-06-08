@@ -39,5 +39,11 @@ class RootTabBarViewController: UITabBarController
 			self.contactsTabViewController,
 			self.settingsTabViewController
 		]
+		//
+		// vertically center tab bar item images
+		let offset_y: CGFloat = 5
+		for (_, viewController) in self.viewControllers!.enumerated() {
+			viewController.tabBarItem.imageInsets = UIEdgeInsetsMake(offset_y, 0, -offset_y, 0)
+		}
 	}
 }
