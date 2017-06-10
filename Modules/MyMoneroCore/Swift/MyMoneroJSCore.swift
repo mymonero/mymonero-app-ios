@@ -41,11 +41,11 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	{
 		let filename = "mymonero-js-core-ios-build"
 		guard let filepath = Bundle.main.path(forResource: filename, ofType: "js") else {
-			NSLog("❌  Can't find js file named \(filename)")
+			DDLog.Error("MyMoneroCore", "Can't find js file named \(filename)")
 			return
 		}
 		guard let fileJSString = try? String(contentsOfFile:filepath, encoding:.utf8) else {
-			NSLog("❌  Error while loading string contents of file named \(filename)")
+			DDLog.Error("MyMoneroCore", "Error while loading string contents of file named \(filename)")
 			return
 		}
 		//

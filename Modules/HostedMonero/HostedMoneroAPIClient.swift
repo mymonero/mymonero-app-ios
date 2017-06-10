@@ -438,17 +438,25 @@ final class HostedMoneroAPIClient
 			"Content-Type": "application/json",
 		]
 		let url = "https://\(self.api_hostname)/\(endpoint.rawValue)"
-		NSLog("📡  \(url)")
-		
-		NSLog("TODO: put app user agent and platform name info on request:")
-//		parameters.app_name = self.appUserAgent_product
-//		parameters.app_version = self.appUserAgent_version
-
-		
+		DDLog.Net("HostedMonero", "\(url)")
+		var final_parameters = parameters
+		do {
+			if let value = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
+				final_parameters["app_name"] = value
+			} else {
+				DDLog.Warn("HostedMonero", "Bundle.main missing CFBundleDisplayName")
+			}
+			if let value = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+				final_parameters["app_version"] = value
+			} else {
+				DDLog.Warn("HostedMonero", "Bundle.main missing CFBundleShortVersionString")
+			}
+			// TODO: put app user agent (system version etc) and platform name info on request
+		}
 		let requestHandle = self.manager.request(
 			url,
 			method: .post,
-			parameters: parameters,
+			parameters: final_parameters,
 			encoding: JSONEncoding.default,
 			headers: headers
 			// these sorts of things shouldn't be necessary but bit us in JS/web
@@ -462,11 +470,11 @@ final class HostedMoneroAPIClient
 			{
 				case .failure(let error):
 					print(error)
-					NSLog("❌  \(url) \(statusCode)")
+					DDLog.Error("HostedMonero", "\(url) \(statusCode)")
 					fn(error.localizedDescription, nil, nil) // localized description ok here?
 					return
 				case .success:
-					NSLog("✅  \(url) \(statusCode)")
+					DDLog.Done("HostedMonero", "\(url) \(statusCode)")
 					break
 			}
 			guard let result_value = response.result.value else {

@@ -64,7 +64,7 @@ class PersistableObject
 	// Lifecycle - Deinit
 	deinit
 	{
-		NSLog("♻️  Tearing down a \(self).")
+		DDLog.TearingDown("Persistence", "Tearing down a \(self).")
 	}
 	//
 	// Accessors - Persistence state
@@ -98,9 +98,9 @@ class PersistableObject
 				toCollectionNamed: self.collectionName()
 			)
 			if err_str != nil {
-				NSLog("❌  Error while saving new object: \(err_str!)")
+				DDLog.Error("Persistence", "Error while saving new object: \(err_str!)")
 			} else {
-				NSLog("✅  Saved new \(self).")
+				DDLog.Done("Persistence", "Saved new \(self).")
 			}
 			return err_str
 		} catch let e {
@@ -120,9 +120,9 @@ class PersistableObject
 				toCollectionNamed: self.collectionName()
 			)
 			if err_str != nil {
-				NSLog("❌  Error while saving update to object: \(err_str!)")
+				DDLog.Error("Persistence", "Error while saving update to object: \(err_str!)")
 			} else {
-				NSLog("✅  Saved update to \(self).")
+				DDLog.Done("Persistence", "Saved update to \(self).")
 			}
 			return err_str
 		} catch let e {

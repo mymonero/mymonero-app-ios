@@ -37,9 +37,9 @@ class AppRuntimeController
 				address: address,
 				privateKeys: privateKeys,
 				{ (err_str, wallet, wasWalletAlreadyInserted) in
-					NSLog("err_str \(err_str.debugDescription)")
-					NSLog("wallet \(wallet.debugDescription)")
-					NSLog("wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
+					DDLog.Info("tests", "err_str \(err_str.debugDescription)")
+					DDLog.Info("tests", "wallet \(wallet.debugDescription)")
+					DDLog.Info("tests", "wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
 				},
 				userCanceledPasswordEntry_fn:
 				{

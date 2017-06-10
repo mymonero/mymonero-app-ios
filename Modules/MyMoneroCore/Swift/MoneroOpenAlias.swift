@@ -51,7 +51,7 @@ func New_ParsedDescriptionFromOpenAliasRecordWithOpenAliasPrefix(
 		let record_length = record_NSString.length
 		let rangeOfValueNameKeyDeclaration = record_NSString.range(of: "\(valueName)=")
 		if rangeOfValueNameKeyDeclaration.location == NSNotFound { // Record does not contain param
-			NSLog("⚠️  \(valueName) not found in OA record.")
+			DDLog.Warn("MyMoneroCore", "\(valueName) not found in OA record.")
 			return nil
 		}
 		let nextDelimiter_searchRange_location = rangeOfValueNameKeyDeclaration.location + valueName_length + 1

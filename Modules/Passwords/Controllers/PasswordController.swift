@@ -181,7 +181,7 @@ final class PasswordController
 			//
 			self.hasBooted = true
 			self._callAndFlushAllBlocksWaitingForBootToExecute()
-			NSLog("✅  Booted \(self) and called all waiting blocks. Waiting for unlock.")
+			DDLog.Done("Passwords", "Booted \(self) and called all waiting blocks. Waiting for unlock.")
 		}
 		if documentJSONs_count == 0 {
 			let fabricated_documentJSON =
@@ -720,7 +720,7 @@ final class PasswordController
 			withUpdate: persistableDocument
 		)
 		if err_str != nil {
-			NSLog("❌  Error while persisting \(self): \(err_str!)")
+			DDLog.Error("Passwords", "Error while persisting \(self): \(err_str!)")
 		}
 		//
 		return err_str
@@ -734,7 +734,7 @@ final class PasswordController
 		_ registrant: DeleteEverythingRegistrant
 	) -> Void
 	{
-		NSLog("Adding registrant for 'DeleteEverything': \(registrant)")
+		DDLog.Info("Passwords", "Adding registrant for 'DeleteEverything': \(registrant)")
 		self.deleteEverythingRegistrants.append(registrant)
 	}
 	func initiateDeleteEverything()
@@ -763,7 +763,7 @@ final class PasswordController
 					cb(err_str)
 					return
 				}
-				NSLog("🗑  Deleted password record.")
+				DDLog.Deleting("Passwords", "Deleted password record.")
 				// now have others delete everything else
 				for (_, registrant) in self.deleteEverythingRegistrants.enumerated() {
 					let registrant__err_str = registrant.passwordController_DeleteEverything()
@@ -794,7 +794,7 @@ final class PasswordController
 	func lockDownAppAndRequirePassword()
 	{ // just a public interface for this - special-case-usage only! (so far. see index.cordova.js.)
 		if self.hasUserEnteredValidPasswordYet == false { // this is fine, but should be used to bail
-			NSLog("⚠️  Warn: Asked to lockDownAppAndRequirePassword but no password entered yet.")
+			DDLog.Warn("Passwords", "Asked to lockDownAppAndRequirePassword but no password entered yet.")
 			return
 		}
 		NSLog("💬  Will lockDownAppAndRequirePassword")

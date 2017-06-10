@@ -161,7 +161,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	func _setup_didBoot()
 	{
-		NSLog("✅ \(self) booted.")
+		DDLog.Done("Lists", "\(self) booted.")
 		self.hasBooted = true // all done!
 		self._callAndFlushAllBlocksWaitingForBootToExecute() // after hasBooted=true
 		DispatchQueue.main.async { // on next tick to avoid instantiator missing this
@@ -170,7 +170,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	func _setup_didFailToBoot(withErrStr err_str: String)
 	{
-		NSLog("❌ \(self) failed to boot with err: \(err_str)")
+		DDLog.Error("Lists", "\(self) failed to boot with err: \(err_str)")
 		DispatchQueue.main.async { // on next tick to avoid instantiator missing this
 			let userInfo: [String: Any] =
 			[
@@ -290,9 +290,9 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	{
 		let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.documentCollectionName)
 		if err_str != nil {
-			NSLog("❌  Error while deleting everything: \(err_str!.debugDescription)")
+			DDLog.Error("Lists", "Error while deleting everything: \(err_str!.debugDescription)")
 		} else {
-			NSLog("🗑  Deleted all \(self.documentCollectionName).")
+			DDLog.Deleting("Lists", "Deleted all \(self.documentCollectionName).")
 		}
 		return err_str
 	}
@@ -302,7 +302,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func PasswordController_changedPassword()
 	{
 		if self.hasBooted != true {
-			NSLog("⚠️  \(self) asked to change password but not yet booted.")
+			DDLog.Warn("Lists", "\(self) asked to change password but not yet booted.")
 			return // critical: not ready to get this
 		}
 		// change all record passwords by re-saving
@@ -315,7 +315,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 					assert(false)
 				}
 			} else {
-				NSLog("This record failed to boot. Not messing with its saved data")
+				DDLog.Error("Lists", "This record failed to boot. Not messing with its saved data")
 				assert(false)
 			}
 		}

@@ -67,20 +67,20 @@ class Wallet_HostPollingController
 	func _fetch_addressInfo()
 	{
 		if self.requestHandleFor_addressInfo != nil {
-			NSLog("⚠️  _fetch_addressInfo called but request already exists")
+			DDLog.Warn("Wallets", "_fetch_addressInfo called but request already exists")
 			return
 		}
 		//
 		if wallet.isLoggedIn != true {
-			NSLog("❌  Unable to do request while not isLoggedIn")
+			DDLog.Error("Wallets", "Unable to do request while not isLoggedIn")
 			return
 		}
 		if wallet.public_address == nil || wallet.public_address == "" {
-			NSLog("❌  Unable to do request for wallet w/o public_address")
+			DDLog.Error("Wallets", "Unable to do request for wallet w/o public_address")
 			return
 		}
 		if wallet.private_keys == nil {
-			NSLog("❌  Unable to do request for wallet w/o private_keys")
+			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
 		self.requestHandleFor_addressInfo = HostedMoneroAPIClient.shared.AddressInfo(
@@ -100,20 +100,20 @@ class Wallet_HostPollingController
 	func _fetch_addressTransactions()
 	{
 		if self.requestHandleFor_addressTransactions != nil {
-			NSLog("⚠️  _fetch_addressInfo called but request already exists")
+			DDLog.Warn("Wallets", "_fetch_addressInfo called but request already exists")
 			return
 		}
 		//
 		if wallet.isLoggedIn != true {
-			NSLog("❌  Unable to do request while not isLoggedIn")
+			DDLog.Error("Wallets", "Unable to do request while not isLoggedIn")
 			return
 		}
 		if wallet.public_address == nil || wallet.public_address == "" {
-			NSLog("❌  Unable to do request for wallet w/o public_address")
+			DDLog.Error("Wallets", "Unable to do request for wallet w/o public_address")
 			return
 		}
 		if wallet.private_keys == nil {
-			NSLog("❌  Unable to do request for wallet w/o private_keys")
+			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
 		self.requestHandleFor_addressInfo = HostedMoneroAPIClient.shared.AddressTransactions(

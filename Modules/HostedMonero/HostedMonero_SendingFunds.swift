@@ -84,7 +84,7 @@ extension HostedMoneroAPIClient
 		}
 		func __trampolineFor_err_withStr(err_str: String) -> Void
 		{
-			NSLog("❌  SendFunds(): \(err_str)")
+			DDLog.Error("HostedMonero", "SendFunds(): \(err_str)")
 			failWithErr_fn(err_str)
 		}
 		// status: preparing to send funds…

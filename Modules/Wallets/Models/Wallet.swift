@@ -326,7 +326,6 @@ class Wallet: PersistableObject
 		if let timeIntervalSince1970 = dictRepresentation[DictKeys.dateThatLast_fetchedAccountTransactions.rawValue] {
 			self.dateThatLast_fetchedAccountTransactions = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
 		}
-		NSLog("Hydrated wallet with existing doc: \(self)")
 	}
 	//
 	//
@@ -383,7 +382,7 @@ class Wallet: PersistableObject
 		//
 		let (wordsetName__err_str, wordsetName) = WordsetName(accordingToMnemonicString: mnemonicString)
 		if wordsetName__err_str != nil {
-			NSLog("Error while detecting mnemonic wordset from mnemonic string: \(wordsetName__err_str.debugDescription)")
+			DDLog.Error("Wallets", "Error while detecting mnemonic wordset from mnemonic string: \(wordsetName__err_str.debugDescription)")
 			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: wordsetName__err_str)
 			return
 		}
@@ -445,18 +444,18 @@ class Wallet: PersistableObject
 	var isAccountScannerCatchingUp: Bool
 	{
 		if self.blockchain_height == nil || self.blockchain_height == 0 {
-			NSLog("Warn: .isScannerCatchingUp called while nil/0 blockchain_height")
+			DDLog.Warn("Wallets", ".isScannerCatchingUp called while nil/0 blockchain_height")
 			return true
 		}
 		if self.account_scanned_block_height == nil || self.account_scanned_block_height == 0  {
-			NSLog("Warn: .isScannerCatchingUp called while nil/0 account_scanned_block_height")
+			DDLog.Warn("Wallets", ".isScannerCatchingUp called while nil/0 account_scanned_block_height")
 			return true
 		}
 		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
 		if nBlocksBehind >= 10 {
 			return true
 		} else if nBlocksBehind < 0 {
-			NSLog("Warn: nBlocksBehind < 0")
+			DDLog.Warn("Wallets", "nBlocksBehind < 0")
 			return false
 		}
 		return false
@@ -464,11 +463,11 @@ class Wallet: PersistableObject
 	var nBlocksBehind: Int
 	{
 		if self.blockchain_height == nil || self.blockchain_height == 0 {
-			NSLog("Warn: .nBlocksBehind called while nil/0 blockchain_height")
+			DDLog.Warn("Wallets", ".nBlocksBehind called while nil/0 blockchain_height")
 			return 0
 		}
 		if self.account_scanned_block_height == nil || self.account_scanned_block_height == 0  {
-			NSLog("Warn: .nBlocksBehind called while nil/0 account_scanned_block_height")
+			DDLog.Warn("Wallets", ".nBlocksBehind called while nil/0 account_scanned_block_height")
 			return 0
 		}
 		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
@@ -477,15 +476,15 @@ class Wallet: PersistableObject
 	var catchingUpPercentageFloat: Double // btn 0 and 1.0
 	{
 		if self.account_scanned_height == nil || self.account_scanned_height == 0 {
-			NSLog("Warn: .catchingUpPercentageFloat accessed while nil/0 self.account_scanned_height. Bailing.")
+			DDLog.Warn("Wallets", ".catchingUpPercentageFloat accessed while nil/0 self.account_scanned_height. Bailing.")
 			return 0
 		}
 		if self.transaction_height == nil || self.transaction_height == 0 {
-			NSLog("Warn: .catchingUpPercentageFloat accessed while nil/0 self.transaction_height. Bailing.")
+			DDLog.Warn("Wallets", ".catchingUpPercentageFloat accessed while nil/0 self.transaction_height. Bailing.")
 			return 0
 		}
 		let pct: Double = Double(self.account_scanned_height!) / Double(self.transaction_height!)
-		NSLog("CatchingUpPercentageFloat \(self.account_scanned_height!)/\(self.transaction_height!) = \(pct)%")
+		DDLog.Info("Wallets", "CatchingUpPercentageFloat \(self.account_scanned_height!)/\(self.transaction_height!) = \(pct)%")
 		return pct
 	}
 	//
@@ -539,7 +538,7 @@ class Wallet: PersistableObject
 	{
 		func __proceed_havingActuallyBooted()
 		{
-			NSLog("✅  Successfully booted \(self)")
+			DDLog.Done("Wallets", "Successfully booted \(self)")
 			self.isBooted = true
 			fn(nil)
 			DispatchQueue.main.async {
@@ -547,7 +546,7 @@ class Wallet: PersistableObject
 			}
 		}
 		if self.account_seed == nil || self.account_seed!.characters.count < 1 {
-			NSLog("⚠️  Wallet initialized without an account_seed.")
+			DDLog.Warn("Wallets", "Wallet initialized without an account_seed.")
 			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
 			__proceed_havingActuallyBooted()
 			//

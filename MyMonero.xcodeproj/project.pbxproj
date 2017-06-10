@@ -77,6 +77,7 @@
 		9F8E2FFD1EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FF91EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png */; };
 		9F8E30011EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FFF1EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png */; };
 		9F8E30021EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30001EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png */; };
+		9F8E30041EEAF38600F89A1D /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30031EEAF38600F89A1D /* Logging.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
@@ -159,6 +160,7 @@
 		9F8E2FF91EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_contacts__active@3x.png"; sourceTree = "<group>"; };
 		9F8E2FFF1EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_fundsRequests@3x.png"; sourceTree = "<group>"; };
 		9F8E30001EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_fundsRequests__active@3x.png"; sourceTree = "<group>"; };
+		9F8E30031EEAF38600F89A1D /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
@@ -353,6 +355,7 @@
 			children = (
 				9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */,
 				9F8E2F571EE4909900F89A1D /* UIView+Debug.swift */,
+				9F8E30031EEAF38600F89A1D /* Logging.swift */,
 			);
 			path = DebugUtils;
 			sourceTree = "<group>";
@@ -774,6 +777,7 @@
 				9F1D002B1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F8E2F851EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift in Sources */,
+				9F8E30041EEAF38600F89A1D /* Logging.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */,
@@ -924,8 +928,10 @@
 			baseConfigurationReference = 78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LLVM_LTO = YES_THIN;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;

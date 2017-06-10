@@ -22,14 +22,14 @@ class WalletsListController: PersistedObjectListController
 	// Overrides
 	override func overridable_sortRecords()
 	{
-		NSLog("TODO: sort on date added/inserted")
+		DDLog.Todo("Wallets", "sort on date added/inserted")
 	}
 	//
 	// Runtime - Accessors - Derived properties
 	var givenBooted_swatchesInUse: [Wallet.SwatchColor]
 	{
 		if self.hasBooted != true {
-			NSLog("givenBooted_swatchesInUse called when \(self) not yet booted.")
+			assert(false, "givenBooted_swatchesInUse called when \(self) not yet booted.")
 			return [] // this may be for the first wallet creation - let's say nothing in use yet
 		}
 		var inUseSwatches: [Wallet.SwatchColor] = []
@@ -222,7 +222,7 @@ class WalletsListController: PersistedObjectListController
 		wallet.Boot_havingLoadedDecryptedExistingInitDoc(
 			{ err_str in
 				if let err_str = err_str {
-					NSLog("❌ Error while booting wallet: \(err_str)")
+					DDLog.Error("Wallets", "Error while booting wallet: \(err_str)")
 				}
 			}
 		)
