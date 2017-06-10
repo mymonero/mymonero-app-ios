@@ -97,8 +97,8 @@ extension HostedMoneroAPIClient
 			address: target_address,
 			amount: totalAmountWithoutFee
 		)
-	//	NSLog("targetDescription \(targetDescription)")
-		NSLog("💬  Total to send, before fee: \(totalAmountWithoutFee)")
+	//	DDLog.Info("HostedMonero", "targetDescription \(targetDescription)")
+		DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
 		//
 		// Derive/finalize some values…
 		let final__mixin = FixedMixin()
@@ -111,7 +111,7 @@ extension HostedMoneroAPIClient
 		mymoneroCore.DecodeAddress(target_address)
 		{ (err, decodedAddressComponents) in
 			if let _ = err {
-				NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
+				DDLog.Todo("HostedMonero", "extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
 				__trampolineFor_err_withStr(err_str: "Error decoding recipient Monero address.")
 				return
 			}
@@ -171,7 +171,7 @@ extension HostedMoneroAPIClient
 			passedIn_attemptAt_network_minimumFee: MoneroAmount
 		)
 		{ // Now we need to establish some values for balance validation and to construct the transaction
-			NSLog("Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
+			DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
 			var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
 			let _/*hostingService_chargeAmount*/ = HostedMoneroAPIClient_HostConfig.HostingServiceChargeForTransaction(
 				with: attemptAt_network_minimumFee
@@ -182,7 +182,7 @@ extension HostedMoneroAPIClient
 				unusedOuts: original_unusedOuts
 			)
 			
-			NSLog("usableOutputsAndAmounts \(usableOutputsAndAmounts)")
+			DDLog.Info("HostedMonero", "usableOutputsAndAmounts \(usableOutputsAndAmounts)")
 			
 			// v-- now, since isRingCT=true, compute fee as closely as possible before hand
 			var usingOuts = usableOutputsAndAmounts.usingOuts
@@ -200,14 +200,14 @@ extension HostedMoneroAPIClient
 					//
 					usingOuts.append(out)
 					usingOutsAmount = usingOutsAmount + out.amount
-					NSLog("Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
+					DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
 					newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
 					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
 				}
-				NSLog("New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
+				DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
 				attemptAt_network_minimumFee = newNeededFee
 			}
-			NSLog("~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
+			DDLog.Info("HostedMonero", "~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
 			// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
 			if usingOutsAmount < totalAmountIncludingFees {
 				__trampolineFor_err_withStr(err_str:
@@ -242,9 +242,9 @@ extension HostedMoneroAPIClient
 			}
 			if usingOutsAmount > totalAmountIncludingFees {
 				let changeAmount = usingOutsAmount - totalAmountIncludingFees
-				NSLog("changeAmount \(changeAmount)")
+				DDLog.Info("HostedMonero", "changeAmount \(changeAmount)")
 				// for RCT we don't presently care about dustiness so add entire change amount
-				NSLog("Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address)")
+				DDLog.Info("HostedMonero", "Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address)")
 				fundTransferDescriptions.append(
 					SendFundsTargetDescription(
 						address: wallet__public_address,
@@ -259,7 +259,7 @@ extension HostedMoneroAPIClient
 				// because isRingCT=true, create random destination to keep 2 outputs always in case of 0 change
 				// TODO: would be nice to avoid this asynchrony so ___proceed() can be dispensed with
 				mymoneroCore.New_FakeAddressForRCTTx({ (err_str, fakeAddress) in
-					NSLog("Sending 0 XMR to a fake address to keep tx uniform (no change exists): \(fakeAddress.debugDescription)")
+					DDLog.Info("HostedMonero", "Sending 0 XMR to a fake address to keep tx uniform (no change exists): \(fakeAddress.debugDescription)")
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)
 						return
@@ -284,7 +284,7 @@ extension HostedMoneroAPIClient
 			usingOuts: [MoneroOutputDescription]
 		)
 		{
-			NSLog("fundTransferDescriptions: \(fundTransferDescriptions)")
+			DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
 			// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
 			let _ = hostedMoneroAPIClient.RandomOuts(
 				using_outs: usingOuts,
@@ -331,7 +331,7 @@ extension HostedMoneroAPIClient
 				mymoneroCore.DecodeAddress(target_address)
 				{ (err, decodedAddressComponents) in
 					if let _ = err {
-						NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
+						DDLog.Todo("HostedMonero", "extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
 						__trampolineFor_err_withStr(err_str: "Error decoding recipient Monero address while creating transaction.")
 						return
 					}
@@ -340,7 +340,7 @@ extension HostedMoneroAPIClient
 						return
 					}
 					let realDestViewKey = decodedAddressComponents.publicKeys.view
-					NSLog("got realDestViewKey \(realDestViewKey)")
+					DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
 					___proceed(realDestViewKey: realDestViewKey)
 				}
 				return
@@ -376,7 +376,7 @@ extension HostedMoneroAPIClient
 					__trampolineFor_err_withStr(err_str: err_str)
 					return
 				}
-	//			NSLog("signed tx: \(signedTx!)")
+	//			DDLog.Info("HostedMonero", "signed tx: \(signedTx!)")
 				__proceedTo_serializeSignedTxAndAttemptToSend(
 					original_unusedOuts: original_unusedOuts,
 					passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
@@ -405,11 +405,11 @@ extension HostedMoneroAPIClient
 				if txBlobBytes.truncatingRemainder(dividingBy: 1024) != 0 { // TODO: AUDIT: != 0 correct here? note: truncatingRemainder is % operator
 					numKB += 1
 				}
-				NSLog("\(txBlobBytes) bytes <= \(numKB) KB (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
+				DDLog.Info("HostedMonero", "\(txBlobBytes) bytes <= \(numKB) KB (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
 				let feeActuallyNeededByNetwork = MoneroConstants.feePerKB * MoneroAmount(numKB)
 				// if we need a higher fee
 				if feeActuallyNeededByNetwork > passedIn_attemptAt_network_minimumFee {
-					NSLog("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")
+					DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")
 					__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 						original_unusedOuts: original_unusedOuts, // this must be the original unusedOuts
 						passedIn_attemptAt_network_minimumFee: feeActuallyNeededByNetwork
@@ -420,7 +420,7 @@ extension HostedMoneroAPIClient
 				//
 				// generated with correct per-kb fee
 				let final_networkFee = passedIn_attemptAt_network_minimumFee // just to make things clear
-				NSLog("💬  Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
+				DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
 				// status: submitting…
 				let _ = hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
 					address: wallet__public_address,
@@ -456,7 +456,7 @@ extension HostedMoneroAPIClient
 		remaining_unusedOuts: [MoneroOutputDescription]
 	)
 	{
-		NSLog("Selecting outputs to use. target: \(FormattedString(fromMoneroAmount: target_amount))")
+		DDLog.Info("HostedMonero", "Selecting outputs to use. target: \(FormattedString(fromMoneroAmount: target_amount))")
 		var toFinalize_usingOutsAmount = MoneroAmount(0)
 		var toFinalize_usingOuts: [MoneroOutputDescription] = []
 		var remaining_unusedOuts = unusedOuts // take 'copy' instead of using original so as to prevent issue if we must re-enter tx building fn if fee too low after building
@@ -469,7 +469,7 @@ extension HostedMoneroAPIClient
 			let out_amount = out.amount
 			toFinalize_usingOuts.append(out)
 			toFinalize_usingOutsAmount = toFinalize_usingOutsAmount + out_amount
-			NSLog("Using output: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")
+			DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")
 		}
 		return (
 			usingOuts: toFinalize_usingOuts,

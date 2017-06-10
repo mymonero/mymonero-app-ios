@@ -91,13 +91,13 @@ func ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
 {
 	if dnssec_used == true {
 		if secured == true {
-			NSLog("DNSSEC validation successful")
+			DDLog.Done("MyMoneroCore", "DNSSEC validation successful")
 		} else {
 			let err_str = "DNSSEC validation failed for \(domain): \(dnssec_fail_reason.debugDescription)"
 			return (err_str: err_str, validated_descriptions: nil)
 		}
 	} else {
-		NSLog("DNSSEC Not used")
+		DDLog.Warn("MyMoneroCore", "DNSSEC Not used")
 	}
 	var oaRecords = [ParsedOARecipientDescription]()
 	for (_, record) in records.enumerated() {

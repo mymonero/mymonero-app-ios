@@ -58,14 +58,14 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		webView.loadHTMLString(htmlString, baseURL: nil)
 		//
 		webView.evaluateJavaScript(fileJSString)
-		{ [unowned self] (any, err) in
+		{ [unowned self] (returnedValue, err) in
 			if let err = err {
-				NSLog("Load err \(err)")
+				DDLog.Error("MyMoneroCore", "Load err \(err)")
 				return
 			}
 			self.hasBooted = true
-			if let any = any {
-				NSLog("Load any \(any)")
+			if let returnedValue = returnedValue {
+				DDLog.Info("MyMoneroCore", "Loaded \(returnedValue)")
 			}
 		}
 	}
@@ -119,7 +119,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			guard let dict = any as? [String: AnyObject] else {
 				// return err?
-				NSLog("Error: Couldn't cast return value as [String: AnyObject]")
+				DDLog.Error("MyMoneroCore", "Couldn't cast return value as [String: AnyObject]")
 				return
 			}
 			if let dict_err_str = dict["err_str"] {
@@ -141,7 +141,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
 		{ (any, err) in
 			if let err = err {
-				NSLog("err \(err)")
+				DDLog.Error("MyMoneroCore", "\(err)")
 				fn(err, nil)
 				return
 			}
@@ -183,7 +183,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		self._callSync(.wallet, "VerifiedComponentsForLogIn_sync", args)
 		{ (any, err) in
 			if let err = err {
-				NSLog("err \(err)")
+				DDLog.Error("MyMoneroCore", "\(err)")
 				fn(err, nil)
 				return
 			}
@@ -240,7 +240,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		self._callSync(.core, "random_scalar", [])
 		{ [unowned self] (any, err) in
 			if let err = err {
-				NSLog("err \(err)")
+				DDLog.Error("MyMoneroCore", "err \(err)")
 				fn("Error generating random scalar.", nil)
 				return
 			}
@@ -251,7 +251,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			self._callSync(.core, "create_address", [ scalar ])
 			{ (any, err) in
 				if let err = err {
-					NSLog("err \(err)")
+					DDLog.Error("MyMoneroCore", "err \(err)")
 					fn("Error creating address with random scalar.", nil)
 					return
 				}
@@ -303,7 +303,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		self._callSync(.core, "create_transaction", args)
 		{ (any, err) in
 			if let err = err {
-				NSLog("err \(err)")
+				DDLog.Error("MyMoneroCore", "err \(err)")
 				fn("Error creating signed transaction.", nil)
 				return
 			}
@@ -327,7 +327,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		self._callSync(.core, "serialize_rct_tx_with_hash", [ json_String ])
 		{ (any, err) in
 			if let err = err {
-				NSLog("err \(err)")
+				DDLog.Error("MyMoneroCore", "err \(err)")
 				fn("Error creating signed transaction.", nil, nil)
 				return
 			}
@@ -390,7 +390,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		let args = argsAsJSFormattedStrings ?? []
 		let joined_args = args.joined(separator: ",")
 		let argsAreaString = joined_args
-//		NSLog("argsAreaString")
+//		DDLog.Info("MyMoneroCore", "argsAreaString")
 //		print(argsAreaString)
 		let javaScriptString = "mymonero_core_js.\(moduleName.rawValue).\(functionName)(\(argsAreaString))"
 		self._evaluateJavaScript(
@@ -398,10 +398,10 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			completionHandler:
 			{ (any, err) in
 				if let err = err {
-					NSLog("err \(err)")
+					DDLog.Error("MyMoneroCore", "err \(err)")
 				}
 //				if let any = any {
-//					NSLog("any \(any)")
+//					DDLog.Info("MyMoneroCore", "any \(any)")
 //				}
 				if let completionHandler = completionHandler {
 					completionHandler(any, err)
@@ -467,6 +467,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	//
 	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage)
 	{ // not really used currently - possibly in the future for any necessarily async & JS stuff
-		NSLog("received message: \(message), \(message.body)")
+		DDLog.Info("MyMoneroCore", "received message: \(message), \(message.body)")
 	}
 }

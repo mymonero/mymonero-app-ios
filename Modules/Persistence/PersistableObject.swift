@@ -105,7 +105,7 @@ class PersistableObject
 			return err_str
 		} catch let e {
 			let err_str = e.localizedDescription
-			NSLog("Caught error while saving new object: \(err_str)")
+			DDLog.Error("Persistence", "Caught error while saving new object: \(err_str)")
 			return err_str // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
 		}
 	}
@@ -127,7 +127,7 @@ class PersistableObject
 			return err_str
 		} catch let e {
 			let err_str = e.localizedDescription
-			NSLog("Caught error while saving update to object: \(err_str)")
+			DDLog.Error("Persistence", "Caught error while saving update to object: \(err_str)")
 			return err_str // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
 		}
 	}

@@ -45,7 +45,7 @@ extension HostedMoneroAPIClient
 				fn(err_str, nil)
 				return
 			}
-			// NSLog("\(openAlias_domain): \(records)")
+			// DDLog.Info("HostedMonero", "openAlias_domain): \(records)")
 			guard let parsedResult = parsedResult else {
 				let err_str = "Unknown error while parsing OA address lookup."
 				fn(err_str, nil)
@@ -80,7 +80,7 @@ extension HostedMoneroAPIClient
 			mymoneroCore.DecodeAddress(oaRecord_address)
 			{ (err, decodedAddressComponents) in
 				if let _ = err {
-					NSLog("TODO: extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
+					DDLog.Todo("HostedMonero", "extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
 					let err_str = "Address found on DNS record for OA address was not a valid Monero address." // TODO
 					fn(err_str, nil)
 					return

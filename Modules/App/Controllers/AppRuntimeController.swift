@@ -55,11 +55,11 @@ class AppRuntimeController
 //				mnemonicString: seedAsMnemonicString,
 //				{ (err_str, wallet, wasWalletAlreadyInserted) in
 //					if err_str != nil {
-//						NSLog("err_str: \(err_str.debugDescription)")
+//						DDLog.Error("tests", "err_str: \(err_str.debugDescription)")
 //						return
 //					}
-//					NSLog("wallet \(wallet.debugDescription)")
-//					NSLog("wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
+//					DDLog.Info("tests", "wallet \(wallet.debugDescription)")
+//					DDLog.Info("tests", "wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
 //				},
 //				{ // user canceled
 //				}
@@ -70,10 +70,10 @@ class AppRuntimeController
 //			self.walletsListController.CreateNewWallet_NoBootNoListAdd()
 //			{ (err_str, walletInstance) in
 //				if err_str != nil {
-//					NSLog("err \(err_str!)")
+//					DDLog.Error("tests", "err \(err_str!)")
 //					return
 //				}
-//				NSLog("Created new wallet instance but not inserted or booted yet: \(walletInstance!)")
+//				DDLog.Info("tests", "Created new wallet instance but not inserted or booted yet: \(walletInstance!)")
 //				// …… gather info from user……
 //				//
 //				self.walletsListController.GivenBooted_ObtainPW_AddNewlyGeneratedWallet(
@@ -82,10 +82,10 @@ class AppRuntimeController
 //					swatchColor: .salmon,
 //					{ (err_str, addedWallet) in
 //						if err_str != nil {
-//							NSLog("err \(err_str!)")
+//							DDLog.Error("tests", "err \(err_str!)")
 //							return
 //						}
-//						NSLog("added/booted/logged in wallet \(addedWallet.debugDescription)")
+//						DDLog.Info("tests", "added/booted/logged in wallet \(addedWallet.debugDescription)")
 //					}
 //				)
 //			}

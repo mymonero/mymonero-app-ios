@@ -130,11 +130,11 @@ final class PasswordController
 //				{
 //					if (self.hasUserSavedAPassword !== true) {
 //						// nothing to do here because the app is not unlocked and/or has no data which would be locked
-//						NSLog("💬  User became idle but no password has ever been entered/no saved data should exist.")
+//						DDLog.Info("Passwords", "User became idle but no password has ever been entered/no saved data should exist.")
 //						return
 //					} else if (self.HasUserEnteredValidPasswordYet() !== true) {
 //						// user has saved data but hasn't unlocked the app yet
-//						NSLog("💬  User became idle and saved data/pw exists, but user hasn't unlocked app yet.")
+//						DDLog.Info("Passwords", "User became idle and saved data/pw exists, but user hasn't unlocked app yet.")
 //						return
 //					}
 //					self._didBecomeIdleAfterHavingPreviouslyEnteredPassword()
@@ -148,13 +148,13 @@ final class PasswordController
 			inCollectionNamed: self.collectionName
 		)
 		if err_str != nil {
-			NSLog("Fatal error while loading \(self.collectionName): \(err_str!)")
+			DDLog.Error("Passwords", "Fatal error while loading \(self.collectionName): \(err_str!)")
 			assert(false)
 			return
 		}
 		let documentJSONs_count = documentJSONs!.count
 		if documentJSONs_count > 1 {
-			NSLog("Unexpected state while loading \(self.collectionName): more than one saved doc.")
+			DDLog.Error("Passwords", "Unexpected state while loading \(self.collectionName): more than one saved doc.")
 			assert(false)
 			return
 		}
@@ -174,7 +174,7 @@ final class PasswordController
 					// ^-- but it was saved w/o an encrypted challenge str
 					// TODO: not sure how to handle this case. delete all local info? would suck
 					let err_str = "Found undefined encrypted msg for unlock challenge in saved password model document"
-					NSLog("Error: \(err_str)")
+					DDLog.Error("Passwords", "\(err_str)")
 					return
 				}
 			}
@@ -244,7 +244,8 @@ final class PasswordController
 		func ___guardAllCallBacks() -> Bool
 		{
 			if hasCalledBack == true {
-				NSLog("PasswordController/OnceBootedAndPasswordObtained hasCalledBack already true")
+				DDLog.Error("Passwords", "PasswordController/OnceBootedAndPasswordObtained hasCalledBack already true")
+				assert(false)
 				return false // ^- shouldn't happen but just in case…
 			}
 			hasCalledBack = true
@@ -320,7 +321,7 @@ final class PasswordController
 	func givenBooted_initiateGetNewOrExistingPasswordFromUserAndEmitIt()
 	{
 		if self.hasUserEnteredValidPasswordYet == true {
-			NSLog("Warn: \(#function) asked to givenBooted_initiateGetNewOrExistingPasswordFromUserAndEmitIt but already has password.")
+			DDLog.Warn("Passwords", "\(#function) asked to givenBooted_initiateGetNewOrExistingPasswordFromUserAndEmitIt but already has password.")
 			return // already got it
 		}
 		do { // guard
@@ -342,7 +343,7 @@ final class PasswordController
 			//
 			if self.messageAsEncryptedDataForUnlockChallenge_base64String == nil {
 				let err_str = "Code fault: Existing document but no messageAsEncryptedDataForUnlockChallenge_base64String"
-				NSLog("Error: \(err_str)")
+				DDLog.Error("Passwords", "\(err_str)")
 				self.unguard_getNewOrExistingPassword()
 				assert(false, err_str)
 				return
@@ -375,7 +376,7 @@ final class PasswordController
 					)
 				} catch let e {
 					self.unguard_getNewOrExistingPassword()
-					NSLog("Error while decrypting message for unlock challenge: \(e) \(e.localizedDescription)")
+					DDLog.Error("Passwords", "Error while decrypting message for unlock challenge: \(e) \(e.localizedDescription)")
 					let err_str = self.new_incorrectPasswordValidationErrorMessageString
 					NotificationCenter.default.post(
 						name: NotificationNames.erroredWhileGettingExistingPassword.notificationName,
@@ -491,18 +492,18 @@ final class PasswordController
 		{
 			let wasAlreadyLockedOut = _unlockTimer != nil
 			if _unlockTimer != nil {
-				// NSLog("💬  clearing existing unlock timer")
+				// DDLog.Info("Passwords", "clearing existing unlock timer")
 				_unlockTimer!.invalidate()
 				_unlockTimer = nil // not strictly necessary
 			}
 			let unlockInT_s: TimeInterval = 10.0 // allows them to try again every T sec, but resets timer if they submit w/o waiting
-			NSLog("🚫 Too many password entry attempts within \(unlockInT_s)s. \(!wasAlreadyLockedOut ? "Locking out" : "Extending lockout.").")
+			DDLog.Info("Passwords", "🚫 Too many password entry attempts within \(unlockInT_s)s. \(!wasAlreadyLockedOut ? "Locking out" : "Extending lockout.").")
 			_unlockTimer = Timer.scheduledTimer(
 				withTimeInterval: unlockInT_s,
 				repeats: false,
 				block:
 				{ timer in
-					NSLog("⭕️  Unlocking password entry.")
+					DDLog.Info("Passwords", "⭕️  Unlocking password entry.")
 					_isCurrentlyLockedOut = false
 					fn(nil, "", nil) // this is _sort_ of a hack and should be made more explicit in API but I'm sending an empty string, and not even an err_str, to clear the validation error so the user knows to try again
 				}
@@ -528,7 +529,7 @@ final class PasswordController
 						let noMoreThanNTriesWithin_s = TimeInterval(30)
 						if (s_since_firstPWTryDuringThisTimePeriod > noMoreThanNTriesWithin_s) { // enough time has passed since this group began - only reset the "time period" with tries->0 and let this pass through as valid check
 							_dateOf_firstPWTryDuringThisTimePeriod = nil // not strictly necessary to do here as we reset the number of tries during this time period to zero just above
-							NSLog("There were more than \(maxLegal_numberOfTriesDuringThisTimePeriod) password entry attempts during this time period but the last attempt was more than \(noMoreThanNTriesWithin_s)s ago, so letting this go.")
+							DDLog.Info("Passwords", "There were more than \(maxLegal_numberOfTriesDuringThisTimePeriod) password entry attempts during this time period but the last attempt was more than \(noMoreThanNTriesWithin_s)s ago, so letting this go.")
 						} else { // simply too many tries!…
 							// lock it out for the next time (supposing this try does not pass)
 							_isCurrentlyLockedOut = true
@@ -536,7 +537,7 @@ final class PasswordController
 					}
 				}
 				if _isCurrentlyLockedOut == true { // do not try to check pw - return as validation err
-					NSLog("🚫  Received password entry attempt but currently locked out.")
+					DDLog.Info("Passwords", "🚫  Received password entry attempt but currently locked out.")
 					validationErr_orNil = "As a security precaution, please wait a few moments before trying again."
 					// setup or extend unlock timer - NOTE: this is pretty strict - we don't strictly need to extend the timer each time to prevent spam unlocks
 					__cancelAnyAndRebuildUnlockTimer()
@@ -627,7 +628,7 @@ final class PasswordController
 			}
 			//
 			// II. hang onto new pw, pw type, and state(s)
-			NSLog("💬  Obtained \(userSelectedTypeOfPassword!) \(obtainedPasswordString!.characters.count) chars long")
+			DDLog.Info("Passwords", "Obtained \(userSelectedTypeOfPassword!) \(obtainedPasswordString!.characters.count) chars long")
 			self._didObtainPassword(password: obtainedPasswordString!)
 			self.passwordType = userSelectedTypeOfPassword!
 			//
@@ -778,7 +779,7 @@ final class PasswordController
 			optl__fn:
 			{ [unowned self] (err_str) in
 				if err_str != nil {
-					NSLog("Error while deleting everything: \(err_str!)")
+					DDLog.Error("Passwords", "Error while deleting everything: \(err_str!)")
 					assert(false)
 					return
 				}
@@ -797,7 +798,7 @@ final class PasswordController
 			DDLog.Warn("Passwords", "Asked to lockDownAppAndRequirePassword but no password entered yet.")
 			return
 		}
-		NSLog("💬  Will lockDownAppAndRequirePassword")
+		DDLog.Info("Passwords", "Will lockDownAppAndRequirePassword")
 		self._deconstructBootedStateAndClearPassword(
 			isForADeleteEverything: false,
 			optl__hasFiredWill_fn: nil,
