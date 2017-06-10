@@ -29,7 +29,7 @@ struct DDLog
 		//
 		var logMessagePrefix: String
 		{
-			return "\(self.rawValue)  "
+			return "\t\(self.rawValue)\t"
 		}
 	}
 	//
