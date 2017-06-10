@@ -45,9 +45,11 @@ struct DDLog
 	//
 	static func addLogEntry(categoryName: CategoryName, level: LogLevel, message: String)
 	{
+		#if DEBUG
 		let final_message = "\(level.logMessagePrefix)\(message)"
 		let log = self.log(named: categoryName)
 		os_log("%@", log: log, final_message)
+		#endif
 	}
 	//
 	static func Info(_ categoryName: CategoryName, _ message: String)
