@@ -516,9 +516,9 @@ extension MyMoneroCoreJS // for Parsing
 			spend_key__private.jsRepresentationString
 		]
 		self._callSync(.responseParser, "Parsed_AddressInfo__sync", args)
-		{ (any, err) in
-			if let err = err {
-				fn(err.localizedDescription, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
 			let returnValuesByKey = any as! [String: Any]
@@ -600,9 +600,9 @@ extension MyMoneroCoreJS // for Parsing
 				spend_key__private.jsRepresentationString
 		]
 		self._callSync(.responseParser, "Parsed_AddressTransactions__sync", args)
-		{ (any, err) in
-			if let err = err {
-				fn(err.localizedDescription, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
 			let returnValuesByKey = any as! [String: Any]
@@ -656,9 +656,9 @@ extension MyMoneroCoreJS // for Parsing
 			spend_key__private.jsRepresentationString
 		]
 		self._callSync(.responseParser, "Parsed_UnspentOuts__sync", args)
-		{ (any, err) in
-			if let err = err {
-				fn(err.localizedDescription, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
 			let returnValuesByKey = any as! [String: Any]

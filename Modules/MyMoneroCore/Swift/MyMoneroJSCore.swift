@@ -77,28 +77,26 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	{
 		let wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
 		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
-		{ [unowned self] (any, err) in
-			if let err = err {
-				fn(err.localizedDescription, nil)
+		{ [unowned self] (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
-			if let dict = any as? [String: AnyObject] {
-				let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
-				fn(nil, description)
-			}
-			// TODO: handle err?
+			let dict = any as! [String: AnyObject]
+			let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
+			fn(nil, description)
 		}
 	}
 	func MnemonicStringFromSeed(
 		_ account_seed: String,
 		_ wordsetName: MoneroMnemonicWordsetName,
-		_ fn: @escaping (Error?, MoneroSeedAsMnemonic?) -> Void
+		_ fn: @escaping (_ err_str: String?, MoneroSeedAsMnemonic?) -> Void
 	)
 	{
 		self._callSync(.wallet, "MnemonicStringFromSeed", [ "\"\(account_seed)\"", "\"\(wordsetName.rawValue)\"" ])
-		{ (any, err) in
-			if let err = err {
-				fn(err, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
 			let mnemonicString = any as! MoneroSeedAsMnemonic
@@ -108,13 +106,13 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	func WalletDescriptionFromMnemonicSeed(
 		_ mnemonicString: MoneroSeedAsMnemonic,
 		_ wordsetName: MoneroMnemonicWordsetName,
-		_ fn: @escaping (Error?, MoneroWalletDescription?) -> Void
+		_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void
 	)
 	{
 		self._callSync(.wallet, "SeedAndKeysFromMnemonic_sync", [ "\"\(mnemonicString)\"", "\"\(wordsetName.rawValue)\"" ])
-		{ (any, err) in
-			if let err = err {
-				fn(err, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
 			guard let dict = any as? [String: AnyObject] else {
@@ -124,8 +122,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			if let dict_err_str = dict["err_str"] {
 				guard let _ = dict_err_str as? NSNull else {
-					let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ NSLocalizedDescriptionKey: dict_err_str as! String ])
-					fn(err, nil)
+					fn(dict_err_str as? String, nil)
 					return
 				}
 			}
@@ -135,32 +132,28 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	}
 	func DecodeAddress(
 		_ address: String,
-		_ fn: @escaping (Error?, _ decodedAddressComponents: MoneroDecodedAddressComponents?) -> Void
+		_ fn: @escaping (_ err_str: String?, _ decodedAddressComponents: MoneroDecodedAddressComponents?) -> Void
 	)
 	{
 		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
-		{ (any, err) in
-			if let err = err {
-				DDLog.Error("MyMoneroCore", "\(err)")
-				fn(err, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
-			if let dict = any as? [String: AnyObject] {
-				let view = dict["view"] as! MoneroKey
-				let spend = dict["spend"] as! MoneroKey
-				var intPaymentId = dict["intPaymentId"] as? MoneroPaymentID
-				if intPaymentId == "" { // normalize
-					intPaymentId = nil
-				}
-				let keypair = MoneroKeyDuo(view: view, spend: spend)
-				let components = MoneroDecodedAddressComponents(
-					publicKeys: keypair,
-					intPaymentId: intPaymentId
-				)
-				fn(nil, components)
-				return
+			let dict = any as! [String: AnyObject]
+			let view = dict["view"] as! MoneroKey
+			let spend = dict["spend"] as! MoneroKey
+			var intPaymentId = dict["intPaymentId"] as? MoneroPaymentID
+			if intPaymentId == "" { // normalize
+				intPaymentId = nil
 			}
-			// TODO: throw?
+			let keypair = MoneroKeyDuo(view: view, spend: spend)
+			let components = MoneroDecodedAddressComponents(
+				publicKeys: keypair,
+				intPaymentId: intPaymentId
+			)
+			fn(nil, components)
 		}
 	}
 	func New_VerifiedComponentsForLogIn(
@@ -169,7 +162,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		spend_key_orNilForViewOnly: MoneroKey?,
 		seed_orNil: MoneroSeed?,
 		wasAGeneratedWallet: Bool,
-		_ fn: @escaping (Error?, MoneroVerifiedComponentsForLogIn?) -> Void
+		_ fn: @escaping (_ err_str: String?, MoneroVerifiedComponentsForLogIn?) -> Void
 	)
 	{
 		let args =
@@ -181,67 +174,61 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			"\(wasAGeneratedWallet)"
 		]
 		self._callSync(.wallet, "VerifiedComponentsForLogIn_sync", args)
-		{ (any, err) in
-			if let err = err {
-				DDLog.Error("MyMoneroCore", "\(err)")
-				fn(err, nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
-			if let dict = any as? [String: AnyObject] {
-				if let dict_err_str = dict["err_str"] {
-					guard let _ = dict_err_str as? NSNull else {
-						let err = NSError(domain:"MyMoneroJSCore", code:-1, userInfo:[ NSLocalizedDescriptionKey: dict_err_str as! String ])
-						fn(err, nil)
-						return
-					}
+			let dict = any as! [String: AnyObject]
+			if let dict_err_str = dict["err_str"] {
+				guard let _ = dict_err_str as? NSNull else {
+					fn(dict_err_str as? String, nil)
+					return
 				}
-				let seed = dict["account_seed"] as! MoneroSeed
-				let publicAddress = dict["address"] as! MoneroAddress
-				let public_keys = dict["public_keys"] as! [String: AnyObject]
-				let private_keys = dict["private_keys"] as! [String: AnyObject]
-				let publicKeys = MoneroKeyDuo(
-					view: public_keys["view"] as! MoneroKey,
-					spend: public_keys["spend"] as! MoneroKey
-				)
-				let privateKeys = MoneroKeyDuo(
-					view: private_keys["view"] as! MoneroKey,
-					spend: private_keys["spend"] as! MoneroKey
-				)
-				let isInViewOnlyMode = dict["isInViewOnlyMode"] as! Bool
-				let components = MoneroVerifiedComponentsForLogIn(
-					seed: seed,
-					publicAddress: publicAddress,
-					publicKeys: publicKeys,
-					privateKeys: privateKeys,
-					isInViewOnlyMode: isInViewOnlyMode
-				)
-				fn(nil, components)
-				return
 			}
-			// TODO: throw?
+			let seed = dict["account_seed"] as! MoneroSeed
+			let publicAddress = dict["address"] as! MoneroAddress
+			let public_keys = dict["public_keys"] as! [String: AnyObject]
+			let private_keys = dict["private_keys"] as! [String: AnyObject]
+			let publicKeys = MoneroKeyDuo(
+				view: public_keys["view"] as! MoneroKey,
+				spend: public_keys["spend"] as! MoneroKey
+			)
+			let privateKeys = MoneroKeyDuo(
+				view: private_keys["view"] as! MoneroKey,
+				spend: private_keys["spend"] as! MoneroKey
+			)
+			let isInViewOnlyMode = dict["isInViewOnlyMode"] as! Bool
+			let components = MoneroVerifiedComponentsForLogIn(
+				seed: seed,
+				publicAddress: publicAddress,
+				publicKeys: publicKeys,
+				privateKeys: privateKeys,
+				isInViewOnlyMode: isInViewOnlyMode
+			)
+			fn(nil, components)
 		}
 	}
-	func New_PaymentID(_ fn: @escaping (MoneroPaymentID) -> Void)
+	func New_PaymentID(_ fn: @escaping (_ err_str: String?, _ paymentId: MoneroPaymentID?) -> Void)
 	{
 		self._callSync(.paymentID, "New_TransactionID", nil)
-		{ (any, err) in
-			if let any = any {
-				let paymentID = any as! MoneroPaymentID
-				fn(paymentID)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn(err_str, nil)
 				return
 			}
-			// TODO: throw?
+			let paymentID = any as! MoneroPaymentID
+			fn(nil, paymentID)
 		}
 	}
 	func New_FakeAddressForRCTTx(
-		_ fn: @escaping (_ err_str: String?, MoneroAddress?) -> Void
+		_ fn: @escaping (_ err_str: String?, _ address: MoneroAddress?) -> Void
 	)
 	{
 		self._callSync(.core, "random_scalar", [])
-		{ [unowned self] (any, err) in
-			if let err = err {
-				DDLog.Error("MyMoneroCore", "err \(err)")
-				fn("Error generating random scalar.", nil)
+		{ [unowned self] (err_str, any) in
+			if let err_str = err_str {
+				fn("Error generating random scalar: \(err_str)", nil)
 				return
 			}
 			guard let scalar = any as? String else {
@@ -249,10 +236,9 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				return
 			}
 			self._callSync(.core, "create_address", [ scalar ])
-			{ (any, err) in
-				if let err = err {
-					DDLog.Error("MyMoneroCore", "err \(err)")
-					fn("Error creating address with random scalar.", nil)
+			{ (err_str, any) in
+				if let err_str = err_str {
+					fn("Error creating address with random scalar: \(err_str)", nil)
 					return
 				}
 				guard let dict = any as? [String: AnyObject] else {
@@ -283,7 +269,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ fn: @escaping (_ err_str: String?, _ signedTxDescription_dict: MoneroSignedTransaction?) -> Void
 	) -> Void
 	{
-		// Now serialize all arguments into good inputs to .core.create_transaction
+		// Serialize all arguments into good inputs to .core.create_transaction
 		let args: [String] =
 		[
 			wallet__public_keys.jsRepresentationString,
@@ -293,18 +279,17 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			MoneroRandomAmountAndOutputs.jsArrayString(mix_outs),
 			"\(fake_outputs_count)",
 			fee_amount.jsRepresentationString,
-			payment_id != nil ? payment_id! : "undefined", // undefined rather than "undefined"
+			payment_id != nil ? payment_id!.jsRepresentationString : "undefined", // undefined rather than "undefined"
 			"\(pid_encrypt != nil ? pid_encrypt! : false)",
-			ifPIDEncrypt_realDestViewKey != nil ? ifPIDEncrypt_realDestViewKey! : "undefined", // undefined rather than "undefined" - tho the undefined case here should be able to be a garbage value
+			ifPIDEncrypt_realDestViewKey != nil ? ifPIDEncrypt_realDestViewKey!.jsRepresentationString : "undefined", // undefined rather than "undefined" - tho the undefined case here should be able to be a garbage value
 			"\(unlock_time)",
 			"\(isRingCT != nil ? isRingCT! : true)",
 		]
 		// might be nice to assert arg length here or centrally via some fn name -> length map
 		self._callSync(.core, "create_transaction", args)
-		{ (any, err) in
-			if let err = err {
-				DDLog.Error("MyMoneroCore", "err \(err)")
-				fn("Error creating signed transaction.", nil)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn("Error creating signed transaction: \(err_str)", nil)
 				return
 			}
 			guard let signedTxDescription_dict = any as? MoneroSignedTransaction else {
@@ -325,9 +310,9 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	{
 		let json_String = __jsonStringForArg(fromJSONDict: signedTx)
 		self._callSync(.core, "serialize_rct_tx_with_hash", [ json_String ])
-		{ (any, err) in
-			if let err = err {
-				DDLog.Error("MyMoneroCore", "err \(err)")
+		{ (err_str, any) in
+			if let err_str = err_str {
+				DDLog.Error("MyMoneroCore", "\(err_str)")
 				fn("Error creating signed transaction.", nil, nil)
 				return
 			}
@@ -384,7 +369,11 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ moduleName: MyMoneroCoreJS_ModuleName,
 		_ functionName: String,
 		_ argsAsJSFormattedStrings: [String]?,
-		_ completionHandler: ((Any?, Error?) -> Void)?
+		_ completionHandler: ((
+			_ err_str: String?,
+			_ returnedValue: Any?
+		
+		) -> Void)?
 	)
 	{
 		let args = argsAsJSFormattedStrings ?? []
@@ -396,15 +385,32 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		self._evaluateJavaScript(
 			javaScriptString,
 			completionHandler:
-			{ (any, err) in
-				if let err = err {
-					DDLog.Error("MyMoneroCore", "err \(err)")
+			{ (returnedValue, err) in
+				var err_str: String?
+				do {
+					if let err = err {
+						let err_NSError = err as NSError
+						if let err_WKError = err_NSError as? WKError {
+							switch err_WKError.code {
+								case .javaScriptExceptionOccurred:
+									let exceptionMessage = err_WKError.userInfo["WKJavaScriptExceptionMessage"] as! String // TODO: any constant declared for "WKJavaScriptExceptionMessage"?
+									err_str = exceptionMessage
+									break
+								default:
+									break // nothing to do - fall through to localizedDescription - at least for now. TODO?
+							}
+						}
+						if err_str == nil { // if still nil
+							// fall back to general case
+							err_str = err.localizedDescription
+						}
+					}
+					if let err_str = err_str {
+						DDLog.Error("MyMoneroCore", "[.\(moduleName)/\(functionName)]: \"\(err_str)\"")
+					}
 				}
-//				if let any = any {
-//					DDLog.Info("MyMoneroCore", "any \(any)")
-//				}
 				if let completionHandler = completionHandler {
-					completionHandler(any, err)
+					completionHandler(err_str, returnedValue)
 				}
 			}
 		)

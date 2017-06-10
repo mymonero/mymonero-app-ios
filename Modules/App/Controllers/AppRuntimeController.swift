@@ -24,6 +24,26 @@ class AppRuntimeController
 		DispatchQueue.main.async
 		{
 			
+//			MyMoneroCore.shared.CreateTransaction(
+//				wallet__public_keys: MoneroKeyDuo(view: "", spend: ""),
+//				wallet__private_keys: MoneroKeyDuo(view: "", spend: ""),
+//				splitDestinations: [],
+//				usingOuts: [],
+//				mix_outs: [],
+//				fake_outputs_count: 4,
+//				fee_amount: MoneroAmount("1000"),
+//				payment_id: "asdfasdfadf",
+//				pid_encrypt: true,
+//				ifPIDEncrypt_realDestViewKey: "asdfasdf",
+//				unlock_time: 0,
+//				isRingCT: true
+//			)
+//			{ (err_str, signedTx) in
+//				DDLog.Error("tests", "\(err_str)")
+//			}
+//			
+//			
+//			
 			
 			
 			let address = "43zxvpcj5Xv9SEkNXbMCG7LPQStHMpFCQCmkmR4u5nzjWwq5Xkv5VmGgYEsHXg4ja2FGRD5wMWbBVMijDTqmmVqm93wHGkg"
