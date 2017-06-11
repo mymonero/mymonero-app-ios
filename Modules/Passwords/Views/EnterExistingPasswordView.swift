@@ -9,7 +9,8 @@
 import UIKit
 //
 class EnterExistingPasswordView: PasswordEntryScreenBaseView
-{	var password_label: UICommonComponents.FormLabel!
+{
+	var password_label: UICommonComponents.FormLabel!
 	var password_inputView: UICommonComponents.FormInputField!
 	var forgot_linkButtonView: UICommonComponents.LinkButtonView!
 	//
