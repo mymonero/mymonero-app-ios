@@ -25,7 +25,7 @@ extension UICommonComponents
 				x: 0,
 				y: 0, 
 				width: 0,
-				height: 16
+				height: 24 // increased height for touchability
 			)
 			super.init(frame: frame)
 			self.mode = mode

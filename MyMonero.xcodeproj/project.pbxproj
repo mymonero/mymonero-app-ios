@@ -82,6 +82,20 @@
 		9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30231EED7D7800F89A1D /* ForgotPasswordViewController.swift */; };
 		9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30241EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift */; };
 		9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30251EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift */; };
+		9F8E303A1EEDAB9400F89A1D /* addButtonIcon_10@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */; };
+		9F8E303B1EEDAB9400F89A1D /* backButtonIcon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E302D1EEDAB9400F89A1D /* backButtonIcon@3x.png */; };
+		9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E302E1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png */; };
+		9F8E303D1EEDAB9400F89A1D /* detectedCheckmark@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E302F1EEDAB9400F89A1D /* detectedCheckmark@3x.png */; };
+		9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30301EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png */; };
+		9F8E303F1EEDAB9400F89A1D /* list_rightside_chevron@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30311EEDAB9400F89A1D /* list_rightside_chevron@3x.png */; };
+		9F8E30401EEDAB9400F89A1D /* wallet-00C6FF@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30321EEDAB9400F89A1D /* wallet-00C6FF@3x.png */; };
+		9F8E30411EEDAB9400F89A1D /* wallet-00F4CD@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30331EEDAB9400F89A1D /* wallet-00F4CD@3x.png */; };
+		9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30341EEDAB9400F89A1D /* wallet-6B696B@3x.png */; };
+		9F8E30431EEDAB9400F89A1D /* wallet-CFCECF@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30351EEDAB9400F89A1D /* wallet-CFCECF@3x.png */; };
+		9F8E30441EEDAB9400F89A1D /* wallet-D975E1@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30361EEDAB9400F89A1D /* wallet-D975E1@3x.png */; };
+		9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */; };
+		9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */; };
+		9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
@@ -169,6 +183,20 @@
 		9F8E30231EED7D7800F89A1D /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		9F8E30241EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryNavigationViewController.swift; sourceTree = "<group>"; };
 		9F8E30251EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryScreenBaseViewController.swift; sourceTree = "<group>"; };
+		9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addButtonIcon_10@3x.png"; sourceTree = "<group>"; };
+		9F8E302D1EEDAB9400F89A1D /* backButtonIcon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "backButtonIcon@3x.png"; sourceTree = "<group>"; };
+		9F8E302E1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "contactPicker_xBtnIcn@3x.png"; sourceTree = "<group>"; };
+		9F8E302F1EEDAB9400F89A1D /* detectedCheckmark@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "detectedCheckmark@3x.png"; sourceTree = "<group>"; };
+		9F8E30301EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "inlineMessageDialog_closeBtn@3x.png"; sourceTree = "<group>"; };
+		9F8E30311EEDAB9400F89A1D /* list_rightside_chevron@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_rightside_chevron@3x.png"; sourceTree = "<group>"; };
+		9F8E30321EEDAB9400F89A1D /* wallet-00C6FF@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-00C6FF@3x.png"; sourceTree = "<group>"; };
+		9F8E30331EEDAB9400F89A1D /* wallet-00F4CD@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-00F4CD@3x.png"; sourceTree = "<group>"; };
+		9F8E30341EEDAB9400F89A1D /* wallet-6B696B@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-6B696B@3x.png"; sourceTree = "<group>"; };
+		9F8E30351EEDAB9400F89A1D /* wallet-CFCECF@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-CFCECF@3x.png"; sourceTree = "<group>"; };
+		9F8E30361EEDAB9400F89A1D /* wallet-D975E1@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-D975E1@3x.png"; sourceTree = "<group>"; };
+		9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EACF12@3x.png"; sourceTree = "<group>"; };
+		9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EB8316@3x.png"; sourceTree = "<group>"; };
+		9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-F97777@3x.png"; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
@@ -380,6 +408,20 @@
 				9F8E300B1EED6EC200F89A1D /* pushButtonBG_utility@3x.png */,
 				9F8E2FA11EE883E800F89A1D /* textField_bg_error_xStretchable@3x.png */,
 				9F8E2FA21EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png */,
+				9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */,
+				9F8E302D1EEDAB9400F89A1D /* backButtonIcon@3x.png */,
+				9F8E302E1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png */,
+				9F8E302F1EEDAB9400F89A1D /* detectedCheckmark@3x.png */,
+				9F8E30301EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png */,
+				9F8E30311EEDAB9400F89A1D /* list_rightside_chevron@3x.png */,
+				9F8E30321EEDAB9400F89A1D /* wallet-00C6FF@3x.png */,
+				9F8E30331EEDAB9400F89A1D /* wallet-00F4CD@3x.png */,
+				9F8E30341EEDAB9400F89A1D /* wallet-6B696B@3x.png */,
+				9F8E30351EEDAB9400F89A1D /* wallet-CFCECF@3x.png */,
+				9F8E30361EEDAB9400F89A1D /* wallet-D975E1@3x.png */,
+				9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */,
+				9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */,
+				9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -691,19 +733,31 @@
 			files = (
 				9F8E2FFA1EE978E800F89A1D /* actionButton_iconImage__request@3x.png in Resources */,
 				9F1C4B981EC241D4004473CE /* mymonero-js-core-ios-build.js in Resources */,
+				9F8E30411EEDAB9400F89A1D /* wallet-00F4CD@3x.png in Resources */,
 				9F8E2FEC1EE978B700F89A1D /* actionButton_iconImage__useCamera@3x.png in Resources */,
+				9F8E303A1EEDAB9400F89A1D /* addButtonIcon_10@3x.png in Resources */,
+				9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */,
 				9F8E300F1EED6EC200F89A1D /* pushButtonBG_destructive@3x.png in Resources */,
 				9F8E2FFD1EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png in Resources */,
+				9F8E30441EEDAB9400F89A1D /* wallet-D975E1@3x.png in Resources */,
+				9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */,
 				9F8E300C1EED6EC200F89A1D /* pushButtonBG_action_highlighted@3x.png in Resources */,
+				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
+				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
 				9F8E2FF31EE978DF00F89A1D /* icon_tabBar_settings@3x.png in Resources */,
 				9F8E2FEB1EE978B700F89A1D /* actionButton_iconImage__chooseFile@3x.png in Resources */,
 				9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */,
 				9F8E2FEF1EE978B700F89A1D /* qrDropzoneIcon@3x.png in Resources */,
+				9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */,
+				9F8E303D1EEDAB9400F89A1D /* detectedCheckmark@3x.png in Resources */,
 				9F8E2F991EE8837300F89A1D /* icon_tabBar_wallets@3x.png in Resources */,
 				9F8E30101EED6EC200F89A1D /* pushButtonBG_disabled@3x.png in Resources */,
+				9F8E303B1EEDAB9400F89A1D /* backButtonIcon@3x.png in Resources */,
+				9F8E30431EEDAB9400F89A1D /* wallet-CFCECF@3x.png in Resources */,
 				9F8E300E1EED6EC200F89A1D /* pushButtonBG_destructive_highlighted@3x.png in Resources */,
+				9F8E303F1EEDAB9400F89A1D /* list_rightside_chevron@3x.png in Resources */,
 				9F8E2FEE1EE978B700F89A1D /* icon_tabBar_sendFunds__active@3x.png in Resources */,
 				9F8E2FED1EE978B700F89A1D /* icon_tabBar_sendFunds@3x.png in Resources */,
 				9F8E2FA41EE883E800F89A1D /* textField_bg_noErr_xStretchable@3x.png in Resources */,
@@ -715,7 +769,9 @@
 				9F8E2FF41EE978DF00F89A1D /* icon_tabBar_settings__active@3x.png in Resources */,
 				9F8E30011EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png in Resources */,
 				9F8E30111EED6EC200F89A1D /* pushButtonBG_utility_highlighted@3x.png in Resources */,
+				9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */,
 				9F8E2FFB1EE978E800F89A1D /* actionButton_iconImage__send@3x.png in Resources */,
+				9F8E30401EEDAB9400F89A1D /* wallet-00C6FF@3x.png in Resources */,
 				9F8E30021EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png in Resources */,
 				9F8E30121EED6EC200F89A1D /* pushButtonBG_utility@3x.png in Resources */,
 				9F8E2FE01EE8A76200F89A1D /* tabBarBGColorImage@3x.png in Resources */,

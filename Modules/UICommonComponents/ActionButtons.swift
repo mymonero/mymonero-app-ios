@@ -41,14 +41,14 @@ extension UICommonComponents
 			super.setup()
 		}
 		//
-		func givenSuperview_layOut(withSibling: ActionButton?)
+		func givenSuperview_layOut(atY y: CGFloat, withMarginH margin_h: CGFloat)
 		{
 			let containerWidth = self.superview!.frame.size.width
-			let width = containerWidth/2 - ActionButton.spaceBetweenSiblingButtons/2
-			let x = self.isLeftOfTwoButtons == true ? 0 : width + ActionButton.spaceBetweenSiblingButtons/2
+			let width = (containerWidth - 2*margin_h)/2 - ActionButton.spaceBetweenSiblingButtons/2
+			let x = margin_h + (self.isLeftOfTwoButtons == true ? 0 : width + ActionButton.spaceBetweenSiblingButtons)
 			self.frame = CGRect(
 				x: x,
-				y: 0,
+				y: y,
 				width: width,
 				height: ActionButton.buttonHeight
 			)

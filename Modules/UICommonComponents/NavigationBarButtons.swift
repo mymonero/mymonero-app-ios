@@ -21,14 +21,24 @@ extension UICommonComponents
 			case edit
 			case valueDisplayLabel
 		}
-		convenience init(type: ButtonItemType, target: Any, action: Selector)
+		var tapped_fn: ((Void) -> Void)?
+		convenience init(type: ButtonItemType, target: Any?, action: Selector?)
 		{
 			self.init(type: type, target: target, action: action, title_orNilForDefault: nil)
 		}
-		init(type: ButtonItemType, target: Any, action: Selector, title_orNilForDefault: String?)
+		init(type: ButtonItemType, tapped_fn: @escaping (Void) -> Void)
 		{
 			super.init()
-			//
+			self.tapped_fn = tapped_fn
+			self._shared_initializeWith(type: type, target: self, action: #selector(_forFn_tapped), title_orNilForDefault: nil)
+		}
+		init(type: ButtonItemType, target: Any?, action: Selector?, title_orNilForDefault: String?)
+		{
+			super.init()
+			self._shared_initializeWith(type: type, target: target, action: action, title_orNilForDefault: title_orNilForDefault)
+		}
+		func _shared_initializeWith(type: ButtonItemType, target: Any?, action: Selector?, title_orNilForDefault: String?)
+		{
 			if type == .valueDisplayLabel {
 				let view = UILabel()
 				view.text = title_orNilForDefault
@@ -52,15 +62,24 @@ extension UICommonComponents
 					break
 			}
 			let view = UICommonComponents.PushButton(pushButtonType: pushButtonType)
-			view.addTarget(target, action: action, for: .touchUpInside)
+			if target != nil && action != nil {
+				view.addTarget(target!, action: action!, for: .touchUpInside)
+			}
 			var sizeToFitAndAddPadding = false
+			var or_useWidth_notIncludingImagePadding: CGFloat?
+			let imagePaddingForShadow_h: CGFloat = 1 // the grey image has shadow around it, and we add extra space for that in the blue and disabled images to make all images regular
+			let imagePaddingForShadow_v: CGFloat = 1
 			switch type
 			{
 				case .back:
 					view.setImage(UIImage(named: "backButtonIcon"), for: .normal)
+					or_useWidth_notIncludingImagePadding = 26
+					view.imageEdgeInsets = UIEdgeInsetsMake(0, -imagePaddingForShadow_h, 0, imagePaddingForShadow_h)
 					break
 				case .add:
 					view.setImage(UIImage(named: "addButtonIcon"), for: .normal)
+					or_useWidth_notIncludingImagePadding = 26
+					view.imageEdgeInsets = UIEdgeInsetsMake(0, -imagePaddingForShadow_h, 0, imagePaddingForShadow_h)
 					break
 				case .cancel:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Cancel", comment: ""), for: .normal)
@@ -84,16 +103,24 @@ extension UICommonComponents
 				//
 				let padding_x: CGFloat = 8
 				frame = view.frame // after sizeToFit()
-				frame.size.width += padding_x * 2
+				frame.size.width += 2*padding_x + 2*imagePaddingForShadow_h
 			} else {
 				frame = view.frame
+				if let width = or_useWidth_notIncludingImagePadding {
+					frame.size.width = width + 2*imagePaddingForShadow_h
+				}
 			}
-			frame.size.height = 26 // 26, not 24, because the grey image has shadow around it, and we add extra space for that in the blue and disabled images
+			frame.size.height = 24 + 2*imagePaddingForShadow_v
 			view.frame = frame
 			self.customView = view
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
+		}
+		//
+		@objc func _forFn_tapped()
+		{
+			self.tapped_fn!()
 		}
 	}
 }

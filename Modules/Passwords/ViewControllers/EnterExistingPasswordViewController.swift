@@ -205,7 +205,10 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	@objc
 	func tapped_forgotButton()
 	{
-		assert(false, "TODO")
+		let controller = ForgotPasswordViewController()
+		DispatchQueue.main.async { // to avoid animation jank (TODO: does this actually work? is this a problem on-device?); possibly exists due to time needed to lay out emoji label
+			self.navigationController!.pushViewController(controller, animated: true)
+		}
 	}
 
 }

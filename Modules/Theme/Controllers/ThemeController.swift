@@ -33,7 +33,6 @@ class ThemeController
 	func configureAppearance()
 	{
 		self.configureAppearance_navigationBar()
-		self.configureAppearance_tabBar()
 	}
 	func configureAppearance_navigationBar()
 	{
@@ -47,9 +46,6 @@ class ThemeController
 		]
 		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-1, for: .default) // b/c font is smaller, need to align w/nav buttons
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
-	}
-	func configureAppearance_tabBar()
-	{ // background color is set via an image in RootTabBarViewController, b/c
 	}
 }
 //
@@ -65,6 +61,10 @@ extension UIColor
 	static var contentBackgroundColor: UIColor
 	{
 		return UIColor(rgb: 0x272527)
+	}
+	static var contentTextColor: UIColor
+	{
+		return UIColor(rgb: 0x9E9C9E)
 	}
 	//
 	static var standaloneValidationTextOrDestructiveLinkContentColor: UIColor

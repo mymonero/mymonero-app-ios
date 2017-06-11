@@ -297,7 +297,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 				}
 				enterExistingPassword_cb(
 					didCancel,
-					password_orNil!
+					password_orNil
 				)
 				// we don't want to free/zero the cb here - user may get pw wrong and try again
 				break
