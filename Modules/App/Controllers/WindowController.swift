@@ -15,6 +15,8 @@ class WindowController
 	//
 	init()
 	{
+		self.window.backgroundColor = UIColor.contentBackgroundColor
+		//
 		let _ = ThemeController.shared // so as to initialize it so it sets up appearance, mode, etc
 		//
 		window.rootViewController = self.rootViewController
