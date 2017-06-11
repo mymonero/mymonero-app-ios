@@ -17,10 +17,6 @@
 		9F1B57491ED8F78D00410675 /* Wallet_HostPollingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1B57481ED8F78D00410675 /* Wallet_HostPollingController.swift */; };
 		9F1C4B981EC241D4004473CE /* mymonero-js-core-ios-build.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F1C4B971EC241D4004473CE /* mymonero-js-core-ios-build.js */; };
 		9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */; };
-		9F1D00231EE3047000A4B3A5 /* PasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00221EE3047000A4B3A5 /* PasswordController.swift */; };
-		9F1D00251EE3048800A4B3A5 /* PasswordEntryNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00241EE3048800A4B3A5 /* PasswordEntryNavigationViewController.swift */; };
-		9F1D00291EE31DEC00A4B3A5 /* EnterExistingPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00281EE31DEC00A4B3A5 /* EnterExistingPasswordViewController.swift */; };
-		9F1D002B1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D002A1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift */; };
 		9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D002D1EE345DF00A4B3A5 /* Forms.swift */; };
 		9F1D00301EE345E500A4B3A5 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D002F1EE345E500A4B3A5 /* Tables.swift */; };
 		9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */; };
@@ -36,15 +32,11 @@
 		9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */; };
 		9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */; };
 		9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */; };
-		9F8E2F511EE488C200F89A1D /* EnterExistingPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F501EE488C200F89A1D /* EnterExistingPasswordView.swift */; };
-		9F8E2F531EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F521EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift */; };
 		9F8E2F561EE4908F00F89A1D /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */; };
 		9F8E2F581EE4909900F89A1D /* UIView+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F571EE4909900F89A1D /* UIView+Debug.swift */; };
 		9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */; };
 		9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */; };
 		9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */; };
-		9F8E2F621EE4BA8E00F89A1D /* EnterNewPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F611EE4BA8E00F89A1D /* EnterNewPasswordView.swift */; };
-		9F8E2F6A1EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F691EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift */; };
 		9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F801EE87FD600F89A1D /* ListViewController.swift */; };
 		9F8E2F831EE87FDF00F89A1D /* WalletsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F821EE87FDF00F89A1D /* WalletsListViewController.swift */; };
 		9F8E2F851EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F841EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift */; };
@@ -84,7 +76,12 @@
 		9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30151EED6FC200F89A1D /* ActionButtons.swift */; };
 		9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */; };
 		9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */; };
-		9F8E301C1EED77CF00F89A1D /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E301B1EED77CF00F89A1D /* ForgotPasswordViewController.swift */; };
+		9F8E30261EED7D7800F89A1D /* PasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E301F1EED7D7800F89A1D /* PasswordController.swift */; };
+		9F8E30271EED7D7800F89A1D /* EnterExistingPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30211EED7D7800F89A1D /* EnterExistingPasswordViewController.swift */; };
+		9F8E30281EED7D7800F89A1D /* EnterNewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30221EED7D7800F89A1D /* EnterNewPasswordViewController.swift */; };
+		9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30231EED7D7800F89A1D /* ForgotPasswordViewController.swift */; };
+		9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30241EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift */; };
+		9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30251EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
@@ -105,10 +102,6 @@
 		9F1B57481ED8F78D00410675 /* Wallet_HostPollingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet_HostPollingController.swift; sourceTree = "<group>"; };
 		9F1C4B971EC241D4004473CE /* mymonero-js-core-ios-build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "mymonero-js-core-ios-build.js"; path = "Modules/MyMoneroCore/build/mymonero-js-core-ios-build.js"; sourceTree = SOURCE_ROOT; };
 		9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootTabBarViewController.swift; sourceTree = "<group>"; };
-		9F1D00221EE3047000A4B3A5 /* PasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordController.swift; sourceTree = "<group>"; };
-		9F1D00241EE3048800A4B3A5 /* PasswordEntryNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryNavigationViewController.swift; sourceTree = "<group>"; };
-		9F1D00281EE31DEC00A4B3A5 /* EnterExistingPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterExistingPasswordViewController.swift; sourceTree = "<group>"; };
-		9F1D002A1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterNewPasswordViewController.swift; sourceTree = "<group>"; };
 		9F1D002D1EE345DF00A4B3A5 /* Forms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Forms.swift; sourceTree = "<group>"; };
 		9F1D002F1EE345E500A4B3A5 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
 		9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkButtonView.swift; sourceTree = "<group>"; };
@@ -126,15 +119,11 @@
 		9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroAPIClient.swift; sourceTree = "<group>"; };
 		9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_OpenAliasResolving.swift; sourceTree = "<group>"; };
 		9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_SendingFunds.swift; sourceTree = "<group>"; };
-		9F8E2F501EE488C200F89A1D /* EnterExistingPasswordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EnterExistingPasswordView.swift; path = Modules/Passwords/Views/EnterExistingPasswordView.swift; sourceTree = SOURCE_ROOT; };
-		9F8E2F521EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryScreenBaseViewController.swift; sourceTree = "<group>"; };
 		9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
 		9F8E2F571EE4909900F89A1D /* UIView+Debug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Debug.swift"; sourceTree = "<group>"; };
 		9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Bold.otf"; sourceTree = "<group>"; };
 		9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Light.otf"; sourceTree = "<group>"; };
 		9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Regular.otf"; sourceTree = "<group>"; };
-		9F8E2F611EE4BA8E00F89A1D /* EnterNewPasswordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterNewPasswordView.swift; sourceTree = "<group>"; };
-		9F8E2F691EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryScreenBaseView.swift; sourceTree = "<group>"; };
 		9F8E2F801EE87FD600F89A1D /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		9F8E2F821EE87FDF00F89A1D /* WalletsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewController.swift; sourceTree = "<group>"; };
 		9F8E2F841EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsTabNavigationViewController.swift; sourceTree = "<group>"; };
@@ -174,7 +163,12 @@
 		9F8E30151EED6FC200F89A1D /* ActionButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionButtons.swift; sourceTree = "<group>"; };
 		9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyScreens.swift; sourceTree = "<group>"; };
 		9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICommonComponents.swift; sourceTree = "<group>"; };
-		9F8E301B1EED77CF00F89A1D /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		9F8E301F1EED7D7800F89A1D /* PasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordController.swift; sourceTree = "<group>"; };
+		9F8E30211EED7D7800F89A1D /* EnterExistingPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterExistingPasswordViewController.swift; sourceTree = "<group>"; };
+		9F8E30221EED7D7800F89A1D /* EnterNewPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterNewPasswordViewController.swift; sourceTree = "<group>"; };
+		9F8E30231EED7D7800F89A1D /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		9F8E30241EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryNavigationViewController.swift; sourceTree = "<group>"; };
+		9F8E30251EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryScreenBaseViewController.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
@@ -221,29 +215,6 @@
 			path = Modules/MyMoneroCore/Swift;
 			sourceTree = SOURCE_ROOT;
 		};
-		9F1D001F1EE3043B00A4B3A5 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				9F8E2F691EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift */,
-				9F8E2F611EE4BA8E00F89A1D /* EnterNewPasswordView.swift */,
-				9F8E2F501EE488C200F89A1D /* EnterExistingPasswordView.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		9F1D00211EE3047000A4B3A5 /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				9F1D00221EE3047000A4B3A5 /* PasswordController.swift */,
-				9F1D00241EE3048800A4B3A5 /* PasswordEntryNavigationViewController.swift */,
-				9F8E2F521EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift */,
-				9F1D002A1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift */,
-				9F1D00281EE31DEC00A4B3A5 /* EnterExistingPasswordViewController.swift */,
-				9F8E301B1EED77CF00F89A1D /* ForgotPasswordViewController.swift */,
-			);
-			path = Controllers;
-			sourceTree = "<group>";
-		};
 		9F1D002C1EE345D600A4B3A5 /* UICommonComponents */ = {
 			isa = PBXGroup;
 			children = (
@@ -286,7 +257,7 @@
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
 				9FEC04F61ECFD8D3009256BD /* Persistence */,
-				9FEC04FE1ED34B5B009256BD /* Passwords */,
+				9F8E301D1EED7D7800F89A1D /* Passwords */,
 				9FEC04EC1ECFD8C4009256BD /* Lists */,
 				9F8E2F4B1EE3AA4700F89A1D /* Theme */,
 				9F1D002C1EE345D600A4B3A5 /* UICommonComponents */,
@@ -547,6 +518,35 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		9F8E301D1EED7D7800F89A1D /* Passwords */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E301E1EED7D7800F89A1D /* ModelControllers */,
+				9F8E30201EED7D7800F89A1D /* ViewControllers */,
+			);
+			path = Passwords;
+			sourceTree = "<group>";
+		};
+		9F8E301E1EED7D7800F89A1D /* ModelControllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E301F1EED7D7800F89A1D /* PasswordController.swift */,
+			);
+			path = ModelControllers;
+			sourceTree = "<group>";
+		};
+		9F8E30201EED7D7800F89A1D /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E30241EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift */,
+				9F8E30251EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift */,
+				9F8E30221EED7D7800F89A1D /* EnterNewPasswordViewController.swift */,
+				9F8E30211EED7D7800F89A1D /* EnterExistingPasswordViewController.swift */,
+				9F8E30231EED7D7800F89A1D /* ForgotPasswordViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
 		9FC366DC1ECF9F90006CE743 /* Wallets */ = {
 			isa = PBXGroup;
 			children = (
@@ -617,15 +617,6 @@
 				9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */,
 			);
 			path = Persistence;
-			sourceTree = "<group>";
-		};
-		9FEC04FE1ED34B5B009256BD /* Passwords */ = {
-			isa = PBXGroup;
-			children = (
-				9F1D00211EE3047000A4B3A5 /* Controllers */,
-				9F1D001F1EE3043B00A4B3A5 /* Views */,
-			);
-			path = Passwords;
 			sourceTree = "<group>";
 		};
 		B1FD17CA08A86496EC2BCADE /* Frameworks */ = {
@@ -789,41 +780,35 @@
 			files = (
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Tables.swift in Sources */,
-				9F8E2F6A1EE5F4A700F89A1D /* PasswordEntryScreenBaseView.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
-				9F8E2F531EE488DD00F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				9F8E2F831EE87FDF00F89A1D /* WalletsListViewController.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
-				9F1D00251EE3048800A4B3A5 /* PasswordEntryNavigationViewController.swift in Sources */,
-				9F1D002B1EE31EF800A4B3A5 /* EnterNewPasswordViewController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F8E2F851EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift in Sources */,
 				9F8E30041EEAF38600F89A1D /* Logging.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
+				9F8E30281EED7D7800F89A1D /* EnterNewPasswordViewController.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */,
 				9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */,
 				9F8E2F951EE8811A00F89A1D /* SettingsTabNavigationViewController.swift in Sources */,
+				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
 				9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
-				9F8E2F511EE488C200F89A1D /* EnterExistingPasswordView.swift in Sources */,
 				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
 				9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */,
 				9F8E30141EED6F2600F89A1D /* PushButton.swift in Sources */,
+				9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
-				9F8E2F621EE4BA8E00F89A1D /* EnterNewPasswordView.swift in Sources */,
 				9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */,
 				9F8E2F8F1EE880F700F89A1D /* ContactsTabNavigationViewController.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
-				9F1D00231EE3047000A4B3A5 /* PasswordController.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
-				9F1D00291EE31DEC00A4B3A5 /* EnterExistingPasswordViewController.swift in Sources */,
-				9F8E301C1EED77CF00F89A1D /* ForgotPasswordViewController.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9F8E2FEA1EE978B700F89A1D /* SendFundsTabNavigationViewController.swift in Sources */,
 				9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */,
@@ -832,12 +817,15 @@
 				9F8E2F911EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
+				9F8E30271EED7D7800F89A1D /* EnterExistingPasswordViewController.swift in Sources */,
 				9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */,
 				9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */,
 				9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */,
+				9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
 				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
 				9F1B57471ED4E92D00410675 /* MoneroMnemonics.swift in Sources */,
+				9F8E30261EED7D7800F89A1D /* PasswordController.swift in Sources */,
 				9F8E2F581EE4909900F89A1D /* UIView+Debug.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

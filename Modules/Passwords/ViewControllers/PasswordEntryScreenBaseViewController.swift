@@ -14,7 +14,7 @@ protocol PasswordEntryTextFieldEventDelegate
 	func aPasswordField_didReturn()
 }
 //
-class PasswordEntryScreenBaseViewController: UIViewController
+class PasswordEntryScreenBaseViewController: UIViewController, UITextFieldDelegate
 {
 	var isForChangingPassword: Bool!
 	//
@@ -35,27 +35,22 @@ class PasswordEntryScreenBaseViewController: UIViewController
 	}
 	func setup()
 	{
-	}
-	//
-	// Accessors
-	var baseView: PasswordEntryScreenBaseView!
-	{
-		return self.view as! PasswordEntryScreenBaseView
+		self.view.backgroundColor = UIColor.contentBackgroundColor
 	}
 	//
 	// Imperatives - Validation error
 	func setValidationMessage(_ message: String)
 	{
-		self.baseView.setValidationMessage(message)
+		assert(false, "override \(#function)")
 	}
 	func clearValidationMessage()
 	{
-		self.baseView.clearValidationMessage()
+		assert(false, "override \(#function)")
 	}
 	//
 	// Imperatives - Exposed for PasswordEntryNavigationViewController
 	func reEnableForm()
 	{
-		self.baseView.reEnable()
+		assert(false, "override \(#function)")
 	}
 }
