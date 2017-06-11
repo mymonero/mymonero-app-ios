@@ -143,7 +143,6 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	}
 	func stopObserving_passwordController()
 	{
-		// TODO: ordinarily we'd check if PasswordController.shared.passwordEntryDelegate really == self but since there ought to only be one at a time…… an == check here is a precaution at the moment - but would require == implentation
 		PasswordController.shared.clearPasswordEntryDelegate(from: self)
 		//
 		guard let passwordController_notificationTokens = self.passwordController_notificationTokens else {
