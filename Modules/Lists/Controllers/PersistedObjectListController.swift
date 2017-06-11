@@ -269,7 +269,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: PersistableObject)
 	{
 		self.records.insert(listedObject, at: 0) // so we add it to the top
-//		self.overridable_startObserving_record(recordInstance) // TODO
+//		self.overridable_startObserving_record(recordInstance) // TODO if necessary - but shouldn't be at the moment - if implemented, be sure to add corresponding stopObserving where necessary
 		//
 		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true {
 			self.overridable_sortRecords()
