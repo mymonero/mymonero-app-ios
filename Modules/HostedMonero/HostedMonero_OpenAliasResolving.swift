@@ -78,11 +78,9 @@ extension HostedMoneroAPIClient
 			}
 			// now verify address is decodable for currency
 			mymoneroCore.DecodeAddress(oaRecord_address)
-			{ (err, decodedAddressComponents) in
-				if let _ = err {
-					DDLog.Todo("HostedMonero", "extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
-					let err_str = "Address found on DNS record for OA address was not a valid Monero address." // TODO
-					fn(err_str, nil)
+			{ (err_str, decodedAddressComponents) in
+				if let _ = err_str {
+					fn("OpenAlias DNS records did not have a valid Monero address.", nil)
 					return
 				}
 				let validResolvedDescription = ValidOAResolvedMoneroAddressDescription(

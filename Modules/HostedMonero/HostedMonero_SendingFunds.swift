@@ -109,10 +109,9 @@ extension HostedMoneroAPIClient
 		var final__payment_id = payment_id == "" ? nil : payment_id
 		var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
 		mymoneroCore.DecodeAddress(target_address)
-		{ (err, decodedAddressComponents) in
-			if let _ = err {
-				DDLog.Todo("HostedMonero", "extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
-				__trampolineFor_err_withStr(err_str: "Error decoding recipient Monero address.")
+		{ (err_str, decodedAddressComponents) in
+			if let _ = err_str {
+				__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
 				return
 			}
 			guard let decodedAddressComponents = decodedAddressComponents else {
@@ -329,10 +328,9 @@ extension HostedMoneroAPIClient
 			}
 			if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
 				mymoneroCore.DecodeAddress(target_address)
-				{ (err, decodedAddressComponents) in
-					if let _ = err {
-						DDLog.Todo("HostedMonero", "extract error string from error") // TODO: this is not done yet cause i don't know the format of the error yet
-						__trampolineFor_err_withStr(err_str: "Error decoding recipient Monero address while creating transaction.")
+				{ (err_str, decodedAddressComponents) in
+					if let _ = err_str {
+						__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
 						return
 					}
 					guard let decodedAddressComponents = decodedAddressComponents else {

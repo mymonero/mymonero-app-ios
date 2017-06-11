@@ -30,6 +30,13 @@ protocol PasswordEntryDelegate
 			_ passwordType: PasswordController.PasswordType?
 		) -> Void
 	)
+	//
+	// To support isEqual
+	func identifier() -> String
+}
+func isEqual(_ l: PasswordEntryDelegate, _ r: PasswordEntryDelegate) -> Bool
+{
+	return l.identifier() == r.identifier()
 }
 //
 final class PasswordController
@@ -108,7 +115,24 @@ final class PasswordController
 	var hasUserSavedAPassword: Bool!
 	var messageAsEncryptedDataForUnlockChallenge_base64String: String?
 	var isAlreadyGettingExistingOrNewPWFromUser: Bool?
-	var passwordEntryDelegate: PasswordEntryDelegate! // someone in the app must set this
+	private var passwordEntryDelegate: PasswordEntryDelegate? // someone in the app must set this by calling setPasswordEntryDelegate(to:)
+	func setPasswordEntryDelegate(to delegate: PasswordEntryDelegate)
+	{
+		if self.passwordEntryDelegate != nil {
+			assert(false, "\(#function) called but self.passwordEntryDelegate already exists")
+		}
+		self.passwordEntryDelegate = delegate
+	}
+	func clearPasswordEntryDelegate(from existing_delegate: PasswordEntryDelegate)
+	{
+		if self.passwordEntryDelegate == nil {
+			assert(false, "\(#function) called but no passwordEntryDelegate exists")
+		}
+		if isEqual(self.passwordEntryDelegate!, existing_delegate) == false {
+			assert(false, "\(#function) called but passwordEntryDelegate does not match")
+		}
+		self.passwordEntryDelegate = nil
+}
 	//
 	// Lifecycle - Singleton Init
 	static let shared = PasswordController()
@@ -172,7 +196,7 @@ final class PasswordController
 			if self._id != nil { // existing doc
 				if self.messageAsEncryptedDataForUnlockChallenge_base64String == nil || self.messageAsEncryptedDataForUnlockChallenge_base64String == "" {
 					// ^-- but it was saved w/o an encrypted challenge str
-					// TODO: not sure how to handle this case. delete all local info? would suck
+					// TODO: not sure how to handle this case. delete all local info? would suck but otoh when would this happen if not for a cracking attempt, some odd/fatal code fault, or a known migration?
 					let err_str = "Found undefined encrypted msg for unlock challenge in saved password model document"
 					DDLog.Error("Passwords", "\(err_str)")
 					return
@@ -510,7 +534,7 @@ final class PasswordController
 			)
 		}
 		// Now put request out
-		self.passwordEntryDelegate.getUserToEnterExistingPassword(isForChangePassword: isForChangePassword)
+		self.passwordEntryDelegate!.getUserToEnterExistingPassword(isForChangePassword: isForChangePassword)
 		{ (didCancel_orNil, obtainedPasswordString) in
 			var validationErr_orNil: String? = nil // so far…
 			if didCancel_orNil != true { // so user did NOT cancel
@@ -558,7 +582,7 @@ final class PasswordController
 	func obtainNewPasswordFromUser(isForChangePassword: Bool)
 	{
 		let wasFirstSetOfPasswordAtRuntime = self.hasUserEnteredValidPasswordYet == false // it's ok if we derive this here instead of in obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet
-		self.passwordEntryDelegate.getUserToEnterNewPasswordAndType(isForChangePassword: isForChangePassword)
+		self.passwordEntryDelegate!.getUserToEnterNewPasswordAndType(isForChangePassword: isForChangePassword)
 		{ [unowned self] (didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword) in
 			if didCancel_orNil == true {
 				NotificationCenter.default.post(

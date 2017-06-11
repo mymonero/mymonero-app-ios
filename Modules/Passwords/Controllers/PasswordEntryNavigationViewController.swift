@@ -48,8 +48,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	var passwordController_notificationTokens: [Any]?
 	func startObserving_passwordController()
 	{
-		// self-elect as singular delegate - TODO: maybe use a setter fn which checks if a delegate already exists
-		PasswordController.shared.passwordEntryDelegate = self
+		PasswordController.shared.setPasswordEntryDelegate(to: self)
 		//
 		self.passwordController_notificationTokens = []
 		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
@@ -145,7 +144,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	func stopObserving_passwordController()
 	{
 		// TODO: ordinarily we'd check if PasswordController.shared.passwordEntryDelegate really == self but since there ought to only be one at a time…… an == check here is a precaution at the moment - but would require == implentation
-		PasswordController.shared.passwordEntryDelegate = nil
+		PasswordController.shared.clearPasswordEntryDelegate(from: self)
 		//
 		guard let passwordController_notificationTokens = self.passwordController_notificationTokens else {
 			assert(false, "nil self.passwordController_notificationTokens")
@@ -323,6 +322,11 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 
 	//
 	// Protocol - PasswordEntryDelegate
+	var uuidString = UUID().uuidString
+	func identifier() -> String
+	{
+		return self.uuidString
+	}
 	var enterExistingPassword_cb: ((Bool?, PasswordController.Password?) -> Void)?
 	func getUserToEnterExistingPassword(
 		isForChangePassword: Bool,
