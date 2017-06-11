@@ -81,6 +81,9 @@
 		9F8E30111EED6EC200F89A1D /* pushButtonBG_utility_highlighted@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E300A1EED6EC200F89A1D /* pushButtonBG_utility_highlighted@3x.png */; };
 		9F8E30121EED6EC200F89A1D /* pushButtonBG_utility@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E300B1EED6EC200F89A1D /* pushButtonBG_utility@3x.png */; };
 		9F8E30141EED6F2600F89A1D /* PushButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30131EED6F2600F89A1D /* PushButton.swift */; };
+		9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30151EED6FC200F89A1D /* ActionButtons.swift */; };
+		9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */; };
+		9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
@@ -167,6 +170,9 @@
 		9F8E300A1EED6EC200F89A1D /* pushButtonBG_utility_highlighted@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pushButtonBG_utility_highlighted@3x.png"; sourceTree = "<group>"; };
 		9F8E300B1EED6EC200F89A1D /* pushButtonBG_utility@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pushButtonBG_utility@3x.png"; sourceTree = "<group>"; };
 		9F8E30131EED6F2600F89A1D /* PushButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushButton.swift; sourceTree = "<group>"; };
+		9F8E30151EED6FC200F89A1D /* ActionButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionButtons.swift; sourceTree = "<group>"; };
+		9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyScreens.swift; sourceTree = "<group>"; };
+		9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICommonComponents.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
@@ -238,12 +244,15 @@
 		9F1D002C1EE345D600A4B3A5 /* UICommonComponents */ = {
 			isa = PBXGroup;
 			children = (
-				9F8E2F6B1EE849E100F89A1D /* Resources */,
+				9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */,
 				9F1D002D1EE345DF00A4B3A5 /* Forms.swift */,
 				9F1D002F1EE345E500A4B3A5 /* Tables.swift */,
-				9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */,
 				9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */,
 				9F8E30131EED6F2600F89A1D /* PushButton.swift */,
+				9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */,
+				9F8E30151EED6FC200F89A1D /* ActionButtons.swift */,
+				9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */,
+				9F8E2F6B1EE849E100F89A1D /* Resources */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -798,7 +807,9 @@
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F8E2F511EE488C200F89A1D /* EnterExistingPasswordView.swift in Sources */,
 				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
+				9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */,
 				9F8E30141EED6F2600F89A1D /* PushButton.swift in Sources */,
+				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
 				9F8E2F621EE4BA8E00F89A1D /* EnterNewPasswordView.swift in Sources */,
 				9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */,
@@ -817,6 +828,7 @@
 				9F8E2F911EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
+				9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */,
 				9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */,
 				9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,

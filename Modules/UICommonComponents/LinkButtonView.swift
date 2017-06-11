@@ -8,54 +8,57 @@
 
 import UIKit
 
-class LinkButtonView: UIButton
+extension UICommonComponents
 {
-	enum Mode
+	class LinkButtonView: UIButton
 	{
-		case mono_default
-		case mono_destructive
-		case sansSerif_default
-	}
-	var mode: Mode!
-	init(mode: Mode, title: String)
-	{
-		let frame = CGRect(
-			x: 0,
-			y: 0, 
-			width: 0,
-			height: 16
-		)
-		super.init(frame: frame)
-		self.mode = mode
-		let normal_attributedTitle = NSAttributedString(
-			string: title,
-			attributes:
-			[
-				NSForegroundColorAttributeName: UIColor.utilityOrConstructiveLinkColor,
-				NSFontAttributeName: UIFont.smallRegularMonospace,
-				NSUnderlineStyleAttributeName: NSUnderlineStyle.styleNone.rawValue
-			]
-		)
-		let selected_attributedTitle = NSAttributedString(
-			string: title,
-			attributes:
-			[
-				NSForegroundColorAttributeName: UIColor.utilityOrConstructiveLinkColor,
-				NSFontAttributeName: UIFont.smallRegularMonospace,
-				NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue
-			]
-		)
-		self.setAttributedTitle(normal_attributedTitle, for: .normal)
-		self.setAttributedTitle(selected_attributedTitle, for: .selected)
-		//
-		self.setup()
-	}
-	func setup()
-	{
-		// now that we have title and font…
-		self.sizeToFit()
-	}
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
+		enum Mode
+		{
+			case mono_default
+			case mono_destructive
+			case sansSerif_default
+		}
+		var mode: Mode!
+		init(mode: Mode, title: String)
+		{
+			let frame = CGRect(
+				x: 0,
+				y: 0, 
+				width: 0,
+				height: 16
+			)
+			super.init(frame: frame)
+			self.mode = mode
+			let normal_attributedTitle = NSAttributedString(
+				string: title,
+				attributes:
+				[
+					NSForegroundColorAttributeName: UIColor.utilityOrConstructiveLinkColor,
+					NSFontAttributeName: UIFont.smallRegularMonospace,
+					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleNone.rawValue
+				]
+			)
+			let selected_attributedTitle = NSAttributedString(
+				string: title,
+				attributes:
+				[
+					NSForegroundColorAttributeName: UIColor.utilityOrConstructiveLinkColor,
+					NSFontAttributeName: UIFont.smallRegularMonospace,
+					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue
+				]
+			)
+			self.setAttributedTitle(normal_attributedTitle, for: .normal)
+			self.setAttributedTitle(selected_attributedTitle, for: .selected)
+			//
+			self.setup()
+		}
+		func setup()
+		{
+			// now that we have title and font…
+			self.sizeToFit()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
 	}
 }

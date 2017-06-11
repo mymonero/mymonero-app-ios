@@ -42,18 +42,18 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 	}
 	//
 	// Accessors - Factories - Views
-	func _new_leftBarButtonItem() -> MMNavigationBarButtonItem?
+	func _new_leftBarButtonItem() -> UICommonComponents.NavigationBarButtonItem?
 	{
-		let item = MMNavigationBarButtonItem(
+		let item = UICommonComponents.NavigationBarButtonItem(
 			type: .cancel,
 			target: self,
 			action: #selector(tapped_leftBarButtonItem)
 		)
 		return item
 	}
-	func _new_rightBarButtonItem() -> MMNavigationBarButtonItem?
+	func _new_rightBarButtonItem() -> UICommonComponents.NavigationBarButtonItem?
 	{
-		let item = MMNavigationBarButtonItem(
+		let item = UICommonComponents.NavigationBarButtonItem(
 			type: .save,
 			target: self,
 			action: #selector(tapped_rightBarButtonItem),

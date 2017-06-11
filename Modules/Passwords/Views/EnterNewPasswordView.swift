@@ -10,20 +10,20 @@ import UIKit
 //
 class EnterNewPasswordView: PasswordEntryScreenBaseView
 {
-	var password_label: FormLabel!
-	var password_inputView: FormInputField!
+	var password_label: UICommonComponents.FormLabel!
+	var password_inputView: UICommonComponents.FormInputField!
 	//
-	var fieldAccessoryMessageLabel: FormFieldAccessoryMessageLabel!
+	var fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
-	var confirmPassword_label: FormLabel!
-	var confirmPassword_inputView: FormInputField!
+	var confirmPassword_label: UICommonComponents.FormLabel!
+	var confirmPassword_inputView: UICommonComponents.FormInputField!
 	//
 	override func setup()
 	{
 		super.setup()
 		//
 		do {
-			let view = FormInputField(
+			let view = UICommonComponents.FormInputField(
 				placeholder: nil
 			)
 			view.isSecureTextEntry = true
@@ -34,7 +34,7 @@ class EnterNewPasswordView: PasswordEntryScreenBaseView
 			self.addSubview(view)
 		}
 		do {
-			let view = FormLabel(
+			let view = UICommonComponents.FormLabel(
 				title: NSLocalizedString("PIN OR PASSWORD", comment: ""),
 				sizeToFit: true
 			)
@@ -42,7 +42,7 @@ class EnterNewPasswordView: PasswordEntryScreenBaseView
 			self.addSubview(view)
 		}
 		do {
-			let view = FormFieldAccessoryMessageLabel(
+			let view = UICommonComponents.FormFieldAccessoryMessageLabel(
 				text: NSLocalizedString("This app-wide password (or PIN) will be used to encrypt your data on your device, and to lock your app when you are idle. Don't forget it!\nSix character minimum.", comment: "")
 			)
 			self.fieldAccessoryMessageLabel = view
@@ -50,7 +50,7 @@ class EnterNewPasswordView: PasswordEntryScreenBaseView
 		}
 		//
 		do {
-			let view = FormInputField(
+			let view = UICommonComponents.FormInputField(
 				placeholder: ""
 			)
 			view.isSecureTextEntry = true
@@ -61,7 +61,7 @@ class EnterNewPasswordView: PasswordEntryScreenBaseView
 			self.addSubview(view)
 		}
 		do {
-			let view = FormLabel(
+			let view = UICommonComponents.FormLabel(
 				title: NSLocalizedString("CONFIRM", comment: ""),
 				sizeToFit: true
 			)

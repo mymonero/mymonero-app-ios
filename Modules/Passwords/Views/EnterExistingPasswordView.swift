@@ -9,16 +9,16 @@
 import UIKit
 //
 class EnterExistingPasswordView: PasswordEntryScreenBaseView
-{	var password_label: FormLabel!
-	var password_inputView: FormInputField!
-	var forgot_linkButtonView: LinkButtonView!
+{	var password_label: UICommonComponents.FormLabel!
+	var password_inputView: UICommonComponents.FormInputField!
+	var forgot_linkButtonView: UICommonComponents.LinkButtonView!
 	//
 	override func setup()
 	{
 		super.setup()
 		//
 		do {
-			let view = FormInputField(
+			let view = UICommonComponents.FormInputField(
 				placeholder: NSLocalizedString("So we know it's you", comment: "")
 			)
 			view.isSecureTextEntry = true
@@ -30,7 +30,7 @@ class EnterExistingPasswordView: PasswordEntryScreenBaseView
 			self.addSubview(view)
 		}
 		do {
-			let view = FormLabel(
+			let view = UICommonComponents.FormLabel(
 				title: PasswordController.shared.passwordType.humanReadableString.uppercased(),
 				sizeToFit: true
 			)
@@ -38,7 +38,7 @@ class EnterExistingPasswordView: PasswordEntryScreenBaseView
 			self.addSubview(view)
 		}
 		do {
-			let view = LinkButtonView(mode: .mono_default, title: NSLocalizedString("Forgot?", comment: ""))
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("Forgot?", comment: ""))
 			view.addTarget(self, action: #selector(tapped_forgotButton), for: .touchUpInside)
 			view.contentHorizontalAlignment = .right // so we can just set the width to whatever
 			self.forgot_linkButtonView = view
