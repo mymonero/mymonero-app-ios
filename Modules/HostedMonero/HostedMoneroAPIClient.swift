@@ -117,9 +117,9 @@ final class HostedMoneroAPIClient
 	}
 	//
 	//
-	// Accessors - Shared
+	// Internal - Accessors - Shared
 	//
-	func _new_parameters_forWalletRequest(
+	private func _new_parameters_forWalletRequest(
 		address: MoneroAddress,
 		view_key__private: MoneroKey
 	) -> [String: Any]
@@ -130,6 +130,26 @@ final class HostedMoneroAPIClient
 		]
 	}
 	//
+	//
+	// Internal - Imperatives - Shared
+	//
+	private func _shared_onMain_callBackFromRequest<T>(
+		_ err_str: String?,
+		_ result: T?,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ result: T?
+		) -> Void
+	)
+	{
+		if err_str != nil {
+			DDLog.Error("HostedMonero", "\(err_str!)")
+		}
+		DispatchQueue.main.async
+		{
+			fn(err_str, result)
+		}
+	}
 	//
 	// Login
 	//
@@ -153,16 +173,12 @@ final class HostedMoneroAPIClient
 		let requestHandle = self._request(endpoint, parameters)
 		{ (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
-				print(err_str)
-				fn(err_str, nil)
+				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
 			let response_jsonDict = response_jsonDict!
 			let isNewAddressToServer = response_jsonDict["new_address"] as! Bool
-			DispatchQueue.main.async
-			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
-				fn(nil, isNewAddressToServer)
-			}
+			self._shared_onMain_callBackFromRequest(err_str, isNewAddressToServer, fn)
 		}
 		return requestHandle
 	}
@@ -186,13 +202,11 @@ final class HostedMoneroAPIClient
 			address: address,
 			view_key__private: view_key__private
 		)
-		//
 		let endpoint = HostedMoneroAPI_Endpoint.AddressInfo
 		let requestHandle = self._request(endpoint, parameters)
 		{ [unowned self] (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
-				print(err_str)
-				fn(err_str, nil)
+				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
 			let response_jsonDict = response_jsonDict!
@@ -204,10 +218,7 @@ final class HostedMoneroAPIClient
 				spend_key__private: spend_key__private
 			)
 			{ (err_str, result) in
-				DispatchQueue.main.async
-				{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
-					fn(err_str, result)
-				}
+				self._shared_onMain_callBackFromRequest(err_str, result, fn)
 			}
 
 		}
@@ -234,8 +245,7 @@ final class HostedMoneroAPIClient
 		let requestHandle = self._request(endpoint, parameters)
 		{ [unowned self] (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
-				print(err_str)
-				fn(err_str, nil)
+				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
 			let response_jsonDict = response_jsonDict!
@@ -247,10 +257,7 @@ final class HostedMoneroAPIClient
 				spend_key__private: spend_key__private
 			)
 			{ (err_str, result) in
-				DispatchQueue.main.async
-				{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
-					fn(err_str, result)
-				}
+				self._shared_onMain_callBackFromRequest(err_str, result, fn)
 			}
 
 		}
@@ -273,7 +280,6 @@ final class HostedMoneroAPIClient
 		let endpointPath = HostedMoneroAPI_Endpoint.TXTRecords
 		let requestHandle: RequestHandle? = nil // TODO
 
-		let err_str: String? = nil
 		let records = [String]()
 		let result = HostedMoneroAPIClient_Parsing.ParsedResult_TXTRecords(
 			records: records,
@@ -281,9 +287,8 @@ final class HostedMoneroAPIClient
 			secured: false,
 			dnssec_fail_reason: nil
 		)
-		DispatchQueue.main.async {
-			fn(err_str, result)
-		}
+		self._shared_onMain_callBackFromRequest(nil, result, fn)
+
 		return requestHandle
 	}
 	//
@@ -316,8 +321,7 @@ final class HostedMoneroAPIClient
 		let requestHandle = self._request(endpoint, parameters)
 		{ [unowned self] (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
-				print(err_str)
-				fn(err_str, nil)
+				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
 			self.mymoneroCore.Parsed_UnspentOuts(
@@ -328,10 +332,7 @@ final class HostedMoneroAPIClient
 				spend_key__private: spend_key__private
 			)
 			{ (err_str, result) in
-				DispatchQueue.main.async
-				{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
-					fn(err_str, result)
-				}
+				self._shared_onMain_callBackFromRequest(err_str, result, fn)
 			}
 		}
 		return requestHandle
@@ -363,8 +364,7 @@ final class HostedMoneroAPIClient
 		let requestHandle = self._request(endpoint, parameters)
 		{ (err_str, response_data, response_jsonDict) in
 			if let err_str = err_str {
-				print(err_str)
-				fn(err_str, nil)
+				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
 			let response_jsonDict = response_jsonDict!
@@ -380,10 +380,7 @@ final class HostedMoneroAPIClient
 			let result = HostedMoneroAPIClient_Parsing.ParsedResult_RandomOuts(
 				amount_outs: final_amount_outs
 			)
-			DispatchQueue.main.async
-			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
-				fn(nil, result)
-			}
+			self._shared_onMain_callBackFromRequest(nil, result, fn)
 		}
 		return requestHandle
 	}
@@ -392,7 +389,8 @@ final class HostedMoneroAPIClient
 		view_key__private: MoneroKey,
 		serializedSignedTx: MoneroSerializedSignedTransaction,
 		_ fn: @escaping (
-			_ err_str: String? // if nil, succeeded
+			_ err_str: String?, // if nil, succeeded
+			_ nilResult: Any? // merely for callback conformance (janky :\) - disregard arg
 		) -> Void
 	) -> RequestHandle?
 	{
@@ -405,15 +403,7 @@ final class HostedMoneroAPIClient
 		let endpoint = HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction
 		let requestHandle = self._request(endpoint, parameters)
 		{ (err_str, response_data, response_jsonDict) in
-			if let err_str = err_str {
-				print(err_str)
-				fn(err_str)
-				return
-			}
-			DispatchQueue.main.async
-			{ // TODO: centralize this cb w/trampoline on main and use trampoline to call for errs too
-				fn(nil)
-			}
+			self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 		}
 		return requestHandle
 	}

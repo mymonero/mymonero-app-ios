@@ -424,7 +424,7 @@ extension HostedMoneroAPIClient
 					address: wallet__public_address,
 					view_key__private: wallet__private_keys.view,
 					serializedSignedTx: serialized_signedTx,
-					{ err_str in
+					{ (err_str, nilValue) in
 						if let err_str = err_str {
 							__trampolineFor_err_withStr(err_str: "Unexpected error while submitting your transaction: \(err_str)")
 							return
