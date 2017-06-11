@@ -22,7 +22,15 @@ class WalletsListController: PersistedObjectListController
 	// Overrides
 	override func overridable_sortRecords()
 	{
-		DDLog.Todo("Wallets", "sort on date added/inserted")
+		self.records = self.records.sorted(by: { (l, r) -> Bool in
+			if l.insertedAt_date == nil {
+				return false
+			}
+			if r.insertedAt_date == nil {
+				return true
+			}
+			return l.insertedAt_date! > r.insertedAt_date!
+		})
 	}
 	//
 	// Runtime - Accessors - Derived properties
