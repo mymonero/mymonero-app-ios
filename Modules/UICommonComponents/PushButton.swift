@@ -27,8 +27,9 @@ extension UICommonComponents
 		}
 		func setup()
 		{
+			let capSize: Int = 5
 			var image: UIImage!
-			let disabledImage = UIImage(named: "pushButtonBG_disabled")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+			let disabledImage = UIImage(named: "pushButtonBG_disabled")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 			var highlightedImage: UIImage!
 			var font: UIFont!
 			var color: UIColor!
@@ -36,20 +37,20 @@ extension UICommonComponents
 			switch self.pushButtonType
 			{
 			case .utility:
-				image = UIImage(named: "pushButtonBG_utility")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
-				highlightedImage = UIImage(named: "pushButtonBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+				image = UIImage(named: "pushButtonBG_utility")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				highlightedImage = UIImage(named: "pushButtonBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0xFCFBFC)
 				break
 			case .action:
-				image = UIImage(named: "pushButtonBG_action")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
-				highlightedImage = UIImage(named: "pushButtonBG_action_highlighted")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+				image = UIImage(named: "pushButtonBG_action")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				highlightedImage = UIImage(named: "pushButtonBG_action_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
 			case .destructive:
-				image = UIImage(named: "pushButtonBG_destructive")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
-				highlightedImage = UIImage(named: "pushButtonBG_destructive_highlighted")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
+				image = UIImage(named: "pushButtonBG_destructive")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				highlightedImage = UIImage(named: "pushButtonBG_destructive_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
