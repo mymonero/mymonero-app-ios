@@ -13,7 +13,7 @@ class WalletsListViewCell: UITableViewCell
 	static let reuseIdentifier = "WalletsListViewCell"
 	static let cellHeight: CGFloat = 100
 	//
-	let cellContentView = WalletCellContentView()
+	let cellContentView = WalletCellContentView(sizeClass: .large48)
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
 	//
 	// Lifecycle - Init
