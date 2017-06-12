@@ -11,9 +11,10 @@ import UIKit
 class WalletsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "WalletsListViewCell"
-	static let cellHeight: CGFloat = 95 // TODO
+	static let cellHeight: CGFloat = 100
 	//
 	let cellContentView = WalletCellContentView()
+	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
 	//
 	// Lifecycle - Init
 	init()
@@ -38,6 +39,10 @@ class WalletsListViewCell: UITableViewCell
 		self.selectedBackgroundView = UIImageView(image: UIImage(named: "highlightableCellBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize))
 		//
 		self.contentView.addSubview(self.cellContentView)
+		//
+		do {
+			self.contentView.addSubview(self.accessoryChevronView)
+		}
 	}
 	//
 	// Lifecycle - Deinit
@@ -69,5 +74,11 @@ class WalletsListViewCell: UITableViewCell
 		self.backgroundView!.frame = frame
 		self.selectedBackgroundView!.frame = frame
 		self.cellContentView.frame = self.contentView.bounds
+		self.accessoryChevronView.frame = CGRect(
+			x: frame.size.width - self.accessoryChevronView.frame.size.width - 16,
+			y: frame.origin.y + (frame.size.height - self.accessoryChevronView.frame.size.height)/2,
+			width: self.accessoryChevronView.frame.size.width,
+			height: self.accessoryChevronView.frame.size.height
+		).integral
 	}
 }

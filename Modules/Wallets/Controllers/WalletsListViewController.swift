@@ -22,6 +22,11 @@ class WalletsListViewController: ListViewController
 		super.setup_tableView()
 		self.tableView.backgroundColor = .contentBackgroundColor
 		self.tableView.separatorStyle = .none
+		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
+	}
+	override func setup_navigationBarButtonItems()
+	{
+		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(type: .add, target: self, action: #selector(addButton_tapped))
 	}
 	//
 	// Accessors - Required overrides
@@ -33,7 +38,7 @@ class WalletsListViewController: ListViewController
 		return "My Monero Wallets"
 	}
 	//
-	// Delegation
+	// Delegation - Table
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
 	{
 		var cell = self.tableView.dequeueReusableCell(withIdentifier: WalletsListViewCell.reuseIdentifier) as? WalletsListViewCell
@@ -48,5 +53,11 @@ class WalletsListViewController: ListViewController
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
 		return WalletsListViewCell.cellHeight
+	}
+	//
+	// Delegation - Interactions
+	func addButton_tapped()
+	{
+		assert(false, "TODO")
 	}
 }

@@ -34,6 +34,7 @@ class ListViewController: UITableViewController
 	func setup()
 	{
 		self.setup_views()
+		self.setup_navigationBarButtonItems()
 		self.startObserving()
 	}
 	func setup_views()
@@ -43,6 +44,9 @@ class ListViewController: UITableViewController
 	func setup_tableView()
 	{
 		self.tableView.delegate = self
+	}
+	func setup_navigationBarButtonItems()
+	{
 	}
 	func startObserving()
 	{

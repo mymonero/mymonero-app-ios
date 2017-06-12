@@ -77,9 +77,9 @@ extension UICommonComponents
 					view.imageEdgeInsets = UIEdgeInsetsMake(0, -imagePaddingForShadow_h, 0, imagePaddingForShadow_h)
 					break
 				case .add:
-					view.setImage(UIImage(named: "addButtonIcon"), for: .normal)
+					view.setImage(UIImage(named: "addButtonIcon_10"), for: .normal)
 					or_useWidth_notIncludingImagePadding = 26
-					view.imageEdgeInsets = UIEdgeInsetsMake(0, -imagePaddingForShadow_h, 0, imagePaddingForShadow_h)
+					view.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
 					break
 				case .cancel:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Cancel", comment: ""), for: .normal)
