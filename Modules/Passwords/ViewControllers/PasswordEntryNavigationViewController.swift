@@ -214,15 +214,18 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	// Imperatives - Presentation
 	func present(animated: Bool)
 	{
-		NotificationCenter.default.post(
-			name: NotificationNames.willPresentInView.notificationName,
-			object: nil
-		)
-		//
-		let parentViewController = UIApplication.shared.delegate!.window!!.rootViewController!
 		DispatchQueue.main.async
-		{ [unowned self] in // on next 'tick' to wait for app to finish launching, if necessary; plus good to be on main
-			parentViewController.present(self, animated: animated, completion: nil)
+		{ [unowned self] in // we should wait until next tick b/c the app (and thus window) may not be finished setting up yet
+			NotificationCenter.default.post(
+				name: NotificationNames.willPresentInView.notificationName,
+				object: nil
+			)
+			//
+			let parentViewController = UIApplication.shared.delegate!.window!!.rootViewController!
+			DispatchQueue.main.async
+			{ [unowned self] in // on next 'tick' to wait for app to finish launching, if necessary; plus good to be on main
+				parentViewController.present(self, animated: animated, completion: nil)
+			}
 		}
 	}
 	func dismiss(animated: Bool = true) // this method might need to be renamed (more specifically) in the future to avoid conflict with UIKit

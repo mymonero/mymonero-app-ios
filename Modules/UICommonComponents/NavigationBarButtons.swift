@@ -68,7 +68,7 @@ extension UICommonComponents
 			var sizeToFitAndAddPadding = false
 			var or_useWidth_notIncludingImagePadding: CGFloat?
 			let imagePaddingForShadow_h: CGFloat = 1 // the grey image has shadow around it, and we add extra space for that in the blue and disabled images to make all images regular
-			let imagePaddingForShadow_v: CGFloat = 1
+			let imagePaddingForShadow_v: CGFloat = 2
 			switch type
 			{
 				case .back:

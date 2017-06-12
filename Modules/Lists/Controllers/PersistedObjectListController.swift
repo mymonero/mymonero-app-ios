@@ -14,12 +14,14 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// constants
 	enum Notifications_Boot: String
 	{ // the raw values of Notification name enums must be globally unique, i.e. semantically specific
-		case Did = "PersistedObjectListController_Notifications_Boot_Did"
-		case Failed = "PersistedObjectListController_Notifications_Boot_Failed"
+		case did = "PersistedObjectListController_Notifications_Boot_Did"
+		case failed = "PersistedObjectListController_Notifications_Boot_Failed"
+		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
 	}
 	enum Notifications_List: String
 	{
-		case Updated = "PersistedObjectListController_Notifications_List_Updated"
+		case updated = "PersistedObjectListController_Notifications_List_Updated"
+		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
 	}
 	enum Notifications_userInfoKeys: String
 	{
@@ -165,7 +167,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		self.hasBooted = true // all done!
 		self._callAndFlushAllBlocksWaitingForBootToExecute() // after hasBooted=true
 		DispatchQueue.main.async { // on next tick to avoid instantiator missing this
-			NotificationCenter.default.post(name: Notification.Name(Notifications_Boot.Did.rawValue), object: self)
+			NotificationCenter.default.post(name: Notifications_Boot.did.notificationName, object: self)
 		}
 	}
 	func _setup_didFailToBoot(withErrStr err_str: String)
@@ -177,7 +179,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 				Notifications_userInfoKeys.err_str.rawValue: err_str
 			]
 			NotificationCenter.default.post(
-				name: Notification.Name(Notifications_Boot.Failed.rawValue),
+				name: Notifications_Boot.failed.notificationName,
 				object: self,
 				userInfo: userInfo
 			)
@@ -280,7 +282,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func _listUpdated_records()
 	{
 		NotificationCenter.default.post(
-			name: NSNotification.Name(Notifications_List.Updated.rawValue),
+			name: Notifications_List.updated.notificationName,
 			object: self
 		)
 	}

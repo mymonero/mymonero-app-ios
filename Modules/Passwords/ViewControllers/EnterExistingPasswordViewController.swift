@@ -89,7 +89,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	// Imperatives
 	func _tryToSubmitForm()
 	{
-		self.__disableForm()
+		self.disableForm()
 		// we can assume pw is not "" here
 		self.__yield_nonZeroPassword()
 	}
@@ -99,14 +99,14 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			cb(self.password_inputView.text!)
 		}
 	}
-	func __disableForm()
+	func disableForm()
 	{
 		self.navigationItem.rightBarButtonItem!.isEnabled = false
 		//
 		self.password_inputView.isEnabled = false
 		self.forgot_linkButtonView.isEnabled = false
 	}
-	func __reEnableForm()
+	override func reEnableForm()
 	{
 		self.navigationItem.rightBarButtonItem!.isEnabled = true
 		//
@@ -162,20 +162,20 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 				y: fieldGroup_y,
 				width: self.view.frame.size.width - 2 * labels_x,
 				height: self.password_label.frame.size.height
-			)
+			).integral
 			assert(self.forgot_linkButtonView.frame.size.height > self.password_label.frame.size.height, "self.forgot_linkButtonView.frame.size.height <= self.password_label.frame.size.height")
 			self.forgot_linkButtonView.frame = CGRect(
 				x: textField_x + textField_w - self.forgot_linkButtonView.frame.size.width - fabs(labels_x - textField_x),
 				y: self.password_label.frame.origin.y - fabs(self.forgot_linkButtonView.frame.size.height - self.password_label.frame.size.height)/2, // since this button is taller than the label, we can't use the same y offset; we have to vertically center the forgot_linkButtonView with the label
 				width: self.forgot_linkButtonView.frame.size.width,
 				height: self.forgot_linkButtonView.frame.size.height
-			)
+			).integral
 			self.password_inputView.frame = CGRect(
 				x: textField_x,
 				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + textField_topMargin,
 				width: textField_w,
 				height: self.password_inputView.frame.size.height
-			)
+			).integral
 		}
 	}
 	//

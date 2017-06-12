@@ -21,10 +21,16 @@ class WalletsTabNavigationViewController: UINavigationController
 	}
 	func setup()
 	{
-		self.tabBarItem = UITabBarItem(
-			title: nil,
-			image: UIImage(named: "icon_tabBar_wallets")!.withRenderingMode(.alwaysOriginal),
-			selectedImage: UIImage(named: "icon_tabBar_wallets__active")!.withRenderingMode(.alwaysOriginal)
-		)
+		do {
+			self.tabBarItem = UITabBarItem(
+				title: nil,
+				image: UIImage(named: "icon_tabBar_wallets")!.withRenderingMode(.alwaysOriginal),
+				selectedImage: UIImage(named: "icon_tabBar_wallets__active")!.withRenderingMode(.alwaysOriginal)
+			)
+		}
+		do {
+			let viewController = WalletsListViewController()
+			self.viewControllers = [ viewController ]
+		}
 	}
 }

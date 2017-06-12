@@ -123,21 +123,21 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 			return
 		}
 		self.clearValidationMessage()
-		self.__disableForm() // for slow platforms (is this necessary in this, the native app?)
+		self.disableForm() // for slow platforms (is this necessary in this, the native app?)
 		self._yield_nonZeroPasswordAndPasswordType()
 	}
 	func _yield_nonZeroPasswordAndPasswordType()
 	{
 		self.userSubmittedNonZeroPassword_cb!(self.password_inputView.text!)
 	}
-	func __disableForm()
+	func disableForm()
 	{
 		self.navigationItem.rightBarButtonItem!.isEnabled = false
 		//
 		self.password_inputView.isEnabled = false
 		self.confirmPassword_inputView.isEnabled = false
 	}
-	func __reEnableForm()
+	override func reEnableForm()
 	{
 		self.navigationItem.rightBarButtonItem!.isEnabled = true
 		//
@@ -191,13 +191,13 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 				y: topPadding,
 				width: textField_w,
 				height: self.password_label.frame.size.height
-			)
+			).integral
 			self.password_inputView.frame = CGRect(
 				x: textField_x,
 				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + 8,
 				width: textField_w,
 				height: self.password_inputView.frame.size.height
-			)
+			).integral
 		}
 		do {
 			self.fieldAccessoryMessageLabel.frame = CGRect(
@@ -205,7 +205,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 				y: self.password_inputView.frame.origin.y + self.password_inputView.frame.size.height + 7,
 				width: textField_w,
 				height: 0
-			)
+			).integral
 			self.fieldAccessoryMessageLabel.sizeToFit()
 		}
 		do {
@@ -214,13 +214,13 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 				y: self.fieldAccessoryMessageLabel.frame.origin.y + self.fieldAccessoryMessageLabel.frame.size.height + 30,
 				width: textField_w,
 				height: self.confirmPassword_label.frame.size.height
-			)
+			).integral
 			self.confirmPassword_inputView.frame = CGRect(
 				x: textField_x,
 				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + 8,
 				width: textField_w,
 				height: self.confirmPassword_inputView.frame.size.height
-			)
+			).integral
 		}
 //		let bottomPadding = topPadding
 //		self.contentSize = CGSize(

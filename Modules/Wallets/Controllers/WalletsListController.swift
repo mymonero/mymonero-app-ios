@@ -14,7 +14,9 @@ class WalletsListController: PersistedObjectListController
 	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
-	init()
+	static let shared = WalletsListController()
+	//
+	private init()
 	{
 		super.init(listedObjectType: Wallet.self)
 	}

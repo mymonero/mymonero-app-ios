@@ -29,7 +29,7 @@ extension UICommonComponents
 		{
 			let capSize: Int = 5
 			var image: UIImage!
-			let disabledImage = UIImage(named: "pushButtonBG_disabled")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+			let disabledImage = UIImage(named: "highlightableCellBG_disabled")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 			var highlightedImage: UIImage!
 			var font: UIFont!
 			var color: UIColor!
@@ -37,20 +37,20 @@ extension UICommonComponents
 			switch self.pushButtonType
 			{
 			case .utility:
-				image = UIImage(named: "pushButtonBG_utility")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
-				highlightedImage = UIImage(named: "pushButtonBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				image = UIImage(named: "highlightableCellBG_utility")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				highlightedImage = UIImage(named: "highlightableCellBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0xFCFBFC)
 				break
 			case .action:
-				image = UIImage(named: "pushButtonBG_action")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
-				highlightedImage = UIImage(named: "pushButtonBG_action_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				image = UIImage(named: "highlightableCellBG_action")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				highlightedImage = UIImage(named: "highlightableCellBG_action_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
 			case .destructive:
-				image = UIImage(named: "pushButtonBG_destructive")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
-				highlightedImage = UIImage(named: "pushButtonBG_destructive_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				image = UIImage(named: "highlightableCellBG_destructive")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				highlightedImage = UIImage(named: "highlightableCellBG_destructive_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break

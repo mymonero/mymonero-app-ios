@@ -11,7 +11,6 @@ import UIKit
 class AppRuntimeController
 {
 	var windowController: WindowController!
-	var walletsListController: WalletsListController!
 	//
 	init(windowController: WindowController)
 	{
@@ -20,7 +19,6 @@ class AppRuntimeController
 	}
 	func setup()
 	{
-		self.walletsListController = WalletsListController()
 		DispatchQueue.main.async
 		{
 			
@@ -46,25 +44,25 @@ class AppRuntimeController
 //			
 			
 			
-			let address = "43zxvpcj5Xv9SEkNXbMCG7LPQStHMpFCQCmkmR4u5nzjWwq5Xkv5VmGgYEsHXg4ja2FGRD5wMWbBVMijDTqmmVqm93wHGkg"
-			let privateKeys = MoneroKeyDuo(
-				view: "7bea1907940afdd480eff7c4bcadb478a0fbb626df9e3ed74ae801e18f53e104",
-				spend: "4e6d43cd03812b803c6f3206689f5fcc910005fc7e91d50d79b0776dbefcd803"
-			)
-			self.walletsListController.OnceBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
-				walletLabel: "m'wallet",
-				swatchColor: .salmon,
-				address: address,
-				privateKeys: privateKeys,
-				{ (err_str, wallet, wasWalletAlreadyInserted) in
-					DDLog.Info("tests", "err_str \(err_str.debugDescription)")
-					DDLog.Info("tests", "wallet \(wallet.debugDescription)")
-					DDLog.Info("tests", "wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
-				},
-				userCanceledPasswordEntry_fn:
-				{
-				}
-			)
+//			let address = "43zxvpcj5Xv9SEkNXbMCG7LPQStHMpFCQCmkmR4u5nzjWwq5Xkv5VmGgYEsHXg4ja2FGRD5wMWbBVMijDTqmmVqm93wHGkg"
+//			let privateKeys = MoneroKeyDuo(
+//				view: "7bea1907940afdd480eff7c4bcadb478a0fbb626df9e3ed74ae801e18f53e104",
+//				spend: "4e6d43cd03812b803c6f3206689f5fcc910005fc7e91d50d79b0776dbefcd803"
+//			)
+//			WalletsListController.shared.OnceBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
+//				walletLabel: "m'wallet",
+//				swatchColor: .salmon,
+//				address: address,
+//				privateKeys: privateKeys,
+//				{ (err_str, wallet, wasWalletAlreadyInserted) in
+//					DDLog.Info("tests", "err_str \(err_str.debugDescription)")
+//					DDLog.Info("tests", "wallet \(wallet.debugDescription)")
+//					DDLog.Info("tests", "wasWalletAlreadyInserted \(wasWalletAlreadyInserted.debugDescription)")
+//				},
+//				userCanceledPasswordEntry_fn:
+//				{
+//				}
+//			)
 			
 			
 			
