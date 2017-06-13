@@ -36,11 +36,11 @@
 		9F2BFE8A1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFE7E1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png */; };
 		9F2BFE8B1EF08ABA006B2F7D /* textField_bg_error_xStretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFE7F1EF08ABA006B2F7D /* textField_bg_error_xStretchable@3x.png */; };
 		9F2BFE8C1EF08ABA006B2F7D /* textField_bg_noErr_xStretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFE801EF08ABA006B2F7D /* textField_bg_noErr_xStretchable@3x.png */; };
+		9F2BFEC81EF0A4FF006B2F7D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFEC71EF0A4FF006B2F7D /* Assets.xcassets */; };
 		9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30470C1EC657CB00190268 /* MoneroAmounts.swift */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
 		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
 		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
-		9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */; };
 		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
 		9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */; };
 		9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB031EBD30710073C2BB /* WindowController.swift */; };
@@ -144,11 +144,11 @@
 		9F2BFE7E1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pushButtonBG_utility@3x.png"; sourceTree = "<group>"; };
 		9F2BFE7F1EF08ABA006B2F7D /* textField_bg_error_xStretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_xStretchable@3x.png"; sourceTree = "<group>"; };
 		9F2BFE801EF08ABA006B2F7D /* textField_bg_noErr_xStretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_xStretchable@3x.png"; sourceTree = "<group>"; };
+		9F2BFEC71EF0A4FF006B2F7D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroAmounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroAmounts.swift; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
 		9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9F7ADAF81EBD2C1C0073C2BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppRuntimeController.swift; sourceTree = "<group>"; };
@@ -358,9 +358,9 @@
 		9F7ADAF61EBD2C1C0073C2BB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F2BFEC71EF0A4FF006B2F7D /* Assets.xcassets */,
 				9F8E2FDF1EE8A76200F89A1D /* tabBarBGColorImage@3x.png */,
 				9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */,
-				9F7ADAF71EBD2C1C0073C2BB /* Assets.xcassets */,
 				9F7ADAF81EBD2C1C0073C2BB /* Info.plist */,
 			);
 			path = Resources;
@@ -768,7 +768,6 @@
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F2BFE8C1EF08ABA006B2F7D /* textField_bg_noErr_xStretchable@3x.png in Resources */,
-				9F7ADAFB1EBD2C1C0073C2BB /* Assets.xcassets in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
 				9F2BFE821EF08ABA006B2F7D /* highlightableCellBG@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
@@ -781,6 +780,7 @@
 				9F2BFE8B1EF08ABA006B2F7D /* textField_bg_error_xStretchable@3x.png in Resources */,
 				9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */,
 				9F8E303D1EEDAB9400F89A1D /* detectedCheckmark@3x.png in Resources */,
+				9F2BFEC81EF0A4FF006B2F7D /* Assets.xcassets in Resources */,
 				9F8E2F991EE8837300F89A1D /* icon_tabBar_wallets@3x.png in Resources */,
 				9F8E303B1EEDAB9400F89A1D /* backButtonIcon@3x.png in Resources */,
 				9F8E30431EEDAB9400F89A1D /* wallet-CFCECF@3x.png in Resources */,
@@ -1024,6 +1024,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1039,6 +1040,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
