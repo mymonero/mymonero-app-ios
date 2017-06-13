@@ -12,33 +12,34 @@ extension UICommonComponents
 {
 	struct HighlightableCells
 	{
-		static let capSize: Int = 5
-		static let imagePaddingForShadow_h: CGFloat = 1 // the grey image has shadow around it, and we add extra space for that in the blue and disabled images to make all images regular
-		static let imagePaddingForShadow_v: CGFloat = 2
-
+		// the grey image has shadow around it
+		static let imagePaddingForShadow_h = CGFloat(imagePaddingForShadow_h_Int)
+		static let imagePaddingForShadow_v = CGFloat(imagePaddingForShadow_v_Int)
+		static let imagePaddingForShadow_h_Int: Int = 1
+		static let imagePaddingForShadow_v_Int: Int = 2
+		//
+		static let cornerRadius: Int = 5
+		static let capSize: Int = cornerRadius + imagePaddingForShadow_h_Int
 		//
 		enum Variant: String
 		{
-			case disabled = "disabled"
-			//
-			case utility = "utility"
-			case utility_highlighted = "utility_highlighted"
-			//
-			case action = "action"
-			case action_highlighted = "action_highlighted"
-			//
-			case destructive = "destructive"
-			case destructive_highlighted = "destructive_highlighted"
+			case normal = ""
+			case highlighted = "_highlighted"
 			//
 			var suffix: String
 			{
 				return self.rawValue
 			}
 			//
-			var image: UIImage
+			var stretchableImage: UIImage
 			{
 				let capSize = UICommonComponents.HighlightableCells.capSize
-				return UIImage(named: "highlightableCellBG_\(self.suffix)")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+				return UIImage(
+					named: "highlightableCellBG\(self.suffix)"
+				)!.stretchableImage(
+					withLeftCapWidth: capSize,
+					topCapHeight: capSize
+				)
 			}
 		}
 	}

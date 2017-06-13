@@ -67,8 +67,8 @@ extension UICommonComponents
 			}
 			var sizeToFitAndAddPadding = false
 			var or_useWidth_notIncludingImagePadding: CGFloat?
-			let imagePaddingForShadow_h = UICommonComponents.HighlightableCells.imagePaddingForShadow_h
-			let imagePaddingForShadow_v = UICommonComponents.HighlightableCells.imagePaddingForShadow_v
+			let imagePaddingForShadow_h = UICommonComponents.PushButtonCells.imagePaddingForShadow_h
+			let imagePaddingForShadow_v = UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 			switch type
 			{
 				case .back:

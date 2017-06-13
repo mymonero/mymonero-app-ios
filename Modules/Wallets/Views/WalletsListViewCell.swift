@@ -34,9 +34,8 @@ class WalletsListViewCell: UITableViewCell
 		self.isOpaque = true // performance
 		self.backgroundColor = UIColor.contentBackgroundColor
 		//
-		let capSize = 5 // TODO: factor/centralize with PushButtons' capSize
-		self.backgroundView = UIImageView(image: UIImage(named: "highlightableCellBG_utility")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize))
-		self.selectedBackgroundView = UIImageView(image: UIImage(named: "highlightableCellBG_utility_highlighted")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize))
+		self.backgroundView = UIImageView(image: UICommonComponents.HighlightableCells.Variant.normal.stretchableImage)
+		self.selectedBackgroundView = UIImageView(image: UICommonComponents.HighlightableCells.Variant.highlighted.stretchableImage)
 		//
 		self.contentView.addSubview(self.cellContentView)
 		//
@@ -73,7 +72,10 @@ class WalletsListViewCell: UITableViewCell
 		self.contentView.frame = frame
 		self.backgroundView!.frame = frame
 		self.selectedBackgroundView!.frame = frame
-		self.cellContentView.frame = self.contentView.bounds
+		self.cellContentView.frame = self.contentView.bounds.insetBy(
+			dx: UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
+			dy: UICommonComponents.HighlightableCells.imagePaddingForShadow_v
+		)
 		self.accessoryChevronView.frame = CGRect(
 			x: frame.size.width - self.accessoryChevronView.frame.size.width - 16,
 			y: frame.origin.y + (frame.size.height - self.accessoryChevronView.frame.size.height)/2,

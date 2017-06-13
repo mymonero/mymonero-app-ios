@@ -28,7 +28,7 @@ extension UICommonComponents
 		func setup()
 		{
 			var image: UIImage!
-			let disabledImage = UICommonComponents.HighlightableCells.Variant.disabled.image
+			let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
 			var highlightedImage: UIImage!
 			var font: UIFont!
 			var color: UIColor!
@@ -36,20 +36,20 @@ extension UICommonComponents
 			switch self.pushButtonType
 			{
 			case .utility:
-				image = UICommonComponents.HighlightableCells.Variant.utility.image
-				highlightedImage = UICommonComponents.HighlightableCells.Variant.utility_highlighted.image
+				image = UICommonComponents.PushButtonCells.Variant.utility.stretchableImage
+				highlightedImage = UICommonComponents.PushButtonCells.Variant.utility_highlighted.stretchableImage
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0xFCFBFC)
 				break
 			case .action:
-				image = UICommonComponents.HighlightableCells.Variant.action.image
-				highlightedImage = UICommonComponents.HighlightableCells.Variant.action_highlighted.image
+				image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
+				highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
 			case .destructive:
-				image = UICommonComponents.HighlightableCells.Variant.destructive.image
-				highlightedImage = UICommonComponents.HighlightableCells.Variant.destructive_highlighted.image
+				image = UICommonComponents.PushButtonCells.Variant.destructive.stretchableImage
+				highlightedImage = UICommonComponents.PushButtonCells.Variant.destructive_highlighted.stretchableImage
 				font = UIFont.middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
@@ -64,6 +64,43 @@ extension UICommonComponents
 		required init?(coder aDecoder: NSCoder)
 		{
 			fatalError("init(coder:) has not been implemented")
+		}
+	}
+	//
+	struct PushButtonCells
+	{
+		// the grey image has shadow around it, and we add extra space for that in the blue and disabled images, having made all images regular
+		static let imagePaddingForShadow_h = CGFloat(imagePaddingForShadow_h_Int)
+		static let imagePaddingForShadow_v = CGFloat(imagePaddingForShadow_v_Int)
+		static let imagePaddingForShadow_h_Int: Int = 1
+		static let imagePaddingForShadow_v_Int: Int = 2
+		//
+		static let cornerRadius: Int = 4
+		static let capSize: Int = cornerRadius + imagePaddingForShadow_h_Int
+		//
+		enum Variant: String
+		{
+			case disabled = "disabled"
+			//
+			case utility = "utility"
+			case utility_highlighted = "utility_highlighted"
+			//
+			case action = "action"
+			case action_highlighted = "action_highlighted"
+			//
+			case destructive = "destructive"
+			case destructive_highlighted = "destructive_highlighted"
+			//
+			var suffix: String
+			{
+				return "_\(self.rawValue)"
+			}
+			//
+			var stretchableImage: UIImage
+			{
+				let capSize = UICommonComponents.PushButtonCells.capSize
+				return UIImage(named: "pushButtonBG\(self.suffix)")!.stretchableImage(withLeftCapWidth: capSize, topCapHeight: capSize)
+			}
 		}
 	}
 }

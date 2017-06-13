@@ -27,6 +27,10 @@ class Wallet: PersistableObject
 			return self.init(rawValue: jsonRepresentation)!
 		}
 		//
+		var humanReadableCurrencySymbolString: String
+		{
+			return self.rawValue.uppercased()
+		}
 		static func humanReadableString(currency: Currency) -> String
 		{
 			switch currency {
