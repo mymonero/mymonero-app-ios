@@ -64,7 +64,23 @@ extension UICommonComponents
 		private func _configureWithContent()
 		{
 			self.emojiLabel.text = emoji
-			self.messageLabel.text = message
+			//
+			var attributedString: NSMutableAttributedString!
+			do {
+				let string = self.message!
+				let range = NSRange(location: 0, length: string.characters.count)
+				attributedString = NSMutableAttributedString(string: string)
+				let paragraphStyle = NSMutableParagraphStyle()
+				paragraphStyle.lineSpacing = 4
+				paragraphStyle.alignment = .center
+				attributedString.addAttribute(
+					NSParagraphStyleAttributeName,
+					value: paragraphStyle,
+					range: range
+				)
+			}
+			self.messageLabel.attributedText = attributedString
+			//
 			self.emojiLabel.sizeToFit()
 			self.messageLabel.sizeToFit()
 			self.setNeedsLayout()

@@ -23,6 +23,7 @@ class WalletsListViewController: ListViewController
 		self.tableView.backgroundColor = .contentBackgroundColor
 		self.tableView.separatorStyle = .none
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
+		self.tableView.backgroundView = WalletsListEmptyView()
 	}
 	override func setup_navigationBarButtonItems()
 	{

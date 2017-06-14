@@ -90,10 +90,18 @@ class Wallet: PersistableObject
 	}
 	enum NotificationNames: String
 	{
-		case balanceChanged		 = "Wallet_NotificationNames_balanceChanged"
+		case labelChanged		= "Wallet_NotificationNames_labelChanged"
+		case swatchColorChanged	= "Wallet_NotificationNames_swatchColorChanged"
+		case balanceChanged		= "Wallet_NotificationNames_balanceChanged"
+		//
 		case spentOutputsChanged = "Wallet_NotificationNames_spentOutputsChanged"
 		case heightsUpdated		 = "Wallet_NotificationNames_heightsUpdated"
 		case transactionsChanged = "Wallet_NotificationNames_transactionsChanged"
+		//
+		var notificationName: NSNotification.Name
+		{
+			return NSNotification.Name(self.rawValue)
+		}
 	}
 	// Internal
 	enum DictKeys: String
@@ -635,10 +643,24 @@ class Wallet: PersistableObject
 		swatchColor: SwatchColor
 	) -> String? // err_str -- maybe port to 'throws'
 	{
+		let isChanging__walletLabel = self.walletLabel != walletLabel
+		let isChanging__swatchColor = self.swatchColor != swatchColor
 		self.walletLabel = walletLabel
 		self.swatchColor = swatchColor
 		let err_str = self.saveToDisk()
-		return err_str
+		if err_str != nil {
+			return err_str
+		}
+		DispatchQueue.main.async
+		{
+			if isChanging__walletLabel {
+				NotificationCenter.default.post(name: NotificationNames.labelChanged.notificationName, object: self)
+			}
+			if isChanging__swatchColor {
+				NotificationCenter.default.post(name: NotificationNames.swatchColorChanged.notificationName, object: self)
+			}
+		}
+		return nil
 	}
 	//
 	//

@@ -69,7 +69,9 @@ class WalletCellContentView: UIView
 	func stopObserving_object()
 	{
 		assert(self.object != nil)
-		DDLog.Todo("Wallets", "stop observing wallet")
+		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.labelChanged.notificationName, object: self.object!)
+		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
+		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
 	}
 	//
 	// Accessors
@@ -150,7 +152,10 @@ class WalletCellContentView: UIView
 	//
 	func startObserving_object()
 	{
-		DDLog.Todo("Wallets", "start observing wallet")
+		assert(self.object != nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(_labelChanged), name: Wallet.NotificationNames.labelChanged.notificationName, object: self.object!)
+		NotificationCenter.default.addObserver(self, selector: #selector(_balanceChanged), name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
+		NotificationCenter.default.addObserver(self, selector: #selector(_swatchColorChanged), name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
 	}
 	//
 	// Imperatives - Overrides
@@ -178,5 +183,19 @@ class WalletCellContentView: UIView
 			width: labels_width,
 			height: 20 // TODO: size with font for accessibility? NOTE: must support emoji, currently, for locked icon
 		).integral
+	}
+	//
+	// Delegation - Wallet NSNotifications
+	@objc func _labelChanged()
+	{
+		self.__configureUIWithWallet_accountInfo()
+	}
+	@objc func _balanceChanged()
+	{
+		self.__configureUIWithWallet_accountInfo()
+	}
+	@objc func _swatchColorChanged()
+	{
+		self.__configureUIWithWallet_swatchColor()
 	}
 }
