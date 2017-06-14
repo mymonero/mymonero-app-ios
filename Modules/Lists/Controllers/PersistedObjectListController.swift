@@ -16,16 +16,25 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	{ // the raw values of Notification name enums must be globally unique, i.e. semantically specific
 		case did = "PersistedObjectListController_Notifications_Boot_Did"
 		case failed = "PersistedObjectListController_Notifications_Boot_Failed"
+		//
 		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
 	}
 	enum Notifications_List: String
 	{
 		case updated = "PersistedObjectListController_Notifications_List_Updated"
+		//
+		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
+	}
+	enum Notifications_Record: String
+	{
+		case deleted = "PersistedObjectListController_Notifications_Record_deleted"
+		//
 		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
 	}
 	enum Notifications_userInfoKeys: String
 	{
 		case err_str = "err_str"
+		case record = "record"
 	}
 	//
 	// inputs
@@ -226,10 +235,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		return DocumentPersister.shared.IdsOfAllDocuments(inCollectionNamed: self.documentCollectionName)
 	}
 	//
-	//
 	// Imperatives - Overridable
 	func overridable_sortRecords() {}
-
 	//
 	// Internal - Imperatives - Queue entry
 	func _dispatchAsync_listUpdated_records()
@@ -264,6 +271,33 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		for (_, block) in blocks.enumerated() {
 			block()
 		}
+	}
+	//
+	// Imperatives - Delete
+	func givenBooted_delete(listedObject object: PersistableObject) -> String?
+	{
+		assert(self.hasBooted)
+		if self.hasBooted == false {
+			return "Code fault"
+		}
+		let err_str = object.delete()
+		if err_str == nil { // remove / release
+			self._removeFromList(object)
+		}
+		return err_str
+	}
+	func _removeFromList(_ object: PersistableObject)
+	{
+		// self.stopObserving(record: record) // if observation added later…
+		let index = self.records.index(where: { (record) -> Bool in
+			record._id == object._id
+		})!
+		self.records.remove(at: index)
+		do {
+			let userInfo = [ Notifications_userInfoKeys.record.rawValue: object ]
+			NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: userInfo)
+		}
+		self._listUpdated_records()
 	}
 	//
 	// Delegation
