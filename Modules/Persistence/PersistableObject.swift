@@ -18,6 +18,16 @@ class PersistableObject
 	var didFailToBoot_flag: Bool?
 	var didFailToBoot_errStr: String?
 	//
+	enum NotificationNames: String
+	{
+		case willBeDeleted = "PersistableObject_NotificationNames_willBeDeleted"
+		//
+		var notificationName: NSNotification.Name
+		{
+			return NSNotification.Name(self.rawValue)
+		}
+	}
+	//
 	func collectionName() -> String
 	{
 		assert(false, "You must override PersistableObject/collectionName")
@@ -130,5 +140,25 @@ class PersistableObject
 			DDLog.Error("Persistence", "Caught error while saving update to object: \(err_str)")
 			return err_str // TODO? possibly change saveToDisk() -> String? to saveToDisk() throws
 		}
+	}
+	//
+	func delete() -> String? // err_str
+	{
+		assert(self._id != nil)
+		NotificationCenter.default.post(
+			name: NotificationNames.willBeDeleted.notificationName,
+			object: self
+		)
+		let (err_str, _) = DocumentPersister.shared.RemoveDocuments(
+			inCollectionNamed: self.collectionName(),
+			withIds: [ self._id! ]
+		)
+		if err_str != nil {
+			DDLog.Error("Persistence", "Error while deleting object: \(err_str!.debugDescription)")
+		} else {
+			DDLog.Deleting("Persistence", "Deleted \(self).")
+		}
+		return err_str
+
 	}
 }

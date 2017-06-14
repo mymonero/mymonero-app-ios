@@ -239,8 +239,8 @@ class DocumentPersister
 	}
 	//
 	func RemoveDocuments(
-		withIds ids: [DocumentId],
-		inCollectionNamed collectionName: CollectionName
+		inCollectionNamed collectionName: CollectionName,
+		withIds ids: [DocumentId]
 	) -> (err_str: String?, numRemoved: Int?)
 	{
 		var numRemoved = 0
@@ -268,7 +268,7 @@ class DocumentPersister
 			return (err_str, nil)
 		}
 		//
-		return self.RemoveDocuments(withIds: ids!, inCollectionNamed: collectionName)
+		return self.RemoveDocuments(inCollectionNamed: collectionName, withIds: ids!)
 	}
 	//
 	//
