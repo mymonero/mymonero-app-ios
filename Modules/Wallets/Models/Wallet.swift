@@ -104,7 +104,7 @@ class Wallet: PersistableObject
 		}
 	}
 	// Internal
-	enum DictKeys: String
+	enum DictKey: String
 	{ // (For persistence)
 		// Encrypted:
 		case currency = "currency"
@@ -197,55 +197,55 @@ class Wallet: PersistableObject
 	{
 		var dict = super.new_dictRepresentation() // since it constructs the base object for us
 		do {
-			dict[DictKeys.currency.rawValue] = self.currency.jsonRepresentation()
-			dict[DictKeys.walletLabel.rawValue] = self.walletLabel
-			dict[DictKeys.swatchColorHexString.rawValue] = self.swatchColor.jsonRepresentation()
-			dict[DictKeys.publicAddress.rawValue] = self.public_address
+			dict[DictKey.currency.rawValue] = self.currency.jsonRepresentation()
+			dict[DictKey.walletLabel.rawValue] = self.walletLabel
+			dict[DictKey.swatchColorHexString.rawValue] = self.swatchColor.jsonRepresentation()
+			dict[DictKey.publicAddress.rawValue] = self.public_address
 			if let value = self.account_seed {
-				dict[DictKeys.accountSeed.rawValue] = value
+				dict[DictKey.accountSeed.rawValue] = value
 			}
-			dict[DictKeys.publicKeys.rawValue] = self.public_keys.jsonRepresentation
-			dict[DictKeys.privateKeys.rawValue] = self.private_keys.jsonRepresentation
+			dict[DictKey.publicKeys.rawValue] = self.public_keys.jsonRepresentation
+			dict[DictKey.privateKeys.rawValue] = self.private_keys.jsonRepresentation
 			if let value = self.shouldDisplayImportAccountOption {
-				dict[DictKeys.shouldDisplayImportAccountOption.rawValue] = value
+				dict[DictKey.shouldDisplayImportAccountOption.rawValue] = value
 			}
-			dict[DictKeys.isLoggedIn.rawValue] = self.isLoggedIn
+			dict[DictKey.isLoggedIn.rawValue] = self.isLoggedIn
 			if let isInViewOnlyMode = self.isInViewOnlyMode {
-				dict[DictKeys.isInViewOnlyMode.rawValue] = isInViewOnlyMode
+				dict[DictKey.isInViewOnlyMode.rawValue] = isInViewOnlyMode
 			}
 			//
 			if let date = self.dateThatLast_fetchedAccountInfo {
-				dict[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] = date.timeIntervalSince1970
+				dict[DictKey.dateThatLast_fetchedAccountInfo.rawValue] = date.timeIntervalSince1970
 			}
 			if let date = self.dateThatLast_fetchedAccountTransactions {
-				dict[DictKeys.dateThatLast_fetchedAccountTransactions.rawValue] = date.timeIntervalSince1970
+				dict[DictKey.dateThatLast_fetchedAccountTransactions.rawValue] = date.timeIntervalSince1970
 			}
 			//
 			if let value = self.totalReceived {
-				dict[DictKeys.totalReceived.rawValue] = String(value, radix: 10)
+				dict[DictKey.totalReceived.rawValue] = String(value, radix: 10)
 			}
 			if let value = self.totalSent {
-				dict[DictKeys.totalSent.rawValue] = String(value, radix: 10)
+				dict[DictKey.totalSent.rawValue] = String(value, radix: 10)
 			}
 			if let value = self.lockedBalance {
-				dict[DictKeys.lockedBalance.rawValue] = String(value, radix: 10)
+				dict[DictKey.lockedBalance.rawValue] = String(value, radix: 10)
 			}
 			//
 			if let array = self.spentOutputs {
-				dict[DictKeys.spentOutputs.rawValue] = MoneroSpentOutputDescription.newSerializedDictRepresentation(
+				dict[DictKey.spentOutputs.rawValue] = MoneroSpentOutputDescription.newSerializedDictRepresentation(
 					withArray: array
 				)
 			}
 			//
-			dict[DictKeys.account_scanned_tx_height.rawValue] = self.account_scanned_tx_height
-			dict[DictKeys.account_scanned_height.rawValue] = self.account_scanned_height
-			dict[DictKeys.account_scanned_block_height.rawValue] = self.account_scanned_block_height
-			dict[DictKeys.account_scan_start_height.rawValue] = self.account_scan_start_height
-			dict[DictKeys.transaction_height.rawValue] = self.transaction_height
-			dict[DictKeys.blockchain_height.rawValue] = self.blockchain_height
+			dict[DictKey.account_scanned_tx_height.rawValue] = self.account_scanned_tx_height
+			dict[DictKey.account_scanned_height.rawValue] = self.account_scanned_height
+			dict[DictKey.account_scanned_block_height.rawValue] = self.account_scanned_block_height
+			dict[DictKey.account_scan_start_height.rawValue] = self.account_scan_start_height
+			dict[DictKey.transaction_height.rawValue] = self.transaction_height
+			dict[DictKey.blockchain_height.rawValue] = self.blockchain_height
 			//
 			if let array = self.transactions {
-				dict[DictKeys.transactions.rawValue] = MoneroHistoricalTransactionRecord.newSerializedDictRepresentation(
+				dict[DictKey.transactions.rawValue] = MoneroHistoricalTransactionRecord.newSerializedDictRepresentation(
 					withArray: array
 				)
 			}
@@ -264,10 +264,10 @@ class Wallet: PersistableObject
 	{
 		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
-		self.isLoggedIn = dictRepresentation[DictKeys.isLoggedIn.rawValue] as! Bool
-		self.isInViewOnlyMode = dictRepresentation[DictKeys.isInViewOnlyMode.rawValue] as? Bool
-		self.shouldDisplayImportAccountOption = dictRepresentation[DictKeys.shouldDisplayImportAccountOption.rawValue] as? Bool
-		if let date = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
+		self.isLoggedIn = dictRepresentation[DictKey.isLoggedIn.rawValue] as! Bool
+		self.isInViewOnlyMode = dictRepresentation[DictKey.isInViewOnlyMode.rawValue] as? Bool
+		self.shouldDisplayImportAccountOption = dictRepresentation[DictKey.shouldDisplayImportAccountOption.rawValue] as? Bool
+		if let date = dictRepresentation[DictKey.dateThatLast_fetchedAccountInfo.rawValue] {
 			guard let timeInterval = date as? TimeInterval else {
 				self.didFailToInitialize_flag = true
 				assert(false, "not a TimeInterval")
@@ -275,7 +275,7 @@ class Wallet: PersistableObject
 			}
 			self.dateThatLast_fetchedAccountInfo = Date(timeIntervalSince1970: timeInterval)
 		}
-		if let date = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
+		if let date = dictRepresentation[DictKey.dateThatLast_fetchedAccountInfo.rawValue] {
 			guard let timeInterval = date as? TimeInterval else {
 				self.didFailToInitialize_flag = true
 				assert(false, "not a TimeInterval")
@@ -285,57 +285,57 @@ class Wallet: PersistableObject
 		}
 		//
 		self.currency = Currency.new(
-			from_jsonRepresentation: dictRepresentation[DictKeys.currency.rawValue] as! String
+			from_jsonRepresentation: dictRepresentation[DictKey.currency.rawValue] as! String
 		)
-		self.walletLabel = dictRepresentation[DictKeys.walletLabel.rawValue] as! String
+		self.walletLabel = dictRepresentation[DictKey.walletLabel.rawValue] as! String
 		self.swatchColor = SwatchColor.new(
-			from_jsonRepresentation: dictRepresentation[DictKeys.swatchColorHexString.rawValue] as! String
+			from_jsonRepresentation: dictRepresentation[DictKey.swatchColorHexString.rawValue] as! String
 		)
 		// Not going to check whether the acct seed is nil/'' here because if the wallet was
 		// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
 		// cannot obtain the seed.
-		self.mnemonic_wordsetName = dictRepresentation[DictKeys.mnemonic_wordsetName.rawValue] as? MoneroMnemonicWordsetName
-		self.public_address = dictRepresentation[DictKeys.publicAddress.rawValue] as! MoneroAddress
+		self.mnemonic_wordsetName = dictRepresentation[DictKey.mnemonic_wordsetName.rawValue] as? MoneroMnemonicWordsetName
+		self.public_address = dictRepresentation[DictKey.publicAddress.rawValue] as! MoneroAddress
 		self.public_keys = MoneroKeyDuo.new(
-			fromJSONRepresentation: dictRepresentation[DictKeys.publicKeys.rawValue] as! [String: Any]
+			fromJSONRepresentation: dictRepresentation[DictKey.publicKeys.rawValue] as! [String: Any]
 		)
-		self.account_seed = dictRepresentation[DictKeys.accountSeed.rawValue] as? MoneroSeed
+		self.account_seed = dictRepresentation[DictKey.accountSeed.rawValue] as? MoneroSeed
 		self.private_keys = MoneroKeyDuo.new(
-			fromJSONRepresentation: dictRepresentation[DictKeys.privateKeys.rawValue] as! [String: Any]
+			fromJSONRepresentation: dictRepresentation[DictKey.privateKeys.rawValue] as! [String: Any]
 		)
 		//
-		if let string = dictRepresentation[DictKeys.totalReceived.rawValue] {
+		if let string = dictRepresentation[DictKey.totalReceived.rawValue] {
 			self.totalReceived = MoneroAmount(string as! String)
 		}
-		if let string = dictRepresentation[DictKeys.totalSent.rawValue] {
+		if let string = dictRepresentation[DictKey.totalSent.rawValue] {
 			self.totalSent = MoneroAmount(string as! String)
 		}
-		if let string = dictRepresentation[DictKeys.lockedBalance.rawValue] {
+		if let string = dictRepresentation[DictKey.lockedBalance.rawValue] {
 			self.lockedBalance = MoneroAmount(string as! String)
 		}
 		//
-		self.account_scanned_tx_height = dictRepresentation[DictKeys.account_scanned_tx_height.rawValue] as? Int
-		self.account_scanned_height = dictRepresentation[DictKeys.account_scanned_height.rawValue] as? Int
-		self.account_scanned_block_height = dictRepresentation[DictKeys.account_scanned_block_height.rawValue] as? Int
-		self.account_scan_start_height = dictRepresentation[DictKeys.account_scan_start_height.rawValue] as? Int
-		self.transaction_height = dictRepresentation[DictKeys.transaction_height.rawValue] as? Int
-		self.blockchain_height = dictRepresentation[DictKeys.blockchain_height.rawValue] as? Int
+		self.account_scanned_tx_height = dictRepresentation[DictKey.account_scanned_tx_height.rawValue] as? Int
+		self.account_scanned_height = dictRepresentation[DictKey.account_scanned_height.rawValue] as? Int
+		self.account_scanned_block_height = dictRepresentation[DictKey.account_scanned_block_height.rawValue] as? Int
+		self.account_scan_start_height = dictRepresentation[DictKey.account_scan_start_height.rawValue] as? Int
+		self.transaction_height = dictRepresentation[DictKey.transaction_height.rawValue] as? Int
+		self.blockchain_height = dictRepresentation[DictKey.blockchain_height.rawValue] as? Int
 		//
-		if let jsonRepresentations = dictRepresentation[DictKeys.spentOutputs.rawValue] {
+		if let jsonRepresentations = dictRepresentation[DictKey.spentOutputs.rawValue] {
 			self.spentOutputs = MoneroSpentOutputDescription.newArray(
 				fromJSONRepresentations: jsonRepresentations as! [[String: Any]]
 			)
 		}
-		if let jsonRepresentations = dictRepresentation[DictKeys.transactions.rawValue] {
+		if let jsonRepresentations = dictRepresentation[DictKey.transactions.rawValue] {
 			self.transactions = MoneroHistoricalTransactionRecord.newArray(
 				fromJSONRepresentations: jsonRepresentations as! [[String: Any]]
 			)
 		}
 		//
-		if let timeIntervalSince1970 = dictRepresentation[DictKeys.dateThatLast_fetchedAccountInfo.rawValue] {
+		if let timeIntervalSince1970 = dictRepresentation[DictKey.dateThatLast_fetchedAccountInfo.rawValue] {
 			self.dateThatLast_fetchedAccountInfo = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
 		}
-		if let timeIntervalSince1970 = dictRepresentation[DictKeys.dateThatLast_fetchedAccountTransactions.rawValue] {
+		if let timeIntervalSince1970 = dictRepresentation[DictKey.dateThatLast_fetchedAccountTransactions.rawValue] {
 			self.dateThatLast_fetchedAccountTransactions = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
 		}
 	}

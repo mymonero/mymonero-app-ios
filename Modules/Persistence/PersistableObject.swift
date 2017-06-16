@@ -159,6 +159,5 @@ class PersistableObject
 			DDLog.Deleting("Persistence", "Deleted \(self).")
 		}
 		return err_str
-
 	}
 }

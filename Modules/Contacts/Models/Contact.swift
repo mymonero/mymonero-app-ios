@@ -18,7 +18,7 @@ class Contact: PersistableObject
 			return NSNotification.Name(self.rawValue)
 		}
 	}
-	enum DictKeys: String
+	enum DictKey: String
 	{ // (For persistence)
 		case fullname = "fullname"
 		case address = "address"
@@ -39,18 +39,18 @@ class Contact: PersistableObject
 	{
 		var dict = super.new_dictRepresentation() // since it constructs the base object for us
 		do {
-			dict[DictKeys.fullname.rawValue] = self.fullname
+			dict[DictKey.fullname.rawValue] = self.fullname
 			if let value = self.address {
-				dict[DictKeys.address.rawValue] = value
+				dict[DictKey.address.rawValue] = value
 			}
 			if let value = self.payment_id {
-				dict[DictKeys.payment_id.rawValue] = value
+				dict[DictKey.payment_id.rawValue] = value
 			}
 			if let value = self.emoji {
-				dict[DictKeys.emoji.rawValue] = value
+				dict[DictKey.emoji.rawValue] = value
 			}
 			if let value = self.cached_OAResolved_XMR_address {
-				dict[DictKeys.cached_OAResolved_XMR_address.rawValue] = value
+				dict[DictKey.cached_OAResolved_XMR_address.rawValue] = value
 			}
 		}
 		return dict
@@ -65,11 +65,11 @@ class Contact: PersistableObject
 	{
 		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
-		self.fullname = dictRepresentation[DictKeys.fullname.rawValue] as! String
-		self.address = dictRepresentation[DictKeys.address.rawValue] as! String
-		self.payment_id = dictRepresentation[DictKeys.payment_id.rawValue] as? String
-		self.emoji = dictRepresentation[DictKeys.emoji.rawValue] as! String
-		self.cached_OAResolved_XMR_address = dictRepresentation[DictKeys.cached_OAResolved_XMR_address.rawValue] as? String
+		self.fullname = dictRepresentation[DictKey.fullname.rawValue] as! String
+		self.address = dictRepresentation[DictKey.address.rawValue] as! String
+		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
+		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! String
+		self.cached_OAResolved_XMR_address = dictRepresentation[DictKey.cached_OAResolved_XMR_address.rawValue] as? String
 	}
 	//
 	// Lifecycle - Init - For adding new

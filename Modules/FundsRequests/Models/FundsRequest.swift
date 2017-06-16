@@ -19,7 +19,7 @@ class FundsRequest: PersistableObject
 			return NSNotification.Name(self.rawValue)
 		}
 	}
-	enum DictKeys: String
+	enum DictKey: String
 	{ // (For persistence)
 		case from_fullname = "from_fullname"
 		case to_walletHexColorString = "to_walletHexColorString"
@@ -49,21 +49,21 @@ class FundsRequest: PersistableObject
 		var dict = super.new_dictRepresentation() // since it constructs the base object for us
 		do {
 			if let value = self.from_fullname {
-				dict[DictKeys.from_fullname.rawValue] = value
+				dict[DictKey.from_fullname.rawValue] = value
 			}
-			dict[DictKeys.to_walletHexColorString.rawValue] = self.to_walletSwatchColor.jsonRepresentation()
-			dict[DictKeys.to_address.rawValue] = self.to_address
+			dict[DictKey.to_walletHexColorString.rawValue] = self.to_walletSwatchColor.jsonRepresentation()
+			dict[DictKey.to_address.rawValue] = self.to_address
 			if let value = self.payment_id {
-				dict[DictKeys.payment_id.rawValue] = value
+				dict[DictKey.payment_id.rawValue] = value
 			}
 			if let value = self.amount {
-				dict[DictKeys.amount.rawValue] = value
+				dict[DictKey.amount.rawValue] = value
 			}
 			if let value = self.message {
-				dict[DictKeys.message.rawValue] = value
+				dict[DictKey.message.rawValue] = value
 			}
 			if let value = self.description {
-				dict[DictKeys.description.rawValue] = value
+				dict[DictKey.description.rawValue] = value
 			}
 		}
 		return dict
@@ -78,13 +78,13 @@ class FundsRequest: PersistableObject
 	{
 		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
-		self.from_fullname = dictRepresentation[DictKeys.from_fullname.rawValue] as? String
-		self.to_walletSwatchColor = Wallet.SwatchColor.new(from_jsonRepresentation: dictRepresentation[DictKeys.to_walletHexColorString.rawValue] as! String)
-		self.to_address = dictRepresentation[DictKeys.to_address.rawValue] as! String
-		self.payment_id = dictRepresentation[DictKeys.payment_id.rawValue] as? String
-		self.amount = dictRepresentation[DictKeys.amount.rawValue] as? String
-		self.message = dictRepresentation[DictKeys.message.rawValue] as? String
-		self.description = dictRepresentation[DictKeys.description.rawValue] as? String
+		self.from_fullname = dictRepresentation[DictKey.from_fullname.rawValue] as? String
+		self.to_walletSwatchColor = Wallet.SwatchColor.new(from_jsonRepresentation: dictRepresentation[DictKey.to_walletHexColorString.rawValue] as! String)
+		self.to_address = dictRepresentation[DictKey.to_address.rawValue] as! String
+		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
+		self.amount = dictRepresentation[DictKey.amount.rawValue] as? String
+		self.message = dictRepresentation[DictKey.message.rawValue] as? String
+		self.description = dictRepresentation[DictKey.description.rawValue] as? String
 		self.setup()
 	}
 	//

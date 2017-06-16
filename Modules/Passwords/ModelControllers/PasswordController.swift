@@ -73,7 +73,7 @@ final class PasswordController
 	}
 	let collectionName = "PasswordMeta"
 	let plaintextMessageToSaveForUnlockChallenges = "this is just a string that we'll use for checking whether a given password can unlock an encrypted version of this very message"
-	enum DictKeys: String
+	enum DictKey: String
 	{
 		case _id = "_id"
 		case passwordType = "passwordType"
@@ -132,7 +132,7 @@ final class PasswordController
 			assert(false, "\(#function) called but passwordEntryDelegate does not match")
 		}
 		self.passwordEntryDelegate = nil
-}
+	}
 	//
 	// Lifecycle - Singleton Init
 	static let shared = PasswordController()
@@ -189,10 +189,10 @@ final class PasswordController
 		{
 			self.hasUserSavedAPassword = hasUserSavedAPassword
 			//
-			self._id = documentJSON[DictKeys._id.rawValue] as? DocumentPersister.DocumentId
-			let passwordType_rawValue = documentJSON[DictKeys.passwordType.rawValue] as? String ?? PasswordType.password.rawValue
+			self._id = documentJSON[DictKey._id.rawValue] as? DocumentPersister.DocumentId
+			let passwordType_rawValue = documentJSON[DictKey.passwordType.rawValue] as? String ?? PasswordType.password.rawValue
 			self.passwordType = PasswordType(rawValue: passwordType_rawValue)
-			self.messageAsEncryptedDataForUnlockChallenge_base64String = documentJSON[DictKeys.messageAsEncryptedDataForUnlockChallenge_base64String.rawValue] as? String
+			self.messageAsEncryptedDataForUnlockChallenge_base64String = documentJSON[DictKey.messageAsEncryptedDataForUnlockChallenge_base64String.rawValue] as? String
 			if self._id != nil { // existing doc
 				if self.messageAsEncryptedDataForUnlockChallenge_base64String == nil || self.messageAsEncryptedDataForUnlockChallenge_base64String == "" {
 					// ^-- but it was saved w/o an encrypted challenge str
@@ -210,7 +210,7 @@ final class PasswordController
 		if documentJSONs_count == 0 {
 			let fabricated_documentJSON =
 			[
-				DictKeys.passwordType.rawValue: PasswordType.password // default (at least for now)
+				DictKey.passwordType.rawValue: PasswordType.password // default (at least for now)
 			]
 			_proceedTo_load(
 				hasUserSavedAPassword: false,
@@ -735,9 +735,9 @@ final class PasswordController
 		}
 		let persistableDocument: [String: Any] =
 		[
-			DictKeys._id.rawValue: self._id!,
-			DictKeys.passwordType.rawValue: self.passwordType.rawValue,
-			DictKeys.messageAsEncryptedDataForUnlockChallenge_base64String.rawValue: self.messageAsEncryptedDataForUnlockChallenge_base64String!
+			DictKey._id.rawValue: self._id!,
+			DictKey.passwordType.rawValue: self.passwordType.rawValue,
+			DictKey.messageAsEncryptedDataForUnlockChallenge_base64String.rawValue: self.messageAsEncryptedDataForUnlockChallenge_base64String!
 		]
 		let (err_str, _) = DocumentPersister.shared.Upsert(
 			documentWithId: self._id!,
