@@ -32,7 +32,7 @@ extension HostedMoneroAPIClient
 		) -> Void
 	) -> HostedMoneroAPIClient.RequestHandle?
 	{
-		if IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) == false {
+		if MyMoneroCoreUtils.isAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) == false {
 			let err_str = "Asked to resolve non-OpenAlias address"
 			fn(err_str, nil) // although technically should be a code fault
 			return nil
@@ -54,7 +54,7 @@ extension HostedMoneroAPIClient
 			let dnssec_used = parsedResult.dnssec_used
 			let secured = parsedResult.secured
 			let dnssec_fail_reason = parsedResult.dnssec_fail_reason
-			let (err_str, optl_validated_descriptions) = ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
+			let (err_str, optl_validated_descriptions) = MyMoneroCoreUtils.validatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
 				domain: openAlias_domain,
 				records: parsedResult.records,
 				dnssec_used: dnssec_used,

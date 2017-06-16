@@ -1,0 +1,141 @@
+//
+//  FundsRequest.swift
+//  MyMonero
+//
+//  Created by Paul Shapiro on 6/15/17.
+//  Copyright © 2017 MyMonero. All rights reserved.
+//
+
+import Foundation
+import CoreImage
+
+class FundsRequest: PersistableObject
+{
+	enum NotificationNames: String
+	{
+		case infoUpdated		= "FundsRequest_NotificationNames_infoUpdated"
+		var notificationName: NSNotification.Name
+		{
+			return NSNotification.Name(self.rawValue)
+		}
+	}
+	enum DictKeys: String
+	{ // (For persistence)
+		case from_fullname = "from_fullname"
+		case to_walletHexColorString = "to_walletHexColorString"
+		case to_address = "to_address"
+		case payment_id = "payment_id"
+		case amount = "amount"
+		case message = "message"
+		case description = "description"
+		case qrCode_imgDataURIString = "qrCode_imgDataURIString" // hopefully encrypting and saving this doesn't turn out to have been a terrible idea - but it could be reconstructed on init
+	}
+	//
+	// Properties - Persisted Values
+	var from_fullname: String?
+	var to_walletSwatchColor: Wallet.SwatchColor!
+	var to_address: MoneroAddress!
+	var payment_id: MoneroPaymentID?
+	var amount: String?
+	var message: String?
+	var description: String?
+	//
+	// Properties - Transient
+	var qrCodeCGImage: CGImage!
+	//
+	// 'Protocols' - Persistable Object
+	override func new_dictRepresentation() -> [String: Any]
+	{
+		var dict = super.new_dictRepresentation() // since it constructs the base object for us
+		do {
+			if let value = self.from_fullname {
+				dict[DictKeys.from_fullname.rawValue] = value
+			}
+			dict[DictKeys.to_walletHexColorString.rawValue] = self.to_walletSwatchColor.jsonRepresentation()
+			dict[DictKeys.to_address.rawValue] = self.to_address
+			if let value = self.payment_id {
+				dict[DictKeys.payment_id.rawValue] = value
+			}
+			if let value = self.amount {
+				dict[DictKeys.amount.rawValue] = value
+			}
+			if let value = self.message {
+				dict[DictKeys.message.rawValue] = value
+			}
+			if let value = self.description {
+				dict[DictKeys.description.rawValue] = value
+			}
+		}
+		return dict
+	}
+	//
+	// Lifecycle - Init - Reading existing (already saved) wallet
+	override func collectionName() -> String
+	{
+		return "FundsRequest"
+	}
+	required init?(withPlaintextDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
+	{
+		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
+		//
+		self.from_fullname = dictRepresentation[DictKeys.from_fullname.rawValue] as? String
+		self.to_walletSwatchColor = Wallet.SwatchColor.new(from_jsonRepresentation: dictRepresentation[DictKeys.to_walletHexColorString.rawValue] as! String)
+		self.to_address = dictRepresentation[DictKeys.to_address.rawValue] as! String
+		self.payment_id = dictRepresentation[DictKeys.payment_id.rawValue] as? String
+		self.amount = dictRepresentation[DictKeys.amount.rawValue] as? String
+		self.message = dictRepresentation[DictKeys.message.rawValue] as? String
+		self.description = dictRepresentation[DictKeys.description.rawValue] as? String
+		self.setup()
+	}
+	//
+	// Lifecycle - Init - For adding new
+	required init()
+	{
+		super.init()
+	}
+	convenience init(
+		from_fullname: String?,
+		to_walletSwatchColor: Wallet.SwatchColor,
+		to_address: MoneroAddress,
+		payment_id: MoneroPaymentID?,
+		amount: String?,
+		message: String?,
+		description: String?
+	)
+	{
+		self.init()
+		self.from_fullname = from_fullname
+		self.to_walletSwatchColor = to_walletSwatchColor
+		self.to_address = to_address
+		self.amount = amount
+		self.message = message
+		self.description = description
+		self.setup()
+	}
+	func setup()
+	{
+		do { // qrCodeCGImage
+			let uriStringData = self.URI().absoluteString.data(using: .utf8)
+			guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
+				assert(false)
+				return
+			}
+			filter.setValue(uriStringData, forKey: "inputMessage")
+			filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
+			let outputImage = filter.outputImage!
+			self.qrCodeCGImage = outputImage.cgImage!
+		}
+	}
+	//
+	// Interface - Runtime - Accessors/Properties
+	func URI() -> URL
+	{
+		return MyMoneroCoreUtils.New_RequestFunds_URL(
+			address: self.to_address,
+			amount: self.amount,
+			description: self.description,
+			paymentId: self.payment_id,
+			message: self.message
+		)
+	}
+}
