@@ -69,8 +69,10 @@ class WalletsListEmptyView: UIView
 	// Delegation - Interactions
 	func useExisting_tapped()
 	{
+		assert(false, "TODO")
 	}
 	func createNew_tapped()
 	{
+		assert(false, "TODO")
 	}
 }

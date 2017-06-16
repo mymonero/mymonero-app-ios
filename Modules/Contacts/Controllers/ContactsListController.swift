@@ -29,7 +29,7 @@ class ContactsListController: PersistedObjectListController
 	//
 	// Accessors - State - Emoji
 	//
-	func givenBooted_CurrentlyInUseEmojis() -> [String]
+	func givenBooted_currentlyInUseEmojis() -> [String]
 	{
 		let inUseEmojis = self.records.map { (record) -> String in
 			return (record as! Contact).emoji

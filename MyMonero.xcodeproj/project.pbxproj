@@ -42,6 +42,14 @@
 		9F2BFED01EF34FA3006B2F7D /* FundsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFECF1EF34FA3006B2F7D /* FundsRequest.swift */; };
 		9F2BFED21EF35C81006B2F7D /* FundsRequestsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFED11EF35C81006B2F7D /* FundsRequestsListController.swift */; };
 		9F2BFED41EF35C8A006B2F7D /* ContactsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFED31EF35C8A006B2F7D /* ContactsListController.swift */; };
+		9F2BFED61EF37CED006B2F7D /* FundsRequestsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFED51EF37CED006B2F7D /* FundsRequestsListViewController.swift */; };
+		9F2BFED81EF37D04006B2F7D /* ContactsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFED71EF37D04006B2F7D /* ContactsListViewController.swift */; };
+		9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEDB1EF37E48006B2F7D /* ContactsListEmptyView.swift */; };
+		9F2BFEDE1EF37E58006B2F7D /* FundsRequestListEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEDD1EF37E58006B2F7D /* FundsRequestListEmptyView.swift */; };
+		9F2BFEE01EF382BD006B2F7D /* ContactsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEDF1EF382BD006B2F7D /* ContactsListViewCell.swift */; };
+		9F2BFEE21EF382CB006B2F7D /* FundsRequestsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE11EF382CB006B2F7D /* FundsRequestsListViewCell.swift */; };
+		9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE31EF38E46006B2F7D /* FundsRequestsCellContentView.swift */; };
+		9F2BFEE61EF38E61006B2F7D /* ContactsCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */; };
 		9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30470C1EC657CB00190268 /* MoneroAmounts.swift */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
 		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
@@ -155,6 +163,14 @@
 		9F2BFECF1EF34FA3006B2F7D /* FundsRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequest.swift; sourceTree = "<group>"; };
 		9F2BFED11EF35C81006B2F7D /* FundsRequestsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsListController.swift; sourceTree = "<group>"; };
 		9F2BFED31EF35C8A006B2F7D /* ContactsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsListController.swift; sourceTree = "<group>"; };
+		9F2BFED51EF37CED006B2F7D /* FundsRequestsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsListViewController.swift; sourceTree = "<group>"; };
+		9F2BFED71EF37D04006B2F7D /* ContactsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsListViewController.swift; sourceTree = "<group>"; };
+		9F2BFEDB1EF37E48006B2F7D /* ContactsListEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsListEmptyView.swift; sourceTree = "<group>"; };
+		9F2BFEDD1EF37E58006B2F7D /* FundsRequestListEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestListEmptyView.swift; sourceTree = "<group>"; };
+		9F2BFEDF1EF382BD006B2F7D /* ContactsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsListViewCell.swift; sourceTree = "<group>"; };
+		9F2BFEE11EF382CB006B2F7D /* FundsRequestsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsListViewCell.swift; sourceTree = "<group>"; };
+		9F2BFEE31EF38E46006B2F7D /* FundsRequestsCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsCellContentView.swift; sourceTree = "<group>"; };
+		9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsCellContentView.swift; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroAmounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroAmounts.swift; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
 		9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -321,6 +337,26 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		9F2BFED91EF37E2C006B2F7D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9F2BFEDD1EF37E58006B2F7D /* FundsRequestListEmptyView.swift */,
+				9F2BFEE11EF382CB006B2F7D /* FundsRequestsListViewCell.swift */,
+				9F2BFEE31EF38E46006B2F7D /* FundsRequestsCellContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9F2BFEDA1EF37E32006B2F7D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9F2BFEDB1EF37E48006B2F7D /* ContactsListEmptyView.swift */,
+				9F2BFEDF1EF382BD006B2F7D /* ContactsListViewCell.swift */,
+				9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		9F7ADAA51EBD2B420073C2BB /* Modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -479,6 +515,7 @@
 			children = (
 				9F8E2F871EE8807500F89A1D /* Controllers */,
 				9F2BFECB1EF3294D006B2F7D /* Models */,
+				9F2BFEDA1EF37E32006B2F7D /* Views */,
 				9F8E2FF51EE978E800F89A1D /* Resources */,
 			);
 			path = Contacts;
@@ -489,6 +526,7 @@
 			children = (
 				9F8E2F8E1EE880F700F89A1D /* ContactsTabNavigationViewController.swift */,
 				9F2BFED31EF35C8A006B2F7D /* ContactsListController.swift */,
+				9F2BFED71EF37D04006B2F7D /* ContactsListViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -498,6 +536,7 @@
 			children = (
 				9F8E2F891EE8807500F89A1D /* Controllers */,
 				9F2BFECE1EF34F7A006B2F7D /* Models */,
+				9F2BFED91EF37E2C006B2F7D /* Views */,
 				9F8E2FFE1EE978EF00F89A1D /* Resources */,
 			);
 			path = FundsRequests;
@@ -508,6 +547,7 @@
 			children = (
 				9F8E2F901EE8810300F89A1D /* FundsRequestsTabNavigationViewController.swift */,
 				9F2BFED11EF35C81006B2F7D /* FundsRequestsListController.swift */,
+				9F2BFED51EF37CED006B2F7D /* FundsRequestsListViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -894,6 +934,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
+				9F2BFEDE1EF37E58006B2F7D /* FundsRequestListEmptyView.swift in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Tables.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
@@ -902,14 +943,18 @@
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F8E2F851EE87FFC00F89A1D /* WalletsTabNavigationViewController.swift in Sources */,
+				9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */,
 				9F8E30041EEAF38600F89A1D /* Logging.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9F8E30281EED7D7800F89A1D /* EnterNewPasswordViewController.swift in Sources */,
+				9F2BFEE21EF382CB006B2F7D /* FundsRequestsListViewCell.swift in Sources */,
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
+				9F2BFEE01EF382BD006B2F7D /* ContactsListViewCell.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */,
 				9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */,
 				9F8E2F951EE8811A00F89A1D /* SettingsTabNavigationViewController.swift in Sources */,
 				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
+				9F2BFEE61EF38E61006B2F7D /* ContactsCellContentView.swift in Sources */,
 				9F2BFECD1EF33015006B2F7D /* Contact.swift in Sources */,
 				9F2BFED21EF35C81006B2F7D /* FundsRequestsListController.swift in Sources */,
 				9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */,
@@ -928,10 +973,12 @@
 				9F2BFED41EF35C8A006B2F7D /* ContactsListController.swift in Sources */,
 				9F2BFE741EEEDEE3006B2F7D /* HighlightableCells.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
+				9F2BFED61EF37CED006B2F7D /* FundsRequestsListViewController.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
+				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
 				9F2BFECA1EF0AA15006B2F7D /* WalletsListEmptyView.swift in Sources */,
 				9F8E2FEA1EE978B700F89A1D /* SendFundsTabNavigationViewController.swift in Sources */,
 				9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */,
@@ -946,6 +993,7 @@
 				9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */,
 				9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
+				9F2BFED81EF37D04006B2F7D /* ContactsListViewController.swift in Sources */,
 				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
 				9F1B57471ED4E92D00410675 /* MoneroMnemonics.swift in Sources */,
 				9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */,

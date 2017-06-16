@@ -21,10 +21,16 @@ class FundsRequestsTabNavigationViewController: UINavigationController
 	}
 	func setup()
 	{
-		self.tabBarItem = UITabBarItem(
-			title: nil,
-			image: UIImage(named: "icon_tabBar_fundsRequests")!.withRenderingMode(.alwaysOriginal),
-			selectedImage: UIImage(named: "icon_tabBar_fundsRequests__active")!.withRenderingMode(.alwaysOriginal)
-		)
+		do {
+			self.tabBarItem = UITabBarItem(
+				title: nil,
+				image: UIImage(named: "icon_tabBar_fundsRequests")!.withRenderingMode(.alwaysOriginal),
+				selectedImage: UIImage(named: "icon_tabBar_fundsRequests__active")!.withRenderingMode(.alwaysOriginal)
+			)
+		}
+		do {
+			let viewController = FundsRequestsListViewController()
+			self.viewControllers = [ viewController ]
+		}
 	}
 }

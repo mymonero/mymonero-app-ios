@@ -21,10 +21,16 @@ class ContactsTabNavigationViewController: UINavigationController
 	}
 	func setup()
 	{
-		self.tabBarItem = UITabBarItem(
-			title: nil,
-			image: UIImage(named: "icon_tabBar_contacts")!.withRenderingMode(.alwaysOriginal),
-			selectedImage: UIImage(named: "icon_tabBar_contacts__active")!.withRenderingMode(.alwaysOriginal)
-		)
+		do {
+			self.tabBarItem = UITabBarItem(
+				title: nil,
+				image: UIImage(named: "icon_tabBar_contacts")!.withRenderingMode(.alwaysOriginal),
+				selectedImage: UIImage(named: "icon_tabBar_contacts__active")!.withRenderingMode(.alwaysOriginal)
+			)
+		}
+		do {
+			let viewController = ContactsListViewController()
+			self.viewControllers = [ viewController ]
+		}
 	}
 }
