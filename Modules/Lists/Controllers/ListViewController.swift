@@ -34,7 +34,10 @@ class ListViewController: UITableViewController
 	func setup()
 	{
 		self.setup_views()
-		self.setup_navigationBarButtonItems()
+		do {
+			self.configure_navigation_title()
+			self.configure_navigation_barButtonItems()
+		}
 		self.startObserving()
 	}
 	func setup_views()
@@ -44,9 +47,6 @@ class ListViewController: UITableViewController
 	func setup_tableView()
 	{
 		self.tableView.delegate = self
-	}
-	func setup_navigationBarButtonItems()
-	{
 	}
 	func startObserving()
 	{
@@ -78,6 +78,16 @@ class ListViewController: UITableViewController
 		assert(false, "required")
 	}
 	//
+	// Imperatives
+	func configure_navigation_title()
+	{
+		self.navigationItem.title = self.new_navigationTitle() // mustn't set self.title or it will also set tabBarItem title
+	}
+	func configure_navigation_barButtonItems()
+	{
+		
+	}
+	//
 	// Protocol - Table View - Accessors & Delegation
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
 	{
@@ -106,7 +116,8 @@ class ListViewController: UITableViewController
 	// Delegation - Notifications
 	func PersistedObjectListController_Notifications_List_updated()
 	{
-		self.navigationItem.title = self.new_navigationTitle() // mustn't set self.title or it will also set tabBarItem title
+		self.configure_navigation_title()
+		self.configure_navigation_barButtonItems()
 		//
 		self.tableView.reloadData()
 	}

@@ -25,7 +25,7 @@ class ContactsListViewController: ListViewController
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
 		self.tableView.backgroundView = ContactsListEmptyView()
 	}
-	override func setup_navigationBarButtonItems()
+	override func configure_navigation_barButtonItems()
 	{
 		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(type: .add, target: self, action: #selector(addButton_tapped))
 	}

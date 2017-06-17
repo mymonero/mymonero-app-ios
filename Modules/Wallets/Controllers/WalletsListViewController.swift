@@ -25,9 +25,13 @@ class WalletsListViewController: ListViewController
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
 		self.tableView.backgroundView = WalletsListEmptyView()
 	}
-	override func setup_navigationBarButtonItems()
+	override func configure_navigation_barButtonItems()
 	{
-		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(type: .add, target: self, action: #selector(addButton_tapped))
+		if self.listController.hasBooted == false || self.listController.records.count == 0 {
+			self.navigationItem.rightBarButtonItem = nil // b/c we have the empty state action buttons
+		} else {
+			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(type: .add, target: self, action: #selector(addButton_tapped))
+		}
 	}
 	//
 	// Accessors - Required overrides
