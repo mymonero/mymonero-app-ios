@@ -27,12 +27,24 @@ class RootViewController: UIViewController
 		//
 		self.setup_views()
 	}
+	@objc func PasswordEntryNavigationViewController_willDismissView()
+	{
+		self.tabBarViewController.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
+	}
+	@objc func PasswordEntryNavigationViewController_willPresentInView()
+	{
+		self.tabBarViewController.disableTabBarItems()
+	}
 	func setup_views()
 	{
 		self.view.backgroundColor = UIColor.contentBackgroundColor
 		//
 		// this passwordEntryNavigationViewController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
 		self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController()
+		do { // start observing (usually is split out, but should be fine here esp since we don't need to stop observing)
+			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willDismissView), name: PasswordEntryNavigationViewController.NotificationNames.willDismissView.notificationName, object: nil)
+			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willPresentInView), name: PasswordEntryNavigationViewController.NotificationNames.willPresentInView.notificationName, object: nil)
+		}
 		//
 		self.tabBarViewController = RootTabBarViewController()
 		self.addChildViewController(tabBarViewController)
