@@ -13,9 +13,17 @@ class WalletsListEmptyView: UIView
 	var emptyStateView: UICommonComponents.EmptyStateView!
 	var useExisting_actionButtonView: UICommonComponents.ActionButton!
 	var createNew_actionButtonView: UICommonComponents.ActionButton!
+	var useExisting_tapped_fn: (Void) -> Void
+	var createNew_tapped_fn: (Void) -> Void
 	//
-	init()
+	init(
+		useExisting_tapped_fn: @escaping (Void) -> Void,
+		createNew_tapped_fn: @escaping (Void) -> Void
+	)
 	{
+		self.useExisting_tapped_fn = useExisting_tapped_fn
+		self.createNew_tapped_fn = createNew_tapped_fn
+		//
 		super.init(frame: .zero)
 		self.setup()
 	}
@@ -69,10 +77,10 @@ class WalletsListEmptyView: UIView
 	// Delegation - Interactions
 	func useExisting_tapped()
 	{
-		assert(false, "TODO")
+		self.useExisting_tapped_fn()
 	}
 	func createNew_tapped()
 	{
-		assert(false, "TODO")
+		self.createNew_tapped_fn()
 	}
 }

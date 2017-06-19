@@ -23,7 +23,18 @@ class WalletsListViewController: ListViewController
 		self.tableView.backgroundColor = .contentBackgroundColor
 		self.tableView.separatorStyle = .none
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
-		self.tableView.backgroundView = WalletsListEmptyView()
+		do {
+			let emptyView = WalletsListEmptyView(
+				useExisting_tapped_fn: { [unowned self] in
+					self._presentAddWalletWizard(inTaskMode: .firstTime_useExisting)
+				},
+				createNew_tapped_fn: { [unowned self] in
+					self._presentAddWalletWizard(inTaskMode: .firstTime_createWallet)
+				}
+			)
+			
+			self.tableView.backgroundView = emptyView
+		}
 	}
 	override func configure_navigation_barButtonItems()
 	{
@@ -41,6 +52,20 @@ class WalletsListViewController: ListViewController
 			return "MyMonero"
 		}
 		return "My Monero Wallets"
+	}
+	//
+	// Runtime - Imperatives - Wizard
+	var current_wizardController: AddWallet_WizardController?
+	func _presentAddWalletWizard(inTaskMode taskMode: AddWallet_WizardController.TaskMode)
+	{
+		assert(self.current_wizardController == nil)
+		let wizardController = AddWallet_WizardController(taskMode: taskMode)
+		wizardController.didDismiss_fn =
+		{ [unowned self] in
+			self.current_wizardController = nil
+		}
+		self.current_wizardController = wizardController
+		wizardController.present(/*inViewController: self.navigationController*/)
 	}
 	//
 	// Delegation - Table
@@ -63,6 +88,6 @@ class WalletsListViewController: ListViewController
 	// Delegation - Interactions
 	func addButton_tapped()
 	{
-		assert(false, "TODO")
+		self._presentAddWalletWizard(inTaskMode: .pickCreateOrUseExisting)
 	}
 }

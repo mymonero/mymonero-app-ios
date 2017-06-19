@@ -48,7 +48,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
 	//
 	//
-	// Lifecycle - Setup
+	// Lifecycle - Init
 	//
 	init(listedObjectType type: PersistableObject.Type)
 	{
