@@ -338,11 +338,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			)
 			self.orUse_button.sizeToFit()
 		}
-		let bottomPadding = topPadding
-		let bottomView = self.orUse_label!
-		self.scrollView.contentSize = CGSize(
-			width: self.view.frame.size.width,
-			height: bottomView.frame.origin.y + bottomView.frame.size.height + bottomPadding
-		)
+		//
+		self.formContentSizeDidChange(withBottomView: self.orUse_label!, bottomPadding: topPadding)
 	}
 }

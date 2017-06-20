@@ -14,7 +14,7 @@ protocol PasswordEntryTextFieldEventDelegate
 	func aPasswordField_didReturn()
 }
 //
-class PasswordEntryScreenBaseViewController: UIViewController, UITextFieldDelegate
+class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewController, UITextFieldDelegate
 {
 	var isForChangingPassword: Bool!
 	//
@@ -24,18 +24,11 @@ class PasswordEntryScreenBaseViewController: UIViewController, UITextFieldDelega
 	//
 	init(isForChangingPassword: Bool)
 	{
-		super.init(nibName: nil, bundle: nil)
-		//
 		self.isForChangingPassword = isForChangingPassword
-		self.setup()
+		super.init()
 	}
-	required init?(coder aDecoder: NSCoder)
-	{
+	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
-	}
-	func setup()
-	{
-		self.view.backgroundColor = UIColor.contentBackgroundColor
 	}
 	//
 	// Imperatives - Validation error

@@ -18,26 +18,9 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 	var confirmPassword_label: UICommonComponents.FormLabel!
 	var confirmPassword_inputView: UICommonComponents.FormInputField!
 	//
-	override func setup()
+	override func setup_views()
 	{
-		super.setup()
-		self.setup_subviews() // before nav, cause nav setup references subviews
-		self.setup_navigation()
-	}
-	func setup_navigation()
-	{
-		var navigationTitle: String!
-		if self.isForChangingPassword == true {
-			navigationTitle = "Create New PIN or Password"
-		} else {
-			navigationTitle = "Create PIN or Password"
-		}
-		self.navigationItem.title = navigationTitle
-		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
-		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
-	}
-	func setup_subviews()
-	{
+		super.setup_views()
 		do {
 			let view = UICommonComponents.FormInputField(
 				placeholder: nil
@@ -84,6 +67,19 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 			self.confirmPassword_label = view
 			self.view.addSubview(view)
 		}
+	}
+	override func setup_navigation()
+	{
+		super.setup_navigation()
+		var navigationTitle: String!
+		if self.isForChangingPassword == true {
+			navigationTitle = "Create New PIN or Password"
+		} else {
+			navigationTitle = "Create PIN or Password"
+		}
+		self.navigationItem.title = navigationTitle
+		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
+		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
 	}
 	//
 	// Accessors - Factories - Views

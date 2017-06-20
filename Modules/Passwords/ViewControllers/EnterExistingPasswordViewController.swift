@@ -14,22 +14,10 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	var password_inputView: UICommonComponents.FormInputField!
 	var forgot_linkButtonView: UICommonComponents.LinkButtonView!
 	//
-	override func setup()
+	override func setup_views()
 	{
-		super.setup()
 		self.edgesForExtendedLayout = [ .top ] // do slide under nav bar, in this case
 		self.extendedLayoutIncludesOpaqueBars = true // since we use an opaque bar
-		self.setup_subviews() // before nav, cause nav setup references subviews
-		self.setup_navigation()
-	}
-	func setup_navigation()
-	{
-		self.navigationItem.title = "Enter \(PasswordController.shared.passwordType.capitalized_humanReadableString)"
-		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
-		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
-	}
-	func setup_subviews()
-	{
 		do {
 			let view = UICommonComponents.FormInputField(
 				placeholder: NSLocalizedString("So we know it's you", comment: "")
@@ -57,6 +45,12 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			self.forgot_linkButtonView = view
 			self.view.addSubview(view)
 		}
+	}
+	override func setup_navigation()
+	{
+		self.navigationItem.title = "Enter \(PasswordController.shared.passwordType.capitalized_humanReadableString)"
+		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
+		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
 	}
 	//
 	// Accessors - Factories - Views

@@ -34,6 +34,67 @@ extension UIView
 //
 extension UICommonComponents
 {
+	class FormViewController: UIViewController, UIScrollViewDelegate
+	{
+		//
+		// Properties
+		var scrollView: UIScrollView { return self.view as! UIScrollView }
+		//
+		// Lifecycle - Init
+		init()
+		{
+			super.init(nibName: nil, bundle: nil)
+			self.setup()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			self.setup_views() // must be before _navigation b/c that may rely on _views
+			self.setup_navigation()
+		}
+		override func loadView()
+		{
+			self.view = UIScrollView()
+			self.scrollView.delegate = self
+		}
+		func setup_views()
+		{ // override but call on super
+			self.view.backgroundColor = UIColor.contentBackgroundColor
+			//
+			let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+			self.view.addGestureRecognizer(tapGestureRecognizer)
+		}
+		func setup_navigation()
+		{ // override but call on super
+		}
+		//
+		// Delegation - Scrollview
+		func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
+		{
+			self.view.resignCurrentFirstResponder()
+		}
+		//
+		// Delegation - Gesture recognition
+		@objc func tapped()
+		{
+			self.view.resignCurrentFirstResponder()
+		}
+		//
+		// Delegation - Internal/Convenience - Scroll view
+		func formContentSizeDidChange(withBottomView bottomView: UIView, bottomPadding: CGFloat)
+		{
+			self.scrollView.contentSize = CGSize(
+				width: self.view.frame.size.width,
+				height: bottomView.frame.origin.y + bottomView.frame.size.height + bottomPadding
+			)
+		}
+	}
+}
+//
+extension UICommonComponents
+{
 	enum FormInputCells: String
 	{
 		case textField_bg_noErr = "textField_bg_noErr_stretchable"
