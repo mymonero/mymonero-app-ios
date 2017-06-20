@@ -29,6 +29,15 @@ extension UICommonComponents
 			)
 			super.init(frame: frame)
 			self.mode = mode
+			self.setTitleText(to: title)
+		}
+		required init?(coder aDecoder: NSCoder)
+		{
+			fatalError("init(coder:) has not been implemented")
+		}
+		//
+		func setTitleText(to title: String)
+		{ // use this instead of setTitle
 			let normal_attributedTitle = NSAttributedString(
 				string: title,
 				attributes:
@@ -50,15 +59,8 @@ extension UICommonComponents
 			self.setAttributedTitle(normal_attributedTitle, for: .normal)
 			self.setAttributedTitle(selected_attributedTitle, for: .selected)
 			//
-			self.setup()
-		}
-		func setup()
-		{
 			// now that we have title and font…
 			self.sizeToFit()
-		}
-		required init?(coder aDecoder: NSCoder) {
-			fatalError("init(coder:) has not been implemented")
 		}
 	}
 }

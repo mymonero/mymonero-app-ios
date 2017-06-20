@@ -150,7 +150,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let textField_topMargin: CGFloat = 8
+		let textField_topMargin: CGFloat = UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView
 		let fieldGroup_h = self.password_label.frame.size.height + textField_topMargin + self.password_inputView.frame.size.height
 		let fieldGroup_y = (self.view.frame.size.height - fieldGroup_h) / 2
 		let textField_x: CGFloat = CGFloat.form_input_margin_x

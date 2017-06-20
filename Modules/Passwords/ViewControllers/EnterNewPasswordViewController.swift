@@ -194,7 +194,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 			).integral
 			self.password_inputView.frame = CGRect(
 				x: textField_x,
-				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + 8,
+				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.password_inputView.frame.size.height
 			).integral
@@ -217,7 +217,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 			).integral
 			self.confirmPassword_inputView.frame = CGRect(
 				x: textField_x,
-				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + 8,
+				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.confirmPassword_inputView.frame.size.height
 			).integral

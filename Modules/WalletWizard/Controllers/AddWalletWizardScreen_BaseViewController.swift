@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddWalletWizardScreen_BaseViewController: UIViewController
+class AddWalletWizardScreen_BaseViewController: UIViewController, UIScrollViewDelegate
 {
 	//
 	// Properties
@@ -33,10 +33,14 @@ class AddWalletWizardScreen_BaseViewController: UIViewController
 	override func loadView()
 	{
 		self.view = UIScrollView()
+		self.scrollView.delegate = self
 	}
 	func setup_views()
 	{ // override but call on super
 		self.view.backgroundColor = UIColor.contentBackgroundColor
+		//
+		let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+		self.view.addGestureRecognizer(tapGestureRecognizer)
 	}
 	func setup_navigation()
 	{ // override but call on super
@@ -52,5 +56,17 @@ class AddWalletWizardScreen_BaseViewController: UIViewController
 	}
 	func _viewControllerIsBeingPoppedFrom()
 	{ // overridable - and is overriden to set state back to what it should be per VC
+	}
+	//
+	// Delegation - Scrollview
+	func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
+	{
+		self.view.resignCurrentFirstResponder()
+	}
+	//
+	// Delegation - Gesture recognition
+	@objc func tapped()
+	{
+		self.view.resignCurrentFirstResponder()
 	}
 }

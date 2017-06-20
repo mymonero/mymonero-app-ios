@@ -7,16 +7,39 @@
 //
 
 import UIKit
-import KMPlaceholderTextView
-
-// TODO: scrolling to field/textarea on field focus where necessary
-
+//
+// TODO: scrolling to field/textarea on field focus where necessary, parent sizing w/inset
+//
+extension UIView
+{ // this should probably be moved out
+	func resignCurrentFirstResponder()
+	{
+		if let responder = self.currentFirstResponder {
+			responder.resignFirstResponder()
+		}
+	}
+	var currentFirstResponder: UIResponder?
+	{
+		if self.isFirstResponder {
+			return self
+		}
+		for view in self.subviews {
+			if let responder = view.currentFirstResponder {
+				return responder
+			}
+		}
+		return nil
+	}
+}
+//
 extension UICommonComponents
 {
 	enum FormInputCells: String
 	{
 		case textField_bg_noErr = "textField_bg_noErr_stretchable"
 		case textField_bg_error = "textField_bg_error_stretchable"
+		//
+		static var imagePadding_y: CGFloat { return 2 }
 		//
 		var stretchableImage: UIImage
 		{
@@ -35,7 +58,7 @@ extension UICommonComponents
 				x: CGFloat(0),
 				y: CGFloat(0),
 				width: CGFloat(0),
-				height: CGFloat(64)
+				height: CGFloat(69)
 			)
 			self.textView = FormTextView(placeholder: placeholder)
 			super.init(frame: frame)
@@ -56,8 +79,8 @@ extension UICommonComponents
 		{
 			super.layoutSubviews()
 			let x: CGFloat = 1
-			let top: CGFloat = 4
-			let bottom: CGFloat = 4
+			let top: CGFloat = FormInputCells.imagePadding_y + 2
+			let bottom: CGFloat = FormInputCells.imagePadding_y + 2 // '+ k' so it fits visually within the 'well'
 			self.textView.frame = CGRect(
 				x: x,
 				y: top,
@@ -72,14 +95,15 @@ extension UICommonComponents
 			super.draw(rect)
 		}
 	}
-	class FormTextView: KMPlaceholderTextView
+	class FormTextView: UITextView
 	{
+		var placeholder: String?
+		var placeholderLabel: UILabel?
 		init(placeholder: String?)
 		{
 			super.init(frame: .zero, textContainer: nil)
-			if let placeholder = placeholder {
-				self.placeholder = placeholder
-			}
+			self.placeholder = placeholder
+			//
 			self.setup()
 		}
 		required init?(coder aDecoder: NSCoder)
@@ -92,9 +116,55 @@ extension UICommonComponents
 			self.backgroundColor = UIColor.clear
 			self.textColor = UIColor(rgb: 0xDFDEDF)
 			self.font = UIFont.middlingLightMonospace
-			self.placeholderColor = UIColor(rgb: 0x6B696B)
-			self.placeholderFont = UIFont.middlingLightMonospace
 			self.textContainerInset = UIEdgeInsetsMake(6, 4, 0, 4)
+			//
+			if let placeholder = self.placeholder {
+				let view = UILabel(frame: .zero)
+				view.textColor = UIColor(rgb: 0x6B696B)
+				view.font = UIFont.middlingLightMonospace
+				view.text = placeholder
+				self.addSubview(view)
+				self.placeholderLabel = view
+			}
+			//
+			// so as not to have to take control of the delegate
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(textViewDidChange),
+				name: NSNotification.Name.UITextViewTextDidChange,
+				object: nil
+			)
+		}
+		//
+		// Lifecycle - Deinit
+		deinit
+		{
+			NotificationCenter.default.removeObserver(
+				self,
+				name: NSNotification.Name.UITextViewTextDidChange,
+				object: nil
+			)
+		}
+		//
+		// Imperatives - Overrides
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			if let placeholderLabel = self.placeholderLabel {
+				let x = self.textContainer.lineFragmentPadding + self.textContainerInset.left
+				let y = self.textContainerInset.top
+				let w = self.frame.width - 2*x
+				placeholderLabel.frame = CGRect(x: x, y: y, width: w, height: 0)
+				placeholderLabel.sizeToFit() // to get h
+			}
+		}
+		//
+		// Delegation
+		@objc func textViewDidChange()
+		{
+			if let placeholderLabel = self.placeholderLabel {
+				placeholderLabel.isHidden = self.text.characters.count > 0
+			}
 		}
 	}
 	class FormInputField: UITextField
@@ -201,6 +271,12 @@ extension UICommonComponents
 	//
 	class FormLabel: UILabel
 	{
+		static let visual_marginBelow: CGFloat = 7
+		static let marginBelowLabelAboveTextInputView: CGFloat = FormLabel.visual_marginBelow - FormInputCells.imagePadding_y
+
+		static let visual_marginAboveLabelForUnderneathField: CGFloat = 13
+		static let marginAboveLabelForUnderneathField_textInputView: CGFloat = FormLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
+		
 		init(title: String, sizeToFit: Bool? = false)
 		{
 			let frame = CGRect(
