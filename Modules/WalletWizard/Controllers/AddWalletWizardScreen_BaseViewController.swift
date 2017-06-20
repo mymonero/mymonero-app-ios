@@ -12,6 +12,7 @@ class AddWalletWizardScreen_BaseViewController: UIViewController
 {
 	//
 	// Properties
+	var scrollView: UIScrollView { return self.view as! UIScrollView }
 	var wizardController: AddWallet_WizardController
 	//
 	// Lifecycle - Init
@@ -28,6 +29,10 @@ class AddWalletWizardScreen_BaseViewController: UIViewController
 	{
 		self.setup_views()
 		self.setup_navigation()
+	}
+	override func loadView()
+	{
+		self.view = UIScrollView()
 	}
 	func setup_views()
 	{ // override but call on super
@@ -46,7 +51,6 @@ class AddWalletWizardScreen_BaseViewController: UIViewController
 		}
 	}
 	func _viewControllerIsBeingPoppedFrom()
-	{ // overridable
-		
+	{ // overridable - and is overriden to set state back to what it should be per VC
 	}
 }

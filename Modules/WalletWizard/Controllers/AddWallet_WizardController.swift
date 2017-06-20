@@ -69,6 +69,9 @@ class AddWallet_WizardController
 	var current_wizardTaskMode_stepIdx: Int!
 	var wizard_navigationController: UINavigationController!
 	//
+	// Properties - Settable by consumer
+	var didDismiss_fn: ((Void) -> Void)! // just going to assume it exists or else code fault
+	//
 	// Lifecycle - Init
 	init(taskMode: TaskMode)
 	{
@@ -187,9 +190,8 @@ class AddWallet_WizardController
 	{
 		assert((!userCanceled || !didTaskFinish) && (userCanceled || didTaskFinish), "Unrecognized args config")
 		self.wizard_navigationController.dismiss(animated: true)
-		{ // [unowned self] in
-			// TODO: ? notify instantiator.. perhaps with a block?
-			DDLog.Todo("asdfa", "asdf")
+		{ [unowned self] in
+			self.didDismiss_fn()
 		}
 	}
 	//
