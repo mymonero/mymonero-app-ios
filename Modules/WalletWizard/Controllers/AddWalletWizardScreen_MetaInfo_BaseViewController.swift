@@ -35,7 +35,6 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("For your reference", comment: "")
 				)
-				view.isSecureTextEntry = true
 				view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.delegate = self
 				view.returnKeyType = .next
