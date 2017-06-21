@@ -191,18 +191,16 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		super.viewDidLayoutSubviews()
 		//
 		let topPadding: CGFloat = 20
-		let textField_x: CGFloat = CGFloat.form_input_margin_x
-		let labels_x: CGFloat  = CGFloat.form_label_margin_x
-		let textField_w: CGFloat = self.view.frame.size.width - 2 * textField_x
+		let textField_w = self.new__textField_w
 		do {
 			self.password_label.frame = CGRect(
-				x: labels_x,
+				x: CGFloat.form_label_margin_x,
 				y: topPadding,
 				width: textField_w,
 				height: self.password_label.frame.size.height
 			).integral
 			self.password_inputView.frame = CGRect(
-				x: textField_x,
+				x: CGFloat.form_input_margin_x,
 				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.password_inputView.frame.size.height
@@ -210,7 +208,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			self.fieldAccessoryMessageLabel.frame = CGRect(
-				x: labels_x,
+				x: CGFloat.form_label_margin_x,
 				y: self.password_inputView.frame.origin.y + self.password_inputView.frame.size.height + 7,
 				width: textField_w,
 				height: 0
@@ -219,23 +217,19 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			self.confirmPassword_label.frame = CGRect(
-				x: labels_x,
+				x: CGFloat.form_label_margin_x,
 				y: self.fieldAccessoryMessageLabel.frame.origin.y + self.fieldAccessoryMessageLabel.frame.size.height + 30,
 				width: textField_w,
 				height: self.confirmPassword_label.frame.size.height
 			).integral
 			self.confirmPassword_inputView.frame = CGRect(
-				x: textField_x,
+				x: CGFloat.form_input_margin_x,
 				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.confirmPassword_inputView.frame.size.height
 			).integral
 		}
-//		let bottomPadding = topPadding
-//		self.contentSize = CGSize(
-//			width: self.frame.size.width,
-//			height: self.confirmPassword_inputView.frame.origin.y + self.confirmPassword_inputView.frame.size.height + bottomPadding
-//		)
+		self.formContentSizeDidChange(withBottomView: self.confirmPassword_inputView, bottomPadding: topPadding)
 	}
 	//
 	// Delegation - UITextField

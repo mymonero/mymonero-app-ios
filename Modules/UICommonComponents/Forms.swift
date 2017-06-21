@@ -37,8 +37,11 @@ extension UICommonComponents
 	class FormViewController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate
 	{
 		//
-		// Properties
+		// Properties - Cached
+		//
+		// Properties - Derived
 		var scrollView: UIScrollView { return self.view as! UIScrollView }
+		var new__textField_w: CGFloat { return self.view.frame.size.width - 2 * CGFloat.form_input_margin_x }
 		//
 		// Lifecycle - Init
 		init()
@@ -61,10 +64,13 @@ extension UICommonComponents
 		}
 		func setup_views()
 		{ // override but call on super
-			self.view.backgroundColor = UIColor.contentBackgroundColor
-			//
-			let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-			self.view.addGestureRecognizer(tapGestureRecognizer)
+			do {
+				self.view.backgroundColor = UIColor.contentBackgroundColor
+			}
+			do {
+				let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+				self.view.addGestureRecognizer(tapGestureRecognizer)
+			}
 		}
 		func setup_navigation()
 		{ // override but call on super
