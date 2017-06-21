@@ -20,9 +20,26 @@ class AddWalletWizardScreen_BaseViewController: UICommonComponents.FormViewContr
 		self.wizardController = wizardController
 		super.init()
 	}
-	required init?(coder aDecoder: NSCoder) {
+	required init?(coder aDecoder: NSCoder)
+	{
 		fatalError("init(coder:) has not been implemented")
 	}
+	override func setup_navigation()
+	{
+		super.setup_navigation()
+		if self.wantsRightSideNextBarButtonItem() {
+			let item = UICommonComponents.NavigationBarButtonItem(
+				type: .save,
+				target: self,
+				action: #selector(tapped_nextBarButtonItem),
+				title_orNilForDefault: NSLocalizedString("Next", comment: "")
+			)
+			self.navigationItem.rightBarButtonItem = item
+		}
+	}
+	//
+	// Accessors - Overridable
+	func wantsRightSideNextBarButtonItem() -> Bool { return true }
 	//
 	// Delegation - View lifecycle
 	override func viewWillDisappear(_ animated: Bool)
@@ -34,5 +51,11 @@ class AddWalletWizardScreen_BaseViewController: UICommonComponents.FormViewContr
 	}
 	func _viewControllerIsBeingPoppedFrom()
 	{ // overridable - and is overriden to set state back to what it should be per VC
+	}
+	//
+	// Delegation - Interactions
+	func tapped_nextBarButtonItem()
+	{
+		
 	}
 }

@@ -18,6 +18,9 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 		self.navigationItem.title = "Add Wallet"
 	}
 	//
+	// Accessors - Overrides
+	override func wantsRightSideNextBarButtonItem() -> Bool { return false }
+	//
 	// Delegation - Internal - Overrides
 	override func _viewControllerIsBeingPoppedFrom()
 	{

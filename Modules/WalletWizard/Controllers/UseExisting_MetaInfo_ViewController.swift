@@ -54,6 +54,11 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	var orUse_button: UICommonComponents.LinkButtonView!
 	//
 	// Lifecycle - Init
+	override func setup()
+	{
+		super.setup()
+		self.configureWith_loginWithMode() // b/c this touches the nav bar btn items
+	}
 	override func setup_views()
 	{
 		super.setup_views()
@@ -162,8 +167,6 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			self.view.addSubview(view)
 		}
 		//
-		self.configureWith_loginWithMode()
-		
 //		self.view.borderSubviews()
 	}
 	override func setup_navigation()
@@ -177,6 +180,33 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				action: #selector(tapped_barButtonItem_cancel)
 			)
 		}
+	}
+	//
+	// Accessors - Overrides
+	override func new_isFormSubmittable() -> Bool
+	{
+		guard let walletLabel = self.walletLabel_inputView.text, walletLabel != "" else {
+			return false
+		}
+		switch self.loginWith_mode {
+			case .mnemonicSeed:
+				guard let walletMnemonic = self.walletMnemonic_inputView.textView.text, walletMnemonic != "" else {
+					return false
+				}
+				break
+			case .addrAndPrivKeys:
+				guard let addr = self.addr_inputView.textView.text, addr != "" else {
+					return false
+				}
+				guard let viewKey = self.viewKey_inputView.textView.text, viewKey != "" else {
+					return false
+				}
+				guard let spendKey = self.spendKey_inputView.textView.text, spendKey != "" else {
+					return false
+				}
+				break
+		}
+		return true
 	}
 	//
 	// Imperatives
@@ -228,10 +258,10 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				}
 				break
 		}
-		// TODO
-//		self.set_submitButtonNeedsUpdate()
-		//
-		self.view.setNeedsLayout() // to lay out again
+		do {
+			self.set_isFormSubmittable_needsUpdate()
+			self.view.setNeedsLayout() // to lay out again
+		}
 	}
 	//
 	// Delegation - Interactions
