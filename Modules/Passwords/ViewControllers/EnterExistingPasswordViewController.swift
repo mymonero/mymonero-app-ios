@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController, PasswordEntryTextFieldEventDelegate
+class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 {
 	var password_label: UICommonComponents.FormLabel!
 	var password_inputView: UICommonComponents.FormInputField!
@@ -25,7 +25,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			view.isSecureTextEntry = true
 			view.keyboardType = PasswordController.shared.passwordType == PasswordController.PasswordType.PIN ? .numberPad : .default
 			view.returnKeyType = .go
-			view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
+			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			view.delegate = self
 			self.password_inputView = view
 			self.view.addSubview(view)
@@ -80,8 +80,16 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		return item
 	}
 	//
+	// Accessors - Overrides
+	override func new_isFormSubmittable() -> Bool
+	{
+		let password = self.password_inputView.text
+		//
+		return (password != nil && password != "") ? true : false
+	}
+	//
 	// Imperatives
-	func _tryToSubmitForm()
+	override func _tryToSubmitForm()
 	{
 		self.disableForm()
 		// we can assume pw is not "" here
@@ -93,16 +101,16 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			cb(self.password_inputView.text!)
 		}
 	}
-	func disableForm()
+	override func disableForm()
 	{
-		self.navigationItem.rightBarButtonItem!.isEnabled = false
+		super.disableForm()
 		//
 		self.password_inputView.isEnabled = false
 		self.forgot_linkButtonView.isEnabled = false
 	}
 	override func reEnableForm()
 	{
-		self.navigationItem.rightBarButtonItem!.isEnabled = true
+		super.reEnableForm()
 		//
 		self.password_inputView.isEnabled = true
 		self.password_inputView.becomeFirstResponder() // since disable would have de-focused
@@ -173,28 +181,13 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 	}
 	//
-	// Delegation - Password field - Control events
-	@objc func aPasswordField_editingChanged()
-	{
-		let password = self.password_inputView.text
-		let submitEnabled = password != nil && password != ""
-		self.navigationItem.rightBarButtonItem!.isEnabled = submitEnabled
-	}
-	//
 	// Delegation - UITextField
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool
 	{
-		self.aPasswordField_didReturn()
+		self.aField_didReturn()
 		return false
 	}
 	//
-	// Delegation - Password field - Internal events
-	func aPasswordField_didReturn()
-	{
-		if self.navigationItem.rightBarButtonItem!.isEnabled {
-			self._tryToSubmitForm()
-		}
-	}	//
 	// Delegation - Interactions
 	@objc
 	func tapped_forgotButton()

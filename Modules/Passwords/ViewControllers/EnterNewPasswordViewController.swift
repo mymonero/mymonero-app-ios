@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, PasswordEntryTextFieldEventDelegate
+class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 {
 	var password_label: UICommonComponents.FormLabel!
 	var password_inputView: UICommonComponents.FormInputField!
@@ -26,7 +26,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 				placeholder: nil
 			)
 			view.isSecureTextEntry = true
-			view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
+			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			view.delegate = self
 			view.returnKeyType = .next
 			self.password_inputView = view
@@ -53,7 +53,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 				placeholder: ""
 			)
 			view.isSecureTextEntry = true
-			view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
+			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			view.delegate = self
 			view.returnKeyType = .go
 			self.confirmPassword_inputView = view
@@ -82,6 +82,19 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
 	}
 	//
+	// Accessors - Overrides
+	override func new_isFormSubmittable() -> Bool
+	{
+		let password = self.password_inputView.text
+		let confirmPassword = self.confirmPassword_inputView.text
+		if password == nil || password == "" {
+			return false
+		} else if confirmPassword == nil || confirmPassword == "" {
+			return false
+		}
+		return true
+	}
+	//
 	// Accessors - Factories - Views
 	func _new_leftBarButtonItem() -> UICommonComponents.NavigationBarButtonItem?
 	{
@@ -106,7 +119,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 	}
 	//
 	// Imperatives
-	func _tryToSubmitForm()
+	override func _tryToSubmitForm()
 	{
 		let password = self.password_inputView.text!
 		let confirmationPassword = self.confirmPassword_inputView.text!
@@ -126,16 +139,16 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 	{
 		self.userSubmittedNonZeroPassword_cb!(self.password_inputView.text!)
 	}
-	func disableForm()
+	override func disableForm()
 	{
-		self.navigationItem.rightBarButtonItem!.isEnabled = false
+		super.disableForm()
 		//
 		self.password_inputView.isEnabled = false
 		self.confirmPassword_inputView.isEnabled = false
 	}
 	override func reEnableForm()
 	{
-		self.navigationItem.rightBarButtonItem!.isEnabled = true
+		super.reEnableForm()
 		//
 		self.password_inputView.isEnabled = true
 		self.password_inputView.becomeFirstResponder() // since disable would have de-focused
@@ -225,22 +238,6 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 //		)
 	}
 	//
-	// Delegation - Password field - Control events
-	@objc func aPasswordField_editingChanged()
-	{
-		let password = self.password_inputView.text
-		let confirmPassword = self.confirmPassword_inputView.text
-		var submitEnabled: Bool;
-		if password == nil || password == "" {
-			submitEnabled = false
-		} else if confirmPassword == nil || confirmPassword == "" {
-			submitEnabled = false
-		} else {
-			submitEnabled = true
-		}
-		self.navigationItem.rightBarButtonItem!.isEnabled = submitEnabled
-	}
-	//
 	// Delegation - UITextField
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool
 	{
@@ -248,15 +245,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController, Pas
 			self.confirmPassword_inputView.becomeFirstResponder()
 			return false
 		}
-		self.aPasswordField_didReturn()
+		self.aField_didReturn()
 		return false
-	}
-	//
-	// Delegation - Password field - Internal events
-	func aPasswordField_didReturn()
-	{
-		if self.navigationItem.rightBarButtonItem!.isEnabled {
-			self._tryToSubmitForm()
-		}
 	}
 }

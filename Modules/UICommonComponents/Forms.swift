@@ -34,7 +34,7 @@ extension UIView
 //
 extension UICommonComponents
 {
-	class FormViewController: UIViewController, UIScrollViewDelegate
+	class FormViewController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate
 	{
 		//
 		// Properties
@@ -70,6 +70,50 @@ extension UICommonComponents
 		{ // override but call on super
 		}
 		//
+		// Runtime - Accessors - State - Overridable
+		func new_isFormSubmittable() -> Bool
+		{
+			DDLog.Warn("UICommonComponents", "Override \(#function)")
+			return true
+		}
+		//
+		// Runtime - Imperatives - State
+		func set_isFormSubmittable_needsUpdate()
+		{
+			let isFormSubmittable = self.isFormEnabled && self.new_isFormSubmittable()
+			if let item = self.navigationItem.rightBarButtonItem {
+				item.isEnabled = isFormSubmittable
+			}
+		}
+		//
+		// Runtime - Imperatives - Convenience/Overridable - Submission
+		func _tryToSubmitForm()
+		{
+			assert(false, "Override and implement \(#function)")
+		}
+		//
+		var isFormEnabled = true
+		func disableForm()
+		{
+			self.isFormEnabled = false
+			self.set_isFormSubmittable_needsUpdate()
+		}
+		func reEnableForm()
+		{
+			self.isFormEnabled = true
+			self.set_isFormSubmittable_needsUpdate()
+		}
+		//
+		// Runtime - Imperatives - Convenience/Overridable - Validation error
+		func setValidationMessage(_ message: String)
+		{
+			assert(false, "override \(#function)")
+		}
+		func clearValidationMessage()
+		{
+			assert(false, "override \(#function)")
+		}
+		//
 		// Delegation - Scrollview
 		func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
 		{
@@ -89,6 +133,18 @@ extension UICommonComponents
 				width: self.view.frame.size.width,
 				height: bottomView.frame.origin.y + bottomView.frame.size.height + bottomPadding
 			)
+		}
+		//
+		// Delegation - Internal/Convenience - Field interactions
+		func aField_editingChanged()
+		{
+			self.set_isFormSubmittable_needsUpdate()
+		}
+		func aField_didReturn()
+		{
+			if self.navigationItem.rightBarButtonItem!.isEnabled {
+				self._tryToSubmitForm()
+			}
 		}
 	}
 }

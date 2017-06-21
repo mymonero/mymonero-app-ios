@@ -8,13 +8,7 @@
 
 import UIKit
 //
-protocol PasswordEntryTextFieldEventDelegate
-{
-	func aPasswordField_editingChanged()
-	func aPasswordField_didReturn()
-}
-//
-class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewController, UITextFieldDelegate
+class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewController
 {
 	var isForChangingPassword: Bool!
 	//
@@ -29,21 +23,5 @@ class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewControll
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
-	}
-	//
-	// Imperatives - Validation error
-	func setValidationMessage(_ message: String)
-	{
-		assert(false, "override \(#function)")
-	}
-	func clearValidationMessage()
-	{
-		assert(false, "override \(#function)")
-	}
-	//
-	// Imperatives - Exposed for PasswordEntryNavigationViewController
-	func reEnableForm()
-	{
-		assert(false, "override \(#function)")
 	}
 }
