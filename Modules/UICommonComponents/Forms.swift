@@ -56,6 +56,7 @@ extension UICommonComponents
 		{
 			self.setup_views() // must be before _navigation b/c that may rely on _views
 			self.setup_navigation()
+			self.startObserving()
 		}
 		override func loadView()
 		{
@@ -75,6 +76,48 @@ extension UICommonComponents
 		func setup_navigation()
 		{ // override but call on super
 		}
+		func startObserving()
+		{ // override, but call on super
+			self.startObserving_keyboard()
+		}
+		func startObserving_keyboard()
+		{
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(keyboardWillShow),
+				name: Notification.Name.UIKeyboardWillShow,
+				object: nil
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(keyboardWillHide),
+				name: Notification.Name.UIKeyboardWillHide,
+				object: nil
+			)
+		}
+		//
+		// Lifecycle - Deinit
+		deinit
+		{
+			self.tearDown()
+		}
+		func tearDown()
+		{
+			self.stopObserving()
+		}
+		func stopObserving()
+		{
+			NotificationCenter.default.removeObserver(
+				self,
+				name: Notification.Name.UIKeyboardWillShow,
+				object: nil
+			)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: Notification.Name.UIKeyboardWillHide,
+				object: nil
+			)
+		}
 		//
 		// Runtime - Accessors - State - Overridable
 		func new_isFormSubmittable() -> Bool
@@ -89,6 +132,12 @@ extension UICommonComponents
 			assert(false, "Override and implement this method")
 			return nil
 		}
+		func new_contentInset() -> UIEdgeInsets
+		{
+			let bottom: CGFloat = self.keyboardIsShowing == true ? self.keyboardHeight! : 0
+			//
+			return UIEdgeInsetsMake(0, 0, bottom, 0)
+		}
 		//
 		// Runtime - Imperatives - State
 		func set_isFormSubmittable_needsUpdate()
@@ -100,7 +149,7 @@ extension UICommonComponents
 			}
 		}
 		//
-		// Runtime - Imperatives - Convenience/Overridable - Submission
+		// Runtime - Imperatives - Convenience/Overridable - Submission/Interactivity
 		func _tryToSubmitForm()
 		{
 			assert(false, "Override and implement \(#function)")
@@ -135,9 +184,47 @@ extension UICommonComponents
 			assert(false, "override \(#function)")
 		}
 		//
+		// Runtime - Imperatives - Scrolling
+		func scrollInputViewToVisible(_ inputView: UIView)
+		{
+			let visibleScroll_size_height = (self.scrollView.bounds.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom)
+			let visibleScroll_size = CGSize(
+				width: scrollView.bounds.size.width,
+				height: visibleScroll_size_height
+			)
+			let visibleScroll_rect = CGRect(origin: scrollView.contentOffset, size: visibleScroll_size)
+			var margin_y: CGFloat = UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.FormLabel.fixedHeight + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView
+			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
+				var this_view = inputView
+				var this_superview = this_view.superview!
+				while this_superview != scrollView {
+					margin_y += this_view.frame.origin.y
+					//
+					this_view = this_superview // walk up
+					this_superview = this_view.superview!
+				}
+			}
+			let toBeVisible_frame__relative = inputView.frame.insetBy(dx: 0, dy: -margin_y)
+			let toBeVisible_frame__absolute = inputView.superview == scrollView ? toBeVisible_frame__relative : inputView.convert(toBeVisible_frame__relative, to: scrollView)
+			if visibleScroll_rect.contains(toBeVisible_frame__absolute) { // already fully contained - do not scroll
+				return
+			}
+			var contentOffset_y: CGFloat
+			if toBeVisible_frame__absolute.origin.y < self.scrollView.contentOffset.y {
+				let toBeVisible_topEdge = toBeVisible_frame__absolute.origin.y
+				contentOffset_y = toBeVisible_topEdge
+			} else {
+				contentOffset_y = toBeVisible_frame__absolute.origin.y - visibleScroll_size_height + toBeVisible_frame__absolute.size.height
+			}
+			UIView.animate(withDuration: 0.25, animations:
+			{ [unowned self] in
+				self.scrollView.contentOffset = CGPoint(x: 0, y: contentOffset_y)
+			})
+		}
+		//
 		// Delegation - Scrollview
 		func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
-		{
+		{ // this may or may not be preferable…
 			self.view.resignCurrentFirstResponder()
 		}
 		//
@@ -157,12 +244,20 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Internal/Convenience - UITextFieldDelegate
+		func textFieldDidBeginEditing(_ textField: UITextField)
+		{
+			self.aField_didBeginEditing(textField)
+		}
 		func textFieldShouldReturn(_ textField: UITextField) -> Bool
 		{
 			return self.aField_shouldReturn(textField, returnKeyType: textField.returnKeyType)
 		}
 		//
 		// Delegation - Internal/Convenience - UITextViewDelegate
+		func textViewDidBeginEditing(_ textView: UITextView)
+		{
+			self.aField_didBeginEditing(textView)
+		}
 		func textViewDidChange(_ textView: UITextView)
 		{
 			return self.aField_editingChanged()
@@ -200,11 +295,54 @@ extension UICommonComponents
 				next_inputView.becomeFirstResponder()
 			}
 		}
+		func aField_didBeginEditing(_ inputView: UIView)
+		{
+			self.scrollInputViewToVisible(self.view.currentFirstResponder! as! UIView)
+		}
 		//
 		// Delegation - Internal/Convenience - Form submission
 		func aFormSubmissionButtonWasPressed()
 		{
 			self._tryToSubmitForm()
+		}
+		//
+		// Delegation - View
+		var hasAppearedBefore = false
+		override func viewDidAppear(_ animated: Bool)
+		{
+			super.viewDidAppear(animated)
+			if self.hasAppearedBefore == false {
+				self.hasAppearedBefore = true
+			}
+		}
+		//
+		// Delegation - Notifications - Keyboard
+		var keyboardIsShowing: Bool = false
+		var keyboardHeight: CGFloat?
+		func keyboardWillShow(notification: Notification)
+		{
+			let userInfo = notification.userInfo!
+			if self.keyboardIsShowing == true { // this actually happens when the keyboard is already showing and fields are just switched
+				return
+			}
+			// arguments
+			let keyboard_size = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+			// state
+			self.keyboardIsShowing = true
+			self.keyboardHeight = keyboard_size.height
+			// configuration
+			self.scrollView.contentInset = self.new_contentInset()
+		}
+		func keyboardWillHide(notification: Notification)
+		{
+			if self.keyboardIsShowing == false { // this actually happens on launch in the Simulator when a text field is shown and focused immediately, e.g. pw entry, but the software keyboard is not to be shown
+				return
+			}
+			// state
+			self.keyboardIsShowing = false
+			self.keyboardHeight = nil
+			// configuration
+			self.scrollView.contentInset = self.new_contentInset()
 		}
 	}
 }
@@ -448,19 +586,24 @@ extension UICommonComponents
 	//
 	class FormLabel: UILabel
 	{
+		//
+		// Properties - Static
+		static let fixedHeight: CGFloat = 13
+		//
 		static let visual_marginBelow: CGFloat = 7
 		static let marginBelowLabelAboveTextInputView: CGFloat = FormLabel.visual_marginBelow - FormInputCells.imagePadding_y
-
+		//
 		static let visual_marginAboveLabelForUnderneathField: CGFloat = 13
 		static let marginAboveLabelForUnderneathField_textInputView: CGFloat = FormLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
-		
+		//
+		// Lifecycle - Init
 		init(title: String, sizeToFit: Bool? = false)
 		{
 			let frame = CGRect(
 				x: CGFloat(0),
 				y: CGFloat(0),
 				width: CGFloat(0),
-				height: CGFloat(13)
+				height: FormLabel.fixedHeight
 			)
 			super.init(frame: frame)
 			self.text = title

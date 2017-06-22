@@ -254,27 +254,9 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	// Imperatives
 	func toggle_loginWithMode()
 	{
-		let finished: ((Bool) -> Void) =
-		{ [unowned self] (finished) in
-			if finished == false {
-				assert(false)
-				return
-			}
-			self.loginWith_mode = self.loginWith_mode.otherMode // toggle
-			self.configureWith_loginWithMode()
-		}
-		if self.scrollView.contentOffset != .zero {
-			UIView.animate(
-				withDuration: 0.5,
-				animations:
-				{ [unowned self] in
-					self.scrollView.contentOffset = .zero
-				},
-				completion: finished
-			)
-		} else {
-			finished(true)
-		}
+		self.loginWith_mode = self.loginWith_mode.otherMode // toggle
+		self.configureWith_loginWithMode()
+		// ^- will trigger scroll to newly focused field
 	}
 	func configureWith_loginWithMode()
 	{
@@ -293,8 +275,11 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				self.spendKey_label.isHidden = true
 				self.spendKey_inputView.isHidden = true
 				//
-				DispatchQueue.main.async { // dispatching on next tick so as to simulate same effect as viewDidAppear
-					self.walletMnemonic_inputView.textView.becomeFirstResponder()
+				if self.hasAppearedBefore == true { // we don't want to do this before having appeared b/c frame will be false when we try to scroll to the input view on focus
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) // after delay to give things a chance to lay out (for auto scroll calc) and for visual effect
+					{ [unowned self] in
+						self.walletMnemonic_inputView.textView.becomeFirstResponder()
+					}
 				}
 				break
 			case .addrAndPrivKeys:
@@ -314,7 +299,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				self.spendKey_inputView.isHidden = false
 				self.spendKey_inputView.setNeedsDisplay() // necessary so view calls draw(rect:) with correct frame
 				//
-				DispatchQueue.main.async {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) // after delay to give things a chance to lay out (for auto scroll calc) and for visual effect
+				{ [unowned self] in
 					self.addr_inputView.textView.becomeFirstResponder()
 				}
 				break
@@ -572,6 +558,17 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		self.layOut_walletLabelAndSwatchFields(atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height)
 		//
 		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
+	}
+	override func viewDidAppear(_ animated: Bool)
+	{
+		let isFirstAppearance = self.hasAppearedBefore == false
+		super.viewDidAppear(animated)
+		if isFirstAppearance {
+			DispatchQueue.main.async
+			{ [unowned self] in
+				self.walletMnemonic_inputView.textView.becomeFirstResponder()
+			}
+		}
 	}
 	//
 	// Delegation - UITextView

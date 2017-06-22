@@ -140,8 +140,8 @@ class ListViewController: UITableViewController
 	{
 		self.configure_navigation_title()
 		self.configure_navigation_barButtonItems()
-		self.configure_emptyStateView()
 		//
+		self.configure_emptyStateView()
 		self.tableView.reloadData()
 	}
 }
