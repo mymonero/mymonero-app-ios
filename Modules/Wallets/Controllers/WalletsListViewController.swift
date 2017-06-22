@@ -23,18 +23,6 @@ class WalletsListViewController: ListViewController
 		self.tableView.backgroundColor = .contentBackgroundColor
 		self.tableView.separatorStyle = .none
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
-		do {
-			let emptyView = WalletsListEmptyView(
-				useExisting_tapped_fn: { [unowned self] in
-					self._presentAddWalletWizard(inTaskMode: .firstTime_useExisting)
-				},
-				createNew_tapped_fn: { [unowned self] in
-					self._presentAddWalletWizard(inTaskMode: .firstTime_createWallet)
-				}
-			)
-			
-			self.tableView.backgroundView = emptyView
-		}
 	}
 	override func configure_navigation_barButtonItems()
 	{
@@ -45,13 +33,25 @@ class WalletsListViewController: ListViewController
 		}
 	}
 	//
-	// Accessors - Required overrides
+	// Accessors - Overrides
 	override func new_navigationTitle() -> String
 	{
 		if self.listController.hasBooted == false || self.listController.records.count == 0 {
 			return "MyMonero"
 		}
 		return "My Monero Wallets"
+	}
+	override func new_emptyStateView() -> UIView?
+	{
+		let view = WalletsListEmptyView(
+			useExisting_tapped_fn: { [unowned self] in
+				self._presentAddWalletWizard(inTaskMode: .firstTime_useExisting)
+			},
+			createNew_tapped_fn: { [unowned self] in
+				self._presentAddWalletWizard(inTaskMode: .firstTime_createWallet)
+			}
+		)
+		return view
 	}
 	//
 	// Runtime - Imperatives - Wizard

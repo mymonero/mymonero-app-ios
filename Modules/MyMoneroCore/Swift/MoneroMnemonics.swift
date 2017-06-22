@@ -88,6 +88,15 @@ struct MNWords
 			.Portuguese,
 			.Japanese
 		]
+		//
+		var jsonRepresentation: String
+		{
+			return self.rawValue
+		}
+		static func new(fromJSONRepresentation jsonRepresentation: Any) -> WordsetName
+		{
+			return self.init(rawValue: jsonRepresentation as! String)!
+		}
 	}
 	static let wordsByWordsetName: [WordsetName: [String]] =
 	[ // we need these words (unfortunately duplicated) to do wordset name detection from mnemonic encoded account seed

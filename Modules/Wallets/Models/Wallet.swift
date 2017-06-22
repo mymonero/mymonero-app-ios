@@ -206,6 +206,9 @@ class Wallet: PersistableObject
 			if let value = self.account_seed {
 				dict[DictKey.accountSeed.rawValue] = value
 			}
+			if let value = self.mnemonic_wordsetName {
+				dict[DictKey.mnemonic_wordsetName.rawValue] = value.jsonRepresentation
+			}
 			dict[DictKey.publicKeys.rawValue] = self.public_keys.jsonRepresentation
 			dict[DictKey.privateKeys.rawValue] = self.private_keys.jsonRepresentation
 			if let value = self.shouldDisplayImportAccountOption {
@@ -302,6 +305,9 @@ class Wallet: PersistableObject
 			fromJSONRepresentation: dictRepresentation[DictKey.publicKeys.rawValue] as! [String: Any]
 		)
 		self.account_seed = dictRepresentation[DictKey.accountSeed.rawValue] as? MoneroSeed
+		if let string = dictRepresentation[DictKey.mnemonic_wordsetName.rawValue] {
+			self.mnemonic_wordsetName = MoneroMnemonicWordsetName.new(fromJSONRepresentation: string as! String)
+		}
 		self.private_keys = MoneroKeyDuo.new(
 			fromJSONRepresentation: dictRepresentation[DictKey.privateKeys.rawValue] as! [String: Any]
 		)

@@ -25,6 +25,7 @@ extension UICommonComponents
 		{
 			case normal = ""
 			case highlighted = "_highlighted"
+			case disabled = "_disabled"
 			//
 			var suffix: String
 			{

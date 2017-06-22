@@ -47,6 +47,7 @@ class ListViewController: UITableViewController
 	func setup_tableView()
 	{
 		self.tableView.delegate = self
+		self.configure_emptyStateView()
 	}
 	func startObserving()
 	{
@@ -78,6 +79,12 @@ class ListViewController: UITableViewController
 		assert(false, "required")
 	}
 	//
+	// Accessors - Overridable - Optional
+	func new_emptyStateView() -> UIView?
+	{
+		return nil
+	}
+	//
 	// Imperatives
 	func configure_navigation_title()
 	{
@@ -85,7 +92,18 @@ class ListViewController: UITableViewController
 	}
 	func configure_navigation_barButtonItems()
 	{
-		
+	}
+	var _emptyStateView: UIView?
+	func configure_emptyStateView()
+	{
+		if self._emptyStateView == nil {
+			self._emptyStateView = self.new_emptyStateView()
+		}
+		if self.listController.records.count == 0 {
+			self.tableView.backgroundView = self._emptyStateView
+		} else {
+			self.tableView.backgroundView = nil
+		}
 	}
 	//
 	// Protocol - Table View - Accessors & Delegation
@@ -118,6 +136,7 @@ class ListViewController: UITableViewController
 	{
 		self.configure_navigation_title()
 		self.configure_navigation_barButtonItems()
+		self.configure_emptyStateView()
 		//
 		self.tableView.reloadData()
 	}

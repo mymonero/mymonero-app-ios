@@ -12,13 +12,20 @@ extension UICommonComponents
 {
 	class WalletColorPickerView: UIView
 	{
+		typealias Color = Wallet.SwatchColor
 		// Properties - Static
-		static let colors = Wallet.SwatchColor.allOrdered()
+		static let colors = Color.allOrdered()
 		static let colors_count = WalletColorPickerView.colors.count
 		// Properties - Init
 		var optionViews: [WalletColorPickerOptionView]!
 		// Properties - Runtime
 		var currentlySelected_idx: Int?
+		var currentlySelected_color: Color? {
+			if let idx = self.currentlySelected_idx {
+				return WalletColorPickerView.colors[idx]
+			}
+			return nil
+		}
 		//
 		init(optl__currentlySelected_color: Wallet.SwatchColor?)
 		{
@@ -116,6 +123,15 @@ extension UICommonComponents
 			let option = self.optionViews[to_idx]
 			option.set(isSelected: true)
 		}
+		var isEnabled: Bool = true
+		func set(isEnabled: Bool)
+		{
+			self.isEnabled = isEnabled
+			optionViews.forEach
+			{ (view) in
+				view.set(isEnabled: isEnabled)
+			}
+		}
 		//
 		// Imperatives - Layout
 		override func layoutSubviews()
@@ -183,6 +199,7 @@ extension UICommonComponents
 		//
 		static let backgroundImage = UICommonComponents.HighlightableCells.Variant.normal.stretchableImage
 		static let selectedBackgroundImage = UICommonComponents.HighlightableCells.Variant.highlighted.stretchableImage
+		static let disabledBackgroundImage = UICommonComponents.HighlightableCells.Variant.disabled.stretchableImage
 		//
 		static let cellSize_side_h: CGFloat = 88 + 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_h
 		static let cellSize_side_v: CGFloat = 88 + 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_v
@@ -194,7 +211,9 @@ extension UICommonComponents
 		var tapped_fn: ((_ option: WalletColorPickerOptionView) -> Void)!
 		//
 		let iconView = WalletIconView(sizeClass: .large48)
-		let selectionIndicatorView = UIImageView(image: UIImage(named: "walletColorPicker_selectionIndicator_stretchable")!.stretchableImage(withLeftCapWidth: 8, topCapHeight: 8))
+		static let selectionIndicator_image = UIImage(named: "walletColorPicker_selectionIndicator_stretchable")!.stretchableImage(withLeftCapWidth: 8, topCapHeight: 8)
+		static let selectionIndicator_disabled_image = UIImage(named: "walletColorPicker_selectionIndicator_disabled_stretchable")!.stretchableImage(withLeftCapWidth: 8, topCapHeight: 8)
+		let selectionIndicatorView = UIImageView(image: selectionIndicator_image)
 		//
 		var color: Wallet.SwatchColor!
 		//
@@ -218,8 +237,8 @@ extension UICommonComponents
 			}
 			do {
 				let view = self.selectionIndicatorView
-				view.isHidden = true
 				self.addSubview(view)
+				self.configure_selectionIndicator()
 			}
 			do {
 				let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
@@ -227,17 +246,38 @@ extension UICommonComponents
 			}
 		}
 		//
+		// Imperatives - State
 		var isSelected: Bool = false
 		func set(isSelected: Bool)
 		{
 			self.isSelected = isSelected
-			self.selectionIndicatorView.isHidden = isSelected == false
+			self.configure_selectionIndicator()
 		}
 		var isBeingTouched: Bool = false
 		func set(isBeingTouched: Bool)
 		{
 			self.isBeingTouched = isBeingTouched
 			self.setNeedsDisplay() // to redraw bg
+		}
+		var isEnabled: Bool = true
+		func set(isEnabled: Bool)
+		{
+			self.isEnabled = isEnabled
+			self.setNeedsDisplay() // to redraw bg
+			self.configure_selectionIndicator()
+		}
+		//
+		// Imperatives - Configuration
+		func configure_selectionIndicator()
+		{
+			self.selectionIndicatorView.isHidden = isSelected == false
+			if self.isSelected {
+				if self.isEnabled {
+					self.selectionIndicatorView.image = WalletColorPickerOptionView.selectionIndicator_image
+				} else {
+					self.selectionIndicatorView.image = WalletColorPickerOptionView.selectionIndicator_disabled_image
+				}
+			}
 		}
 		//
 		// Imperatives - Overrides
@@ -260,10 +300,14 @@ extension UICommonComponents
 		{
 			do {
 				var image: UIImage!
-				if self.isBeingTouched {
-					image = WalletColorPickerOptionView.selectedBackgroundImage
+				if self.isEnabled == false {
+					image = WalletColorPickerOptionView.disabledBackgroundImage
 				} else {
-					image = WalletColorPickerOptionView.backgroundImage
+					if self.isBeingTouched {
+						image = WalletColorPickerOptionView.selectedBackgroundImage
+					} else {
+						image = WalletColorPickerOptionView.backgroundImage
+					}
 				}
 				image.draw(in: rect)
 			}
@@ -273,24 +317,28 @@ extension UICommonComponents
 		// Delegation - Interactions - Gestures
 		func tapped()
 		{
-			self.tapped_fn(self)
+			if self.isEnabled == true {
+				self.tapped_fn(self)
+			}
 		}
 		//
 		// Delegation - Interactions - Overrides
 		override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
 		{
 			super.touchesBegan(touches, with: event)
-			self.set(isBeingTouched: true)
+			if self.isEnabled == true {
+				self.set(isBeingTouched: true)
+			}
 		}
 		override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
 		{
 			super.touchesEnded(touches, with: event)
-			self.set(isBeingTouched: false)
+			self.set(isBeingTouched: false) // in case we disable while touching, do not filter to isEnabled=true to get back to ground state
 		}
 		override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?)
 		{
 			super.touchesCancelled(touches, with: event)
-			self.set(isBeingTouched: false)
+			self.set(isBeingTouched: false) // in case we disable while touching, do not filter to isEnabled=true to get back to ground state
 		}
 	}
 }

@@ -182,26 +182,46 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 	}
 	//
+	// Accessors - Lookups/derived - Input values
+	var walletLabel: String? {
+		return self.walletLabel_inputView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	var mnemonic: String? {
+		return self.walletMnemonic_inputView.textView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	var addr: String? {
+		return self.addr_inputView.textView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	var viewKey: String? {
+		return self.viewKey_inputView.textView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	var spendKey: String? {
+		return self.spendKey_inputView.textView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	//
 	// Accessors - Overrides
 	override func new_isFormSubmittable() -> Bool
 	{
-		guard let walletLabel = self.walletLabel_inputView.text, walletLabel != "" else {
+		if self.isSubmitting == true {
+			return false
+		}
+		guard let walletLabel = self.walletLabel, walletLabel != "" else {
 			return false
 		}
 		switch self.loginWith_mode {
 			case .mnemonicSeed:
-				guard let walletMnemonic = self.walletMnemonic_inputView.textView.text, walletMnemonic != "" else {
+				guard let mnemonic = self.mnemonic, mnemonic != "" else {
 					return false
 				}
 				break
 			case .addrAndPrivKeys:
-				guard let addr = self.addr_inputView.textView.text, addr != "" else {
+				guard let addr = self.addr, addr != "" else {
 					return false
 				}
-				guard let viewKey = self.viewKey_inputView.textView.text, viewKey != "" else {
+				guard let viewKey = self.viewKey, viewKey != "" else {
 					return false
 				}
-				guard let spendKey = self.spendKey_inputView.textView.text, spendKey != "" else {
+				guard let spendKey = self.spendKey, spendKey != "" else {
 					return false
 				}
 				break
@@ -272,6 +292,146 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	@objc func orUse_button_tapped()
 	{
 		self.toggle_loginWithMode()
+	}
+	//
+	// Runtime - Imperatives - Overrides
+	override func disableForm()
+	{
+		super.disableForm()
+		//
+		self.orUse_button.isEnabled = false
+		self.walletColorPicker_inputView.set(isEnabled: false)
+		self.walletLabel_inputView.isEnabled = false
+		self.walletMnemonic_inputView.textView.isEditable = false
+		self.addr_inputView.textView.isEditable = false
+		self.viewKey_inputView.textView.isEditable = false
+		self.spendKey_inputView.textView.isEditable = false
+	}
+	override func reEnableForm()
+	{
+		super.reEnableForm()
+		//
+		self.orUse_button.isEnabled = true
+		self.walletColorPicker_inputView.set(isEnabled: true)
+		self.walletLabel_inputView.isEnabled = true
+		self.walletMnemonic_inputView.textView.isEditable = true
+		self.addr_inputView.textView.isEditable = true
+		self.viewKey_inputView.textView.isEditable = true
+		self.spendKey_inputView.textView.isEditable = true
+	}
+	override func setValidationMessage(_ message: String)
+	{
+		DDLog.Todo("WalletWizard", "show validation msg")
+	}
+	override func clearValidationMessage()
+	{
+		DDLog.Todo("WalletWizard", "clear validation msg")
+	}
+	var isSubmitting = false
+	override func _tryToSubmitForm()
+	{
+		if self.isSubmitting == true {
+			return
+		}
+		do {
+			DDLog.Todo("WalletWizard", "disable user idle, screen dim")
+//			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+//			if (self.context.Cordova_isMobile === true) {
+//				window.plugins.insomnia.keepAwake() // disable screen dim/off
+//			}
+			self.set(isFormSubmitting: true) // will update 'Next' btn
+			self.disableForm()
+			self.clearValidationMessage()
+			DDLog.Todo("WalletWizard", "hide next btn/replace it with an activity indicator")
+			self.navigationItem.leftBarButtonItem!.isEnabled = false
+		}
+		func ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
+		{ // factored because we would like to call this on successful submission too!
+			DDLog.Todo("WalletWizard", "re-enable user idle, screen dim")
+//			self.context.userIdleInWindowController.ReEnable_userIdle()
+//			if (self.context.Cordova_isMobile === true) {
+//				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+//			}
+		}
+		func ___reEnableFormFromSubmissionDisable()
+		{
+			____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
+			//
+			self.navigationItem.leftBarButtonItem!.isEnabled = true
+			DDLog.Todo("WalletWizard", "remove act ind and replace /re display next btn ")
+			self.set(isFormSubmitting: false) // will update 'Next' btn
+			self.reEnableForm()
+		}
+		func __trampolineFor_failedWithErrStr(_ err_str: String)
+		{
+			self.scrollView.scrollRectToVisible(.zero, animated: true) // because we want to show the validation err msg
+			self.setValidationMessage(err_str)
+			___reEnableFormFromSubmissionDisable()
+		}
+		func __trampolineFor_didAddWallet()
+		{
+			____reEnable_userIdleAndScreenSleepFromSubmissionDisable() // we must call this manually as we are not re-enabling the form (or it will break user idle!!)
+			self.wizardController.proceedToNextStep() // will dismiss
+		}
+		//
+		let walletLabel = self.walletLabel!
+		let color = self.walletColorPicker_inputView.currentlySelected_color
+		switch self.loginWith_mode
+		{
+			case .mnemonicSeed:
+				let mnemonic = self.mnemonic!
+				WalletsListController.shared.OnceBooted_ObtainPW_AddExtantWalletWith_MnemonicString(
+					walletLabel: walletLabel,
+					swatchColor: color!,
+					mnemonicString: mnemonic,
+					{ (err_str, walletInstance, wasWalletAlreadyInserted) in
+						if err_str != nil {
+							__trampolineFor_failedWithErrStr(err_str!)
+							return
+						}
+						if wasWalletAlreadyInserted == true {
+							__trampolineFor_failedWithErrStr("That wallet has already been added.")
+							return // consider a 'fail'
+						}
+						// success
+						__trampolineFor_didAddWallet()
+					},
+					userCanceledPasswordEntry_fn:
+					{
+						___reEnableFormFromSubmissionDisable()
+					}
+				)
+				break
+			case .addrAndPrivKeys:
+				let addr = self.addr!
+				let viewKey = self.viewKey! as MoneroKey
+				let spendKey = self.spendKey! as MoneroKey
+				let privateKeys = MoneroKeyDuo(view: viewKey, spend: spendKey)
+			
+				WalletsListController.shared.OnceBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
+					walletLabel: walletLabel,
+					swatchColor: color!,
+					address: addr,
+					privateKeys: privateKeys,
+					{ (err_str, walletInstance, wasWalletAlreadyInserted) in
+						if err_str != nil {
+							__trampolineFor_failedWithErrStr(err_str!)
+							return
+						}
+						if wasWalletAlreadyInserted == true {
+							__trampolineFor_failedWithErrStr("That wallet has already been added.")
+							return // consider a 'fail'
+						}
+						// success
+						__trampolineFor_didAddWallet()
+					},
+					userCanceledPasswordEntry_fn:
+					{
+						___reEnableFormFromSubmissionDisable()
+					}
+				)
+				break
+		}
 	}
 	//
 	// Delegation - Internal - Overrides

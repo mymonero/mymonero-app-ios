@@ -86,7 +86,9 @@ extension UICommonComponents
 		// Runtime - Imperatives - State
 		func set_isFormSubmittable_needsUpdate()
 		{
-			let isFormSubmittable = self.isFormEnabled && self.new_isFormSubmittable()
+			let isFormSubmittable =
+				self.isFormEnabled && self.isFormSubmitting == false
+					&& self.new_isFormSubmittable()
 			if let item = self.navigationItem.rightBarButtonItem {
 				item.isEnabled = isFormSubmittable
 			}
@@ -107,6 +109,13 @@ extension UICommonComponents
 		func reEnableForm()
 		{
 			self.isFormEnabled = true
+			self.set_isFormSubmittable_needsUpdate()
+		}
+		//
+		var isFormSubmitting = false
+		func set(isFormSubmitting: Bool)
+		{
+			self.isFormSubmitting = isFormSubmitting
 			self.set_isFormSubmittable_needsUpdate()
 		}
 		//
@@ -151,6 +160,12 @@ extension UICommonComponents
 			if self.navigationItem.rightBarButtonItem!.isEnabled {
 				self._tryToSubmitForm()
 			}
+		}
+		//
+		// Delegation - Internal/Convenience - Form submission
+		func aFormSubmissionButtonWasPressed()
+		{
+			self._tryToSubmitForm()
 		}
 	}
 }
