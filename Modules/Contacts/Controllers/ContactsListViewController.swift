@@ -23,7 +23,6 @@ class ContactsListViewController: ListViewController
 		self.tableView.backgroundColor = .contentBackgroundColor
 		self.tableView.separatorStyle = .none
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
-		self.tableView.backgroundView = ContactsListEmptyView()
 	}
 	override func configure_navigation_barButtonItems()
 	{
@@ -34,6 +33,11 @@ class ContactsListViewController: ListViewController
 	override func new_navigationTitle() -> String
 	{
 		return "Contacts"
+	}
+	override func new_emptyStateView() -> UIView?
+	{
+		let view = ContactsListEmptyView()
+		return view
 	}
 	//
 	// Delegation - Table

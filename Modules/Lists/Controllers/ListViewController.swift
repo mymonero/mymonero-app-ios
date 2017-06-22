@@ -96,14 +96,18 @@ class ListViewController: UITableViewController
 	var _emptyStateView: UIView?
 	func configure_emptyStateView()
 	{
-		if self._emptyStateView == nil {
-			self._emptyStateView = self.new_emptyStateView()
-		}
-		if self.listController.records.count == 0 {
-			self.tableView.backgroundView = self._emptyStateView
+		let shouldShow = self.listController.records.count == 0 // TODO: fix this so it refreshes after app is unlocked: PasswordController.shared.hasUserSavedAPassword == false || (PasswordController.shared.hasUserEnteredValidPasswordYet && self.listController.records.count == 0)
+		if shouldShow {
+			if self.tableView.backgroundView == nil {
+				if self._emptyStateView == nil {
+					self._emptyStateView = self.new_emptyStateView()
+				}
+				self.tableView.backgroundView = self._emptyStateView
+			}
 		} else {
 			self.tableView.backgroundView = nil
 		}
+
 	}
 	//
 	// Protocol - Table View - Accessors & Delegation
