@@ -162,6 +162,12 @@ extension UICommonComponents
 			return self.aField_shouldReturn(textField, returnKeyType: textField.returnKeyType)
 		}
 		//
+		// Delegation - Internal/Convenience - UITextViewDelegate
+		func textViewDidChange(_ textView: UITextView)
+		{
+			return self.aField_editingChanged()
+		}
+		//
 		// Delegation - Internal/Convenience - Field interactions
 		func aField_editingChanged()
 		{

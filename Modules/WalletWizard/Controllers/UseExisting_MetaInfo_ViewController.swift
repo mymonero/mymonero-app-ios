@@ -80,7 +80,6 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.textView.delegate = self
 				self.walletMnemonic_inputView = view
 				self.view.addSubview(view)
@@ -103,7 +102,6 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.textView.delegate = self
 				self.addr_inputView = view
 				self.view.addSubview(view)
@@ -125,7 +123,6 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.textView.delegate = self
 				self.viewKey_inputView = view
 				self.view.addSubview(view)
@@ -147,7 +144,6 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.textView.delegate = self
 				self.spendKey_inputView = view
 				self.view.addSubview(view)
