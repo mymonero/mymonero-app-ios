@@ -75,6 +75,10 @@ extension UIColor
 	{
 		return UIColor(rgb: 0x11BBEC)
 	}
+	static var disabled_utilityOrConstructiveLinkColor: UIColor
+	{
+		return UIColor(rgb: 0xD4D4D4)
+	}
 }
 //
 extension UIFont

@@ -12,7 +12,7 @@ class FundsRequestsListViewController: ListViewController
 {
 	init()
 	{
-		super.init(withListController: WalletsListController.shared)
+		super.init(withListController: FundsRequestsListController.shared)
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")

@@ -94,6 +94,14 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		return true
 	}
+	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
+	{
+		if inputView != self.password_inputView {
+			assert(false, "Unexpected")
+			return nil
+		}
+		return self.confirmPassword_inputView
+	}
 	//
 	// Accessors - Factories - Views
 	func _new_leftBarButtonItem() -> UICommonComponents.NavigationBarButtonItem?
@@ -230,16 +238,5 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			).integral
 		}
 		self.formContentSizeDidChange(withBottomView: self.confirmPassword_inputView, bottomPadding: topPadding)
-	}
-	//
-	// Delegation - UITextField
-	func textFieldShouldReturn(_ textField: UITextField) -> Bool
-	{
-		if self.password_inputView.isFirstResponder {
-			self.confirmPassword_inputView.becomeFirstResponder()
-			return false
-		}
-		self.aField_didReturn()
-		return false
 	}
 }

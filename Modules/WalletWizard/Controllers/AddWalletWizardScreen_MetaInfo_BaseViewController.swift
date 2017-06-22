@@ -37,7 +37,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 				)
 				view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.delegate = self
-				view.returnKeyType = .next
+				view.returnKeyType = .go
 				self.walletLabel_inputView = view
 				self.view.addSubview(view)
 			}

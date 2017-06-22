@@ -179,13 +179,6 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 	}
 	//
-	// Delegation - UITextField
-	func textFieldShouldReturn(_ textField: UITextField) -> Bool
-	{
-		self.aField_didReturn()
-		return false
-	}
-	//
 	// Delegation - Interactions
 	@objc
 	func tapped_forgotButton()

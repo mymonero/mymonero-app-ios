@@ -80,8 +80,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
-//				view.delegate = self
+//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+				view.textView.delegate = self
 				self.walletMnemonic_inputView = view
 				self.view.addSubview(view)
 			}
@@ -103,8 +103,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
-//				view.delegate = self
+//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+				view.textView.delegate = self
 				self.addr_inputView = view
 				self.view.addSubview(view)
 			}
@@ -125,8 +125,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
-//				view.delegate = self
+//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+				view.textView.delegate = self
 				self.viewKey_inputView = view
 				self.view.addSubview(view)
 			}
@@ -147,8 +147,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
-//				view.addTarget(self, action: #selector(aPasswordField_editingChanged), for: .editingChanged)
-//				view.delegate = self
+//				view.textView.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+				view.textView.delegate = self
 				self.spendKey_inputView = view
 				self.view.addSubview(view)
 			}
@@ -200,6 +200,32 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	}
 	//
 	// Accessors - Overrides
+	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
+	{
+		switch self.loginWith_mode {
+			case .mnemonicSeed:
+				if inputView == self.walletMnemonic_inputView.textView {
+					return self.walletLabel_inputView
+				}
+				assert(false, "Unexpected")
+				break
+			case .addrAndPrivKeys:
+				if inputView == self.addr_inputView.textView {
+					return self.viewKey_inputView.textView
+				}
+				if inputView == self.viewKey_inputView.textView {
+					return self.spendKey_inputView.textView
+				}
+				if inputView == self.spendKey_inputView.textView {
+					return self.walletLabel_inputView
+				}
+				assert(false, "Unexpected")
+				break
+			// TODO: consider looping back to origin and keeping return key type of wallet label as .next until form is ready to submit (might be a neat usability thing)
+		}
+		assert(false, "Unexpected")
+		return nil
+	}
 	override func new_isFormSubmittable() -> Bool
 	{
 		if self.isSubmitting == true {
@@ -232,8 +258,27 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	// Imperatives
 	func toggle_loginWithMode()
 	{
-		self.loginWith_mode = self.loginWith_mode.otherMode // toggle
-		self.configureWith_loginWithMode()
+		let finished: ((Bool) -> Void) =
+		{ [unowned self] (finished) in
+			if finished == false {
+				assert(false)
+				return
+			}
+			self.loginWith_mode = self.loginWith_mode.otherMode // toggle
+			self.configureWith_loginWithMode()
+		}
+		if self.scrollView.contentOffset != .zero {
+			UIView.animate(
+				withDuration: 0.5,
+				animations:
+				{ [unowned self] in
+					self.scrollView.contentOffset = .zero
+				},
+				completion: finished
+			)
+		} else {
+			finished(true)
+		}
 	}
 	func configureWith_loginWithMode()
 	{
@@ -364,7 +409,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		func __trampolineFor_failedWithErrStr(_ err_str: String)
 		{
-			self.scrollView.scrollRectToVisible(.zero, animated: true) // because we want to show the validation err msg
+			self.scrollView.setContentOffset(.zero, animated: true) // because we want to show the validation err msg
 			self.setValidationMessage(err_str)
 			___reEnableFormFromSubmissionDisable()
 		}
@@ -531,5 +576,18 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		self.layOut_walletLabelAndSwatchFields(atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height)
 		//
 		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
+	}
+	//
+	// Delegation - UITextView
+	func textView(
+		_ textView: UITextView,
+		shouldChangeTextIn range: NSRange,
+		replacementText text: String
+	) -> Bool
+	{
+		if text == "\n" { // simulate single-line input
+			return self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
+		}
+		return true
 	}
 }

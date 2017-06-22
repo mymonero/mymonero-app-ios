@@ -56,8 +56,19 @@ extension UICommonComponents
 					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue
 				]
 			)
+			let disabled_attributedTitle = NSAttributedString(
+				string: title,
+				attributes:
+				[
+					NSForegroundColorAttributeName: UIColor.disabled_utilityOrConstructiveLinkColor,
+					NSFontAttributeName: UIFont.smallRegularMonospace,
+					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleNone.rawValue
+				]
+			)
 			self.setAttributedTitle(normal_attributedTitle, for: .normal)
+			self.setAttributedTitle(selected_attributedTitle, for: .highlighted)
 			self.setAttributedTitle(selected_attributedTitle, for: .selected)
+			self.setAttributedTitle(disabled_attributedTitle, for: .disabled)
 			//
 			// now that we have title and font…
 			self.sizeToFit()

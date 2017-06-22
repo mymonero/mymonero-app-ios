@@ -83,12 +83,18 @@ extension UICommonComponents
 			return true
 		}
 		//
+		// Runtime - Accessors - Form fields - Overridable
+		func nextInputFieldViewAfter(inputView: UIView) -> UIView?
+		{ // for automated field advancing (if you use returnKeyType=.next)
+			assert(false, "Override and implement this method")
+			return nil
+		}
+		//
 		// Runtime - Imperatives - State
 		func set_isFormSubmittable_needsUpdate()
 		{
 			let isFormSubmittable =
-				self.isFormEnabled && self.isFormSubmitting == false
-					&& self.new_isFormSubmittable()
+				self.isFormEnabled && self.isFormSubmitting == false && self.new_isFormSubmittable()
 			if let item = self.navigationItem.rightBarButtonItem {
 				item.isEnabled = isFormSubmittable
 			}
@@ -150,15 +156,42 @@ extension UICommonComponents
 			)
 		}
 		//
+		// Delegation - Internal/Convenience - UITextFieldDelegate
+		func textFieldShouldReturn(_ textField: UITextField) -> Bool
+		{
+			return self.aField_shouldReturn(textField, returnKeyType: textField.returnKeyType)
+		}
+		//
 		// Delegation - Internal/Convenience - Field interactions
 		func aField_editingChanged()
 		{
 			self.set_isFormSubmittable_needsUpdate()
 		}
-		func aField_didReturn()
+		func aField_shouldReturn(_ inputView: UIView, returnKeyType: UIReturnKeyType) -> Bool
+		{
+			switch returnKeyType {
+				case .go:
+					self.aField_didReturnWithKey_go(inputView)
+					return false
+				case .next:
+					self.aField_didReturnWithKey_next(inputView)
+					break
+				default:
+					assert(false, "Unrecognized return key type")
+					break
+				}
+			return true
+		}
+		func aField_didReturnWithKey_go(_ inputView: UIView)
 		{
 			if self.navigationItem.rightBarButtonItem!.isEnabled {
 				self._tryToSubmitForm()
+			}
+		}
+		func aField_didReturnWithKey_next(_ inputView: UIView)
+		{
+			if let next_inputView = self.nextInputFieldViewAfter(inputView: inputView) {
+				next_inputView.becomeFirstResponder()
 			}
 		}
 		//
