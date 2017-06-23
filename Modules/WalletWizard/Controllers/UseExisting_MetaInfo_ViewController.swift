@@ -175,13 +175,18 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				target: self,
 				action: #selector(tapped_barButtonItem_cancel)
 			)
+		} else { // must implement 'back' btn ourselves
+			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+				type: .back,
+				tapped_fn:
+				{ [unowned self] in
+					self.navigationController?.popViewController(animated: true)
+				}
+			)
 		}
 	}
 	//
 	// Accessors - Lookups/derived - Input values
-	var walletLabel: String? {
-		return self.walletLabel_inputView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-	}
 	var mnemonic: String? {
 		return self.walletMnemonic_inputView.textView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
 	}
@@ -326,6 +331,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	{
 		super.disableForm()
 		//
+		self.scrollView.isScrollEnabled = false
+		//
 		self.orUse_button.isEnabled = false
 		self.walletColorPicker_inputView.set(isEnabled: false)
 		self.walletLabel_inputView.isEnabled = false
@@ -337,6 +344,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	override func reEnableForm()
 	{
 		super.reEnableForm()
+		//
+		self.scrollView.isScrollEnabled = true
 		//
 		self.orUse_button.isEnabled = true
 		self.walletColorPicker_inputView.set(isEnabled: true)

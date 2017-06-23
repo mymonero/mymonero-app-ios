@@ -60,6 +60,11 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 		}
 	}
 	//
+	// Accessors - Lookups/derived - Input values
+	var walletLabel: String? {
+		return self.walletLabel_inputView.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	//
 	// Runtime - Imperatives - Convenience - Layout
 	func layOut_walletLabelAndSwatchFields(atYOffset y: CGFloat)
 	{ // Call this at the end of your layoutSubviews() override

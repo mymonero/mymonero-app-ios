@@ -113,7 +113,7 @@ class AddWallet_WizardController
 	var isAtEndOf_current_wizardTaskMode: Bool
 	{
 		let classes = self.current_wizardTaskMode!.stepsScreenViewControllerClasses
-		if classes.count >= self.current_wizardTaskMode_stepIdx! {
+		if self.current_wizardTaskMode_stepIdx! >= classes.count {
 			return true
 		}
 		return false
@@ -194,6 +194,20 @@ class AddWallet_WizardController
 			self.didDismiss_fn()
 		}
 	}
+	//
+	// Runtime - Imperatives - Steps - Convenience - Advancing steps - Create wallet
+	var walletCreation_metaInfo_walletLabel: String?
+	var walletCreation_metaInfo_color: Wallet.SwatchColor?
+	func setMetaInfoAndProceedToNextStep(
+		walletLabel: String,
+		color: Wallet.SwatchColor
+	)
+	{
+		self.walletCreation_metaInfo_walletLabel = walletLabel
+		self.walletCreation_metaInfo_color = color
+		self.proceedToNextStep()
+	}
+
 	//
 	// Runtime - Delegation
 	func _fromScreen_userPickedCancel()
