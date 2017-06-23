@@ -11,7 +11,10 @@ import UIKit
 class ContactsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "ContactsListViewCell"
-	static let cellHeight: CGFloat = 100
+	static let contentViewHeight: CGFloat = 80
+	static let contentView_margin_h: CGFloat = 16
+	static let cellSpacing: CGFloat = 12
+	static let cellHeight: CGFloat = contentViewHeight + cellSpacing
 	//
 	let cellContentView = ContactCellContentView()
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
@@ -63,7 +66,15 @@ class ContactsListViewCell: UITableViewCell
 	override func layoutSubviews()
 	{
 		super.layoutSubviews()
-		let frame = UIEdgeInsetsInsetRect(self.bounds, UIEdgeInsetsMake(0, 16, 16, 16))
+		let frame = UIEdgeInsetsInsetRect(
+			self.bounds,
+			UIEdgeInsetsMake(
+				0,
+				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
+				WalletsListViewCell.cellSpacing - 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_v,
+				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h
+			)
+		)
 		self.contentView.frame = frame
 		//		self.backgroundView!.frame = frame
 		//		self.selectedBackgroundView!.frame = frame

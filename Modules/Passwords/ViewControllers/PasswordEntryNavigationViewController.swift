@@ -43,6 +43,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	}
 	func setup()
 	{
+		self.view.backgroundColor = .contentBackgroundColor // so we don't get content flashing through transparency during modal transitions
 		self.startObserving_passwordController()
 	}
 	var passwordController_notificationTokens: [Any]?

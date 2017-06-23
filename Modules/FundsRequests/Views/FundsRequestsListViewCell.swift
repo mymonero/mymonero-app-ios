@@ -11,7 +11,10 @@ import UIKit
 class FundsRequestsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "FundsRequestsListViewCell"
-	static let cellHeight: CGFloat = 100
+	static let contentViewHeight: CGFloat = 80
+	static let contentView_margin_h: CGFloat = 16
+	static let cellSpacing: CGFloat = 12
+	static let cellHeight: CGFloat = contentViewHeight + cellSpacing
 	//
 	let cellContentView = FundsRequestsCellContentView()
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
@@ -63,10 +66,16 @@ class FundsRequestsListViewCell: UITableViewCell
 	override func layoutSubviews()
 	{
 		super.layoutSubviews()
-		let frame = UIEdgeInsetsInsetRect(self.bounds, UIEdgeInsetsMake(0, 16, 16, 16))
+		let frame = UIEdgeInsetsInsetRect(
+			self.bounds,
+			UIEdgeInsetsMake(
+				0,
+				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
+				WalletsListViewCell.cellSpacing - 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_v,
+				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h
+			)
+		)
 		self.contentView.frame = frame
-//		self.backgroundView!.frame = frame
-//		self.selectedBackgroundView!.frame = frame
 		self.cellContentView.frame = self.contentView.bounds.insetBy(
 			dx: UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
 			dy: UICommonComponents.HighlightableCells.imagePaddingForShadow_v
