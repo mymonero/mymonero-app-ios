@@ -409,9 +409,9 @@
 				9F2BFF051EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */,
 				9F2BFF0C1EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift */,
 				9F2BFF0A1EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift */,
-				9F2BFF071EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift */,
-				9F2BFF081EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift */,
 				9F2BFF091EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift */,
+				9F2BFF081EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift */,
+				9F2BFF071EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift */,
 				9F2BFF0B1EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift */,
 			);
 			path = Controllers;
