@@ -51,8 +51,10 @@ class ThemeController
 //
 extension CGFloat
 {
-	static var form_input_margin_x: CGFloat = 24
-	static var form_label_margin_x: CGFloat = 33
+	static let visual__form_input_margin_x: CGFloat = 24
+	static let form_input_margin_x: CGFloat = visual__form_input_margin_x - 2*UICommonComponents.FormInputCells.imagePadding_x
+	//
+	static let form_label_margin_x: CGFloat = 33
 }
 //
 extension UIColor
@@ -111,6 +113,14 @@ extension UIFont
 	}
 	//
 	// Sans Serif - (systemFont should be "San Francisco")
+	static var smallSemiboldSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightSemibold)
+	}
+	static var smallMediumSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightMedium)
+	}
 	static var middlingBoldSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
@@ -118,10 +128,6 @@ extension UIFont
 	static var middlingSemiboldSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightSemibold)
-	}
-	static var smallSemiboldSansSerif: UIFont
-	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightSemibold)
 	}
 	static var middlingRegularSansSerif: UIFont
 	{

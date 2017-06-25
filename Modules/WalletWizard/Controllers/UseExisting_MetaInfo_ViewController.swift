@@ -259,6 +259,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	// Imperatives
 	func toggle_loginWithMode()
 	{
+		self.clearValidationMessage() // just in case
+		//
 		self.loginWith_mode = self.loginWith_mode.otherMode // toggle
 		self.configureWith_loginWithMode()
 		// ^- will trigger scroll to newly focused field
@@ -354,14 +356,6 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		self.addr_inputView.textView.isEditable = true
 		self.viewKey_inputView.textView.isEditable = true
 		self.spendKey_inputView.textView.isEditable = true
-	}
-	override func setValidationMessage(_ message: String)
-	{
-		DDLog.Todo("WalletWizard", "show validation msg")
-	}
-	override func clearValidationMessage()
-	{
-		DDLog.Todo("WalletWizard", "clear validation msg")
 	}
 	var isSubmitting = false
 	override func _tryToSubmitForm()
@@ -485,7 +479,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let topPadding: CGFloat = 13
+		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		let textField_w = self.new__textField_w
 		//
 		var viewAbove_orUse_label: UIView!
@@ -495,7 +489,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				//
 				self.walletMnemonic_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: topPadding,
+					y: top_yOffset,
 					width: textField_w,
 					height: self.walletMnemonic_label.frame.size.height
 				).integral
@@ -511,7 +505,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				//
 				self.addr_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: topPadding,
+					y: top_yOffset,
 					width: textField_w,
 					height: self.addr_label.frame.size.height
 				).integral
@@ -566,7 +560,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		self.layOut_walletLabelAndSwatchFields(atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height)
 		//
-		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
+		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.topPadding)
 	}
 	override func viewDidAppear(_ animated: Bool)
 	{

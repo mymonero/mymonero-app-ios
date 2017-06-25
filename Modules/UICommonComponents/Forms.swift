@@ -354,6 +354,7 @@ extension UICommonComponents
 		case textField_bg_noErr = "textField_bg_noErr_stretchable"
 		case textField_bg_error = "textField_bg_error_stretchable"
 		//
+		static var imagePadding_x: CGFloat { return 1 }
 		static var imagePadding_y: CGFloat { return 2 }
 		//
 		var stretchableImage: UIImage
