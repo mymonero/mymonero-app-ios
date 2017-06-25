@@ -13,18 +13,31 @@ extension UICommonComponents
 	class InlineMessageView: UIView
 	{
 		//
+		// Constants
+		enum Mode
+		{
+			case withCloseButton
+			case noCloseButton
+		}
+		//
 		// Properties
+		let mode: Mode
 		let label = UILabel()
-		let closeButton = UIButton(type: .custom)
+		var closeButton: UIButton?
 		//
 		var didHide: ((Void) -> Void)! // this is so we can route self.closeButton tap directly to clearAndHide() internally
 		//
 		// Lifecycle - Init
-		init(didHide: @escaping ((Void) -> Void))
+		init(mode: Mode, didHide: ((Void) -> Void)?)
 		{
+			self.mode = mode
 			super.init(frame: .zero)
-			self.didHide = didHide
+			self.didHide = didHide ?? {}
 			self.setup()
+		}
+		convenience init(mode: Mode) // for .noCloseButton; TODO: improve by limiting to only that mode
+		{
+			self.init(mode: mode, didHide: nil)
 		}
 		required init?(coder aDecoder: NSCoder)
 		{
@@ -58,8 +71,9 @@ extension UICommonComponents
 				view.numberOfLines = 0
 				self.addSubview(view)
 			}
-			do {
-				let view = closeButton
+			if self.mode == .withCloseButton {
+				let view = UIButton(type: .custom)
+				self.closeButton = view
 				view.setImage(UIImage(named: "inlineMessageDialog_closeBtn"), for: .normal)
 				view.adjustsImageWhenHighlighted = true
 				view.addTarget(self, action: #selector(closeButton_tapped), for: .touchUpInside)
@@ -95,7 +109,7 @@ extension UICommonComponents
 		static let button_side: CGFloat = 29
 		func layOut(atX x: CGFloat, y: CGFloat, width: CGFloat)
 		{
-			let label_w = width - InlineMessageView.padding.left - InlineMessageView.button_side // no need to subtract padding.right b/c button_side incorporates that
+			let label_w = width - InlineMessageView.padding.left - (self.closeButton != nil ? InlineMessageView.button_side : InlineMessageView.padding.right) // no need to subtract padding.right b/c button_side incorporates that
 			label.frame = CGRect(x: 0, y: 0, width: label_w, height: 0)
 			label.sizeToFit() // now that we have the width
 			label.frame = CGRect(
@@ -105,12 +119,14 @@ extension UICommonComponents
 				height: label.frame.size.height
 			)
 			//
-			closeButton.frame = CGRect(
-				x: label.frame.origin.x + label.frame.size.width,
-				y: 0,
-				width: InlineMessageView.button_side,
-				height: InlineMessageView.button_side
-			)
+			if let view = closeButton {
+				view.frame = CGRect(
+					x: label.frame.origin.x + label.frame.size.width,
+					y: 0,
+					width: InlineMessageView.button_side,
+					height: InlineMessageView.button_side
+				)
+			}
 			//
 			self.frame = CGRect(
 				x: x,

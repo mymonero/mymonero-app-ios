@@ -16,6 +16,14 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	{
 		super.setup_navigation()
 		self.navigationItem.title = "New Wallet"
+		// must implement 'back' btn ourselves
+		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+			type: .back,
+			tapped_fn:
+			{ [unowned self] in
+				self.navigationController?.popViewController(animated: true)
+			}
+		)
 	}
 	//
 	// Delegation - Internal - Overrides

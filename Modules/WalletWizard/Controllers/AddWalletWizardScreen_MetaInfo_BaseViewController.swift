@@ -24,6 +24,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 	{
 		do {
 			let view = UICommonComponents.InlineMessageView(
+				mode: .withCloseButton,
 				didHide:
 				{ [unowned self] in
 					self.view.setNeedsLayout()
@@ -151,8 +152,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 	override func viewDidLayoutSubviews()
 	{
 		super.viewDidLayoutSubviews()
-		//
-		if self.messageView.shouldPerformLayOut {
+		if self.messageView.shouldPerformLayOut { // i.e. is visible
 			self.layOut_messageView()
 		}
 	}

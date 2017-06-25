@@ -111,6 +111,10 @@ extension UIFont
 	{
 		return UIFont(name: "Native", size: 13)!
 	}
+	static var middlingBoldMonospace: UIFont
+	{
+		return UIFont(name: "Native-Bold", size: 13)!
+	}
 	//
 	// Sans Serif - (systemFont should be "San Francisco")
 	static var smallSemiboldSansSerif: UIFont

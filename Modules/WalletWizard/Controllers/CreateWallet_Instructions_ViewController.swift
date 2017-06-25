@@ -19,8 +19,8 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 	}
 	struct LabelDuo
 	{
-		var titleLabel: UILabel
-		var descriptionLabel: UILabel
+		var titleLabel: UICommonComponents.ReadableInfoHeaderLabel
+		var descriptionLabel: UICommonComponents.ReadableInfoDescriptionLabel
 	}
 	//
 	// Properties
@@ -119,36 +119,18 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		//
 		return list
 	}
-	func _new_titleLabel(with text: String) -> UILabel
+	func _new_titleLabel(with text: String) -> UICommonComponents.ReadableInfoHeaderLabel
 	{
-		let label = UILabel()
-		label.font = UIFont.middlingSemiboldSansSerif
-		label.textColor = UIColor(rgb: 0xF8F7F8)
+		let label = UICommonComponents.ReadableInfoHeaderLabel()
 		label.text = text
-		label.numberOfLines = 0
 		//
 		return label
 	}
-	func _new_descriptionLabel(with text: String) -> UILabel
+	func _new_descriptionLabel(with text: String) -> UICommonComponents.ReadableInfoDescriptionLabel
 	{
-		let label = UILabel()
-		let paragraphStyle = NSMutableParagraphStyle()
-		do {
-			paragraphStyle.lineSpacing = 4
-			paragraphStyle.alignment = .center
-		}
-		let attributedString = NSAttributedString(
-			string: text,
-			attributes:
-			[
-				NSForegroundColorAttributeName: UIColor(rgb: 0x8D8B8D),
-				NSFontAttributeName: UIFont.middlingRegularSansSerif,
-				NSParagraphStyleAttributeName: paragraphStyle
-			]
-		)
-		label.attributedText = attributedString
+		let label = UICommonComponents.ReadableInfoDescriptionLabel()
 		label.textAlignment = .left
-		label.numberOfLines = 0
+		label.set(text: text)
 		//
 		return label
 	}
