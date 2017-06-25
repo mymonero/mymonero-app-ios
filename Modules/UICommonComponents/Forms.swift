@@ -639,7 +639,7 @@ extension UICommonComponents
 		}
 		func setup()
 		{
-			self.font = UIFont.messageBearingSmallLightMonospace
+			self.font = UIFont.smallRegularMonospace
 			self.textColor = UIColor(rgb: 0x8D8B8D)
 			self.numberOfLines = 0
 		}

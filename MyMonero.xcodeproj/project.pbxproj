@@ -26,6 +26,8 @@
 		9F22B79B1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */; };
 		9F22B79D1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */; };
 		9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B79E1EFF44B60036B02F /* InlineMessages.swift */; };
+		9F22B7A21F0054000036B02F /* terms_checkbox_checked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */; };
+		9F22B7A31F0054000036B02F /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */; };
 		9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */; };
 		9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */; };
 		9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */; };
@@ -159,6 +161,8 @@
 		9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "highlightableCellBG_disabled@3x.png"; sourceTree = "<group>"; };
 		9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walletColorPicker_selectionIndicator_disabled_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B79E1EFF44B60036B02F /* InlineMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InlineMessages.swift; sourceTree = "<group>"; };
+		9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox_checked@3x.png"; sourceTree = "<group>"; };
+		9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9F24AE191EBA7D3A00841BCB /* MyMonero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyMonero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewCell.swift; sourceTree = "<group>"; };
 		9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCellContentView.swift; sourceTree = "<group>"; };
@@ -540,6 +544,8 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */,
+				9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */,
 				9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */,
 				9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */,
 				9F2BFE751EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png */,
@@ -901,9 +907,11 @@
 				9F8E30441EEDAB9400F89A1D /* wallet-D975E1@3x.png in Resources */,
 				9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */,
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
+				9F22B7A21F0054000036B02F /* terms_checkbox_checked@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
 				9F2BFE821EF08ABA006B2F7D /* highlightableCellBG@3x.png in Resources */,
+				9F22B7A31F0054000036B02F /* terms_checkbox@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
 				9F8E2FF31EE978DF00F89A1D /* icon_tabBar_settings@3x.png in Resources */,
 				9F2BFE871EF08ABA006B2F7D /* pushButtonBG_destructive@3x.png in Resources */,

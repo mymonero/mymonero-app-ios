@@ -198,6 +198,8 @@ class AddWallet_WizardController
 	// Runtime - Imperatives - Steps - Convenience - Advancing steps - Create wallet
 	var walletCreation_metaInfo_walletLabel: String?
 	var walletCreation_metaInfo_color: Wallet.SwatchColor?
+	//
+	var walletCreation_walletInstance: Wallet?
 	func setMetaInfoAndProceedToNextStep(
 		walletLabel: String,
 		color: Wallet.SwatchColor
@@ -207,7 +209,35 @@ class AddWallet_WizardController
 		self.walletCreation_metaInfo_color = color
 		self.proceedToNextStep()
 	}
-
+	func createWalletInstanceAndProceedToNextStep()
+	{
+		WalletsListController.shared.CreateNewWallet_NoBootNoListAdd
+		{ (err_str, walletInstance) in
+			if err_str != nil {
+				assert(false)
+				let alertController = UIAlertController(
+					title: NSLocalizedString("Error", comment: ""),
+					message: NSLocalizedString(
+						"An error occurred while creating your wallet. Please try again or contact us for support.",
+						comment: ""
+					),
+					preferredStyle: .alert
+				)
+				alertController.addAction(
+					UIAlertAction(
+						title: NSLocalizedString("OK", comment: ""),
+						style: .default
+					)
+					{ (result: UIAlertAction) -> Void in
+					}
+				)
+				self.wizard_navigationController.present(alertController, animated: true, completion: nil)
+				return
+			}
+			self.walletCreation_walletInstance = walletInstance
+			self.proceedToNextStep()
+		}
+	}
 	//
 	// Runtime - Delegation
 	func _fromScreen_userPickedCancel()

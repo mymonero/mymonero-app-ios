@@ -91,9 +91,9 @@ extension UIFont
 	{
 		return UIFont(name: "Native-Regular", size: 11)!
 	}
-	static var messageBearingSmallLightMonospace: UIFont
+	static var visualSizeIncreased_smallRegularMonospace: UIFont // a special case
 	{
-		return UIFont(name: "Native-Regular", size: 11)!
+		return UIFont(name: "Native-Regular", size: 12)!
 	}
 	static var smallLightMonospace: UIFont
 	{
