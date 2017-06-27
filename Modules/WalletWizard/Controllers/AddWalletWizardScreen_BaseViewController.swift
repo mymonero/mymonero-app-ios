@@ -32,13 +32,17 @@ class AddWalletWizardScreen_BaseViewController: UICommonComponents.FormViewContr
 				type: .save,
 				target: self,
 				action: #selector(tapped_nextBarButtonItem),
-				title_orNilForDefault: NSLocalizedString("Next", comment: "")
+				title_orNilForDefault: self.new_titleForNavigationBarButtonItem__next()
 			)
 			self.navigationItem.rightBarButtonItem = item
 		}
 	}
 	//
 	// Accessors - Overridable
+	func new_titleForNavigationBarButtonItem__next() -> String
+	{
+		return NSLocalizedString("Next", comment: "")
+	}
 	func wantsRightSideNextBarButtonItem() -> Bool { return true }
 	//
 	// Delegation - View lifecycle
