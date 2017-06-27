@@ -8,13 +8,15 @@
 
 import UIKit
 //
+struct CreateWallet_InformOfMnemonic {}
+//
 class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseViewController
 {
 	//
 	// Properties
 	let headerLabel = UICommonComponents.ReadableInfoHeaderLabel()
 	let descriptionLabel = UICommonComponents.ReadableInfoDescriptionLabel()
-	let mnemonicTextDisplayView = MnemonicTextDisplayView()
+	let mnemonicTextDisplayView = CreateWallet_InformOfMnemonic.MnemonicTextDisplayView()
 	let messageView = UICommonComponents.InlineMessageView(mode: .noCloseButton)
 	//
 	// Lifecycle - Init
@@ -143,118 +145,121 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 	}
 }
 //
-class MnemonicTextDisplayLabel: UILabel
+extension CreateWallet_InformOfMnemonic
 {
-	//
-	// Accessors - Overrides - UIResponder
-	override var canBecomeFirstResponder: Bool {
-		return true
-	}
-	//
-	// Accessors - Overrides
-	override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool
+	class MnemonicTextDisplayLabel: UILabel
 	{
-		return action == #selector(copy(_:))
-	}
-	//
-	// Imperatives - Overrides - UIResponderStandardEditActions
-	override func copy(_ sender: Any?)
-	{
-		UIPasteboard.general.string = self.text
-	}
-}
-//
-class MnemonicTextDisplayView: UIView
-{
-	//
-	// Properties
-	let label = MnemonicTextDisplayLabel()
-	let image = UIImage(named: "mnemonicTextDisplayView_bg_stretchable")!.stretchableImage(
-		withLeftCapWidth: 6,
-		topCapHeight: 6
-	)
-	//
-	// Lifecycle - Init
-	init()
-	{
-		super.init(frame: .zero)
-		self.setup()
-	}
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	func setup()
-	{
-		do {
-			self.backgroundColor = .clear
-		}
-		do {
-			let view = self.label
-			view.isUserInteractionEnabled = true
-			view.numberOfLines = 0
-			self.addSubview(view)
-			//
-			let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(did_longPress(_:)))
-			gestureRecognizer.minimumPressDuration = 0.3
-			view.addGestureRecognizer(gestureRecognizer)
-		}
-	}
-	//
-	// Imperatives - Overrides
-	override func draw(_ rect: CGRect)
-	{
-		self.image.draw(in: rect)
-		super.draw(rect)
-	}
-	//
-	// Imperatives - Layout
-	func layOut(atX x: CGFloat, y: CGFloat, width: CGFloat)
-	{
-		let padding_h: CGFloat = 22 //24 // b/c 24 doesn't give enough h room to break well
-		let padding_y: CGFloat = 36
-		self.label.frame = CGRect(x: 0, y: 0, width: width - 2*padding_h, height: 0)
-		self.label.sizeToFit()
-		self.label.frame = CGRect(x: padding_h, y: padding_y, width: self.label.frame.size.width, height: self.label.frame.size.height)
 		//
-		self.frame = CGRect(x: x, y: y, width: width, height: self.label.frame.size.height + 2*padding_y)
+		// Accessors - Overrides - UIResponder
+		override var canBecomeFirstResponder: Bool {
+			return true
+		}
+		//
+		// Accessors - Overrides
+		override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool
+		{
+			return action == #selector(copy(_:))
+		}
+		//
+		// Imperatives - Overrides - UIResponderStandardEditActions
+		override func copy(_ sender: Any?)
+		{
+			UIPasteboard.general.string = self.text
+		}
 	}
 	//
-	// Imperatives - State
-	func set(text: String)
+	class MnemonicTextDisplayView: UIView
 	{
-		let paragraphStyle = NSMutableParagraphStyle()
-		do {
-			paragraphStyle.lineSpacing = 7
-		}
-		let attributedString = NSAttributedString(
-			string: text,
-			attributes:
-			[
-				NSForegroundColorAttributeName: UIColor(rgb: 0x9E9C9E),
-				NSFontAttributeName: UIFont.middlingRegularMonospace,
-				NSParagraphStyleAttributeName: paragraphStyle
-			]
+		//
+		// Properties
+		let label = CreateWallet_InformOfMnemonic.MnemonicTextDisplayLabel()
+		let image = UIImage(named: "mnemonicDisplayView_bg_stretchable")!.stretchableImage(
+			withLeftCapWidth: 6,
+			topCapHeight: 6
 		)
-		self.label.attributedText = attributedString
-	}
-	//
-	// Delegation - Interactions
-	func did_longPress(_ recognizer: UIGestureRecognizer)
-	{
-		guard recognizer.state == .began else { // instead of .recognized - so user knows asap that it's long-pressable
-			return
+		//
+		// Lifecycle - Init
+		init()
+		{
+			super.init(frame: .zero)
+			self.setup()
 		}
-		guard let recognizerView = recognizer.view else {
-			return
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
 		}
-		guard let recognizerSuperView = recognizerView.superview else {
-			return
+		func setup()
+		{
+			do {
+				self.backgroundColor = .clear
+			}
+			do {
+				let view = self.label
+				view.isUserInteractionEnabled = true
+				view.numberOfLines = 0
+				self.addSubview(view)
+				//
+				let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(did_longPress(_:)))
+				gestureRecognizer.minimumPressDuration = 0.3
+				view.addGestureRecognizer(gestureRecognizer)
+			}
 		}
-		guard recognizerView.becomeFirstResponder() else {
-			return
+		//
+		// Imperatives - Overrides
+		override func draw(_ rect: CGRect)
+		{
+			self.image.draw(in: rect)
+			super.draw(rect)
 		}
-		let menuController = UIMenuController.shared
-		menuController.setTargetRect(recognizerView.frame, in: recognizerSuperView)
-		menuController.setMenuVisible(true, animated:true)
+		//
+		// Imperatives - Layout
+		func layOut(atX x: CGFloat, y: CGFloat, width: CGFloat)
+		{
+			let padding_h: CGFloat = 22 //24 // b/c 24 doesn't give enough h room to break well
+			let padding_y: CGFloat = 36
+			self.label.frame = CGRect(x: 0, y: 0, width: width - 2*padding_h, height: 0)
+			self.label.sizeToFit()
+			self.label.frame = CGRect(x: padding_h, y: padding_y, width: self.label.frame.size.width, height: self.label.frame.size.height)
+			//
+			self.frame = CGRect(x: x, y: y, width: width, height: self.label.frame.size.height + 2*padding_y)
+		}
+		//
+		// Imperatives - State
+		func set(text: String)
+		{
+			let paragraphStyle = NSMutableParagraphStyle()
+			do {
+				paragraphStyle.lineSpacing = 7
+			}
+			let attributedString = NSAttributedString(
+				string: text,
+				attributes:
+				[
+					NSForegroundColorAttributeName: UIColor(rgb: 0x9E9C9E),
+					NSFontAttributeName: UIFont.middlingRegularMonospace,
+					NSParagraphStyleAttributeName: paragraphStyle
+				]
+			)
+			self.label.attributedText = attributedString
+		}
+		//
+		// Delegation - Interactions
+		func did_longPress(_ recognizer: UIGestureRecognizer)
+		{
+			guard recognizer.state == .began else { // instead of .recognized - so user knows asap that it's long-pressable
+				return
+			}
+			guard let recognizerView = recognizer.view else {
+				return
+			}
+			guard let recognizerSuperView = recognizerView.superview else {
+				return
+			}
+			guard recognizerView.becomeFirstResponder() else {
+				return
+			}
+			let menuController = UIMenuController.shared
+			menuController.setTargetRect(recognizerView.frame, in: recognizerSuperView)
+			menuController.setMenuVisible(true, animated:true)
+		}
 	}
 }

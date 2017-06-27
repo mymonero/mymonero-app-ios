@@ -29,7 +29,7 @@
 		9F22B7A21F0054000036B02F /* terms_checkbox_checked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */; };
 		9F22B7A31F0054000036B02F /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */; };
 		9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */; };
-		9F22B7A81F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A71F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png */; };
+		9F22B7A81F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */; };
 		9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A91F01BAD20036B02F /* CopyButton.swift */; };
 		9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */; };
 		9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */; };
@@ -167,7 +167,7 @@
 		9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox_checked@3x.png"; sourceTree = "<group>"; };
 		9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadableInfoLabels.swift; sourceTree = "<group>"; };
-		9F22B7A71F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicTextDisplayView_bg_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicDisplayView_bg_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B7A91F01BAD20036B02F /* CopyButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
 		9F24AE191EBA7D3A00841BCB /* MyMonero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyMonero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewCell.swift; sourceTree = "<group>"; };
@@ -346,7 +346,7 @@
 		9F22B7A61F006E4B0036B02F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9F22B7A71F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png */,
+				9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -933,7 +933,7 @@
 				9F8E2FF31EE978DF00F89A1D /* icon_tabBar_settings@3x.png in Resources */,
 				9F2BFE871EF08ABA006B2F7D /* pushButtonBG_destructive@3x.png in Resources */,
 				9F8E2FEB1EE978B700F89A1D /* actionButton_iconImage__chooseFile@3x.png in Resources */,
-				9F22B7A81F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png in Resources */,
+				9F22B7A81F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png in Resources */,
 				9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */,
 				9F2BFE881EF08ABA006B2F7D /* pushButtonBG_disabled@3x.png in Resources */,
 				9F8E2FEF1EE978B700F89A1D /* qrDropzoneIcon@3x.png in Resources */,
