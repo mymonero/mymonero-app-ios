@@ -46,7 +46,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	}
 	override func setup_navigation()
 	{
-		self.navigationItem.title = "Enter \(PasswordController.shared.passwordType.capitalized_humanReadableString)"
+		self.navigationItem.title = NSLocalizedString("Enter \(PasswordController.shared.passwordType.capitalized_humanReadableString)", comment: "")
 		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
 		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
 	}

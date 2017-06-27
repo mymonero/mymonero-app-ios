@@ -85,7 +85,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 	{
 		super.setup_navigation()
 		//
-		self.navigationItem.title = "New Wallet"
+		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
 		// must implement 'back' btn ourselves
 		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 			type: .back,

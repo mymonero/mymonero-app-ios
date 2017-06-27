@@ -109,7 +109,7 @@ extension UIFont
 	}
 	static var middlingRegularMonospace: UIFont
 	{
-		return UIFont(name: "Native", size: 13)!
+		return UIFont(name: "Native-Regular", size: 13)!
 	}
 	static var middlingBoldMonospace: UIFont
 	{
@@ -124,6 +124,10 @@ extension UIFont
 	static var smallMediumSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightMedium)
+	}
+	static var smallBoldSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightBold)
 	}
 	static var middlingBoldSansSerif: UIFont
 	{

@@ -15,7 +15,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	override func setup_navigation()
 	{
 		super.setup_navigation()
-		self.navigationItem.title = "New Wallet"
+		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
 		// must implement 'back' btn ourselves
 		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 			type: .back,

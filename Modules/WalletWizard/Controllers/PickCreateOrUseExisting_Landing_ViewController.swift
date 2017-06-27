@@ -20,7 +20,7 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 	override func setup_navigation()
 	{
 		super.setup_navigation()
-		self.navigationItem.title = "Add Wallet"
+		self.navigationItem.title = NSLocalizedString("Add Wallet", comment: "")
 		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 			type: .cancel,
 			target: self,

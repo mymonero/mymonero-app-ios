@@ -30,6 +30,7 @@
 		9F22B7A31F0054000036B02F /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */; };
 		9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */; };
 		9F22B7A81F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A71F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png */; };
+		9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A91F01BAD20036B02F /* CopyButton.swift */; };
 		9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */; };
 		9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */; };
 		9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */; };
@@ -167,6 +168,7 @@
 		9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadableInfoLabels.swift; sourceTree = "<group>"; };
 		9F22B7A71F006E4B0036B02F /* mnemonicTextDisplayView_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicTextDisplayView_bg_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F22B7A91F01BAD20036B02F /* CopyButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
 		9F24AE191EBA7D3A00841BCB /* MyMonero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyMonero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewCell.swift; sourceTree = "<group>"; };
 		9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCellContentView.swift; sourceTree = "<group>"; };
@@ -336,6 +338,7 @@
 				9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */,
 				9F22B79E1EFF44B60036B02F /* InlineMessages.swift */,
 				9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */,
+				9F22B7A91F01BAD20036B02F /* CopyButton.swift */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -1069,6 +1072,7 @@
 				9F2BFE741EEEDEE3006B2F7D /* HighlightableCells.swift in Sources */,
 				9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */,
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
+				9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */,
 				9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
 				9F2BFED61EF37CED006B2F7D /* FundsRequestsListViewController.swift in Sources */,

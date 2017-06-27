@@ -19,7 +19,7 @@ class CreateWallet_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseV
 	override func setup_navigation()
 	{
 		super.setup_navigation()
-		self.navigationItem.title = "New Wallet"
+		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
 		if self.wizardController.current_wizardTaskMode == .firstTime_useExisting { // only if it is, add cancel btn
 			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 				type: .cancel,

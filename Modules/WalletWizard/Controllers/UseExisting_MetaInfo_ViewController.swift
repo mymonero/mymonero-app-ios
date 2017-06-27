@@ -168,7 +168,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	override func setup_navigation()
 	{
 		super.setup_navigation()
-		self.navigationItem.title = "Log Into Your Wallet"
+		self.navigationItem.title = NSLocalizedString("Log Into Your Wallet", comment: "")
 		if self.wizardController.current_wizardTaskMode == .firstTime_useExisting { // only if it is, add cancel btn
 			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 				type: .cancel,
