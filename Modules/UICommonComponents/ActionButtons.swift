@@ -28,9 +28,17 @@ extension UICommonComponents
 		static var bottomMargin: CGFloat = 8
 		static var wholeButtonsContainerHeight: CGFloat = ActionButton.topMargin + ActionButton.buttonHeight + ActionButton.bottomMargin
 		//
+		var iconImage: UIImage?
+		//
 		init(pushButtonType: PushButtonType, isLeftOfTwoButtons: Bool)
 		{
 			self.isLeftOfTwoButtons = isLeftOfTwoButtons
+			super.init(pushButtonType: pushButtonType)
+		}
+		init(pushButtonType: PushButtonType, isLeftOfTwoButtons: Bool, iconImage: UIImage)
+		{
+			self.isLeftOfTwoButtons = isLeftOfTwoButtons
+			self.iconImage = iconImage
 			super.init(pushButtonType: pushButtonType)
 		}
 		required init?(coder aDecoder: NSCoder) {
@@ -39,6 +47,11 @@ extension UICommonComponents
 		override func setup()
 		{
 			super.setup()
+			if self.iconImage != nil {
+				self.setImage(iconImage, for: .normal)
+				self.imageEdgeInsets = UIEdgeInsetsMake(0, 17, 0, 0)
+				self.contentHorizontalAlignment = .left
+			}
 		}
 		//
 		func givenSuperview_layOut(atY y: CGFloat, withMarginH margin_h: CGFloat)
@@ -52,6 +65,18 @@ extension UICommonComponents
 				width: width,
 				height: ActionButton.buttonHeight
 			)
+		}
+		//
+		// Accessors - Overrides - Centering title with an image
+		override func titleRect(forContentRect contentRect: CGRect) -> CGRect
+		{
+			let titleRect = super.titleRect(forContentRect: contentRect)
+			if self.iconImage == nil {
+				return titleRect 
+			}
+			let imageSize = self.currentImage?.size ?? .zero
+			let availableWidth = contentRect.width - self.imageEdgeInsets.right - imageSize.width - titleRect.width
+			return titleRect.offsetBy(dx: round(availableWidth / 2), dy: 0)
 		}
 	}
 }

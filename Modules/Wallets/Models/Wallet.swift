@@ -54,8 +54,6 @@ class Wallet: PersistableObject
 		case yellow = "#EACF12"
 		case blue = "#00C6FF"
 		//
-		
-		//
 		static func allOrdered() -> [SwatchColor]
 		{
 			let order: [SwatchColor] =

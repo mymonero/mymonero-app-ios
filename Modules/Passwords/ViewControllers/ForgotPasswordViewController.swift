@@ -13,7 +13,6 @@ class ForgotPasswordViewController: UIViewController
 	var emptyStateView: UICommonComponents.EmptyStateView!
 	var nevermind_actionButtonView: UICommonComponents.ActionButton!
 	var deleteEverything_actionButtonView: UICommonComponents.ActionButton!
-	
 	//
 	init()
 	{

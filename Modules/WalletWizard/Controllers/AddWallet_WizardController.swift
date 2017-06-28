@@ -95,18 +95,7 @@ class AddWallet_WizardController
 		let viewController_Type = self.current_wizardTaskMode!.stepScreenViewControllerType(
 			forStepIdx: self.current_wizardTaskMode_stepIdx!
 		)
-		let viewController = viewController_Type.init(
-			wizardController: self
-			// TODO
-		)
-//		let options =
-//		{
-//			wizardController: self,
-//			wizardController_initial_wizardTaskModeName		: self.initial_wizardTaskModeName,
-//			wizardController_current_wizardTaskModeName		: self.current_wizardTaskModeName,
-//			wizardController_current_wizardTaskMode_stepName: self.current_wizardTaskMode_stepName,
-//			wizardController_current_wizardTaskMode_stepIdx	: self.current_wizardTaskMode_stepIdx
-//		}
+		let viewController = viewController_Type.init(wizardController: self)
 		//
 		return viewController
 	}
@@ -209,10 +198,10 @@ class AddWallet_WizardController
 		self.walletCreation_metaInfo_color = color
 		self.proceedToNextStep()
 	}
-	func createWalletInstanceAndProceedToNextStep()
+	private func __generateWallet(_ fn: @escaping ((Void) -> Void))
 	{
 		WalletsListController.shared.CreateNewWallet_NoBootNoListAdd
-		{ (err_str, walletInstance) in
+		{ [unowned self] (err_str, walletInstance) in
 			if err_str != nil {
 				assert(false)
 				let alertController = UIAlertController(
@@ -235,7 +224,22 @@ class AddWallet_WizardController
 				return
 			}
 			self.walletCreation_walletInstance = walletInstance
+			fn()
+		}
+	}
+	func createWalletInstanceAndProceedToNextStep()
+	{
+		self.__generateWallet
+		{ [unowned self] in
 			self.proceedToNextStep()
+		}
+	}
+	func regenerateWalletAndPopToInformOfMnemonicScreen()
+	{
+		// TODO: maybe assert that this is being called from the correct screen
+		self.__generateWallet
+		{ [unowned self] in
+			self.wizard_navigationController.popViewController(animated: true)
 		}
 	}
 	//

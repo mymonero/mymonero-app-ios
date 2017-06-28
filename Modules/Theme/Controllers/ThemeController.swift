@@ -87,10 +87,6 @@ extension UIFont
 {
 	//
 	// Monospace - "Native"
-	static var smallRegularMonospace: UIFont
-	{
-		return UIFont(name: "Native-Regular", size: 11)!
-	}
 	static var visualSizeIncreased_smallRegularMonospace: UIFont // a special case
 	{
 		return UIFont(name: "Native-Regular", size: 12)!
@@ -99,7 +95,7 @@ extension UIFont
 	{
 		return UIFont(name: "Native-Light", size: 11)!
 	}
-	static var smallPillLightMonospace: UIFont
+	static var smallRegularMonospace: UIFont
 	{
 		return UIFont(name: "Native-Regular", size: 11)!
 	}

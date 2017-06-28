@@ -26,8 +26,6 @@
 		9F22B79B1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */; };
 		9F22B79D1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */; };
 		9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B79E1EFF44B60036B02F /* InlineMessages.swift */; };
-		9F22B7A21F0054000036B02F /* terms_checkbox_checked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */; };
-		9F22B7A31F0054000036B02F /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */; };
 		9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */; };
 		9F22B7A81F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */; };
 		9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A91F01BAD20036B02F /* CopyButton.swift */; };
@@ -137,6 +135,12 @@
 		9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC366E91ECFA0F7006CE743 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */; };
+		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
+		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
+		9FCE96C91F04130200A5837D /* terms_checkbox_checked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */; };
+		9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */; };
+		9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */; };
+		9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
@@ -164,8 +168,6 @@
 		9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "highlightableCellBG_disabled@3x.png"; sourceTree = "<group>"; };
 		9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walletColorPicker_selectionIndicator_disabled_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B79E1EFF44B60036B02F /* InlineMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InlineMessages.swift; sourceTree = "<group>"; };
-		9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox_checked@3x.png"; sourceTree = "<group>"; };
-		9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadableInfoLabels.swift; sourceTree = "<group>"; };
 		9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicDisplayView_bg_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B7A91F01BAD20036B02F /* CopyButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
@@ -277,6 +279,12 @@
 		9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-F97777@3x.png"; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC366E81ECFA0F7006CE743 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
+		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
+		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
+		9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox_checked@3x.png"; sourceTree = "<group>"; };
+		9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
+		9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__startOver@3x.png"; sourceTree = "<group>"; };
+		9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__tryAgain@3x.png"; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
@@ -346,6 +354,10 @@
 		9F22B7A61F006E4B0036B02F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */,
+				9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */,
+				9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */,
+				9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */,
 				9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */,
 			);
 			path = Resources;
@@ -443,6 +455,7 @@
 			children = (
 				9F7ADAA61EBD2B420073C2BB /* App */,
 				9F8E2F541EE4908700F89A1D /* DebugUtils */,
+				9FCE96C01F03021200A5837D /* SwiftExtensions */,
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
 				9FEC04F61ECFD8D3009256BD /* Persistence */,
@@ -561,8 +574,7 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9F22B7A01F0054000036B02F /* terms_checkbox_checked@3x.png */,
-				9F22B7A11F0054000036B02F /* terms_checkbox@3x.png */,
+				9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */,
 				9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */,
 				9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */,
 				9F2BFE751EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png */,
@@ -807,6 +819,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		9FCE96C01F03021200A5837D /* SwiftExtensions */ = {
+			isa = PBXGroup;
+			children = (
+				9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */,
+			);
+			path = SwiftExtensions;
+			sourceTree = "<group>";
+		};
 		9FEC04EC1ECFD8C4009256BD /* Lists */ = {
 			isa = PBXGroup;
 			children = (
@@ -924,11 +944,10 @@
 				9F8E30441EEDAB9400F89A1D /* wallet-D975E1@3x.png in Resources */,
 				9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */,
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
-				9F22B7A21F0054000036B02F /* terms_checkbox_checked@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
+				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,
 				9F2BFE821EF08ABA006B2F7D /* highlightableCellBG@3x.png in Resources */,
-				9F22B7A31F0054000036B02F /* terms_checkbox@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
 				9F8E2FF31EE978DF00F89A1D /* icon_tabBar_settings@3x.png in Resources */,
 				9F2BFE871EF08ABA006B2F7D /* pushButtonBG_destructive@3x.png in Resources */,
@@ -940,6 +959,7 @@
 				9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */,
 				9F8E303D1EEDAB9400F89A1D /* detectedCheckmark@3x.png in Resources */,
 				9F2BFEC81EF0A4FF006B2F7D /* Assets.xcassets in Resources */,
+				9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */,
 				9F8E2F991EE8837300F89A1D /* icon_tabBar_wallets@3x.png in Resources */,
 				9F8E303B1EEDAB9400F89A1D /* backButtonIcon@3x.png in Resources */,
 				9F8E30431EEDAB9400F89A1D /* wallet-CFCECF@3x.png in Resources */,
@@ -959,12 +979,15 @@
 				9F8E2FFB1EE978E800F89A1D /* actionButton_iconImage__send@3x.png in Resources */,
 				9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */,
 				9F8E30401EEDAB9400F89A1D /* wallet-00C6FF@3x.png in Resources */,
+				9FCE96C91F04130200A5837D /* terms_checkbox_checked@3x.png in Resources */,
 				9F8E30021EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png in Resources */,
+				9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */,
 				9F8E2FE01EE8A76200F89A1D /* tabBarBGColorImage@3x.png in Resources */,
 				9F22B7991EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png in Resources */,
 				9F22B79B1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png in Resources */,
 				9F2BFE891EF08ABA006B2F7D /* pushButtonBG_utility_highlighted@3x.png in Resources */,
 				9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */,
+				9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1094,6 +1117,7 @@
 				9F8E30271EED7D7800F89A1D /* EnterExistingPasswordViewController.swift in Sources */,
 				9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */,
 				9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */,
+				9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */,
 				9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */,
 				9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,

@@ -307,6 +307,11 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - View
+		override func viewWillAppear(_ animated: Bool)
+		{
+			super.viewWillAppear(animated)
+			self.set_isFormSubmittable_needsUpdate()
+		}
 		var hasAppearedBefore = false
 		override func viewDidAppear(_ animated: Bool)
 		{

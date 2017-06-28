@@ -161,8 +161,6 @@ extension UICommonComponents
 					idxInRow = 0 // return to origin on next row
 					//
 					origin = new_origin() // re-derive origin
-				} else {
-					idxInRow += 1 // or advance on same row
 				}
 				let frame = CGRect(
 					x: origin.x,
@@ -171,6 +169,9 @@ extension UICommonComponents
 					height: cellSize_side_v
 				)
 				optionView.frame = frame
+				//
+				// now tentatively advance to next column on same row (for next iteration calculation of new_origin)
+				idxInRow += 1
 			}
 		}
 		//

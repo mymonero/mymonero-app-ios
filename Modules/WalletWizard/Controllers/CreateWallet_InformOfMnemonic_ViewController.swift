@@ -85,7 +85,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let topMargin: CGFloat = 41
+		let topMargin: CGFloat = 36
 		let headers_x: CGFloat = 4 // would normally use content_x, but that's too large to fit content on small screens
 		let headers_w = self.view.frame.size.width - 2*headers_x
 		self.headerLabel.frame = CGRect(x: 0, y: 0, width: headers_w, height: 0)
@@ -214,7 +214,7 @@ extension CreateWallet_InformOfMnemonic
 		// Imperatives - Layout
 		func layOut(atX x: CGFloat, y: CGFloat, width: CGFloat)
 		{
-			let padding_h: CGFloat = 22 //24 // b/c 24 doesn't give enough h room to break well
+			let padding_h: CGFloat = 22
 			let padding_y: CGFloat = 36
 			self.label.frame = CGRect(x: 0, y: 0, width: width - 2*padding_h, height: 0)
 			self.label.sizeToFit()
