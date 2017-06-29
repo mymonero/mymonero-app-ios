@@ -16,6 +16,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	//
 	override func setup_views()
 	{
+		super.setup_views()
 		do {
 			let view = UICommonComponents.FormInputField(
 				placeholder: NSLocalizedString("So we know it's you", comment: "")

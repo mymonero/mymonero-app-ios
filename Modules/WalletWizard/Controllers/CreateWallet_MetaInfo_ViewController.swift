@@ -44,6 +44,7 @@ class CreateWallet_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseV
 		assert(false, "Unexpected")
 		return nil
 	}
+	override func new_wantsInlineMessageViewForValidationMessages() -> Bool { return false }
 	override func new_isFormSubmittable() -> Bool
 	{
 //		if self.isSubmitting == true {

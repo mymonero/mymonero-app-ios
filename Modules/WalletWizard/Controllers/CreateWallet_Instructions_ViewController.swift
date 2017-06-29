@@ -136,6 +136,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 	}
 	//
 	// Accessors - Overrides
+	override func new_wantsInlineMessageViewForValidationMessages() -> Bool { return false }
 	override func new_isFormSubmittable() -> Bool
 	{
 		guard self.agreeCheckboxButton.isSelected else {

@@ -14,7 +14,6 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 {
 	//
 	// Properties
-	var messageView: UICommonComponents.InlineMessageView!
 	let headerLabel = UICommonComponents.ReadableInfoHeaderLabel()
 	let descriptionLabel = UICommonComponents.ReadableInfoDescriptionLabel()
 	var selectedWordsView: CreateWallet_ConfirmMnemonic.SelectedWordsView!
@@ -42,17 +41,6 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	override func setup_views()
 	{
 		super.setup_views()
-		do {
-			let view = UICommonComponents.InlineMessageView(
-				mode: .withCloseButton,
-				didHide:
-				{ [unowned self] in
-					self.view.setNeedsLayout()
-				}
-			)
-			self.messageView = view
-			self.view.addSubview(view)
-		}
 		do {
 			let view = self.headerLabel
 			view.text = NSLocalizedString("Verify your mnemonic", comment: "")
@@ -131,16 +119,14 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	var content_x: CGFloat { return self.margin_h }
 	var content_w: CGFloat { return (self.view.frame.size.width - 2*content_x) }
 	var topPadding: CGFloat { return 36 }
-	var marginAboveValidationMessageView: CGFloat { return 13 }
-	var minimumMarginBelowValidationMessageView: CGFloat { return self.marginAboveValidationMessageView }
-	var yOffsetForViewsBelowValidationMessageView: CGFloat
-	{
-		if self.messageView.isHidden {
+	override var yOffsetForViewsBelowValidationMessageView: CGFloat
+	{ // overridden to get topPadding and max() behavior
+		if self.messageView!.isHidden {
 			return self.topPadding
 		}
 		return max(
 			self.topPadding,
-			(self.marginAboveValidationMessageView + self.messageView.frame.size.height + self.minimumMarginBelowValidationMessageView)
+			(self.inlineMessageValidationView_topMargin + self.messageView!.frame.size.height + self.inlineMessageValidationView_bottomMargin)
 		)
 	}
 	//
@@ -164,21 +150,6 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			return false
 		}
 		return true
-	}
-	//
-	// Imperatives - Overrides - Validation
-	override func setValidationMessage(_ message: String)
-	{
-		let view = self.messageView! // this ! is not necessary according to the var's optionality but there seems to be a compiler bug
-		view.set(text: message)
-		self.layOut_messageView() // this can be slightly redundant, but it is called here so we lay out before showing. maybe rework this so it doesn't require laying out twice and checking visibility. maybe a flag saying "ought to be showing". maybe.
-		view.show()
-		self.view.setNeedsLayout() // so views (below messageView) get re-laid-out
-	}
-	override func clearValidationMessage()
-	{
-		self.messageView.clearAndHide() // as you can see, no ! required here. compiler bug?
-		// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
 	}
 	//
 	// Imperatives - Overrides - Submission
@@ -303,16 +274,6 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 		self.set_isFormSubmittable_needsUpdate()
 		self.view.setNeedsLayout()
 	}
-	
-	//
-	// Imperatives - Layout
-	func layOut_messageView()
-	{
-		let x = CGFloat.visual__form_input_margin_x // use visual__ instead so we don't get extra img padding
-		let y: CGFloat = 13
-		let w = self.content_w
-		self.messageView.layOut(atX: x, y: y, width: w)
-	}
 	//
 	// Delegation - Overrides - Layout
 	override func viewDidLayoutSubviews()
@@ -322,9 +283,6 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 		let content_x = self.margin_h
 		let content_w = self.content_w
 		//
-		if self.messageView.shouldPerformLayOut { // i.e. is visible
-			self.layOut_messageView()
-		}
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		let headers_x: CGFloat = 4 // would normally use content_x, but that's too large to fit content on small screens
 		let headers_w = self.view.frame.size.width - 2*headers_x

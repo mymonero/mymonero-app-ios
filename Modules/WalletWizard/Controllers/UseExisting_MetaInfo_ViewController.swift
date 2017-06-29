@@ -560,7 +560,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		self.layOut_walletLabelAndSwatchFields(atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height)
 		//
-		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.topPadding)
+		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.inlineMessageValidationView_bottomMargin)
 	}
 	override func viewDidAppear(_ animated: Bool)
 	{

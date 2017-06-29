@@ -17,7 +17,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 	let headerLabel = UICommonComponents.ReadableInfoHeaderLabel()
 	let descriptionLabel = UICommonComponents.ReadableInfoDescriptionLabel()
 	let mnemonicTextDisplayView = CreateWallet_InformOfMnemonic.MnemonicTextDisplayView()
-	let messageView = UICommonComponents.InlineMessageView(mode: .noCloseButton)
+	let note_messageView = UICommonComponents.InlineMessageView(mode: .noCloseButton)
 	//
 	// Lifecycle - Init
 	override func setup_navigation()
@@ -54,7 +54,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 			self.view.addSubview(view)
 		}
 		do {
-			let view = self.messageView
+			let view = self.note_messageView
 			view.set(text: NSLocalizedString("NOTE: This is the only way to access your wallet if you switch devices, use another Monero wallet app, or lose your data.", comment: ""))
 			view.show()
 			self.view.addSubview(view)
@@ -62,6 +62,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 	}
 	//
 	// Accessors - Overrides
+	override func new_wantsInlineMessageViewForValidationMessages() -> Bool { return false }
 	override func new_isFormSubmittable() -> Bool
 	{
 		return true
@@ -114,7 +115,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 			width: content_w
 		)
 		//
-		self.messageView.layOut(atX: content_x, y: self.mnemonicTextDisplayView.frame.origin.y + self.mnemonicTextDisplayView.frame.size.height + 24, width: content_w)
+		self.note_messageView.layOut(atX: content_x, y: self.mnemonicTextDisplayView.frame.origin.y + self.mnemonicTextDisplayView.frame.size.height + 24, width: content_w)
 		//
 		self.formContentSizeDidChange(withBottomView: self.mnemonicTextDisplayView, bottomPadding: 18)
 	}

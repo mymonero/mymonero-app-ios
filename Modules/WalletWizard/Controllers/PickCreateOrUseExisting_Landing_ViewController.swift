@@ -9,7 +9,7 @@
 import UIKit
 
 class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_BaseViewController
-{
+{ // NOTE: this does not really need to be a FormViewController
 	//
 	// Properties - Views
 	var emptyStateView: UICommonComponents.EmptyStateView!
@@ -55,6 +55,7 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 	}
 	//
 	// Accessors - Overrides
+	override func new_wantsInlineMessageViewForValidationMessages() -> Bool { return false }
 	override func wantsRightSideNextBarButtonItem() -> Bool { return false }
 	//
 	// Delegation - Internal - Overrides

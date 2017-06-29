@@ -38,6 +38,7 @@ extension UICommonComponents
 	{
 		//
 		// Properties - Cached
+		var messageView: UICommonComponents.InlineMessageView?
 		//
 		// Properties - Derived
 		var scrollView: UIScrollView { return self.view as! UIScrollView }
@@ -71,6 +72,17 @@ extension UICommonComponents
 			do {
 				let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
 				self.view.addGestureRecognizer(tapGestureRecognizer)
+			}
+			if self.new_wantsInlineMessageViewForValidationMessages() {
+				let view = UICommonComponents.InlineMessageView(
+					mode: .withCloseButton,
+					didHide:
+					{ [unowned self] in
+						self.view.setNeedsLayout()
+					}
+				)
+				self.messageView = view
+				self.view.addSubview(view)
 			}
 		}
 		func setup_navigation()
@@ -117,6 +129,34 @@ extension UICommonComponents
 				name: Notification.Name.UIKeyboardWillHide,
 				object: nil
 			)
+		}
+		//
+		// Runtime - Accessors - Form components configuration
+		func new_wantsInlineMessageViewForValidationMessages() -> Bool
+		{ // overridable
+			return true
+		}
+		//
+		// Accessors - Lookups/Derived - Layout metrics
+		var inlineMessageValidationView_topMargin: CGFloat
+		{
+			return 13
+		}
+		var inlineMessageValidationView_bottomMargin: CGFloat
+		{
+			return 13
+		}
+		var yOffsetForViewsBelowValidationMessageView: CGFloat
+		{
+			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
+			let topMargin = self.inlineMessageValidationView_topMargin
+			if self.messageView!.isHidden {
+				return topMargin
+			}
+			let bottomMargin = self.inlineMessageValidationView_bottomMargin
+			let y = topMargin + self.messageView!.frame.size.height + bottomMargin
+			//
+			return y
 		}
 		//
 		// Runtime - Accessors - State - Overridable
@@ -177,11 +217,33 @@ extension UICommonComponents
 		// Runtime - Imperatives - Convenience/Overridable - Validation error
 		func setValidationMessage(_ message: String)
 		{
-			assert(false, "override \(#function)")
+			if self.new_wantsInlineMessageViewForValidationMessages() == false {
+				assert(false, "override \(#function)")
+				return
+			}
+			let view = self.messageView! // this ! is not necessary according to the var's optionality but there seems to be a compiler bug
+			view.set(text: message)
+			self.layOut_messageView() // this can be slightly redundant, but it is called here so we lay out before showing. maybe rework this so it doesn't require laying out twice and checking visibility. maybe a flag saying "ought to be showing". maybe.
+			view.show()
+			self.view.setNeedsLayout() // so views (below messageView) get re-laid-out
 		}
 		func clearValidationMessage()
 		{
-			assert(false, "override \(#function)")
+			if self.new_wantsInlineMessageViewForValidationMessages() == false {
+				assert(false, "override \(#function)")
+				return
+			}
+			self.messageView!.clearAndHide() // as you can see, no ! required here. compiler bug?
+			// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
+		}
+		//
+		// Imperatives - Internal - Layout
+		func layOut_messageView()
+		{
+			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
+			let x = CGFloat.visual__form_input_margin_x // use visual__ instead so we don't get extra img padding
+			let w = self.new__textField_w
+			self.messageView!.layOut(atX: x, y: self.inlineMessageValidationView_topMargin, width: w)
 		}
 		//
 		// Runtime - Imperatives - Scrolling
@@ -220,6 +282,17 @@ extension UICommonComponents
 			{ [unowned self] in
 				self.scrollView.contentOffset = CGPoint(x: 0, y: contentOffset_y)
 			})
+		}
+		//
+		// Delegation - View
+		override func viewDidLayoutSubviews()
+		{
+			super.viewDidLayoutSubviews()
+			if self.new_wantsInlineMessageViewForValidationMessages() {
+				if self.messageView!.shouldPerformLayOut { // i.e. is visible
+					self.layOut_messageView()
+				}
+			}
 		}
 		//
 		// Delegation - Scrollview
