@@ -530,7 +530,7 @@ extension UICommonComponents
 				let view = UILabel(frame: .zero)
 				view.numberOfLines = 0 // to fix line wrapping bug
 				view.textColor = UIColor(rgb: 0x6B696B)
-				view.font = UIFont.middlingLightMonospace
+				view.font = UIFont.middlingRegularMonospace// LightMonospace - too light
 				view.text = placeholder
 				self.addSubview(view)
 				self.placeholderLabel = view
@@ -579,6 +579,7 @@ extension UICommonComponents
 	class FormInputField: UITextField
 	{
 		var validationErrorMessageLabel: FormFieldAccessoryMessageLabel?
+		var init_placeholder: String?
 		//
 		init(placeholder: String?)
 		{
@@ -588,16 +589,8 @@ extension UICommonComponents
 				width: CGFloat(0),
 				height: CGFloat(37)
 			)
+			self.init_placeholder = placeholder
 			super.init(frame: frame)
-			if placeholder != nil {
-				let string = NSMutableAttributedString(string: placeholder!)
-				string.addAttribute(
-					NSForegroundColorAttributeName,
-					value: UIColor(rgb: 0x6B696B),
-					range: NSRange(location: 0, length: placeholder!.characters.count)
-				)
-				self.attributedPlaceholder = string
-			}
 			self.setup()
 		}
 		required init?(coder aDecoder: NSCoder) {
@@ -606,6 +599,18 @@ extension UICommonComponents
 		func setup()
 		{
 			self.font = UIFont.middlingLightMonospace
+			if self.init_placeholder != nil {
+				let string = NSMutableAttributedString(string: self.init_placeholder!)
+				let range = NSRange(location: 0, length: self.init_placeholder!.characters.count)
+				string.addAttributes(
+					[
+						NSForegroundColorAttributeName: UIColor(rgb: 0x6B696B),
+						NSFontAttributeName: UIFont.middlingRegularMonospace // light is too light
+					],
+					range: range
+				)
+				self.attributedPlaceholder = string
+			}
 			self.textColor = UIColor(rgb: 0xDFDEDF)
 			//
 			self.borderStyle = .none
