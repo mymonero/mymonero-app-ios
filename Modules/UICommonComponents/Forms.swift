@@ -460,6 +460,9 @@ extension UICommonComponents
 		var textView: FormTextView!
 		let stretchableBackgroundImage = FormInputCells.textField_bg_noErr.stretchableImage
 		//
+		static let visual__height: CGFloat = 64
+		static let height: CGFloat = FormTextViewContainerView.visual__height + 2*UICommonComponents.FormInputCells.imagePadding_y
+		//
 		init(placeholder: String?)
 		{
 			let frame = CGRect(
@@ -578,6 +581,10 @@ extension UICommonComponents
 	}
 	class FormInputField: UITextField
 	{
+		static let visual__height: CGFloat = 32
+		static let textFieldHeightCompensation: CGFloat = 2 // I'm not sure where this comes from yet
+		static let height: CGFloat = FormInputField.visual__height + 2*FormInputCells.imagePadding_y + FormInputField.textFieldHeightCompensation
+		//
 		var validationErrorMessageLabel: FormFieldAccessoryMessageLabel?
 		var init_placeholder: String?
 		//
@@ -587,7 +594,7 @@ extension UICommonComponents
 				x: CGFloat(0),
 				y: CGFloat(0),
 				width: CGFloat(0),
-				height: CGFloat(37)
+				height: FormInputField.height
 			)
 			self.init_placeholder = placeholder
 			super.init(frame: frame)
@@ -674,7 +681,7 @@ extension UICommonComponents
 				let frame = CGRect(
 					x: margin_x,
 					y: self.frame.size.height + margin_y,
-					width: self.frame.size.width - 2 * margin_x,
+					width: self.frame.size.width - 2*margin_x,
 					height: 0
 				)
 				validationErrorMessageLabel.frame = frame
@@ -691,6 +698,7 @@ extension UICommonComponents
 		//
 		static let visual_marginBelow: CGFloat = 7
 		static let marginBelowLabelAboveTextInputView: CGFloat = FormLabel.visual_marginBelow - FormInputCells.imagePadding_y
+		static let marginBelowLabelAbovePushButton: CGFloat = FormLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 		//
 		static let visual_marginAboveLabelForUnderneathField: CGFloat = 13
 		static let marginAboveLabelForUnderneathField_textInputView: CGFloat = FormLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y

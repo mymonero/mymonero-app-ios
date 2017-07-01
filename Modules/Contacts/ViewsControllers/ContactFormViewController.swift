@@ -16,7 +16,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var name_inputView: UICommonComponents.FormInputField!
 	//
 	var emoji_label: UICommonComponents.FormLabel!
-	var emoji_inputView: UICommonComponents.FormInputField! // TODO: real emoji picker
+	var emoji_inputView: EmojiUI.EmojiPickerButtonView!
 	//
 	var address_label: UICommonComponents.FormLabel!
 	var address_inputView: UICommonComponents.FormTextViewContainerView!
@@ -65,12 +65,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.view.addSubview(view)
 		}
 		do { // TODO: actual emoji field
-			let view = UICommonComponents.FormInputField(
-				placeholder: nil
-			)
-			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-			view.delegate = self
-			view.returnKeyType = .next
+			let view = EmojiUI.EmojiPickerButtonView()
+//			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//			view.delegate = self
 			self.emoji_inputView = view
 			self.view.addSubview(view)
 		}
@@ -127,6 +124,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.view.addSubview(view)
 		}
 		
+//		self.view.borderSubviews()
 		// TODO: add delete record btn here per overridable flag
 	}
 	override func setup_navigation()
@@ -191,11 +189,11 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		let textField_w = self.new__textField_w
 		let fullWidth_label_w = self.new__fieldLabel_w
 		//
-		let nameField_marginRight: CGFloat = 24 // TODO? remove cell img padding?
-		let emojiField_w: CGFloat = 58 // just the field, not the left margin
+		let visual__nameField_marginRight: CGFloat = 24
+		let nameField_marginRight = visual__nameField_marginRight - UICommonComponents.FormInputCells.imagePadding_x - UICommonComponents.PushButtonCells.imagePaddingForShadow_h
 		//
 		do {
-			let visual__nameField_w = textField_w - (nameField_marginRight + emojiField_w)
+			let visual__nameField_w = textField_w - (nameField_marginRight + self.emoji_inputView.frame.size.width)
 			self.name_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
 				y: top_yOffset,
@@ -211,16 +209,17 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			let emojiField_x = self.name_inputView.frame.origin.x + self.name_inputView.frame.size.width + nameField_marginRight
+			let label_inset: CGFloat = 8
 			self.emoji_label.frame = CGRect(
-				x: emojiField_x + 8, // +K b/c labels are inset
+				x: emojiField_x + label_inset,
 				y: top_yOffset,
-				width: emojiField_w,
+				width: self.emoji_inputView.frame.size.width - label_inset,
 				height: self.emoji_label.frame.size.height
 			).integral
 			self.emoji_inputView.frame = CGRect(
-				x: emojiField_x,
-				y: self.emoji_label.frame.origin.y + self.emoji_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
-				width: emojiField_w,
+				x: emojiField_x - UICommonComponents.PushButtonCells.imagePaddingForShadow_h,
+				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAbovePushButton + 1, // +1 to align vertically - should not technically be necessary but there's some height weirdness with the text field
+				width: self.emoji_inputView.frame.size.width,
 				height: self.emoji_inputView.frame.size.height
 			).integral
 		}

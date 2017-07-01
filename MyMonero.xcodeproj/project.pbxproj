@@ -138,6 +138,11 @@
 		9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734221F07610E00C674D6 /* UIColor+Random.swift */; };
 		9FA734261F07610E00C674D6 /* UIView+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734231F07610E00C674D6 /* UIView+Debug.swift */; };
 		9FA7342A1F076DB700C674D6 /* EditContactFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */; };
+		9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7342E1F077C7200C674D6 /* Emoji.swift */; };
+		9FA734311F077DF300C674D6 /* EmojiPickerPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734301F077DF300C674D6 /* EmojiPickerPopoverView.swift */; };
+		9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */; };
+		9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FA734351F077EA100C674D6 /* popoverBG@3x.png */; };
+		9FA734381F077EA100C674D6 /* popoverDisclosureArrow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
@@ -286,6 +291,11 @@
 		9FA734221F07610E00C674D6 /* UIColor+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
 		9FA734231F07610E00C674D6 /* UIView+Debug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Debug.swift"; sourceTree = "<group>"; };
 		9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditContactFormViewController.swift; sourceTree = "<group>"; };
+		9FA7342E1F077C7200C674D6 /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		9FA734301F077DF300C674D6 /* EmojiPickerPopoverView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPickerPopoverView.swift; sourceTree = "<group>"; };
+		9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPickerButtonView.swift; sourceTree = "<group>"; };
+		9FA734351F077EA100C674D6 /* popoverBG@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverBG@3x.png"; sourceTree = "<group>"; };
+		9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverDisclosureArrow@3x.png"; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -477,6 +487,7 @@
 				9F8E2FE11EE978B700F89A1D /* SendFundsTab */,
 				9F8E2F881EE8807500F89A1D /* FundsRequests */,
 				9F8E2F861EE8807500F89A1D /* Contacts */,
+				9FA7342B1F077C6800C674D6 /* Emoji */,
 				9F8E2F8C1EE8807500F89A1D /* Settings */,
 			);
 			path = Modules;
@@ -835,6 +846,42 @@
 			path = Modules/UIKitExtensions;
 			sourceTree = SOURCE_ROOT;
 		};
+		9FA7342B1F077C6800C674D6 /* Emoji */ = {
+			isa = PBXGroup;
+			children = (
+				9FA734341F077EA100C674D6 /* Resources */,
+				9FA7342C1F077C6800C674D6 /* Models */,
+				9FA7342D1F077C6800C674D6 /* Views */,
+			);
+			path = Emoji;
+			sourceTree = "<group>";
+		};
+		9FA7342C1F077C6800C674D6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9FA7342E1F077C7200C674D6 /* Emoji.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9FA7342D1F077C6800C674D6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */,
+				9FA734301F077DF300C674D6 /* EmojiPickerPopoverView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9FA734341F077EA100C674D6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9FA734351F077EA100C674D6 /* popoverBG@3x.png */,
+				9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		9FC366DC1ECF9F90006CE743 /* Wallets */ = {
 			isa = PBXGroup;
 			children = (
@@ -992,6 +1039,7 @@
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
+				9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */,
 				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,
 				9F2BFE821EF08ABA006B2F7D /* highlightableCellBG@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
@@ -1003,6 +1051,7 @@
 				9F2BFE881EF08ABA006B2F7D /* pushButtonBG_disabled@3x.png in Resources */,
 				9F8E2FEF1EE978B700F89A1D /* qrDropzoneIcon@3x.png in Resources */,
 				9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */,
+				9FA734381F077EA100C674D6 /* popoverDisclosureArrow@3x.png in Resources */,
 				9F8E303D1EEDAB9400F89A1D /* detectedCheckmark@3x.png in Resources */,
 				9F2BFEC81EF0A4FF006B2F7D /* Assets.xcassets in Resources */,
 				9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */,
@@ -1118,6 +1167,7 @@
 				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
 				9F2BFF151EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift in Sources */,
 				9F2BFEE61EF38E61006B2F7D /* ContactsCellContentView.swift in Sources */,
+				9FA734311F077DF300C674D6 /* EmojiPickerPopoverView.swift in Sources */,
 				9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */,
 				9F2BFECD1EF33015006B2F7D /* Contact.swift in Sources */,
 				9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */,
@@ -1152,7 +1202,9 @@
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
 				9FA7340F1F05AF8800C674D6 /* FundsRequestsListViewController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
+				9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
+				9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9F2BFF101EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
 				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
