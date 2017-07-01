@@ -60,6 +60,8 @@ class ContactsListViewController: ListViewController
 	// Delegation - Interactions
 	func addButton_tapped()
 	{
-		assert(false, "TODO")
+		let viewController = AddContactFromContactsTabFormViewController()
+		let modalViewController = UINavigationController(rootViewController: viewController)
+		self.navigationController!.present(modalViewController, animated: true, completion: nil)
 	}
 }

@@ -43,6 +43,9 @@ extension UICommonComponents
 		// Properties - Derived
 		var scrollView: UIScrollView { return self.view as! UIScrollView }
 		var new__textField_w: CGFloat { return self.view.frame.size.width - 2 * CGFloat.form_input_margin_x }
+		var new__fieldLabel_w: CGFloat {
+			return self.view.frame.size.width - CGFloat.form_label_margin_x - CGFloat.form_input_margin_x
+		}
 		//
 		// Lifecycle - Init
 		init()
@@ -68,6 +71,7 @@ extension UICommonComponents
 		{ // override but call on super
 			do {
 				self.view.backgroundColor = UIColor.contentBackgroundColor
+				self.scrollView.indicatorStyle = .white
 			}
 			do {
 				let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
@@ -135,6 +139,10 @@ extension UICommonComponents
 		func new_wantsInlineMessageViewForValidationMessages() -> Bool
 		{ // overridable
 			return true
+		}
+		func new_wantsBackgroundTapToFocusResponder_orNilToBlurInstead() -> UIResponder?
+		{
+			return nil
 		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
@@ -304,7 +312,13 @@ extension UICommonComponents
 		// Delegation - Gesture recognition
 		@objc func tapped()
 		{
-			self.view.resignCurrentFirstResponder()
+			guard let viewToFocus_orNilToBlur = self.new_wantsBackgroundTapToFocusResponder_orNilToBlurInstead() else {
+				self.view.resignCurrentFirstResponder()
+				return
+			}
+			if viewToFocus_orNilToBlur.isFirstResponder == false { // this check is probably not necessary
+				viewToFocus_orNilToBlur.becomeFirstResponder()
+			}
 		}
 		//
 		// Delegation - Internal/Convenience - Scroll view
@@ -514,6 +528,7 @@ extension UICommonComponents
 			//
 			if let placeholder = self.placeholder {
 				let view = UILabel(frame: .zero)
+				view.numberOfLines = 0 // to fix line wrapping bug
 				view.textColor = UIColor(rgb: 0x6B696B)
 				view.font = UIFont.middlingLightMonospace
 				view.text = placeholder

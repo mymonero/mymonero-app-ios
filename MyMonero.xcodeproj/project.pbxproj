@@ -73,8 +73,6 @@
 		9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */; };
 		9F7E51721EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */; };
 		9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */; };
-		9F8E2F561EE4908F00F89A1D /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */; };
-		9F8E2F581EE4909900F89A1D /* UIView+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E2F571EE4909900F89A1D /* UIView+Debug.swift */; };
 		9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */; };
 		9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */; };
 		9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */; };
@@ -99,7 +97,6 @@
 		9F8E2FFD1EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FF91EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png */; };
 		9F8E30011EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2FFF1EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png */; };
 		9F8E30021EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30001EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png */; };
-		9F8E30041EEAF38600F89A1D /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30031EEAF38600F89A1D /* Logging.swift */; };
 		9F8E30141EED6F2600F89A1D /* PushButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30131EED6F2600F89A1D /* PushButton.swift */; };
 		9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30151EED6FC200F89A1D /* ActionButtons.swift */; };
 		9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */; };
@@ -135,6 +132,11 @@
 		9FA734171F05AFAB00C674D6 /* ContactsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734141F05AFAB00C674D6 /* ContactsListViewController.swift */; };
 		9FA734181F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734151F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift */; };
 		9FA7341A1F05AFC000C674D6 /* ContactFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734191F05AFC000C674D6 /* ContactFormViewController.swift */; };
+		9FA7341C1F05D92700C674D6 /* AddContactBaseFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7341B1F05D92700C674D6 /* AddContactBaseFormViewController.swift */; };
+		9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7341D1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift */; };
+		9FA734241F07610E00C674D6 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734201F07610E00C674D6 /* Logging.swift */; };
+		9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734221F07610E00C674D6 /* UIColor+Random.swift */; };
+		9FA734261F07610E00C674D6 /* UIView+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734231F07610E00C674D6 /* UIView+Debug.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
@@ -218,8 +220,6 @@
 		9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroAPIClient.swift; sourceTree = "<group>"; };
 		9F7E516F1EC6156C001EAB3F /* HostedMonero_OpenAliasResolving.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_OpenAliasResolving.swift; sourceTree = "<group>"; };
 		9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_SendingFunds.swift; sourceTree = "<group>"; };
-		9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
-		9F8E2F571EE4909900F89A1D /* UIView+Debug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Debug.swift"; sourceTree = "<group>"; };
 		9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Bold.otf"; sourceTree = "<group>"; };
 		9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Light.otf"; sourceTree = "<group>"; };
 		9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Regular.otf"; sourceTree = "<group>"; };
@@ -244,7 +244,6 @@
 		9F8E2FF91EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_contacts__active@3x.png"; sourceTree = "<group>"; };
 		9F8E2FFF1EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_fundsRequests@3x.png"; sourceTree = "<group>"; };
 		9F8E30001EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_tabBar_fundsRequests__active@3x.png"; sourceTree = "<group>"; };
-		9F8E30031EEAF38600F89A1D /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		9F8E30131EED6F2600F89A1D /* PushButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushButton.swift; sourceTree = "<group>"; };
 		9F8E30151EED6FC200F89A1D /* ActionButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionButtons.swift; sourceTree = "<group>"; };
 		9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyScreens.swift; sourceTree = "<group>"; };
@@ -280,6 +279,11 @@
 		9FA734141F05AFAB00C674D6 /* ContactsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsListViewController.swift; sourceTree = "<group>"; };
 		9FA734151F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsTabNavigationViewController.swift; sourceTree = "<group>"; };
 		9FA734191F05AFC000C674D6 /* ContactFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormViewController.swift; sourceTree = "<group>"; };
+		9FA7341B1F05D92700C674D6 /* AddContactBaseFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactBaseFormViewController.swift; sourceTree = "<group>"; };
+		9FA7341D1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromContactsTabFormViewController.swift; sourceTree = "<group>"; };
+		9FA734201F07610E00C674D6 /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
+		9FA734221F07610E00C674D6 /* UIColor+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
+		9FA734231F07610E00C674D6 /* UIView+Debug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Debug.swift"; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -456,14 +460,15 @@
 			isa = PBXGroup;
 			children = (
 				9F7ADAA61EBD2B420073C2BB /* App */,
-				9F8E2F541EE4908700F89A1D /* DebugUtils */,
 				9FCE96C01F03021200A5837D /* SwiftExtensions */,
+				9FA7341F1F07610E00C674D6 /* Logging */,
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
 				9FEC04F61ECFD8D3009256BD /* Persistence */,
 				9F8E301D1EED7D7800F89A1D /* Passwords */,
 				9FEC04EC1ECFD8C4009256BD /* Lists */,
 				9F8E2F4B1EE3AA4700F89A1D /* Theme */,
+				9FA734211F07610E00C674D6 /* UIKitExtensions */,
 				9F1D002C1EE345D600A4B3A5 /* UICommonComponents */,
 				9FC366DC1ECF9F90006CE743 /* Wallets */,
 				9F2BFEED1EF7373E006B2F7D /* WalletWizard */,
@@ -543,16 +548,6 @@
 				9F8E2F591EE4B3A900F89A1D /* Resources */,
 			);
 			path = Theme;
-			sourceTree = "<group>";
-		};
-		9F8E2F541EE4908700F89A1D /* DebugUtils */ = {
-			isa = PBXGroup;
-			children = (
-				9F8E2F551EE4908F00F89A1D /* UIColor+Random.swift */,
-				9F8E2F571EE4909900F89A1D /* UIView+Debug.swift */,
-				9F8E30031EEAF38600F89A1D /* Logging.swift */,
-			);
-			path = DebugUtils;
 			sourceTree = "<group>";
 		};
 		9F8E2F591EE4B3A900F89A1D /* Resources */ = {
@@ -756,8 +751,8 @@
 			children = (
 				9F8E30241EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift */,
 				9F8E30251EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift */,
-				9F8E30221EED7D7800F89A1D /* EnterNewPasswordViewController.swift */,
 				9F8E30211EED7D7800F89A1D /* EnterExistingPasswordViewController.swift */,
+				9F8E30221EED7D7800F89A1D /* EnterNewPasswordViewController.swift */,
 				9F8E30231EED7D7800F89A1D /* ForgotPasswordViewController.swift */,
 			);
 			path = ViewControllers;
@@ -809,12 +804,33 @@
 		9FA734131F05AFAB00C674D6 /* ViewsControllers */ = {
 			isa = PBXGroup;
 			children = (
-				9FA734141F05AFAB00C674D6 /* ContactsListViewController.swift */,
 				9FA734151F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift */,
+				9FA734141F05AFAB00C674D6 /* ContactsListViewController.swift */,
 				9FA734191F05AFC000C674D6 /* ContactFormViewController.swift */,
+				9FA7341B1F05D92700C674D6 /* AddContactBaseFormViewController.swift */,
+				9FA7341D1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift */,
 			);
 			path = ViewsControllers;
 			sourceTree = "<group>";
+		};
+		9FA7341F1F07610E00C674D6 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				9FA734201F07610E00C674D6 /* Logging.swift */,
+			);
+			name = Logging;
+			path = Modules/Logging;
+			sourceTree = SOURCE_ROOT;
+		};
+		9FA734211F07610E00C674D6 /* UIKitExtensions */ = {
+			isa = PBXGroup;
+			children = (
+				9FA734221F07610E00C674D6 /* UIColor+Random.swift */,
+				9FA734231F07610E00C674D6 /* UIView+Debug.swift */,
+			);
+			name = UIKitExtensions;
+			path = Modules/UIKitExtensions;
+			sourceTree = SOURCE_ROOT;
 		};
 		9FC366DC1ECF9F90006CE743 /* Wallets */ = {
 			isa = PBXGroup;
@@ -1084,7 +1100,6 @@
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F2BFF0E1EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */,
 				9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */,
-				9F8E30041EEAF38600F89A1D /* Logging.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9F8E30281EED7D7800F89A1D /* EnterNewPasswordViewController.swift in Sources */,
 				9F2BFEE21EF382CB006B2F7D /* FundsRequestsListViewCell.swift in Sources */,
@@ -1121,8 +1136,11 @@
 				9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */,
 				9F2BFED01EF34FA3006B2F7D /* FundsRequest.swift in Sources */,
 				9F2BFE741EEEDEE3006B2F7D /* HighlightableCells.swift in Sources */,
+				9FA734241F07610E00C674D6 /* Logging.swift in Sources */,
+				9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */,
 				9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */,
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
+				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,
 				9FA734071F05AF4E00C674D6 /* WalletsListViewController.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */,
 				9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
@@ -1134,9 +1152,9 @@
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9F2BFF101EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
 				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
+				9FA7341C1F05D92700C674D6 /* AddContactBaseFormViewController.swift in Sources */,
 				9F2BFECA1EF0AA15006B2F7D /* WalletsListEmptyView.swift in Sources */,
 				9F8E2FEA1EE978B700F89A1D /* SendFundsTabNavigationViewController.swift in Sources */,
-				9F8E2F561EE4908F00F89A1D /* UIColor+Random.swift in Sources */,
 				9F2BFEE81EF3964A006B2F7D /* SettingsController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
@@ -1147,6 +1165,7 @@
 				9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */,
 				9FA734101F05AF8800C674D6 /* FundsRequestsTabNavigationViewController.swift in Sources */,
 				9FA7341A1F05AFC000C674D6 /* ContactFormViewController.swift in Sources */,
+				9FA734261F07610E00C674D6 /* UIView+Debug.swift in Sources */,
 				9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
 				9FA734171F05AFAB00C674D6 /* ContactsListViewController.swift in Sources */,
@@ -1154,7 +1173,6 @@
 				9F1B57471ED4E92D00410675 /* MoneroMnemonics.swift in Sources */,
 				9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */,
 				9F8E30261EED7D7800F89A1D /* PasswordController.swift in Sources */,
-				9F8E2F581EE4909900F89A1D /* UIView+Debug.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

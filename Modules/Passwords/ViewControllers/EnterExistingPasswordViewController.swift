@@ -86,6 +86,10 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		//
 		return (password != nil && password != "") ? true : false
 	}
+	override func new_wantsBackgroundTapToFocusResponder_orNilToBlurInstead() -> UIResponder?
+	{
+		return self.password_inputView
+	}
 	//
 	// Imperatives
 	override func _tryToSubmitForm()

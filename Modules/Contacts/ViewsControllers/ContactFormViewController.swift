@@ -12,6 +12,19 @@ class ContactFormViewController: UICommonComponents.FormViewController
 {
 	//
 	// Properties
+	var name_label: UICommonComponents.FormLabel!
+	var name_inputView: UICommonComponents.FormInputField!
+	//
+	var emoji_label: UICommonComponents.FormLabel!
+	var emoji_inputView: UICommonComponents.FormInputField! // TODO: real emoji picker
+	//
+	var address_label: UICommonComponents.FormLabel!
+	var address_inputView: UICommonComponents.FormTextViewContainerView!
+	//
+	var paymentID_label: UICommonComponents.FormLabel?
+	var paymentID_inputView: UICommonComponents.FormTextViewContainerView?
+	//
+	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
 	//
 	// Lifecycle - Init
 	override init()
@@ -24,27 +37,129 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	override func setup_views()
 	{
 		super.setup_views()
+		do {
+			let view = UICommonComponents.FormLabel(
+				title: NSLocalizedString("NAME", comment: ""),
+				sizeToFit: true
+			)
+			self.name_label = view
+			self.view.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.FormInputField(
+				placeholder: NSLocalizedString("Enter name", comment: "")
+			)
+			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+			view.delegate = self
+			view.returnKeyType = .next
+			self.name_inputView = view
+			self.view.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.FormLabel(
+				title: NSLocalizedString("EMOJI", comment: ""),
+				sizeToFit: true
+			)
+			self.emoji_label = view
+			self.view.addSubview(view)
+		}
+		do { // TODO: actual emoji field
+			let view = UICommonComponents.FormInputField(
+				placeholder: nil
+			)
+			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+			view.delegate = self
+			view.returnKeyType = .next
+			self.emoji_inputView = view
+			self.view.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.FormLabel(
+				title: NSLocalizedString("ADDRESS", comment: ""),
+				sizeToFit: true
+			)
+			self.address_label = view
+			self.view.addSubview(view)
+		}
+		do { // TODO: config as immutable by overridable flag
+			let view = UICommonComponents.FormTextViewContainerView(
+				placeholder: NSLocalizedString("Enter normal, integrated, or OpenAlias address", comment: "")
+			)
+			view.textView.autocorrectionType = .no
+			view.textView.autocapitalizationType = .none
+			view.textView.spellCheckingType = .no
+			view.textView.returnKeyType = .next
+			view.textView.delegate = self
+			self.address_inputView = view
+			self.view.addSubview(view)
+		}
+		// TODO: add 'resolving' act ind here per flag
+		
+		// TODO: check if paymentID needed by overridable flag
+		do {
+			let view = UICommonComponents.FormLabel(
+				title: NSLocalizedString("PAYMENT ID", comment: ""),
+				sizeToFit: true
+			)
+			self.paymentID_label = view
+			self.view.addSubview(view)
+		}
+		do { // TODO: config as immutable by overridable flag
+			let view = UICommonComponents.FormTextViewContainerView(
+				placeholder: NSLocalizedString("Optional", comment: "")
+			)
+			view.textView.autocorrectionType = .no
+			view.textView.autocapitalizationType = .none
+			view.textView.spellCheckingType = .no
+			view.textView.returnKeyType = .go
+			view.textView.delegate = self
+			self.paymentID_inputView = view
+			self.view.addSubview(view)
+		}
+		// TODO: check if field needs to be displayed:
+		do {
+			let view = UICommonComponents.FormFieldAccessoryMessageLabel(
+				text: NSLocalizedString("Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated.", comment: "")
+			)
+			self.paymentID_fieldAccessoryMessageLabel = view
+			self.view.addSubview(view)
+		}
+		
+		// TODO: add delete record btn here per overridable flag
 	}
 	override func setup_navigation()
 	{
 		super.setup_navigation()
-		let item = UICommonComponents.NavigationBarButtonItem(
+		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 			type: .save,
 			target: self,
 			action: #selector(tapped_rightBarButtonItem),
 			title_orNilForDefault: nil
 		)
-		self.navigationItem.rightBarButtonItem = item
+		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+			type: .cancel,
+			target: self,
+			action: #selector(tapped_barButtonItem_cancel),
+			title_orNilForDefault: self._overridable_cancelBarButtonTitle_orNilForDefault()
+		)
+
 	}
 	//
-	// Accessors - Overridable
+	// Accessors - Overrides
 	override func new_isFormSubmittable() -> Bool
 	{
 //		if self.isSubmitting == true {
 //			return false
 //		}
+		// TODO: check things like form fields (based on existence),
+		// and whether is resolving…… anything else?
 		return true
 	}
+	//
+	// Accessors - Overridable
+	func _overridable_cancelBarButtonTitle_orNilForDefault() -> String? { return nil }
 	//
 	// Runtime - Imperatives - Overrides
 	override func disableForm()
@@ -63,10 +178,8 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		// TODO
 	}
-	var isSubmitting = false
 	override func _tryToSubmitForm()
 	{
-
 	}
 	//
 	// Delegation - View
@@ -76,21 +189,98 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		let textField_w = self.new__textField_w
-		
-//		self.address_label.frame = CGRect(
-//			x: CGFloat.form_label_margin_x,
-//			y: self.name_inputView.frame.origin.y + self.name_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
-//			width: textField_w,
-//			height: self.address_label.frame.size.height
-//		).integral
-//		self.address_inputView.frame = CGRect(
-//			x: CGFloat.form_input_margin_x,
-//			y: self.address_label.frame.origin.y + self.address_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
-//			width: textField_w,
-//			height: self.address_inputView.frame.size.height
-//		).integral
+		let fullWidth_label_w = self.new__fieldLabel_w
 		//
-//		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.topPadding)
+		let nameField_marginRight: CGFloat = 24 // TODO? remove cell img padding?
+		let emojiField_w: CGFloat = 58 // just the field, not the left margin
+		//
+		do {
+			let visual__nameField_w = textField_w - (nameField_marginRight + emojiField_w)
+			self.name_label.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: top_yOffset,
+				width: visual__nameField_w,
+				height: self.name_label.frame.size.height
+			).integral
+			self.name_inputView.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				width: visual__nameField_w,
+				height: self.name_inputView.frame.size.height
+			).integral
+		}
+		do {
+			let emojiField_x = self.name_inputView.frame.origin.x + self.name_inputView.frame.size.width + nameField_marginRight
+			self.emoji_label.frame = CGRect(
+				x: emojiField_x + 8, // +K b/c labels are inset
+				y: top_yOffset,
+				width: emojiField_w,
+				height: self.emoji_label.frame.size.height
+			).integral
+			self.emoji_inputView.frame = CGRect(
+				x: emojiField_x,
+				y: self.emoji_label.frame.origin.y + self.emoji_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				width: emojiField_w,
+				height: self.emoji_inputView.frame.size.height
+			).integral
+		}
+		do {
+			self.address_label.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.name_inputView.frame.origin.y + self.name_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+				width: fullWidth_label_w,
+				height: self.address_label.frame.size.height
+			).integral
+			self.address_inputView.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.address_label.frame.origin.y + self.address_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				width: textField_w,
+				height: self.address_inputView.frame.size.height
+			).integral
+		}
+		//
+		// TODO: lay out Resolving field if exists and not hidden
+		//
+		if self.paymentID_label != nil {
+			assert(self.paymentID_inputView != nil)
+			self.paymentID_label!.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+				width: fullWidth_label_w,
+				height: self.paymentID_label!.frame.size.height
+			).integral
+			self.paymentID_inputView!.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.paymentID_label!.frame.origin.y + self.paymentID_label!.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				width: textField_w,
+				height: self.paymentID_inputView!.frame.size.height
+			).integral
+			if self.paymentID_fieldAccessoryMessageLabel != nil {
+				self.paymentID_fieldAccessoryMessageLabel!.frame = CGRect(
+					x: CGFloat.form_label_margin_x,
+					y: self.paymentID_inputView!.frame.origin.y + self.paymentID_inputView!.frame.size.height + 7,
+					width: fullWidth_label_w,
+					height: 0
+				).integral
+				self.paymentID_fieldAccessoryMessageLabel!.sizeToFit()
+			}
+		} else {
+			assert(self.paymentID_inputView == nil)
+			assert(self.paymentID_fieldAccessoryMessageLabel == nil)
+		}
+		// TODO: lay out delete record field if exists
+		//
+		// TODO: derive bottommost view based on existence
+		// … delete record, payment id, address, … and set up way to expand border box to fill view
+		// TODO: if applicable set up inset fields for add contact from send funds tab
+		
+		
+		let bottomMostView = self.paymentID_fieldAccessoryMessageLabel /*?? self.deleteRecordButton*/ ?? self.paymentID_inputView ?? self.address_inputView
+		let bottomPadding: CGFloat = 18
+		self.formContentSizeDidChange(
+			withBottomView: bottomMostView!,
+			bottomPadding: bottomPadding
+		)
 	}
 	override func viewDidAppear(_ animated: Bool)
 	{
@@ -99,8 +289,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		if isFirstAppearance {
 			DispatchQueue.main.async
 			{ [unowned self] in
-				assert(false) // TODO
-//				self.name_inputView.textView.becomeFirstResponder()
+				self.name_inputView.becomeFirstResponder()
 			}
 		}
 	}
@@ -121,7 +310,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	// Delegation - Interactions
 	func tapped_rightBarButtonItem()
 	{
-		assert(false) // TODO save
+		self.aFormSubmissionButtonWasPressed()
 	}
-
+	func tapped_barButtonItem_cancel()
+	{
+		assert(self.navigationController!.presentingViewController != nil)
+		// we always expect self to be presented modally
+		self.navigationController?.dismiss(animated: true, completion: nil)
+	}
 }

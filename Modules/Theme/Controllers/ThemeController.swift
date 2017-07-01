@@ -52,7 +52,7 @@ class ThemeController
 extension CGFloat
 {
 	static let visual__form_input_margin_x: CGFloat = 24
-	static let form_input_margin_x: CGFloat = visual__form_input_margin_x - 2*UICommonComponents.FormInputCells.imagePadding_x
+	static let form_input_margin_x: CGFloat = visual__form_input_margin_x - 2*UICommonComponents.FormInputCells.imagePadding_x /* TODO: should this 2x be 1x? */
 	//
 	static let form_label_margin_x: CGFloat = 33
 }
