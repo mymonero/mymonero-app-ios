@@ -137,6 +137,7 @@
 		9FA734241F07610E00C674D6 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734201F07610E00C674D6 /* Logging.swift */; };
 		9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734221F07610E00C674D6 /* UIColor+Random.swift */; };
 		9FA734261F07610E00C674D6 /* UIView+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734231F07610E00C674D6 /* UIView+Debug.swift */; };
+		9FA7342A1F076DB700C674D6 /* EditContactFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
@@ -284,6 +285,7 @@
 		9FA734201F07610E00C674D6 /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		9FA734221F07610E00C674D6 /* UIColor+Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
 		9FA734231F07610E00C674D6 /* UIView+Debug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Debug.swift"; sourceTree = "<group>"; };
+		9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditContactFormViewController.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -809,6 +811,7 @@
 				9FA734191F05AFC000C674D6 /* ContactFormViewController.swift */,
 				9FA7341B1F05D92700C674D6 /* AddContactBaseFormViewController.swift */,
 				9FA7341D1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift */,
+				9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */,
 			);
 			path = ViewsControllers;
 			sourceTree = "<group>";
@@ -1138,6 +1141,7 @@
 				9F2BFE741EEEDEE3006B2F7D /* HighlightableCells.swift in Sources */,
 				9FA734241F07610E00C674D6 /* Logging.swift in Sources */,
 				9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */,
+				9FA7342A1F076DB700C674D6 /* EditContactFormViewController.swift in Sources */,
 				9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */,
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
 				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,

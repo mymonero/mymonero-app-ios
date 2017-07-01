@@ -10,5 +10,9 @@ import UIKit
 
 class AddContactBaseFormViewController: ContactFormViewController
 {
-	
+	override func setup_navigation()
+	{
+		super.setup_navigation()
+		self.navigationItem.title = NSLocalizedString("New Contact", comment: "")
+	}
 }
