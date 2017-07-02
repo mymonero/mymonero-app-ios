@@ -64,10 +64,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.emoji_label = view
 			self.view.addSubview(view)
 		}
-		do { // TODO: actual emoji field
+		do {
 			let view = EmojiUI.EmojiPickerButtonView()
-//			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-//			view.delegate = self
+			view.configure(withEmojiCharacter: self.new_initial_value_emoji)
+			view.tapped_fn =
+			{ [unowned self] in
+				self.view.resignCurrentFirstResponder() // if any
+			}
 			self.emoji_inputView = view
 			self.view.addSubview(view)
 		}
@@ -158,6 +161,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	// Accessors - Overridable
 	func _overridable_cancelBarButtonTitle_orNilForDefault() -> String? { return nil }
+	var new_initial_value_emoji: Emoji.EmojiCharacter {
+		let inUseEmojiCharacters = ContactsListController.shared.givenBooted_currentlyInUseEmojiCharacters()
+		let value = Emoji.anEmojiWhichIsNotInUse(amongInUseEmoji: inUseEmojiCharacters)
+		//
+		return value
+	}
 	//
 	// Runtime - Imperatives - Overrides
 	override func disableForm()

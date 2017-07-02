@@ -143,6 +143,7 @@
 		9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */; };
 		9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FA734351F077EA100C674D6 /* popoverBG@3x.png */; };
 		9FA734381F077EA100C674D6 /* popoverDisclosureArrow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */; };
+		9FAA18A31F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
@@ -296,6 +297,7 @@
 		9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPickerButtonView.swift; sourceTree = "<group>"; };
 		9FA734351F077EA100C674D6 /* popoverBG@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverBG@3x.png"; sourceTree = "<group>"; };
 		9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverDisclosureArrow@3x.png"; sourceTree = "<group>"; };
+		9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emojiPickerPopover_cell_selectedBG_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -876,6 +878,7 @@
 		9FA734341F077EA100C674D6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */,
 				9FA734351F077EA100C674D6 /* popoverBG@3x.png */,
 				9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */,
 			);
@@ -1031,6 +1034,7 @@
 				9F8E30411EEDAB9400F89A1D /* wallet-00F4CD@3x.png in Resources */,
 				9F2BFE861EF08ABA006B2F7D /* pushButtonBG_destructive_highlighted@3x.png in Resources */,
 				9F8E2FEC1EE978B700F89A1D /* actionButton_iconImage__useCamera@3x.png in Resources */,
+				9FAA18A31F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png in Resources */,
 				9F8E303A1EEDAB9400F89A1D /* addButtonIcon_10@3x.png in Resources */,
 				9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */,
 				9F8E2FFD1EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png in Resources */,

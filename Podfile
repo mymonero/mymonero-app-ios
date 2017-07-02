@@ -6,7 +6,8 @@ target 'MyMonero' do
 	pod 'BigInt', '~> 2.1'
 	pod 'SwiftDate', '~> 4.0'
 	pod 'Alamofire', '~> 4.4'
-	pod 'RNCryptor'
+	pod 'RNCryptor', '~> 5.0.1'
+	pod 'Popover', '~> 1.0.5'
 end
 
 post_install do |installer|

@@ -22,7 +22,7 @@ struct EmojiUI
 		static let visual__arrowRightPadding: CGFloat = 8
 		//
 		// Properties
-		
+		var tapped_fn: ((Void) -> Void)?
 		//
 		// Lifecycle - Init
 		init()
@@ -46,6 +46,9 @@ struct EmojiUI
 				EmojiPickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
 			)
 			//
+			self.contentHorizontalAlignment = .left
+			self.titleEdgeInsets = UIEdgeInsetsMake(0, 1, 0, 0)
+			//
 			self.frame = CGRect(
 				x: 0, y: 0,
 				width: EmojiPickerButtonView.w,
@@ -55,10 +58,34 @@ struct EmojiUI
 			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
 		}
 		//
-		// Delegation - Imperatives
+		// Accessors
+		var selected_emojiCharacter: Emoji.EmojiCharacter {
+			return self.titleLabel!.text! as Emoji.EmojiCharacter
+		}
+		//
+		// Imperatives - Config
+		func configure(withEmojiCharacter emojiCharacter: Emoji.EmojiCharacter)
+		{
+			self.setTitle(emojiCharacter, for: .normal)
+		}
+		//
+		// Delegation - Interactions
 		func tapped()
 		{
-			// toggle visibility
+			// the popover should be guaranteed not to be showing here… 
+			if let tapped_fn = self.tapped_fn {
+				tapped_fn()
+			}
+			DispatchQueue.main.async
+			{ [unowned self] in // on next tick so as not to conflict with any responder resigns
+				let popover = EmojiPickerPopoverView()
+				popover.selectedEmojiCharacter_fn =
+				{ [unowned self] (emojiCharacter) in
+					self.configure(withEmojiCharacter: emojiCharacter)
+				}
+				let initial_emojiCharacter = self.titleLabel!.text! as Emoji.EmojiCharacter
+				popover.show(fromView: self, selecting_emojiCharacter: initial_emojiCharacter)
+			}
 		}
 	}
 }

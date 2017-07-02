@@ -31,7 +31,7 @@ class Contact: PersistableObject
 	var fullname: String!
 	var address: String! // String because it could be an OA address
 	var payment_id: MoneroPaymentID!
-	var emoji: String!
+	var emoji: Emoji.EmojiCharacter!
 	var cached_OAResolved_XMR_address: MoneroAddress?
 	//
 	// 'Protocols' - Persistable Object
@@ -68,7 +68,7 @@ class Contact: PersistableObject
 		self.fullname = dictRepresentation[DictKey.fullname.rawValue] as! String
 		self.address = dictRepresentation[DictKey.address.rawValue] as! String
 		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
-		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! String
+		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! Emoji.EmojiCharacter
 		self.cached_OAResolved_XMR_address = dictRepresentation[DictKey.cached_OAResolved_XMR_address.rawValue] as? String
 	}
 	//
@@ -81,7 +81,7 @@ class Contact: PersistableObject
 		fullname: String,
 		address: String,
 		payment_id: MoneroPaymentID?,
-		emoji: String?,
+		emoji: Emoji.EmojiCharacter?,
 		cached_OAResolved_XMR_address: MoneroAddress?
 	)
 	{
@@ -99,7 +99,7 @@ class Contact: PersistableObject
 	// Runtime - Imperatives - Update cases
 	func SetValuesAndSave_fromEditAndPossibleOAResolve(
 		fullname: String,
-		emoji: String,
+		emoji: Emoji.EmojiCharacter,
 		address: String, // could be an OA address too
 		payment_id: MoneroPaymentID,
 		cached_OAResolved_XMR_address: MoneroAddress?
@@ -107,7 +107,6 @@ class Contact: PersistableObject
 	{
 		self.fullname = fullname
 		self.emoji = emoji
-		// TODO:? validate emoji is in set
 		self.address = address
 		if MyMoneroCoreUtils.isAddressNotMoneroAddressAndThusProbablyOAAddress(address) == false {
 			self.cached_OAResolved_XMR_address = nil // if new one is not OA addr, clear cached OA-resolved info
