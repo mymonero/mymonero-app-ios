@@ -700,7 +700,7 @@ extension UICommonComponents
 		static let marginBelowLabelAboveTextInputView: CGFloat = FormLabel.visual_marginBelow - FormInputCells.imagePadding_y
 		static let marginBelowLabelAbovePushButton: CGFloat = FormLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 		//
-		static let visual_marginAboveLabelForUnderneathField: CGFloat = 13
+		static let visual_marginAboveLabelForUnderneathField: CGFloat = 18
 		static let marginAboveLabelForUnderneathField_textInputView: CGFloat = FormLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
 		//
 		// Lifecycle - Init

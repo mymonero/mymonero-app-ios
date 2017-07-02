@@ -21,6 +21,8 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var address_label: UICommonComponents.FormLabel!
 	var address_inputView: UICommonComponents.FormTextViewContainerView!
 	//
+	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
+	//
 	var paymentID_label: UICommonComponents.FormLabel?
 	var paymentID_inputView: UICommonComponents.FormTextViewContainerView?
 	//
@@ -95,8 +97,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.address_inputView = view
 			self.view.addSubview(view)
 		}
-		// TODO: add 'resolving' act ind here per flag
-		
+		do {
+			let view = UICommonComponents.ResolvingActivityIndicatorView()
+			view.isHidden = true
+			self.resolving_activityIndicator = view
+			self.view.addSubview(view)
+		}
 		// TODO: check if paymentID needed by overridable flag
 		do {
 			let view = UICommonComponents.FormLabel(
@@ -158,6 +164,28 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		// and whether is resolving…… anything else?
 		return true
 	}
+	
+	//
+	// Accessors - Overrides
+	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
+	{
+		if inputView == self.name_inputView {
+			return self.address_inputView.textView
+		}
+		if inputView == self.address_inputView.textView {
+			if let paymentID_inputView = self.paymentID_inputView {
+				return paymentID_inputView.textView
+			}
+			return nil
+		}
+		if let paymentID_inputView = self.paymentID_inputView {
+			if inputView == paymentID_inputView.textView {
+				return nil
+			}
+		}
+		assert(false, "Unexpected")
+		return nil
+	}
 	//
 	// Accessors - Overridable
 	func _overridable_cancelBarButtonTitle_orNilForDefault() -> String? { return nil }
@@ -187,6 +215,8 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	}
 	override func _tryToSubmitForm()
 	{
+		self.resolving_activityIndicator.show()
+		self.view.setNeedsLayout()
 	}
 	//
 	// Delegation - View
@@ -246,14 +276,25 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				height: self.address_inputView.frame.size.height
 			).integral
 		}
-		//
-		// TODO: lay out Resolving field if exists and not hidden
-		//
+		if self.resolving_activityIndicator.isHidden == false {
+			let size = self.resolving_activityIndicator.new_boundsSize
+			self.resolving_activityIndicator.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
+				width: size.width,
+				height: size.height
+			).integral
+		}
 		if self.paymentID_label != nil {
 			assert(self.paymentID_inputView != nil)
+			
+			let addressFieldset_bottomEdge = self.resolving_activityIndicator.isHidden ?
+				self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height
+			: self.resolving_activityIndicator.frame.origin.y + self.resolving_activityIndicator.frame.size.height
+			//
 			self.paymentID_label!.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+				y: addressFieldset_bottomEdge + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.paymentID_label!.frame.size.height
 			).integral
