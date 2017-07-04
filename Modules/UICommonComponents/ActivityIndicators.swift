@@ -69,12 +69,11 @@ extension UICommonComponents
 		func _animateNextLoop()
 		{
 			if self.isAnimating == false {
-				assert(false)
-				return // terminate
+				return // terminate; may have been called after a cancel
 			}
 			if self.isAnimatingALoop {
 				assert(false)
-				return // terminate
+				return // terminate; may have been called after a cancel
 			}
 			self.isAnimatingALoop = true
 			let durationOfAnimationTo_on = 0.15
