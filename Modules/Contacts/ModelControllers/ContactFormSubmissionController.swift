@@ -10,8 +10,16 @@ import Foundation
 //
 class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 {
+	enum Mode
+	{
+		case insert
+		case update
+	}
 	struct Parameters
 	{
+		// Mode:
+		var mode: Mode
+		//
 		// Input values:
 		var name: String
 		var emoji: Emoji.EmojiCharacter
@@ -21,6 +29,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		//
 		// Special cases
 		var skippingOAResolve_explicit__cached_OAResolved_XMR_address: MoneroAddress?
+		//
+		var forMode_update__contactInstance: Contact?
 		//
 		// Process callbacks
 		var preInputValidation_terminal_validationMessage_fn: (_ localizedString: String) -> Void
@@ -32,13 +42,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		var didBeginResolving_fn: (Void) -> Void
 		var didEndResolving_fn: (Void) -> Void
 		//
-		var persistContact_fn: (
-			_ name: String,
-			_ emoji: Emoji.EmojiCharacter,
-			_ address: String,
-			_ paymentID_toSave: MoneroPaymentID?,
-			_ cached_OAResolved_XMR_address: MoneroAddress?
-		) -> Void
+		var success_fn: (_ instance: Contact) -> Void
 	}
 	var parameters: Parameters
 	init(parameters: Parameters)
@@ -204,13 +208,34 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 			)
 			return
 		}
-		// now we can actually persist the contact (update or insert)
-		self.parameters.persistContact_fn(
-			self.parameters.name,
-			self.parameters.emoji,
-			self.parameters.address,
-			paymentID_toSave,
-			cached_OAResolved_XMR_address
-		)
+		if self.parameters.mode == .insert {
+			ContactsListController.shared.onceBooted_addContact(
+				fullname: self.parameters.name,
+				address: self.parameters.address,
+				payment_id: paymentID_toSave,
+				emoji: self.parameters.emoji,
+				cached_OAResolved_XMR_address: cached_OAResolved_XMR_address
+				)
+			{ [unowned self] (err_str, contactInstance) in
+				if err_str != nil {
+					self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
+					return
+				}
+				self.parameters.success_fn(contactInstance!)
+			}
+		} else {
+			let err_str = self.parameters.forMode_update__contactInstance!.SetValuesAndSave_fromEditAndPossibleOAResolve(
+				fullname: self.parameters.name,
+				emoji: self.parameters.emoji,
+				address: self.parameters.address,
+				payment_id: paymentID_toSave,
+				cached_OAResolved_XMR_address: cached_OAResolved_XMR_address
+			)
+			if err_str != nil {
+				self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
+				return
+			}
+			self.parameters.success_fn(self.parameters.forMode_update__contactInstance!)
+		}
 	}
 }

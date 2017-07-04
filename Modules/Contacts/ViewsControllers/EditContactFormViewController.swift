@@ -25,26 +25,8 @@ class EditContactFormViewController: ContactFormViewController
 		super.setup_navigation()
 		self.navigationItem.title = NSLocalizedString("Edit Contact", comment: "")
 	}
-	override func _persistContact(
-		name: String,
-		emoji: Emoji.EmojiCharacter,
-		address: String,
-		withPaymentID paymentID_toSave: MoneroPaymentID?,
-		cached_OAResolved_XMR_address: MoneroAddress?,
-		fn: @escaping (_ err_str: String?, _ instance: Contact?) -> Void
-	)
-	{
-		let err_str = self.contact.SetValuesAndSave_fromEditAndPossibleOAResolve(
-			fullname: name,
-			emoji: emoji,
-			address: address,
-			payment_id: paymentID_toSave,
-			cached_OAResolved_XMR_address: cached_OAResolved_XMR_address
-		)
-		if err_str != nil {
-			fn(err_str, nil)
-			return
-		}
-		fn(nil, self.contact)
-	}
+	//
+	// Overrides - Accessors
+	override var _overridable_formSubmissionMode: ContactFormSubmissionController.Mode { return .update }
+	override var _overridable_forMode_update__contactInstance: Contact? { return self.contact }
 }

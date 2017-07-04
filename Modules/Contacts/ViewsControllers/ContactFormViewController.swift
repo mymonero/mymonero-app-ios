@@ -194,7 +194,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	// Accessors - Overridable
 	func _overridable_cancelBarButtonTitle_orNilForDefault() -> String? { return nil }
 	var _overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues: Bool { return false }
+	var _overridable_formSubmissionMode: ContactFormSubmissionController.Mode { return .insert }
 	var _overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address: MoneroAddress? { return nil }
+	var _overridable_forMode_update__contactInstance: Contact? { return nil }
 	var new_initial_value_emoji: Emoji.EmojiCharacter {
 		let inUseEmojiCharacters = ContactsListController.shared.givenBooted_currentlyInUseEmojiCharacters()
 		let value = Emoji.anEmojiWhichIsNotInUse(amongInUseEmoji: inUseEmojiCharacters)
@@ -264,6 +266,8 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		assert(self.sanitizedInputValue__name != "")
 		assert(self.sanitizedInputValue__address != "")
 		let parameters = ContactFormSubmissionController.Parameters(
+			mode: self._overridable_formSubmissionMode,
+			//
 			name: self.sanitizedInputValue__name,
 			emoji: self.sanitizedInputValue__emoji,
 			address: self.sanitizedInputValue__address,
@@ -271,6 +275,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			canSkipEntireOAResolveAndDirectlyUseInputValues: self._overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues,
 			//
 			skippingOAResolve_explicit__cached_OAResolved_XMR_address: self._overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address,
+			forMode_update__contactInstance: self._overridable_forMode_update__contactInstance,
 			//
 			preInputValidation_terminal_validationMessage_fn:
 			{ [unowned self] (localizedString) in
@@ -302,50 +307,22 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			{ [unowned self] in
 				self.set(resolvingIndicatorIsVisible: false)
 			},
-			persistContact_fn:
-			{ [unowned self] (name, emoji, address, paymentID_toSave, cached_OAResolved_XMR_address) in
-				self._persistContact(
-					name: name,
-					emoji: emoji,
-					address: address,
-					withPaymentID: paymentID_toSave,
-					cached_OAResolved_XMR_address: cached_OAResolved_XMR_address,
-					fn:
-					{ [unowned self] (err_str, instance) in
-						if err_str != nil {
-							self.setValidationMessage(err_str!)
-						}
-						self.formSubmissionController = nil // must free as this is a terminal callback
-						self.reEnableForm() // b/c we disabled it
-						if err_str == nil {
-							self._didSave(instance: instance!)
-						}
-					}
-				)
-				//
+			success_fn:
+			{ [unowned self] (contactInstance) in
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.reEnableForm() // b/c we disabled it
+				self._didSave(instance: contactInstance)
 			}
 		)
 		let controller = ContactFormSubmissionController(parameters: parameters)
 		self.formSubmissionController = controller
 		controller.handle()
 	}
-	func _persistContact(
-		name: String,
-		emoji: Emoji.EmojiCharacter,
-		address: String,
-		withPaymentID paymentID_toSave: MoneroPaymentID?,
-		cached_OAResolved_XMR_address: MoneroAddress?,
-		fn: @escaping (_ err_str: String?, _ instance: Contact?) -> Void
-	)
-	{
-		assert(false, "Override and implement, and call fn on err or success.")
-		fn(nil, nil) // TODO
-	}
 	//
 	// Delegation - Form submission success
 	func _didSave(instance: Contact)
 	{
-		assert(false, "Override this and implement")
+		self.navigationController!.dismiss(animated: true, completion: nil)
 	}
 	//
 	// Delegation - View

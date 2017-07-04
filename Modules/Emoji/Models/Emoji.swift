@@ -14,7 +14,7 @@ struct Emoji
 	
 	static func anEmojiWhichIsNotInUse(amongInUseEmoji inUseEmojiCharacters: [EmojiCharacter]) -> EmojiCharacter
 	{
-		for (idx, emojiCharacter) in allOrdered.enumerated() {
+		for (_, emojiCharacter) in allOrdered.enumerated() {
 			if inUseEmojiCharacters.contains(emojiCharacter) == false { // if not in use
 				return emojiCharacter
 			}
