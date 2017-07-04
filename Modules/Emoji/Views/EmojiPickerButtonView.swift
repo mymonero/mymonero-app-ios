@@ -70,6 +70,7 @@ struct EmojiUI
 		}
 		//
 		// Delegation - Interactions
+		var popover: EmojiPickerPopoverView?
 		func tapped()
 		{
 			// the popover should be guaranteed not to be showing here… 
@@ -78,10 +79,17 @@ struct EmojiUI
 			}
 			DispatchQueue.main.async
 			{ [unowned self] in // on next tick so as not to conflict with any responder resigns
-				let popover = EmojiPickerPopoverView()
+				let popover = EmojiPickerPopoverView(
+					dismissHandler:
+					{ [unowned self] in
+						self.popover = nil
+					}
+				)
+				self.popover = popover
 				popover.selectedEmojiCharacter_fn =
 				{ [unowned self] (emojiCharacter) in
 					self.configure(withEmojiCharacter: emojiCharacter)
+					self.popover!.dismiss()
 				}
 				let initial_emojiCharacter = self.titleLabel!.text! as Emoji.EmojiCharacter
 				popover.show(fromView: self, selecting_emojiCharacter: initial_emojiCharacter)
