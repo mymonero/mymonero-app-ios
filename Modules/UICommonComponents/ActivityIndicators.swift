@@ -134,6 +134,7 @@ extension UICommonComponents
 				bulbView.layer.removeAllAnimations()
 			}
 			self.isAnimating = false
+			self.isAnimatingALoop = false
 		}
 	}
 	class GraphicActivityIndicatorPartBulbView: UIImageView
