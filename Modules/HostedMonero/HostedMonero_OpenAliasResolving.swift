@@ -19,10 +19,9 @@ struct ValidOAResolvedMoneroAddressDescription
 	let dnssec_used_and_secured: Bool
 }
 //
-// TODO: this should be callable via a standardized OpenAliasResolver class ala JS
 extension HostedMoneroAPIClient
 {
-	static func LookupMoneroAddressInfoFromOpenAliasAddress(
+	static func lookupMoneroAddressInfoFromOpenAliasAddress(
 		openAliasAddress: String,
 		hostedMoneroAPIClient: HostedMoneroAPIClient, // to get TXT records
 		mymoneroCore: MyMoneroCore,

@@ -10,7 +10,7 @@ import Foundation
 //
 extension MyMoneroCoreUtils
 {
-	static func IsValidPaymentIDOrNoPaymentID(_ paymentId: String?) -> Bool
+	static func isValidPaymentIDOrNoPaymentID(_ paymentId: String?) -> Bool
 	{
 		if let paymentId = paymentId {
 			let pattern = "^[0-9a-fA-F]{64}$"

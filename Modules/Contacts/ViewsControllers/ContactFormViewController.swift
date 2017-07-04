@@ -157,11 +157,15 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	// Accessors - Overrides
 	override func new_isFormSubmittable() -> Bool
 	{
-//		if self.isSubmitting == true {
-//			return false
-//		}
-		// TODO: check things like form fields (based on existence),
-		// and whether is resolving…… anything else?
+		if self.formSubmissionController != nil {
+			return false
+		}
+		if self.sanitizedInputValue__name == "" {
+			return false
+		}
+		if self.sanitizedInputValue__address == "" {
+			return false
+		}
 		return true
 	}
 	
@@ -189,11 +193,46 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	// Accessors - Overridable
 	func _overridable_cancelBarButtonTitle_orNilForDefault() -> String? { return nil }
+	var _overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues: Bool { return false }
+	var _overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address: MoneroAddress? { return nil }
 	var new_initial_value_emoji: Emoji.EmojiCharacter {
 		let inUseEmojiCharacters = ContactsListController.shared.givenBooted_currentlyInUseEmojiCharacters()
 		let value = Emoji.anEmojiWhichIsNotInUse(amongInUseEmoji: inUseEmojiCharacters)
 		//
 		return value
+	}
+	//
+	// Accessors
+	var sanitizedInputValue__name: String {
+		return self.name_inputView.text != nil && self.name_inputView.text != ""
+			? self.name_inputView.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+			: ""
+	}
+	var sanitizedInputValue__emoji: Emoji.EmojiCharacter {
+		return self.emoji_inputView.selected_emojiCharacter
+	}
+	var sanitizedInputValue__address: String {
+		return self.address_inputView.textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+	}
+	var sanitizedInputValue__paymentID: MoneroPaymentID? {
+		if self.paymentID_inputView != nil && self.paymentID_inputView!.isHidden != true {
+			let stripped_paymentID = self.paymentID_inputView!.textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+			if stripped_paymentID != "" {
+				return stripped_paymentID
+			}
+		}
+		return nil
+	}
+	//
+	// Imperatives - Resolving indicator
+	func set(resolvingIndicatorIsVisible: Bool)
+	{
+		if resolvingIndicatorIsVisible {
+			self.resolving_activityIndicator.show()
+		} else {
+			self.resolving_activityIndicator.hide()
+		}
+		self.view.setNeedsLayout()
 	}
 	//
 	// Runtime - Imperatives - Overrides
@@ -203,7 +242,10 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		self.scrollView.isScrollEnabled = false
 		//
-		// TODO
+		self.name_inputView.isEnabled = false
+		self.emoji_inputView.isEnabled = false
+		self.address_inputView.textView.isEditable = false
+		self.paymentID_inputView?.textView.isEditable = false
 	}
 	override func reEnableForm()
 	{
@@ -211,12 +253,64 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		self.scrollView.isScrollEnabled = true
 		//
-		// TODO
+		self.name_inputView.isEnabled = true
+		self.emoji_inputView.isEnabled = true
+		self.address_inputView.textView.isEditable = true
+		self.paymentID_inputView?.textView.isEditable = true
 	}
+	var formSubmissionController: ContactFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()
 	{
-		self.resolving_activityIndicator.show()
-		self.view.setNeedsLayout()
+		assert(self.sanitizedInputValue__name != "")
+		assert(self.sanitizedInputValue__address != "")
+		let parameters = ContactFormSubmissionController.Parameters(
+			name: self.sanitizedInputValue__name,
+			emoji: self.sanitizedInputValue__emoji,
+			address: self.sanitizedInputValue__address,
+			paymentID: self.sanitizedInputValue__paymentID,
+			canSkipEntireOAResolveAndDirectlyUseInputValues: self._overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues,
+			//
+			skippingOAResolve_explicit__cached_OAResolved_XMR_address: self._overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address,
+			//
+			preInputValidation_terminal_validationMessage_fn:
+			{ [unowned self] (localizedString) in
+				self.setValidationMessage(localizedString)
+				self.formSubmissionController = nil // must free as this is a terminal callback
+			},
+			passedInputValidation_fn:
+			{ [unowned self] in
+				self.clearValidationMessage()
+				self.disableForm()
+			},
+			preSuccess_terminal_validationMessage_fn:
+			{ [unowned self] (localizedString) in
+				self.setValidationMessage(localizedString)
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.reEnableForm() // b/c we disabled it
+			},
+			feedBackOverridingPaymentIDValue_fn:
+			{ [unowned self] (paymentID_orNil) in
+				if self.paymentID_inputView != nil {
+					self.paymentID_inputView!.textView.text = paymentID_orNil ?? ""
+				}
+			},
+			didBeginResolving_fn:
+			{ [unowned self] in
+				self.set(resolvingIndicatorIsVisible: true)
+			},
+			didEndResolving_fn:
+			{ [unowned self] in
+				self.set(resolvingIndicatorIsVisible: false)
+			},
+			success_fn:
+			{ [unowned self] (instance) in
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.reEnableForm() // b/c we disabled it
+			}
+		)
+		let controller = ContactFormSubmissionController(parameters: parameters)
+		self.formSubmissionController = controller
+		controller.handle()
 	}
 	//
 	// Delegation - View

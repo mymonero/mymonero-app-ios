@@ -126,7 +126,7 @@ extension HostedMoneroAPIClient
 				final__payment_id = decodedAddressComponents.intPaymentId
 				final__pid_encrypt = true // we do want to encrypt if using an integrated address
 			}
-			if MyMoneroCoreUtils.IsValidPaymentIDOrNoPaymentID(final__payment_id) == false { // Validation
+			if MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(final__payment_id) == false { // Validation
 				__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
 				return
 			}

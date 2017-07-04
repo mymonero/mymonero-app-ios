@@ -146,6 +146,9 @@
 		9FAA18A31F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */; };
 		9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */; };
 		9FAA18AB1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */; };
+		9FAA18B01F0AEC22001F1D4D /* OpenAliasResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18AF1F0AEC22001F1D4D /* OpenAliasResolver.swift */; };
+		9FAA18B21F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B11F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift */; };
+		9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
@@ -302,6 +305,9 @@
 		9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emojiPickerPopover_cell_selectedBG_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicators.swift; sourceTree = "<group>"; };
 		9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graphicActivityIndicator_decoration@3x.png"; sourceTree = "<group>"; };
+		9FAA18AF1F0AEC22001F1D4D /* OpenAliasResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAliasResolver.swift; sourceTree = "<group>"; };
+		9FAA18B11F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAliasResolverRequestMaker.swift; sourceTree = "<group>"; };
+		9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormSubmissionController.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -494,6 +500,7 @@
 				9F8E2FE11EE978B700F89A1D /* SendFundsTab */,
 				9F8E2F881EE8807500F89A1D /* FundsRequests */,
 				9F8E2F861EE8807500F89A1D /* Contacts */,
+				9FAA18AE1F0AEC0C001F1D4D /* OpenAlias */,
 				9FA7342B1F077C6800C674D6 /* Emoji */,
 				9F8E2F8C1EE8807500F89A1D /* Settings */,
 			);
@@ -818,6 +825,7 @@
 			isa = PBXGroup;
 			children = (
 				9FA734121F05AFAB00C674D6 /* ContactsListController.swift */,
+				9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */,
 			);
 			path = ModelControllers;
 			sourceTree = "<group>";
@@ -889,6 +897,15 @@
 				9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		9FAA18AE1F0AEC0C001F1D4D /* OpenAlias */ = {
+			isa = PBXGroup;
+			children = (
+				9FAA18AF1F0AEC22001F1D4D /* OpenAliasResolver.swift */,
+				9FAA18B11F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift */,
+			);
+			path = OpenAlias;
 			sourceTree = "<group>";
 		};
 		9FC366DC1ECF9F90006CE743 /* Wallets */ = {
@@ -1160,6 +1177,7 @@
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
+				9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */,
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F2BFF0E1EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */,
@@ -1208,11 +1226,13 @@
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
 				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,
 				9FA734071F05AF4E00C674D6 /* WalletsListViewController.swift in Sources */,
+				9FAA18B21F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */,
 				9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
 				9FA7340F1F05AF8800C674D6 /* FundsRequestsListViewController.swift in Sources */,
+				9FAA18B01F0AEC22001F1D4D /* OpenAliasResolver.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
 				9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,

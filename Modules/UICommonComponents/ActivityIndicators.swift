@@ -58,23 +58,31 @@ extension UICommonComponents
 		var isAnimating = false
 		func startAnimating()
 		{
-			if isAnimating {
+			if self.isAnimating {
 				assert(false)
 				return
 			}
+			self.isAnimating = true
 			self._animateNextLoop()
 		}
+		var isAnimatingALoop = false
 		func _animateNextLoop()
 		{
-			if isAnimating {
+			if self.isAnimating == false {
+				assert(false)
 				return // terminate
 			}
+			if self.isAnimatingALoop {
+				assert(false)
+				return // terminate
+			}
+			self.isAnimatingALoop = true
 			let durationOfAnimationTo_on = 0.15
 			let durationOfAnimationTo_off = 0.3
 			let delayBetweenLoops: TimeInterval = 0.05
 			for (idx, bulbView) in bulbViews.enumerated() {
 //				bulbView.layer.removeAllAnimations() // in case
-
+				//
 				let bulbAnimationDelay: TimeInterval = TimeInterval(idx) * (durationOfAnimationTo_on + 0.05)
 				UIView.animate(
 					withDuration: durationOfAnimationTo_on,
@@ -103,6 +111,7 @@ extension UICommonComponents
 												deadline: .now() + delayBetweenLoops,
 												execute:
 												{ [unowned self] in
+													self.isAnimatingALoop = false
 													self._animateNextLoop()
 												}
 											)
@@ -117,10 +126,14 @@ extension UICommonComponents
 		}
 		func stopAnimating()
 		{
-			if isAnimating == false {
+			if self.isAnimating == false {
 				assert(false)
 				return
 			}
+			for (_, bulbView) in bulbViews.enumerated() {
+				bulbView.layer.removeAllAnimations()
+			}
+			self.isAnimating = false
 		}
 	}
 	class GraphicActivityIndicatorPartBulbView: UIImageView
