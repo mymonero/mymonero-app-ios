@@ -24,15 +24,8 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 	{
 		super.setup_navigation()
 		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
-		// must implement 'back' btn ourselves
-		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .back,
-			tapped_fn:
-			{ [unowned self] in
-				self.navigationController?.popViewController(animated: true)
-			}
-		)
 	}
+	override var overridable_wantsBackButton: Bool { return true }
 	override func setup_views()
 	{
 		super.setup_views()
@@ -117,7 +110,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 		//
 		self.note_messageView.layOut(atX: content_x, y: self.mnemonicTextDisplayView.frame.origin.y + self.mnemonicTextDisplayView.frame.size.height + 24, width: content_w)
 		//
-		self.formContentSizeDidChange(withBottomView: self.mnemonicTextDisplayView, bottomPadding: 18)
+		self.scrollableContentSizeDidChange(withBottomView: self.mnemonicTextDisplayView, bottomPadding: 18)
 	}
 	//
 	// Delegation - Views

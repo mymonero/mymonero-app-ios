@@ -175,15 +175,11 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				target: self,
 				action: #selector(tapped_barButtonItem_cancel)
 			)
-		} else { // must implement 'back' btn ourselves
-			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .back,
-				tapped_fn:
-				{ [unowned self] in
-					self.navigationController?.popViewController(animated: true)
-				}
-			)
+		} else { // we'll get a back button from super per overridable_wantsBackButton
 		}
+	}
+	override var overridable_wantsBackButton: Bool {
+		return self.wizardController.current_wizardTaskMode != .firstTime_useExisting
 	}
 	//
 	// Accessors - Lookups/derived - Input values
@@ -560,7 +556,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		self.layOut_walletLabelAndSwatchFields(atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height)
 		//
-		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.inlineMessageValidationView_bottomMargin)
+		self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.inlineMessageValidationView_bottomMargin)
 	}
 	override func viewDidAppear(_ animated: Bool)
 	{

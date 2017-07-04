@@ -8,67 +8,23 @@
 
 import UIKit
 //
-// TODO: scrolling to field/textarea on field focus where necessary, parent sizing w/inset
-//
-extension UIView
-{ // this should probably be moved out
-	func resignCurrentFirstResponder()
-	{
-		if let responder = self.currentFirstResponder {
-			responder.resignFirstResponder()
-		}
-	}
-	var currentFirstResponder: UIResponder?
-	{
-		if self.isFirstResponder {
-			return self
-		}
-		for view in self.subviews {
-			if let responder = view.currentFirstResponder {
-				return responder
-			}
-		}
-		return nil
-	}
-}
-//
 extension UICommonComponents
 {
-	class FormViewController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate
+	class FormViewController: ScrollableValidatingInfoViewController, UITextFieldDelegate, UITextViewDelegate
 	{
 		//
 		// Properties - Cached
-		var messageView: UICommonComponents.InlineMessageView?
 		//
 		// Properties - Derived
-		var scrollView: UIScrollView { return self.view as! UIScrollView }
 		var new__textField_w: CGFloat { return self.view.frame.size.width - 2 * CGFloat.form_input_margin_x }
 		var new__fieldLabel_w: CGFloat {
 			return self.view.frame.size.width - CGFloat.form_label_margin_x - CGFloat.form_input_margin_x
 		}
 		//
 		// Lifecycle - Init
-		init()
-		{
-			super.init(nibName: nil, bundle: nil)
-			self.setup()
-		}
-		required init?(coder aDecoder: NSCoder) {
-			fatalError("init(coder:) has not been implemented")
-		}
-		func setup()
-		{
-			self.setup_views() // must be before _navigation b/c that may rely on _views
-			self.setup_navigation()
-			self.startObserving()
-		}
-		override func loadView()
-		{
-			self.view = UIScrollView()
-			self.scrollView.delegate = self
-		}
-		func setup_views()
+		override func setup_views()
 		{ // override but call on super
+			super.setup_views()
 			do {
 				self.view.backgroundColor = UIColor.contentBackgroundColor
 				self.scrollView.indicatorStyle = .white
@@ -77,23 +33,10 @@ extension UICommonComponents
 				let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
 				self.view.addGestureRecognizer(tapGestureRecognizer)
 			}
-			if self.new_wantsInlineMessageViewForValidationMessages() {
-				let view = UICommonComponents.InlineMessageView(
-					mode: .withCloseButton,
-					didHide:
-					{ [unowned self] in
-						self.view.setNeedsLayout()
-					}
-				)
-				self.messageView = view
-				self.view.addSubview(view)
-			}
 		}
-		func setup_navigation()
-		{ // override but call on super
-		}
-		func startObserving()
+		override func startObserving()
 		{ // override, but call on super
+			super.startObserving()
 			self.startObserving_keyboard()
 		}
 		func startObserving_keyboard()
@@ -111,18 +54,9 @@ extension UICommonComponents
 				object: nil
 			)
 		}
-		//
-		// Lifecycle - Deinit
-		deinit
+		override func stopObserving()
 		{
-			self.tearDown()
-		}
-		func tearDown()
-		{
-			self.stopObserving()
-		}
-		func stopObserving()
-		{
+			super.stopObserving()
 			NotificationCenter.default.removeObserver(
 				self,
 				name: Notification.Name.UIKeyboardWillShow,
@@ -136,35 +70,9 @@ extension UICommonComponents
 		}
 		//
 		// Runtime - Accessors - Form components configuration
-		func new_wantsInlineMessageViewForValidationMessages() -> Bool
-		{ // overridable
-			return true
-		}
 		func new_wantsBackgroundTapToFocusResponder_orNilToBlurInstead() -> UIResponder?
 		{
 			return nil
-		}
-		//
-		// Accessors - Lookups/Derived - Layout metrics
-		var inlineMessageValidationView_topMargin: CGFloat
-		{
-			return 13
-		}
-		var inlineMessageValidationView_bottomMargin: CGFloat
-		{
-			return 13
-		}
-		var yOffsetForViewsBelowValidationMessageView: CGFloat
-		{
-			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
-			let topMargin = self.inlineMessageValidationView_topMargin
-			if self.messageView!.isHidden {
-				return topMargin
-			}
-			let bottomMargin = self.inlineMessageValidationView_bottomMargin
-			let y = topMargin + self.messageView!.frame.size.height + bottomMargin
-			//
-			return ceil(y) // b/c having it be .5 doesn't mix well with consumers' usage of .integral
 		}
 		//
 		// Runtime - Accessors - State - Overridable
@@ -185,6 +93,44 @@ extension UICommonComponents
 			let bottom: CGFloat = self.keyboardIsShowing == true ? self.keyboardHeight! : 0
 			//
 			return UIEdgeInsetsMake(0, 0, bottom, 0)
+		}
+		//
+		// Runtime - Imperatives - Scrolling
+		func scrollInputViewToVisible(_ inputView: UIView)
+		{
+			let visibleScroll_size_height = (self.scrollView.bounds.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom)
+			let visibleScroll_size = CGSize(
+				width: scrollView.bounds.size.width,
+				height: visibleScroll_size_height
+			)
+			let visibleScroll_rect = CGRect(origin: scrollView.contentOffset, size: visibleScroll_size)
+			var margin_y: CGFloat = UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.FormLabel.fixedHeight + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView
+			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
+				var this_view = inputView
+				var this_superview = this_view.superview!
+				while this_superview != scrollView {
+					margin_y += this_view.frame.origin.y
+					//
+					this_view = this_superview // walk up
+					this_superview = this_view.superview!
+				}
+			}
+			let toBeVisible_frame__relative = inputView.frame.insetBy(dx: 0, dy: -margin_y)
+			let toBeVisible_frame__absolute = inputView.superview == scrollView ? toBeVisible_frame__relative : inputView.convert(toBeVisible_frame__relative, to: scrollView)
+			if visibleScroll_rect.contains(toBeVisible_frame__absolute) { // already fully contained - do not scroll
+				return
+			}
+			var contentOffset_y: CGFloat
+			if toBeVisible_frame__absolute.origin.y < self.scrollView.contentOffset.y {
+				let toBeVisible_topEdge = toBeVisible_frame__absolute.origin.y
+				contentOffset_y = toBeVisible_topEdge
+			} else {
+				contentOffset_y = toBeVisible_frame__absolute.origin.y - visibleScroll_size_height + toBeVisible_frame__absolute.size.height
+			}
+			UIView.animate(withDuration: 0.25, animations:
+				{ [unowned self] in
+					self.scrollView.contentOffset = CGPoint(x: 0, y: contentOffset_y)
+			})
 		}
 		//
 		// Runtime - Imperatives - State
@@ -222,87 +168,6 @@ extension UICommonComponents
 			self.set_isFormSubmittable_needsUpdate()
 		}
 		//
-		// Runtime - Imperatives - Convenience/Overridable - Validation error
-		func setValidationMessage(_ message: String)
-		{
-			if self.new_wantsInlineMessageViewForValidationMessages() == false {
-				assert(false, "override \(#function)")
-				return
-			}
-			let view = self.messageView! // this ! is not necessary according to the var's optionality but there seems to be a compiler bug
-			view.set(text: message)
-			self.layOut_messageView() // this can be slightly redundant, but it is called here so we lay out before showing. maybe rework this so it doesn't require laying out twice and checking visibility. maybe a flag saying "ought to be showing". maybe.
-			view.show()
-			self.view.setNeedsLayout() // so views (below messageView) get re-laid-out
-		}
-		func clearValidationMessage()
-		{
-			if self.new_wantsInlineMessageViewForValidationMessages() == false {
-				assert(false, "override \(#function)")
-				return
-			}
-			self.messageView!.clearAndHide() // as you can see, no ! required here. compiler bug?
-			// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
-		}
-		//
-		// Imperatives - Internal - Layout
-		func layOut_messageView()
-		{
-			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
-			let x = CGFloat.visual__form_input_margin_x // use visual__ instead so we don't get extra img padding
-			let w = self.new__textField_w
-			self.messageView!.layOut(atX: x, y: self.inlineMessageValidationView_topMargin, width: w)
-		}
-		//
-		// Runtime - Imperatives - Scrolling
-		func scrollInputViewToVisible(_ inputView: UIView)
-		{
-			let visibleScroll_size_height = (self.scrollView.bounds.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom)
-			let visibleScroll_size = CGSize(
-				width: scrollView.bounds.size.width,
-				height: visibleScroll_size_height
-			)
-			let visibleScroll_rect = CGRect(origin: scrollView.contentOffset, size: visibleScroll_size)
-			var margin_y: CGFloat = UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.FormLabel.fixedHeight + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView
-			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
-				var this_view = inputView
-				var this_superview = this_view.superview!
-				while this_superview != scrollView {
-					margin_y += this_view.frame.origin.y
-					//
-					this_view = this_superview // walk up
-					this_superview = this_view.superview!
-				}
-			}
-			let toBeVisible_frame__relative = inputView.frame.insetBy(dx: 0, dy: -margin_y)
-			let toBeVisible_frame__absolute = inputView.superview == scrollView ? toBeVisible_frame__relative : inputView.convert(toBeVisible_frame__relative, to: scrollView)
-			if visibleScroll_rect.contains(toBeVisible_frame__absolute) { // already fully contained - do not scroll
-				return
-			}
-			var contentOffset_y: CGFloat
-			if toBeVisible_frame__absolute.origin.y < self.scrollView.contentOffset.y {
-				let toBeVisible_topEdge = toBeVisible_frame__absolute.origin.y
-				contentOffset_y = toBeVisible_topEdge
-			} else {
-				contentOffset_y = toBeVisible_frame__absolute.origin.y - visibleScroll_size_height + toBeVisible_frame__absolute.size.height
-			}
-			UIView.animate(withDuration: 0.25, animations:
-			{ [unowned self] in
-				self.scrollView.contentOffset = CGPoint(x: 0, y: contentOffset_y)
-			})
-		}
-		//
-		// Delegation - View
-		override func viewDidLayoutSubviews()
-		{
-			super.viewDidLayoutSubviews()
-			if self.new_wantsInlineMessageViewForValidationMessages() {
-				if self.messageView!.shouldPerformLayOut { // i.e. is visible
-					self.layOut_messageView()
-				}
-			}
-		}
-		//
 		// Delegation - Scrollview
 		func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
 		{ // this may or may not be preferable…
@@ -319,15 +184,6 @@ extension UICommonComponents
 			if viewToFocus_orNilToBlur.isFirstResponder == false { // this check is probably not necessary
 				viewToFocus_orNilToBlur.becomeFirstResponder()
 			}
-		}
-		//
-		// Delegation - Internal/Convenience - Scroll view
-		func formContentSizeDidChange(withBottomView bottomView: UIView, bottomPadding: CGFloat)
-		{
-			self.scrollView.contentSize = CGSize(
-				width: self.view.frame.size.width,
-				height: bottomView.frame.origin.y + bottomView.frame.size.height + bottomPadding
-			)
 		}
 		//
 		// Delegation - Internal/Convenience - UITextFieldDelegate
@@ -398,14 +254,6 @@ extension UICommonComponents
 		{
 			super.viewWillAppear(animated)
 			self.set_isFormSubmittable_needsUpdate()
-		}
-		var hasAppearedBefore = false
-		override func viewDidAppear(_ animated: Bool)
-		{
-			super.viewDidAppear(animated)
-			if self.hasAppearedBefore == false {
-				self.hasAppearedBefore = true
-			}
 		}
 		//
 		// Delegation - Notifications - Keyboard

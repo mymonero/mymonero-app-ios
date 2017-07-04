@@ -20,23 +20,18 @@ class CreateWallet_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseV
 	{
 		super.setup_navigation()
 		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
-		if self.wizardController.current_wizardTaskMode == .firstTime_useExisting { // only if it is, add cancel btn
+		if self.wizardController.current_wizardTaskMode == .firstTime_createWallet { // only if it is, add cancel btn
 			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 				type: .cancel,
 				target: self,
 				action: #selector(tapped_barButtonItem_cancel)
 			)
-		} else { // must implement 'back' btn ourselves
-			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .back,
-				tapped_fn:
-				{ [unowned self] in
-					self.navigationController?.popViewController(animated: true)
-				}
-			)
+		} else { // we'll get a back button from super per overridable_wantsBackButton
 		}
 	}
-	
+	override var overridable_wantsBackButton: Bool {
+		return self.wizardController.current_wizardTaskMode != .firstTime_createWallet
+	}	
 	//
 	// Accessors - Overrides
 	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
@@ -87,7 +82,7 @@ class CreateWallet_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseV
 		let topPadding: CGFloat = 13
 		//
 		self.layOut_walletLabelAndSwatchFields(atYOffset: 0)
-		self.formContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
+		self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
 	}
 	override func viewDidAppear(_ animated: Bool)
 	{

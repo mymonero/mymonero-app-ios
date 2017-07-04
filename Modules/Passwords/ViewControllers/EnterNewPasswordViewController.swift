@@ -237,6 +237,6 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 				height: self.confirmPassword_inputView.frame.size.height
 			).integral
 		}
-		self.formContentSizeDidChange(withBottomView: self.confirmPassword_inputView, bottomPadding: topPadding)
+		self.scrollableContentSizeDidChange(withBottomView: self.confirmPassword_inputView, bottomPadding: topPadding)
 	}
 }

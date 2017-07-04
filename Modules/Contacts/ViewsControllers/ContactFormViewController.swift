@@ -435,7 +435,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		
 		let bottomMostView = self.paymentID_fieldAccessoryMessageLabel /*?? self.deleteRecordButton*/ ?? self.paymentID_inputView ?? self.address_inputView
 		let bottomPadding: CGFloat = 18
-		self.formContentSizeDidChange(
+		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView!,
 			bottomPadding: bottomPadding
 		)

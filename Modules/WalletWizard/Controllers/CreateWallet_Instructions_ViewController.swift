@@ -86,15 +86,8 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		super.setup_navigation()
 		//
 		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
-		// must implement 'back' btn ourselves
-		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .back,
-			tapped_fn:
-			{ [unowned self] in
-				self.navigationController?.popViewController(animated: true)
-			}
-		)
 	}
+	override var overridable_wantsBackButton: Bool { return true }
 	//
 	// Accessors
 	var _new_messages_titlesAndDescriptions: [TitleAndDescription]
@@ -204,7 +197,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 			let height = 32 + 2 * UICommonComponents.FormInputCells.imagePadding_y
 			self.agreeCheckboxButton.frame = CGRect(x: content_x, y: y, width: width, height: height).integral
 		}
-		self.formContentSizeDidChange(withBottomView: self.agreeCheckboxButton, bottomPadding: 18)
+		self.scrollableContentSizeDidChange(withBottomView: self.agreeCheckboxButton, bottomPadding: 18)
 	}
 	//
 	// Delegation - Internal - Overrides

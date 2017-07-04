@@ -29,15 +29,8 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	{
 		super.setup_navigation()
 		self.navigationItem.title = NSLocalizedString("New Wallet", comment: "")
-		// must implement 'back' btn ourselves
-		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .back,
-			tapped_fn:
-			{ [unowned self] in
-				self.navigationController?.popViewController(animated: true)
-			}
-		)
 	}
+	override var overridable_wantsBackButton: Bool { return true }
 	override func setup_views()
 	{
 		super.setup_views()
@@ -335,7 +328,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			? self.selectableWordsView
 			: self.startOver_actionButtonView
 		assert(self.selectableWordsView.isHidden != self.startOver_actionButtonView.isHidden) // assert both are not both visible or hidden
-		self.formContentSizeDidChange(withBottomView: bottomMostView, bottomPadding: 18)
+		self.scrollableContentSizeDidChange(withBottomView: bottomMostView, bottomPadding: 18)
 	}
 	//
 	// Delegation - Interactions
