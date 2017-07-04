@@ -11,13 +11,21 @@ import UIKit
 class ContactsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "ContactsListViewCell"
-	static let contentViewHeight: CGFloat = 80
+	static let contentViewHeight: CGFloat = 70
 	static let contentView_margin_h: CGFloat = 16
-	static let cellSpacing: CGFloat = 12
-	static let cellHeight: CGFloat = contentViewHeight + cellSpacing
+	static func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
+	{
+		let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
+			withState: .normal,
+			position: cellPosition
+		)
+		let imagePadding = groupedHighlightableCellVariant.imagePaddingForShadow
+		return contentViewHeight + imagePadding.top + imagePadding.bottom
+	}
 	//
 	let cellContentView = ContactCellContentView()
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
+	let separatorView = UIView()
 	//
 	// Lifecycle - Init
 	init()
@@ -40,6 +48,11 @@ class ContactsListViewCell: UITableViewCell
 		}
 		self.contentView.addSubview(self.cellContentView)
 		self.contentView.addSubview(self.accessoryChevronView)
+		do {
+			let view = self.separatorView
+			view.backgroundColor = UIColor(rgb: 0x413e40)
+			self.contentView.addSubview(view)
+		}
 	}
 	//
 	// Lifecycle - Deinit
@@ -51,42 +64,79 @@ class ContactsListViewCell: UITableViewCell
 	{
 		self.cellContentView.prepareForReuse()
 		self.object = nil
+		self.cellPosition = nil
 	}
 	//
 	// Imperatives - Configuration
 	var object: Contact?
-	func configure(withObject object: Contact)
+	var cellPosition: UICommonComponents.CellPosition?
+	func configure(withObject object: Contact, cellPosition: UICommonComponents.CellPosition)
 	{
 		assert(self.object == nil)
+		assert(self.cellPosition == nil)
 		self.object = object
+		self.cellPosition = cellPosition
+		do {
+			self.backgroundView = UIImageView(
+				image: UICommonComponents.GroupedHighlightableCells.Variant.new(
+					withState: .normal,
+					position: cellPosition
+				).stretchableImage
+			)
+			self.selectedBackgroundView = UIImageView(
+				image: UICommonComponents.GroupedHighlightableCells.Variant.new(
+					withState: .highlighted,
+					position: cellPosition
+				).stretchableImage
+			)
+		}
+		self.separatorView.isHidden = cellPosition == .bottom || cellPosition == .standalone
 		self.cellContentView.configure(withObject: object)
 	}
 	//
-	// Overrides - Imperatives - Layout
+	// Overrides - Imperatives
 	override func layoutSubviews()
 	{
 		super.layoutSubviews()
+		let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
+			withState: .normal,
+			position: self.cellPosition!
+		)
+		let imagePaddingForShadowInsets = groupedHighlightableCellVariant.imagePaddingForShadow
 		let frame = UIEdgeInsetsInsetRect(
 			self.bounds,
 			UIEdgeInsetsMake(
 				0,
-				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
-				WalletsListViewCell.cellSpacing - 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_v,
-				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h
+				ContactsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.left,
+				0,
+				ContactsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.right
 			)
 		)
 		self.contentView.frame = frame
-		//		self.backgroundView!.frame = frame
-		//		self.selectedBackgroundView!.frame = frame
-		self.cellContentView.frame = self.contentView.bounds.insetBy(
-			dx: UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
-			dy: UICommonComponents.HighlightableCells.imagePaddingForShadow_v
+		self.backgroundView!.frame = frame
+		self.selectedBackgroundView!.frame = frame
+		let cellContentViewFrame = UIEdgeInsetsInsetRect(
+			self.contentView.bounds,
+			imagePaddingForShadowInsets
 		)
+		self.cellContentView.frame = cellContentViewFrame
 		self.accessoryChevronView.frame = CGRect(
-			x: frame.size.width - self.accessoryChevronView.frame.size.width - 16,
-			y: frame.origin.y + (frame.size.height - self.accessoryChevronView.frame.size.height)/2,
+			x: (cellContentViewFrame.origin.x + cellContentViewFrame.size.width) - self.accessoryChevronView.frame.size.width - 16,
+			y: cellContentViewFrame.origin.y + (cellContentViewFrame.size.height - self.accessoryChevronView.frame.size.height)/2,
 			width: self.accessoryChevronView.frame.size.width,
 			height: self.accessoryChevronView.frame.size.height
 		).integral
+		do {
+			if self.separatorView.isHidden == false {
+				let x = cellContentViewFrame.origin.x + 50
+				let h: CGFloat = 1/UIScreen.main.scale
+				self.separatorView.frame = CGRect(
+					x: x,
+					y: cellContentViewFrame.origin.y + cellContentViewFrame.size.height - h,
+					width: cellContentViewFrame.size.width - x + 1, // not sure where the -1 is coming from here - probably some img padding h
+					height: h
+				)
+			}
+		}
 	}
 }

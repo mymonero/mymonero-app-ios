@@ -25,12 +25,19 @@ class ContactCellContentView: UIView
 	}
 	func setup()
 	{
-		
+		do {
+			let view = UILabel()
+			view.font = UIFont.systemFont(ofSize: 13)
+			view.numberOfLines = 1
+			self.addSubview(view)
+			self.emojiLabel =  view
+		}
 		do {
 			let view = UILabel()
 			view.textColor = UIColor(rgb: 0xFCFBFC)
 			view.font = UIFont.middlingSemiboldSansSerif
 			view.numberOfLines = 1
+			view.lineBreakMode = .byTruncatingTail
 			self.addSubview(view)
 			self.titleLabel =  view
 		}
@@ -39,6 +46,7 @@ class ContactCellContentView: UIView
 			view.textColor = UIColor(rgb: 0x9E9C9E)
 			view.font = UIFont.middlingRegularMonospace
 			view.numberOfLines = 1
+			view.lineBreakMode = .byTruncatingTail
 			self.addSubview(view)
 			self.subtitleLabel =  view
 		}
@@ -79,6 +87,9 @@ class ContactCellContentView: UIView
 	func _configureUI()
 	{
 		assert(self.object != nil)
+		self.emojiLabel.text = self.object!.emoji
+		self.titleLabel.text = self.object!.fullname
+		self.subtitleLabel.text = self.object!.address
 	}
 	//
 	func startObserving_object()
@@ -90,21 +101,21 @@ class ContactCellContentView: UIView
 	override func layoutSubviews()
 	{
 		super.layoutSubviews()
-//		self.emojiLabel.frame = CGRect(
-//			x: self.iconView_x,
-//			y: 16,
-//			width: self.iconView.frame.size.width,
-//			height: self.iconView.frame.size.height
-//		)
-		let labels_x: CGFloat = 10 // TODO
+		self.emojiLabel.frame = CGRect(
+			x: 17,
+			y: 17,
+			width: 20,
+			height: 21
+		)
+		let labels_x: CGFloat = 50
 		let labels_rightMargin: CGFloat = 40
 		let labels_width = self.frame.size.width - labels_x - labels_rightMargin
 		self.titleLabel.frame = CGRect(
 			x: labels_x,
-			y: 10,
+			y: 19,
 			width: labels_width,
 			height: 16 // TODO: size with font for accessibility?
-			).integral
+		).integral
 		self.subtitleLabel.frame = CGRect(
 			x: labels_x,
 			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 1,

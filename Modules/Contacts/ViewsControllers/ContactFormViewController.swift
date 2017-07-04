@@ -51,6 +51,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			let view = UICommonComponents.FormInputField(
 				placeholder: NSLocalizedString("Enter name", comment: "")
 			)
+			view.autocorrectionType = .no
+			view.autocapitalizationType = .words // not perfect
+			view.spellCheckingType = .no
 			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			view.delegate = self
 			view.returnKeyType = .next

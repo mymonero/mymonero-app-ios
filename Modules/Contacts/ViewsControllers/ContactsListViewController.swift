@@ -21,7 +21,7 @@ class ContactsListViewController: ListViewController
 	{
 		super.setup_tableView()
 		self.tableView.backgroundColor = .contentBackgroundColor
-		self.tableView.separatorStyle = .none
+		self.tableView.separatorStyle = .none // on cell
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
 	}
 	override func configure_navigation_barButtonItems()
@@ -48,13 +48,25 @@ class ContactsListViewController: ListViewController
 			cell = ContactsListViewCell()
 		}
 		let object = self.listController.records[indexPath.row] as! Contact
-		cell!.configure(withObject: object)
+		let index = indexPath.row
+		let cellsCount = self.listController.records.count // it'd be nice if we could cache this - probably on the list controller
+		let cellPosition = UICommonComponents.newCellPosition(
+			withCellIndex: index,
+			cellsCount: cellsCount
+		)
+		cell!.configure(withObject: object, cellPosition: cellPosition)
 		//
 		return cell!
 	}
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
-		return ContactsListViewCell.cellHeight
+		let index = indexPath.row
+		let cellsCount = self.listController.records.count // it'd be nice if we could cache this - probably on the list controller
+		let cellPosition = UICommonComponents.newCellPosition(
+			withCellIndex: index,
+			cellsCount: cellsCount
+		)
+		return ContactsListViewCell.cellHeight(withPosition: cellPosition)
 	}
 	//
 	// Delegation - Interactions
