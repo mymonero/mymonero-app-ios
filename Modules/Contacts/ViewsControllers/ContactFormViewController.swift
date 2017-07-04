@@ -302,15 +302,50 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			{ [unowned self] in
 				self.set(resolvingIndicatorIsVisible: false)
 			},
-			success_fn:
-			{ [unowned self] (instance) in
-				self.formSubmissionController = nil // must free as this is a terminal callback
-				self.reEnableForm() // b/c we disabled it
+			persistContact_fn:
+			{ [unowned self] (name, emoji, address, paymentID_toSave, cached_OAResolved_XMR_address) in
+				self._persistContact(
+					name: name,
+					emoji: emoji,
+					address: address,
+					withPaymentID: paymentID_toSave,
+					cached_OAResolved_XMR_address: cached_OAResolved_XMR_address,
+					fn:
+					{ [unowned self] (err_str, instance) in
+						if err_str != nil {
+							self.setValidationMessage(err_str!)
+						}
+						self.formSubmissionController = nil // must free as this is a terminal callback
+						self.reEnableForm() // b/c we disabled it
+						if err_str == nil {
+							self._didSave(instance: instance!)
+						}
+					}
+				)
+				//
 			}
 		)
 		let controller = ContactFormSubmissionController(parameters: parameters)
 		self.formSubmissionController = controller
 		controller.handle()
+	}
+	func _persistContact(
+		name: String,
+		emoji: Emoji.EmojiCharacter,
+		address: String,
+		withPaymentID paymentID_toSave: MoneroPaymentID?,
+		cached_OAResolved_XMR_address: MoneroAddress?,
+		fn: @escaping (_ err_str: String?, _ instance: Contact?) -> Void
+	)
+	{
+		assert(false, "Override and implement, and call fn on err or success.")
+		fn(nil, nil) // TODO
+	}
+	//
+	// Delegation - Form submission success
+	func _didSave(instance: Contact)
+	{
+		assert(false, "Override this and implement")
 	}
 	//
 	// Delegation - View
@@ -329,7 +364,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			let visual__nameField_w = textField_w - (nameField_marginRight + self.emoji_inputView.frame.size.width)
 			self.name_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: top_yOffset,
+				y: ceil(top_yOffset),
 				width: visual__nameField_w,
 				height: self.name_label.frame.size.height
 			).integral

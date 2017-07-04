@@ -30,7 +30,7 @@ class Contact: PersistableObject
 	// Properties - Principal Persisted Values
 	var fullname: String!
 	var address: String! // String because it could be an OA address
-	var payment_id: MoneroPaymentID!
+	var payment_id: MoneroPaymentID?
 	var emoji: Emoji.EmojiCharacter!
 	var cached_OAResolved_XMR_address: MoneroAddress?
 	//
@@ -101,7 +101,7 @@ class Contact: PersistableObject
 		fullname: String,
 		emoji: Emoji.EmojiCharacter,
 		address: String, // could be an OA address too
-		payment_id: MoneroPaymentID,
+		payment_id: MoneroPaymentID?,
 		cached_OAResolved_XMR_address: MoneroAddress?
 	) -> String? // err_str -- maybe port to 'throws'
 	{
@@ -125,7 +125,7 @@ class Contact: PersistableObject
 		return nil
 	}
 	func SetValuesAndSave_fromOAResolve(
-		payment_id: MoneroPaymentID,
+		payment_id: MoneroPaymentID?,
 		cached_OAResolved_XMR_address: MoneroAddress
 	) -> String? // err_str -- maybe port to 'throws'
 	{

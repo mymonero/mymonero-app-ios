@@ -164,7 +164,7 @@ extension UICommonComponents
 			let bottomMargin = self.inlineMessageValidationView_bottomMargin
 			let y = topMargin + self.messageView!.frame.size.height + bottomMargin
 			//
-			return y
+			return ceil(y) // b/c having it be .5 doesn't mix well with consumers' usage of .integral
 		}
 		//
 		// Runtime - Accessors - State - Overridable

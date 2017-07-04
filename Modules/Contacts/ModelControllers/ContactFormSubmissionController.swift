@@ -32,7 +32,13 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		var didBeginResolving_fn: (Void) -> Void
 		var didEndResolving_fn: (Void) -> Void
 		//
-		var success_fn: (_ instance: Contact) -> Void
+		var persistContact_fn: (
+			_ name: String,
+			_ emoji: Emoji.EmojiCharacter,
+			_ address: String,
+			_ paymentID_toSave: MoneroPaymentID?,
+			_ cached_OAResolved_XMR_address: MoneroAddress?
+		) -> Void
 	}
 	var parameters: Parameters
 	init(parameters: Parameters)
@@ -76,8 +82,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		self.parameters.passedInputValidation_fn()
 		//
 		if self.parameters.canSkipEntireOAResolveAndDirectlyUseInputValues == true {
-			DDLog.Info("Contacts", "Skipping OA resolve on AddContact.")
-			self.__proceedTo_addContact(
+			DDLog.Info("Contacts", "Skipping OA resolve on ContactForm submit.")
+			self.__proceedTo_persistContact(
 				withPaymentID: self.parameters.paymentID, // now, by now, we've already validated that if they've entered a paymentID, it's valid
 				cached_OAResolved_XMR_address: self.parameters.skippingOAResolve_explicit__cached_OAResolved_XMR_address
 			)
@@ -114,7 +120,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 							}
 							let paymentID = generated_paymentID!
 							self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
-							self.__proceedTo_addContact(
+							self.__proceedTo_persistContact(
 								withPaymentID: paymentID,
 								cached_OAResolved_XMR_address: nil
 							)
@@ -122,7 +128,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 					return
 				}
 				// else, simply use the entered paymentID
-				self.__proceedTo_addContact(
+				self.__proceedTo_persistContact(
 					withPaymentID: self.parameters.paymentID!, // and it's not necessary but ! added to be explicit
 					cached_OAResolved_XMR_address: nil
 				)
@@ -132,7 +138,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 			// else, IS integrated address
 			let paymentID = integratedAddress_paymentId // use this one instead
 			self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
-			self.__proceedTo_addContact(
+			self.__proceedTo_persistContact(
 				withPaymentID: paymentID,
 				cached_OAResolved_XMR_address: nil
 			)
@@ -174,7 +180,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID_toSave)
 				//
 				let cached_OAResolved_XMR_address = response!.moneroReady_address
-				self.__proceedTo_addContact(
+				self.__proceedTo_persistContact(
 					withPaymentID: paymentID_toSave, // aka use no/zero/emptystr payment id rather than null as null will create a new
 					cached_OAResolved_XMR_address: cached_OAResolved_XMR_address // it's ok if this is nil
 				)
@@ -182,13 +188,29 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		)
 	}
 	//
-
-	func __proceedTo_addContact(
+	func __proceedTo_persistContact(
 		withPaymentID paymentID_toSave: MoneroPaymentID?,
 		cached_OAResolved_XMR_address: MoneroAddress?
-		)
+	)
 	{
-		assert(false, "make this save edit instead of create new if configured as such")
-		
+		// final validation of paymentID…
+		let paymentID_exists = self.parameters.paymentID != nil && self.parameters.paymentID! != ""
+		let paymentID_existsAndIsNotValid = paymentID_exists && MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(
+			self.parameters.paymentID!
+			) == false
+		if paymentID_existsAndIsNotValid {
+			self.parameters.preInputValidation_terminal_validationMessage_fn(
+				NSLocalizedString("Please enter a valid payment ID.", comment: "")
+			)
+			return
+		}
+		// now we can actually persist the contact (update or insert)
+		self.parameters.persistContact_fn(
+			self.parameters.name,
+			self.parameters.emoji,
+			self.parameters.address,
+			paymentID_toSave,
+			cached_OAResolved_XMR_address
+		)
 	}
 }
