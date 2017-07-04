@@ -71,6 +71,7 @@ class ContactCellContentView: UIView
 	func stopObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: self.object!)
 	}
 	//
 	// Accessors
@@ -95,6 +96,7 @@ class ContactCellContentView: UIView
 	func startObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(_infoUpdated), name: Contact.NotificationNames.infoUpdated.notificationName, object: self.object!)
 	}
 	//
 	// Imperatives - Overrides
@@ -122,5 +124,11 @@ class ContactCellContentView: UIView
 			width: labels_width,
 			height: 20 // TODO: size with font for accessibility? NOTE: must support emoji, currently, for locked icon
 		).integral
+	}
+	//
+	// Delegation - Notifications
+	func _infoUpdated()
+	{
+		self._configureUI()
 	}
 }
