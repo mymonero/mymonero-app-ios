@@ -41,14 +41,17 @@ class ContactDetailsViewController: UICommonComponents.DetailsViewController
 		return true
 	}
 	//
-	override func startObserving() {
+	override func startObserving()
+	{
 		super.startObserving()
-		// TODO
-		// info updated and will be deleted
+		NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.contact)
+		NotificationCenter.default.addObserver(self, selector: #selector(infoUpdated), name: Contact.NotificationNames.infoUpdated.notificationName, object: self.contact)
 	}
-	override func stopObserving() {
+	override func stopObserving()
+	{
 		super.stopObserving()
-		// TODO info updated and will be deleted
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.contact)
+		NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: self.contact)
 	}
 	//
 	// Imperatives
@@ -63,5 +66,19 @@ class ContactDetailsViewController: UICommonComponents.DetailsViewController
 		let viewController = EditContactFormViewController(withContact: self.contact)
 		let presenting_viewController = UINavigationController(rootViewController: viewController)
 		self.navigationController!.present(presenting_viewController, animated: true, completion: nil)
+	}
+	//
+	func willBeDeleted()
+	{
+		if self.navigationController!.topViewController! != self {
+			assert(false)
+			return
+		}
+		self.navigationController!.popViewController(animated: true)
+	}
+	func infoUpdated()
+	{
+		self.set_navigationTitle()
+		// TODO: also config table/details UI
 	}
 }

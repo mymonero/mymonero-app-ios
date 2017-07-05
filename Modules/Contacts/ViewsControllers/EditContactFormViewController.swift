@@ -6,7 +6,7 @@
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class EditContactFormViewController: ContactFormViewController
 {
@@ -41,4 +41,44 @@ class EditContactFormViewController: ContactFormViewController
 	override var new_initial_value_emoji: Emoji.EmojiCharacter { return self.contact.emoji }
 	override var new_initial_value_address: String? { return self.contact.address }
 	override var new_initial_value_paymentID: String? { return self.contact.payment_id }
+	//
+	override var _overridable_wantsDeleteRecordButton: Bool { return true }
+	//
+	// Overrides - Delegation
+	override func deleteButton_tapped()
+	{
+		let alertController = UIAlertController(
+			title: NSLocalizedString("Delete this contact?", comment: ""),
+			message: NSLocalizedString(
+				"Delete this contact? This cannot be undone.",
+				comment: ""
+			),
+			preferredStyle: .alert
+		)
+		alertController.addAction(
+			UIAlertAction(
+				title: NSLocalizedString("Delete", comment: ""),
+				style: .destructive
+			)
+			{ (result: UIAlertAction) -> Void in
+				let err_str = ContactsListController.shared.givenBooted_delete(listedObject: self.contact)
+				if err_str != nil {
+					self.setValidationMessage(err_str!)
+					return
+				}
+				assert(self.navigationController!.presentingViewController != nil)
+				// we always expect self to be presented modally
+				self.navigationController?.dismiss(animated: true, completion: nil)
+			}
+		)
+		alertController.addAction(
+			UIAlertAction(
+				title: NSLocalizedString("Cancel", comment: ""),
+				style: .default
+			)
+			{ (result: UIAlertAction) -> Void in
+			}
+		)
+		self.navigationController!.present(alertController, animated: true, completion: nil)
+	}
 }

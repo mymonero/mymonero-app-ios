@@ -28,6 +28,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
 	//
+	var deleteButton_separatorView: UIView?
+	var deleteButton: UICommonComponents.LinkButtonView?
+	//
 	// Lifecycle - Init
 	override init()
 	{
@@ -144,9 +147,21 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.paymentID_fieldAccessoryMessageLabel = view
 			self.view.addSubview(view)
 		}
-		
+		if self._overridable_wantsDeleteRecordButton {
+			do {
+				let view = UIView()
+				view.backgroundColor = UIColor(red: 56/255, green: 54/255, blue: 56/255, alpha: 100/255)
+				self.deleteButton_separatorView = view
+				self.view.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "DELETE CONTACT")
+				view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
+				self.deleteButton = view
+				self.view.addSubview(view)
+			}
+		}
 //		self.view.borderSubviews()
-		// TODO: add delete record btn here per overridable flag
 	}
 	override func setup_navigation()
 	{
@@ -209,6 +224,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var _overridable_formSubmissionMode: ContactFormSubmissionController.Mode { return .insert }
 	var _overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address: MoneroAddress? { return nil }
 	var _overridable_forMode_update__contactInstance: Contact? { return nil }
+	var _overridable_wantsDeleteRecordButton: Bool { return false }
 	//
 	var new_initial_value_name: String? { return nil }
 	var new_initial_value_emoji: Emoji.EmojiCharacter {
@@ -439,14 +455,29 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			assert(self.paymentID_inputView == nil)
 			assert(self.paymentID_fieldAccessoryMessageLabel == nil)
 		}
-		// TODO: lay out delete record field if exists
-		//
+		if self.deleteButton != nil {
+			assert(self.deleteButton_separatorView != nil)
+			let justPreviousView = (self.paymentID_fieldAccessoryMessageLabel ?? self.paymentID_inputView ?? self.address_inputView)!
+			self.deleteButton_separatorView!.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.FormLabel.visual_marginAboveLabelForUnderneathField,
+				width: self.view.frame.size.width - 2 * CGFloat.form_input_margin_x,
+				height: 1/UIScreen.main.scale
+			)
+			//
+			self.deleteButton!.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.FormLabel.visual_marginAboveLabelForUnderneathField,
+				width: self.deleteButton!.frame.size.width,
+				height: self.deleteButton!.frame.size.height
+			)
+		}
 		// TODO: derive bottommost view based on existence
 		// … delete record, payment id, address, … and set up way to expand border box to fill view
 		// TODO: if applicable set up inset fields for add contact from send funds tab
 		
 		
-		let bottomMostView = self.paymentID_fieldAccessoryMessageLabel /*?? self.deleteRecordButton*/ ?? self.paymentID_inputView ?? self.address_inputView
+		let bottomMostView = self.paymentID_fieldAccessoryMessageLabel ?? self.deleteButton ?? self.paymentID_inputView ?? self.address_inputView
 		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView!,
@@ -488,5 +519,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		assert(self.navigationController!.presentingViewController != nil)
 		// we always expect self to be presented modally
 		self.navigationController?.dismiss(animated: true, completion: nil)
+	}
+	//
+	func deleteButton_tapped()
+	{
 	}
 }

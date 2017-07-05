@@ -12,12 +12,18 @@ extension UICommonComponents
 {
 	class LinkButtonView: UIButton
 	{
+		//
+		// Constants
+		static let h: CGFloat = 24
+		//
 		enum Mode
 		{
 			case mono_default
 			case mono_destructive
 			case sansSerif_default
 		}
+		//
+		// Init
 		var mode: Mode!
 		init(mode: Mode, title: String)
 		{
@@ -25,7 +31,7 @@ extension UICommonComponents
 				x: 0,
 				y: 0, 
 				width: 0,
-				height: 24 // increased height for touchability
+				height: LinkButtonView.h // increased height for touchability
 			)
 			super.init(frame: frame)
 			self.mode = mode
@@ -38,11 +44,14 @@ extension UICommonComponents
 		//
 		func setTitleText(to title: String)
 		{ // use this instead of setTitle
+			let color_normal = self.mode == .mono_destructive
+				? UIColor.standaloneValidationTextOrDestructiveLinkContentColor
+				: UIColor.utilityOrConstructiveLinkColor
 			let normal_attributedTitle = NSAttributedString(
 				string: title,
 				attributes:
 				[
-					NSForegroundColorAttributeName: UIColor.utilityOrConstructiveLinkColor,
+					NSForegroundColorAttributeName: color_normal,
 					NSFontAttributeName: UIFont.smallRegularMonospace,
 					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleNone.rawValue
 				]
@@ -51,7 +60,7 @@ extension UICommonComponents
 				string: title,
 				attributes:
 				[
-					NSForegroundColorAttributeName: UIColor.utilityOrConstructiveLinkColor,
+					NSForegroundColorAttributeName: color_normal,
 					NSFontAttributeName: UIFont.smallRegularMonospace,
 					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue
 				]
@@ -60,7 +69,7 @@ extension UICommonComponents
 				string: title,
 				attributes:
 				[
-					NSForegroundColorAttributeName: UIColor.disabled_utilityOrConstructiveLinkColor,
+					NSForegroundColorAttributeName: UIColor.disabledLinkColor,
 					NSFontAttributeName: UIFont.smallRegularMonospace,
 					NSUnderlineStyleAttributeName: NSUnderlineStyle.styleNone.rawValue
 				]
@@ -72,6 +81,10 @@ extension UICommonComponents
 			//
 			// now that we have title and font…
 			self.sizeToFit()
+			var frame = self.frame
+			frame.size.height = LinkButtonView.h
+			self.frame = frame
+			
 		}
 	}
 }

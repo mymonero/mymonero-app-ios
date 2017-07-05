@@ -32,7 +32,7 @@ extension UICommonComponents
 			self.setTitle(NSLocalizedString("COPY", comment: ""), for: .normal)
 			self.titleLabel!.font = UIFont.smallBoldSansSerif
 			self.setTitleColor(.utilityOrConstructiveLinkColor, for: .normal)
-			self.setTitleColor(.disabled_utilityOrConstructiveLinkColor, for: .disabled)
+			self.setTitleColor(.disabledLinkColor, for: .disabled)
 			self.addTarget(self, action: #selector(did_touchUpInside), for: .touchUpInside)
 			//
 			self.sizeToFit() // perhaps replace with fixed value - minor optimization

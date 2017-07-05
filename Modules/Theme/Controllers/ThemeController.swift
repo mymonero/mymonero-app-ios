@@ -77,7 +77,7 @@ extension UIColor
 	{
 		return UIColor(rgb: 0x11BBEC)
 	}
-	static var disabled_utilityOrConstructiveLinkColor: UIColor
+	static var disabledLinkColor: UIColor
 	{
 		return UIColor(rgb: 0xD4D4D4)
 	}
