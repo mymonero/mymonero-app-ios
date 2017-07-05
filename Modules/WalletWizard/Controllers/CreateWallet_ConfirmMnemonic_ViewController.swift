@@ -38,13 +38,13 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			let view = self.headerLabel
 			view.text = NSLocalizedString("Verify your mnemonic", comment: "")
 			view.textAlignment = .center
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = self.descriptionLabel
 			view.set(text: NSLocalizedString("Choose each word in the correct order.", comment: ""))
 			view.textAlignment = .center
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		let mnemonicWords = self.wizardWalletMnemonicString.components(separatedBy: " ").map(
 			{ (word) -> CreateWallet_ConfirmMnemonic.MnemonicWordHandle in
@@ -69,7 +69,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 				}
 			)
 			self.selectedWordsView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = CreateWallet_ConfirmMnemonic.SelectableWordsView(
@@ -77,7 +77,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 				selectedWordsView: self.selectedWordsView
 			)
 			self.selectableWordsView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		self.selectedWordsView.postInit_set(selectableWordsView: self.selectableWordsView)
 		do {
@@ -87,7 +87,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			view.font = UIFont.smallRegularMonospace
 			view.textColor = UIColor(rgb: 0xF97777)
 			view.text = NSLocalizedString("That’s not right. You can try again or start over with a new mnemonic.", comment: "")
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: UIImage(named: "actionButton_iconImage__tryAgain")!)
@@ -95,7 +95,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			view.setTitle(NSLocalizedString("Try again", comment: ""), for: .normal)
 			view.isHidden = true
 			self.tryAgain_actionButtonView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: UIImage(named: "actionButton_iconImage__startOver")!)
@@ -103,14 +103,14 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			view.setTitle(NSLocalizedString("Start over", comment: ""), for: .normal)
 			view.isHidden = true
 			self.startOver_actionButtonView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 	}
 	//
 	// Accessors - Derived
 	var margin_h: CGFloat { return 16 }
 	var content_x: CGFloat { return self.margin_h }
-	var content_w: CGFloat { return (self.view.frame.size.width - 2*content_x) }
+	var content_w: CGFloat { return (self.scrollView.frame.size.width - 2*content_x) }
 	var topPadding: CGFloat { return 36 }
 	override var yOffsetForViewsBelowValidationMessageView: CGFloat
 	{ // overridden to get topPadding and max() behavior
@@ -278,7 +278,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 		//
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		let headers_x: CGFloat = 4 // would normally use content_x, but that's too large to fit content on small screens
-		let headers_w = self.view.frame.size.width - 2*headers_x
+		let headers_w = self.scrollView.frame.size.width - 2*headers_x
 		self.headerLabel.frame = CGRect(x: 0, y: 0, width: headers_w, height: 0)
 		self.descriptionLabel.frame = CGRect(x: 0, y: 0, width: headers_w, height: 0)
 		self.headerLabel.sizeToFit() // to get height
@@ -303,7 +303,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 		)
 		if self.selectableWordsView.isHidden == false {
 			let special__content_x: CGFloat = 8 // this is instead of 16 and different from the design but it gives more room on small screens
-			let special__content_w = self.view.frame.size.width - 2*special__content_x
+			let special__content_w = self.scrollView.frame.size.width - 2*special__content_x
 			let topMargin: CGFloat = 24 // design says 40 but this better accommodates small screens
 			self.selectableWordsView.layOut(
 				atX: special__content_x,
@@ -320,7 +320,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			//
 			assert(self.tryAgain_actionButtonView.isHidden == false)
 			assert(self.startOver_actionButtonView.isHidden == false)
-			let buttons_y = self.view.bounds.size.height - (UICommonComponents.ActionButton.buttonHeight + UICommonComponents.ActionButton.bottomMargin) // we'll assume the view contents are short enough not to obscure these
+			let buttons_y = self.scrollView.bounds.size.height - (UICommonComponents.ActionButton.buttonHeight + UICommonComponents.ActionButton.bottomMargin) // we'll assume the view contents are short enough not to obscure these
 			self.tryAgain_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: content_x)
 			self.startOver_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: content_x)
 		}

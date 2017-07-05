@@ -14,10 +14,8 @@ extension UICommonComponents
 	{
 		//
 		// Properties - Cached
+		var scrollView: UIScrollView!
 		var messageView: UICommonComponents.InlineMessageView?
-		//
-		// Properties - Derived
-		var scrollView: UIScrollView { return self.view as! UIScrollView }
 		//
 		// Imperatives - Init
 		init()
@@ -34,24 +32,31 @@ extension UICommonComponents
 			self.setup_navigation()
 			self.startObserving()
 		}
-		override func loadView()
-		{
-			self.view = UIScrollView()
-			self.scrollView.delegate = self
-		}
 		func setup_views()
 		{ // override but call on super
+			self.setup_scrollView()
 			if self.new_wantsInlineMessageViewForValidationMessages() {
-				let view = UICommonComponents.InlineMessageView(
-					mode: .withCloseButton,
-					didHide:
-					{ [unowned self] in
-						self.view.setNeedsLayout()
-					}
-				)
-				self.messageView = view
-				self.view.addSubview(view)
+				self.setup_messageView()
 			}
+		}
+		func setup_scrollView()
+		{
+			let view = UIScrollView()
+			view.delegate = self
+			self.view.addSubview(view)
+			self.scrollView = view
+		}
+		func setup_messageView()
+		{
+			let view = UICommonComponents.InlineMessageView(
+				mode: .withCloseButton,
+				didHide:
+				{ [unowned self] in
+					self.view.setNeedsLayout()
+				}
+			)
+			self.messageView = view
+			self.scrollView.addSubview(view)
 		}
 		func setup_navigation()
 		{ // override but call on super
@@ -141,6 +146,14 @@ extension UICommonComponents
 			let x = CGFloat.visual__form_input_margin_x // use visual__ instead so we don't get extra img padding
 			let w = self.view.frame.size.width - 2 * x
 			self.messageView!.layOut(atX: x, y: self.inlineMessageValidationView_topMargin, width: w)
+		}
+		//
+		// Imperatives - Overrides - Layout
+		override func viewWillLayoutSubviews()
+		{
+			super.viewWillLayoutSubviews()
+			//
+			self.scrollView.frame = self.view.bounds
 		}
 		//
 		// Delegation - View

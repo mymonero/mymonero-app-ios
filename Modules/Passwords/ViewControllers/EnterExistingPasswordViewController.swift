@@ -27,7 +27,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			view.delegate = self
 			self.password_inputView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
@@ -35,14 +35,14 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 				sizeToFit: true
 			)
 			self.password_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("Forgot?", comment: ""))
 			view.addTarget(self, action: #selector(tapped_forgotButton), for: .touchUpInside)
 			view.contentHorizontalAlignment = .right // so we can just set the width to whatever
 			self.forgot_linkButtonView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 	}
 	override func setup_navigation()
@@ -158,12 +158,12 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		let textField_w = self.new__textField_w
 		let textField_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 		let fieldGroup_h = self.password_label.frame.size.height + textField_topMargin + self.password_inputView.frame.size.height
-		let fieldGroup_y = (self.view.frame.size.height - fieldGroup_h)/2 - self.view.frame.size.height*0.1 // -k to work better on mobile screen
+		let fieldGroup_y = (self.scrollView.frame.size.height - fieldGroup_h)/2 - self.scrollView.frame.size.height*0.15 // -k to work better on mobile screen
 		//
 		self.password_label.frame = CGRect(
 			x: CGFloat.form_label_margin_x,
 			y: fieldGroup_y,
-			width: self.view.frame.size.width - 2 * CGFloat.form_label_margin_x,
+			width: self.scrollView.frame.size.width - 2 * CGFloat.form_label_margin_x,
 			height: self.password_label.frame.size.height
 		).integral
 		assert(self.forgot_linkButtonView.frame.size.height > self.password_label.frame.size.height, "self.forgot_linkButtonView.frame.size.height <= self.password_label.frame.size.height")

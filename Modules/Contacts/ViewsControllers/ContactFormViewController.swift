@@ -48,7 +48,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				sizeToFit: true
 			)
 			self.name_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.FormInputField(
@@ -64,7 +64,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				view.text = value
 			}
 			self.name_inputView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		//
 		do {
@@ -73,17 +73,17 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				sizeToFit: true
 			)
 			self.emoji_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = EmojiUI.EmojiPickerButtonView()
 			view.configure(withEmojiCharacter: self.new_initial_value_emoji)
 			view.tapped_fn =
 			{ [unowned self] in
-				self.view.resignCurrentFirstResponder() // if any
+				self.scrollView.resignCurrentFirstResponder() // if any
 			}
 			self.emoji_inputView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		//
 		do {
@@ -92,7 +92,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				sizeToFit: true
 			)
 			self.address_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do { // TODO: config as immutable by overridable flag
 			let view = UICommonComponents.FormTextViewContainerView(
@@ -107,13 +107,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				view.textView.text = value
 			}
 			self.address_inputView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.ResolvingActivityIndicatorView()
 			view.isHidden = true
 			self.resolving_activityIndicator = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		// TODO: check if paymentID needed by overridable flag
 		do {
@@ -122,7 +122,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				sizeToFit: true
 			)
 			self.paymentID_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do { // TODO: config as immutable by overridable flag
 			let view = UICommonComponents.FormTextViewContainerView(
@@ -137,7 +137,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			if let value = self.new_initial_value_paymentID {
 				view.textView.text = value
 			}
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		// TODO: check if field needs to be displayed:
 		do {
@@ -145,23 +145,23 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				text: NSLocalizedString("Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated.", comment: "")
 			)
 			self.paymentID_fieldAccessoryMessageLabel = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		if self._overridable_wantsDeleteRecordButton {
 			do {
 				let view = UIView()
 				view.backgroundColor = UIColor(red: 56/255, green: 54/255, blue: 56/255, alpha: 100/255)
 				self.deleteButton_separatorView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "DELETE CONTACT")
 				view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
 				self.deleteButton = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 		}
-//		self.view.borderSubviews()
+//		self.scrollView.borderSubviews()
 	}
 	override func setup_navigation()
 	{
@@ -461,7 +461,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.deleteButton_separatorView!.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
 				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-				width: self.view.frame.size.width - 2 * CGFloat.form_input_margin_x,
+				width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
 				height: 1/UIScreen.main.scale
 			)
 			//

@@ -28,7 +28,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 					sizeToFit: true
 				)
 				self.walletLabel_label = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.FormInputField(
@@ -38,7 +38,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 				view.delegate = self
 				view.returnKeyType = .go
 				self.walletLabel_inputView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 		}
 		do { // wallet color field
@@ -48,12 +48,12 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 					sizeToFit: true
 				)
 				self.walletColorPicker_label = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.WalletColorPickerView(optl__currentlySelected_color: nil)
 				self.walletColorPicker_inputView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 		}
 	}
@@ -91,7 +91,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 			).integral
 			//
 			let colorPicker_x = CGFloat.form_input_margin_x
-			let colorPicker_maxWidth = self.view.frame.size.width - colorPicker_x
+			let colorPicker_maxWidth = self.scrollView.frame.size.width - colorPicker_x
 			let colorPicker_height = self.walletColorPicker_inputView.heightThatFits(width: colorPicker_maxWidth)
 			self.walletColorPicker_inputView.frame = CGRect(
 				x: colorPicker_x,

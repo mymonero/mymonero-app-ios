@@ -33,24 +33,24 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 			let view = self.headerLabel
 			view.text = NSLocalizedString("Write down your mnemonic", comment: "")
 			view.textAlignment = .center
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = self.descriptionLabel
 			view.set(text: NSLocalizedString("You'll confirm this sequence on the next screen.", comment: ""))
 			view.textAlignment = .center
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = self.mnemonicTextDisplayView
 			view.set(text: self.wizardWalletMnemonicString)
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = self.note_messageView
 			view.set(text: NSLocalizedString("NOTE: This is the only way to access your wallet if you switch devices, use another Monero wallet app, or lose your data.", comment: ""))
 			view.show()
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 	}
 	//
@@ -81,7 +81,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 		//
 		let topMargin: CGFloat = 36
 		let headers_x: CGFloat = 4 // would normally use content_x, but that's too large to fit content on small screens
-		let headers_w = self.view.frame.size.width - 2*headers_x
+		let headers_w = self.scrollView.frame.size.width - 2*headers_x
 		self.headerLabel.frame = CGRect(x: 0, y: 0, width: headers_w, height: 0)
 		self.descriptionLabel.frame = CGRect(x: 0, y: 0, width: headers_w, height: 0)
 		self.headerLabel.sizeToFit() // to get height
@@ -101,7 +101,7 @@ class CreateWallet_InformOfMnemonic_ViewController: AddWalletWizardScreen_BaseVi
 		//
 		let margin_h: CGFloat = 16
 		let content_x = margin_h
-		let content_w = self.view.frame.size.width - 2*content_x
+		let content_w = self.scrollView.frame.size.width - 2*content_x
 		self.mnemonicTextDisplayView.layOut(
 			atX: content_x,
 			y: self.descriptionLabel.frame.origin.y + self.descriptionLabel.frame.size.height + 44,

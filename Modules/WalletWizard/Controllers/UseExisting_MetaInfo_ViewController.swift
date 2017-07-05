@@ -70,7 +70,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					sizeToFit: true
 				)
 				self.walletMnemonic_label = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.FormTextViewContainerView(
@@ -82,7 +82,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.returnKeyType = .next
 				view.textView.delegate = self
 				self.walletMnemonic_inputView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 		}
 		do { // .addrAndPrivKeys
@@ -92,7 +92,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					sizeToFit: true
 				)
 				self.addr_label = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.FormTextViewContainerView(
@@ -104,7 +104,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.returnKeyType = .next
 				view.textView.delegate = self
 				self.addr_inputView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			//
 			do {
@@ -113,7 +113,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					sizeToFit: true
 				)
 				self.viewKey_label = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.FormTextViewContainerView(
@@ -125,7 +125,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.returnKeyType = .next
 				view.textView.delegate = self
 				self.viewKey_inputView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			//
 			do {
@@ -134,7 +134,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					sizeToFit: true
 				)
 				self.spendKey_label = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.FormTextViewContainerView(
@@ -146,7 +146,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				view.textView.returnKeyType = .next
 				view.textView.delegate = self
 				self.spendKey_inputView = view
-				self.view.addSubview(view)
+				self.scrollView.addSubview(view)
 			}
 		}
 		do {
@@ -154,16 +154,16 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				text: NSLocalizedString("Or, use ", comment: "")
 			)
 			self.orUse_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: "") // title will be set in configureWith_loginWithMode()
 			view.addTarget(self, action: #selector(orUse_button_tapped), for: .touchUpInside)
 			self.orUse_button = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		//
-//		self.view.borderSubviews()
+//		self.scrollView.borderSubviews()
 	}
 	override func setup_navigation()
 	{

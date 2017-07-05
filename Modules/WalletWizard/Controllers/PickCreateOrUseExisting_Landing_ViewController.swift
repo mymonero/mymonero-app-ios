@@ -36,21 +36,21 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 				message: NSLocalizedString("How would you like to\nadd a wallet?", comment: "")
 			)
 			self.emptyStateView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true)
 			view.addTarget(self, action: #selector(useExisting_tapped), for: .touchUpInside)
 			view.setTitle(NSLocalizedString("Use existing wallet", comment: ""), for: .normal)
 			self.useExisting_actionButtonView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.ActionButton(pushButtonType: .action, isLeftOfTwoButtons: false)
 			view.addTarget(self, action: #selector(createNew_tapped), for: .touchUpInside)
 			view.setTitle(NSLocalizedString("Create new wallet", comment: ""), for: .normal)
 			self.createNew_actionButtonView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 	}
 	//
@@ -74,8 +74,8 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 		self.emptyStateView.frame = CGRect(
 			x: margin_h,
 			y: emptyStateView_margin_top,
-			width: self.view.frame.size.width - 2*margin_h,
-			height: self.view.frame.size.height - emptyStateView_margin_top - UICommonComponents.ActionButton.wholeButtonsContainerHeight
+			width: self.scrollView.frame.size.width - 2*margin_h,
+			height: self.scrollView.frame.size.height - emptyStateView_margin_top - UICommonComponents.ActionButton.wholeButtonsContainerHeight
 		).integral
 		let buttons_y = self.emptyStateView.frame.origin.y + self.emptyStateView.frame.size.height + UICommonComponents.ActionButton.topMargin
 		self.useExisting_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: margin_h)

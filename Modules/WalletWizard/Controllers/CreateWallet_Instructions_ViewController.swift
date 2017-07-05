@@ -43,14 +43,14 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 				//
 				let titleLabel = labelDuo.titleLabel
 				let descriptionLabel = labelDuo.descriptionLabel
-				self.view.addSubview(titleLabel)
-				self.view.addSubview(descriptionLabel)
+				self.scrollView.addSubview(titleLabel)
+				self.scrollView.addSubview(descriptionLabel)
 			}
 		}
 		do {
 			let view = self.horizontalRuleView
 			view.backgroundColor = UIColor(rgb: 0x383638)
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = self.agreeCheckboxButton
@@ -78,7 +78,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 				inset_v,
 				0
 			)
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 	}
 	override func setup_navigation()
@@ -157,7 +157,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		super.viewDidLayoutSubviews()
 		let topMargin: CGFloat = 40
 		let content_w: CGFloat = 240
-		let content_x = (self.view.frame.size.width - content_w) / 2
+		let content_x = (self.scrollView.frame.size.width - content_w) / 2
 		do {
 			let marginBelowDescriptionLabel: CGFloat = 28
 			var lastYOffset = topMargin

@@ -30,7 +30,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			view.delegate = self
 			view.returnKeyType = .next
 			self.password_inputView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
@@ -38,14 +38,14 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 				sizeToFit: true
 			)
 			self.password_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.FormFieldAccessoryMessageLabel(
 				text: NSLocalizedString("This app-wide password (or PIN) will be used to encrypt your data on your device, and to lock your app when you are idle. Don't forget it!\nSix character minimum.", comment: "")
 			)
 			self.fieldAccessoryMessageLabel = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		//
 		do {
@@ -57,7 +57,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			view.delegate = self
 			view.returnKeyType = .go
 			self.confirmPassword_inputView = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
@@ -65,7 +65,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 				sizeToFit: true
 			)
 			self.confirmPassword_label = view
-			self.view.addSubview(view)
+			self.scrollView.addSubview(view)
 		}
 	}
 	override func setup_navigation()

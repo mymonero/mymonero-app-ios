@@ -16,22 +16,26 @@ extension UICommonComponents
 		// Properties - Cached
 		//
 		// Properties - Derived
-		var new__textField_w: CGFloat { return self.view.frame.size.width - 2 * CGFloat.form_input_margin_x }
+		var new__textField_w: CGFloat { return self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x }
 		var new__fieldLabel_w: CGFloat {
-			return self.view.frame.size.width - CGFloat.form_label_margin_x - CGFloat.form_input_margin_x
+			return self.scrollView.frame.size.width - CGFloat.form_label_margin_x - CGFloat.form_input_margin_x
 		}
 		//
 		// Lifecycle - Init
 		override func setup_views()
 		{ // override but call on super
 			super.setup_views()
+			self.view.backgroundColor = UIColor.contentBackgroundColor // prevent weird effects on nav/modal transitions
+		}
+		override func setup_scrollView()
+		{
+			super.setup_scrollView()
 			do {
-				self.view.backgroundColor = UIColor.contentBackgroundColor
 				self.scrollView.indicatorStyle = .white
 			}
 			do {
 				let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-				self.view.addGestureRecognizer(tapGestureRecognizer)
+				self.scrollView.addGestureRecognizer(tapGestureRecognizer)
 			}
 		}
 		override func startObserving()
@@ -171,14 +175,14 @@ extension UICommonComponents
 		// Delegation - Scrollview
 		func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
 		{ // this may or may not be preferable…
-			self.view.resignCurrentFirstResponder()
+			self.scrollView.resignCurrentFirstResponder()
 		}
 		//
 		// Delegation - Gesture recognition
 		@objc func tapped()
 		{
 			guard let viewToFocus_orNilToBlur = self.new_wantsBackgroundTapToFocusResponder_orNilToBlurInstead() else {
-				self.view.resignCurrentFirstResponder()
+				self.scrollView.resignCurrentFirstResponder()
 				return
 			}
 			if viewToFocus_orNilToBlur.isFirstResponder == false { // this check is probably not necessary
@@ -240,7 +244,7 @@ extension UICommonComponents
 		}
 		func aField_didBeginEditing(_ inputView: UIView)
 		{
-			self.scrollInputViewToVisible(self.view.currentFirstResponder! as! UIView)
+			self.scrollInputViewToVisible(self.scrollView.currentFirstResponder! as! UIView)
 		}
 		//
 		// Delegation - Internal/Convenience - Form submission
@@ -259,7 +263,7 @@ extension UICommonComponents
 		{
 			super.viewWillDisappear(animated)
 			if self.isBeingDismissed || self.navigationController != nil && self.navigationController!.isBeingDismissed {
-				self.view.resignCurrentFirstResponder()
+				self.scrollView.resignCurrentFirstResponder()
 			}
 		}
 		//

@@ -22,8 +22,12 @@ extension UICommonComponents
 			override func setup_views()
 			{
 				super.setup_views()
+				self.view.backgroundColor = UIColor.contentBackgroundColor
+			}
+			override func setup_scrollView()
+			{
+				super.setup_scrollView()
 				do {
-					self.view.backgroundColor = UIColor.contentBackgroundColor
 					self.scrollView.indicatorStyle = .white
 				}
 			}
