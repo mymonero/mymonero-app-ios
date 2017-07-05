@@ -57,6 +57,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			view.delegate = self
 			view.returnKeyType = .next
+			if let value = self.new_initial_value_name {
+				view.text = value
+			}
 			self.name_inputView = view
 			self.view.addSubview(view)
 		}
@@ -97,6 +100,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			view.textView.spellCheckingType = .no
 			view.textView.returnKeyType = .next
 			view.textView.delegate = self
+			if let value = self.new_initial_value_address {
+				view.textView.text = value
+			}
 			self.address_inputView = view
 			self.view.addSubview(view)
 		}
@@ -125,6 +131,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			view.textView.returnKeyType = .go
 			view.textView.delegate = self
 			self.paymentID_inputView = view
+			if let value = self.new_initial_value_paymentID {
+				view.textView.text = value
+			}
 			self.view.addSubview(view)
 		}
 		// TODO: check if field needs to be displayed:
@@ -200,12 +209,16 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var _overridable_formSubmissionMode: ContactFormSubmissionController.Mode { return .insert }
 	var _overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address: MoneroAddress? { return nil }
 	var _overridable_forMode_update__contactInstance: Contact? { return nil }
+	//
+	var new_initial_value_name: String? { return nil }
 	var new_initial_value_emoji: Emoji.EmojiCharacter {
 		let inUseEmojiCharacters = ContactsListController.shared.givenBooted_currentlyInUseEmojiCharacters()
 		let value = Emoji.anEmojiWhichIsNotInUse(amongInUseEmoji: inUseEmojiCharacters)
 		//
 		return value
 	}
+	var new_initial_value_address: String? { return nil }
+	var new_initial_value_paymentID: String? { return nil }
 	//
 	// Accessors
 	var sanitizedInputValue__name: String {

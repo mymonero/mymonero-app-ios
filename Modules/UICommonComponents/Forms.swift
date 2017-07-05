@@ -377,15 +377,17 @@ extension UICommonComponents
 			self.font = UIFont.middlingLightMonospace
 			self.textContainerInset = UIEdgeInsetsMake(6, 4, 0, 4)
 			//
+			let view = UILabel(frame: .zero)
+			view.numberOfLines = 0 // to fix line wrapping bug
+			view.textColor = UIColor(rgb: 0x6B696B)
+			view.font = UIFont.middlingRegularMonospace// LightMonospace - too light
 			if let placeholder = self.placeholder {
-				let view = UILabel(frame: .zero)
-				view.numberOfLines = 0 // to fix line wrapping bug
-				view.textColor = UIColor(rgb: 0x6B696B)
-				view.font = UIFont.middlingRegularMonospace// LightMonospace - too light
 				view.text = placeholder
-				self.addSubview(view)
-				self.placeholderLabel = view
+			} else {
+				view.isHidden = true
 			}
+			self.addSubview(view)
+			self.placeholderLabel = view
 			//
 			// so as not to have to take control of the delegate
 			NotificationCenter.default.addObserver(
@@ -407,6 +409,12 @@ extension UICommonComponents
 		}
 		//
 		// Imperatives - Overrides
+		override var text: String!
+		{
+			didSet {
+				self.textViewDidChange()
+			}
+		}
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
