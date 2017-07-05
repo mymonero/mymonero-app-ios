@@ -104,7 +104,7 @@ extension UICommonComponents
 				height: visibleScroll_size_height
 			)
 			let visibleScroll_rect = CGRect(origin: scrollView.contentOffset, size: visibleScroll_size)
-			var margin_y: CGFloat = UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.FormLabel.fixedHeight + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView
+			var margin_y: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.Form.FieldLabel.fixedHeight + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
 				var this_view = inputView
 				var this_superview = this_view.superview!
@@ -290,6 +290,49 @@ extension UICommonComponents
 			self.keyboardHeight = nil
 			// configuration
 			self.scrollView.contentInset = self.new_contentInset()
+		}
+	}
+	struct Form
+	{ // TODO: port the entire remainder of this file, Form.swift, to this namespace, Form
+		//
+		class FieldLabel: UILabel
+		{
+			//
+			// Properties - Static
+			static let fixedHeight: CGFloat = 13
+			//
+			static let visual_marginBelow: CGFloat = 7
+			static let marginBelowLabelAboveTextInputView: CGFloat = Form.FieldLabel.visual_marginBelow - FormInputCells.imagePadding_y
+			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
+			//
+			static let visual_marginAboveLabelForUnderneathField: CGFloat = 18
+			static let marginAboveLabelForUnderneathField_textInputView: CGFloat = Form.FieldLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
+			//
+			// Lifecycle - Init
+			init(title: String, sizeToFit: Bool? = false)
+			{
+				let frame = CGRect(
+					x: CGFloat(0),
+					y: CGFloat(0),
+					width: CGFloat(0),
+					height: Form.FieldLabel.fixedHeight
+				)
+				super.init(frame: frame)
+				self.text = title
+				self.setup()
+				if sizeToFit == true { // after receiving style
+					self.sizeToFit()
+				}
+			}
+			required init?(coder aDecoder: NSCoder) {
+				fatalError("init(coder:) has not been implemented")
+			}
+			func setup()
+			{
+				self.font = UIFont.smallRegularMonospace
+				self.textColor = UIColor(rgb: 0xF8F7F8)
+				self.numberOfLines = 1
+			}
 		}
 	}
 }
@@ -550,46 +593,6 @@ extension UICommonComponents
 				validationErrorMessageLabel.frame = frame
 				validationErrorMessageLabel.sizeToFit()
 			}
-		}
-	}
-	//
-	class FormLabel: UILabel
-	{
-		//
-		// Properties - Static
-		static let fixedHeight: CGFloat = 13
-		//
-		static let visual_marginBelow: CGFloat = 7
-		static let marginBelowLabelAboveTextInputView: CGFloat = FormLabel.visual_marginBelow - FormInputCells.imagePadding_y
-		static let marginBelowLabelAbovePushButton: CGFloat = FormLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
-		//
-		static let visual_marginAboveLabelForUnderneathField: CGFloat = 18
-		static let marginAboveLabelForUnderneathField_textInputView: CGFloat = FormLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
-		//
-		// Lifecycle - Init
-		init(title: String, sizeToFit: Bool? = false)
-		{
-			let frame = CGRect(
-				x: CGFloat(0),
-				y: CGFloat(0),
-				width: CGFloat(0),
-				height: FormLabel.fixedHeight
-			)
-			super.init(frame: frame)
-			self.text = title
-			self.setup()
-			if sizeToFit == true { // after receiving style
-				self.sizeToFit()
-			}
-		}
-		required init?(coder aDecoder: NSCoder) {
-			fatalError("init(coder:) has not been implemented")
-		}
-		func setup()
-		{
-			self.font = UIFont.smallRegularMonospace
-			self.textColor = UIColor(rgb: 0xF8F7F8)
-			self.numberOfLines = 1
 		}
 	}
 	//

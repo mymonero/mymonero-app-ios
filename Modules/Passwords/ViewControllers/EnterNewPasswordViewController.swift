@@ -10,12 +10,12 @@ import UIKit
 
 class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 {
-	var password_label: UICommonComponents.FormLabel!
+	var password_label: UICommonComponents.Form.FieldLabel!
 	var password_inputView: UICommonComponents.FormInputField!
 	//
 	var fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
-	var confirmPassword_label: UICommonComponents.FormLabel!
+	var confirmPassword_label: UICommonComponents.Form.FieldLabel!
 	var confirmPassword_inputView: UICommonComponents.FormInputField!
 	//
 	override func setup_views()
@@ -33,7 +33,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			self.view.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("PIN OR PASSWORD", comment: ""),
 				sizeToFit: true
 			)
@@ -60,7 +60,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			self.view.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("CONFIRM", comment: ""),
 				sizeToFit: true
 			)
@@ -209,7 +209,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			).integral
 			self.password_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.password_inputView.frame.size.height
 			).integral
@@ -232,7 +232,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			).integral
 			self.confirmPassword_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.confirmPassword_inputView.frame.size.height
 			).integral

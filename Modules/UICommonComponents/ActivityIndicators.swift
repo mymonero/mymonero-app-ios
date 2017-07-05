@@ -206,7 +206,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var activityIndicator = GraphicActivityIndicatorView()
-		var label = FormLabel(title: "", sizeToFit: false)
+		var label = Form.FieldLabel(title: "", sizeToFit: false)
 		//
 		// Lifecycle
 		init()

@@ -40,14 +40,14 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	// Properties - Model/state
 	var loginWith_mode: LoginWith_Mode = .mnemonicSeed // initial state
 	// Properties - Subviews
-	var walletMnemonic_label: UICommonComponents.FormLabel!
+	var walletMnemonic_label: UICommonComponents.Form.FieldLabel!
 	var walletMnemonic_inputView: UICommonComponents.FormTextViewContainerView!
 	//
-	var addr_label: UICommonComponents.FormLabel!
+	var addr_label: UICommonComponents.Form.FieldLabel!
 	var addr_inputView: UICommonComponents.FormTextViewContainerView!
-	var viewKey_label: UICommonComponents.FormLabel!
+	var viewKey_label: UICommonComponents.Form.FieldLabel!
 	var viewKey_inputView: UICommonComponents.FormTextViewContainerView!
-	var spendKey_label: UICommonComponents.FormLabel!
+	var spendKey_label: UICommonComponents.Form.FieldLabel!
 	var spendKey_inputView: UICommonComponents.FormTextViewContainerView!
 	//
 	var orUse_label: UICommonComponents.FormFieldAccessoryMessageLabel!
@@ -65,7 +65,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		//
 		do { // .mnemonicSeed
 			do {
-				let view = UICommonComponents.FormLabel(
+				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("SECRET MNEMONIC", comment: ""),
 					sizeToFit: true
 				)
@@ -87,7 +87,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		do { // .addrAndPrivKeys
 			do {
-				let view = UICommonComponents.FormLabel(
+				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("ADDRESS", comment: ""),
 					sizeToFit: true
 				)
@@ -108,7 +108,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			}
 			//
 			do {
-				let view = UICommonComponents.FormLabel(
+				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("VIEW KEY", comment: ""),
 					sizeToFit: true
 				)
@@ -129,7 +129,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			}
 			//
 			do {
-				let view = UICommonComponents.FormLabel(
+				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("SPEND KEY", comment: ""),
 					sizeToFit: true
 				)
@@ -491,7 +491,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				).integral
 				self.walletMnemonic_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
-					y: self.walletMnemonic_label.frame.origin.y + self.walletMnemonic_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+					y: self.walletMnemonic_label.frame.origin.y + self.walletMnemonic_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.walletMnemonic_inputView.frame.size.height
 				).integral
@@ -507,33 +507,33 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				).integral
 				self.addr_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
-					y: self.addr_label.frame.origin.y + self.addr_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+					y: self.addr_label.frame.origin.y + self.addr_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.addr_inputView.frame.size.height
 				).integral
 				//
 				self.viewKey_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: self.addr_inputView.frame.origin.y + self.addr_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+					y: self.addr_inputView.frame.origin.y + self.addr_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: textField_w,
 					height: self.viewKey_label.frame.size.height
 				).integral
 				self.viewKey_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
-					y: self.viewKey_label.frame.origin.y + self.viewKey_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+					y: self.viewKey_label.frame.origin.y + self.viewKey_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.viewKey_inputView.frame.size.height
 				).integral
 				//
 				self.spendKey_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: self.viewKey_inputView.frame.origin.y + self.viewKey_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+					y: self.viewKey_inputView.frame.origin.y + self.viewKey_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: textField_w,
 					height: self.spendKey_label.frame.size.height
 				).integral
 				self.spendKey_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
-					y: self.spendKey_label.frame.origin.y + self.spendKey_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+					y: self.spendKey_label.frame.origin.y + self.spendKey_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.spendKey_inputView.frame.size.height
 				).integral

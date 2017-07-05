@@ -12,18 +12,18 @@ class ContactFormViewController: UICommonComponents.FormViewController
 {
 	//
 	// Properties
-	var name_label: UICommonComponents.FormLabel!
+	var name_label: UICommonComponents.Form.FieldLabel!
 	var name_inputView: UICommonComponents.FormInputField!
 	//
-	var emoji_label: UICommonComponents.FormLabel!
+	var emoji_label: UICommonComponents.Form.FieldLabel!
 	var emoji_inputView: EmojiUI.EmojiPickerButtonView!
 	//
-	var address_label: UICommonComponents.FormLabel!
+	var address_label: UICommonComponents.Form.FieldLabel!
 	var address_inputView: UICommonComponents.FormTextViewContainerView!
 	//
 	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 	//
-	var paymentID_label: UICommonComponents.FormLabel?
+	var paymentID_label: UICommonComponents.Form.FieldLabel?
 	var paymentID_inputView: UICommonComponents.FormTextViewContainerView?
 	//
 	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
@@ -43,7 +43,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	{
 		super.setup_views()
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("NAME", comment: ""),
 				sizeToFit: true
 			)
@@ -68,7 +68,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		//
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("EMOJI", comment: ""),
 				sizeToFit: true
 			)
@@ -87,7 +87,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		//
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("ADDRESS", comment: ""),
 				sizeToFit: true
 			)
@@ -117,7 +117,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		// TODO: check if paymentID needed by overridable flag
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("PAYMENT ID", comment: ""),
 				sizeToFit: true
 			)
@@ -379,7 +379,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			).integral
 			self.name_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: visual__nameField_w,
 				height: self.name_inputView.frame.size.height
 			).integral
@@ -395,7 +395,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			).integral
 			self.emoji_inputView.frame = CGRect(
 				x: emojiField_x - UICommonComponents.PushButtonCells.imagePaddingForShadow_h,
-				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAbovePushButton + 1, // +1 to align vertically - should not technically be necessary but there's some height weirdness with the text field
+				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton + 1, // +1 to align vertically - should not technically be necessary but there's some height weirdness with the text field
 				width: self.emoji_inputView.frame.size.width,
 				height: self.emoji_inputView.frame.size.height
 			).integral
@@ -403,13 +403,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		do {
 			self.address_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: self.name_inputView.frame.origin.y + self.name_inputView.frame.size.height + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+				y: self.name_inputView.frame.origin.y + self.name_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.address_label.frame.size.height
 			).integral
 			self.address_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: self.address_label.frame.origin.y + self.address_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.address_label.frame.origin.y + self.address_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.address_inputView.frame.size.height
 			).integral
@@ -432,13 +432,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			//
 			self.paymentID_label!.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: addressFieldset_bottomEdge + UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView,
+				y: addressFieldset_bottomEdge + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.paymentID_label!.frame.size.height
 			).integral
 			self.paymentID_inputView!.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: self.paymentID_label!.frame.origin.y + self.paymentID_label!.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.paymentID_label!.frame.origin.y + self.paymentID_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.paymentID_inputView!.frame.size.height
 			).integral
@@ -460,14 +460,14 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			let justPreviousView = (self.paymentID_fieldAccessoryMessageLabel ?? self.paymentID_inputView ?? self.address_inputView)!
 			self.deleteButton_separatorView!.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.FormLabel.visual_marginAboveLabelForUnderneathField,
+				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 				width: self.view.frame.size.width - 2 * CGFloat.form_input_margin_x,
 				height: 1/UIScreen.main.scale
 			)
 			//
 			self.deleteButton!.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.FormLabel.visual_marginAboveLabelForUnderneathField,
+				y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 				width: self.deleteButton!.frame.size.width,
 				height: self.deleteButton!.frame.size.height
 			)

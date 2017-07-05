@@ -12,10 +12,10 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 {
 	//
 	// Properties
-	var walletLabel_label: UICommonComponents.FormLabel!
+	var walletLabel_label: UICommonComponents.Form.FieldLabel!
 	var walletLabel_inputView: UICommonComponents.FormInputField!
 	//
-	var walletColorPicker_label: UICommonComponents.FormLabel!
+	var walletColorPicker_label: UICommonComponents.Form.FieldLabel!
 	var walletColorPicker_inputView: UICommonComponents.WalletColorPickerView!
 	//
 	override func setup_views()
@@ -23,7 +23,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 		super.setup_views()
 		do { // wallet label field
 			do {
-				let view = UICommonComponents.FormLabel(
+				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("WALLET NAME", comment: ""),
 					sizeToFit: true
 				)
@@ -43,7 +43,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 		}
 		do { // wallet color field
 			do {
-				let view = UICommonComponents.FormLabel(
+				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("COLOR", comment: ""),
 					sizeToFit: true
 				)
@@ -67,7 +67,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 	func layOut_walletLabelAndSwatchFields(atYOffset y: CGFloat)
 	{ // Call this at the end of your layoutSubviews() override
 		let textField_w = self.new__textField_w
-		let fieldset_topMargin: CGFloat = UICommonComponents.FormLabel.marginAboveLabelForUnderneathField_textInputView + 8 // 8 for greater visual separation, per design; maybe factor
+		let fieldset_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 8 // 8 for greater visual separation, per design; maybe factor
 		do {
 			self.walletLabel_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
@@ -77,7 +77,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 			).integral
 			self.walletLabel_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
-				y: self.walletLabel_label.frame.origin.y + self.walletLabel_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.walletLabel_label.frame.origin.y + self.walletLabel_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.walletLabel_inputView.frame.size.height
 			).integral
@@ -95,7 +95,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 			let colorPicker_height = self.walletColorPicker_inputView.heightThatFits(width: colorPicker_maxWidth)
 			self.walletColorPicker_inputView.frame = CGRect(
 				x: colorPicker_x,
-				y: self.walletColorPicker_label.frame.origin.y + self.walletColorPicker_label.frame.size.height + UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView,
+				y: self.walletColorPicker_label.frame.origin.y + self.walletColorPicker_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: colorPicker_maxWidth,
 				height: colorPicker_height
 			).integral

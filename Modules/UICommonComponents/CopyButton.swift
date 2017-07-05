@@ -14,6 +14,10 @@ extension UICommonComponents
 	class CopyButton: UIButton
 	{
 		//
+		// Constants
+		static let w: CGFloat = 33
+		static let h: CGFloat = 30 // for usability
+		//
 		// Properties
 		private var pasteboardItem_value_text: String?
 		private var pasteboardItem_value_html: String?
@@ -35,8 +39,7 @@ extension UICommonComponents
 			self.setTitleColor(.disabledLinkColor, for: .disabled)
 			self.addTarget(self, action: #selector(did_touchUpInside), for: .touchUpInside)
 			//
-			self.sizeToFit() // perhaps replace with fixed value - minor optimization
-			let frame = CGRect(x: 0, y: 0, width: self.frame.size.width, height: 30)
+			let frame = CGRect(x: 0, y: 0, width: CopyButton.w, height: CopyButton.h)
 			self.frame = frame
 		}
 		//

@@ -10,7 +10,7 @@ import UIKit
 
 class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 {
-	var password_label: UICommonComponents.FormLabel!
+	var password_label: UICommonComponents.Form.FieldLabel!
 	var password_inputView: UICommonComponents.FormInputField!
 	var forgot_linkButtonView: UICommonComponents.LinkButtonView!
 	//
@@ -30,7 +30,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			self.view.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormLabel(
+			let view = UICommonComponents.Form.FieldLabel(
 				title: PasswordController.shared.passwordType.humanReadableString.uppercased(),
 				sizeToFit: true
 			)
@@ -156,7 +156,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		super.viewDidLayoutSubviews()
 		//
 		let textField_w = self.new__textField_w
-		let textField_topMargin: CGFloat = UICommonComponents.FormLabel.marginBelowLabelAboveTextInputView
+		let textField_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 		let fieldGroup_h = self.password_label.frame.size.height + textField_topMargin + self.password_inputView.frame.size.height
 		let fieldGroup_y = (self.view.frame.size.height - fieldGroup_h)/2 - self.view.frame.size.height*0.1 // -k to work better on mobile screen
 		//
