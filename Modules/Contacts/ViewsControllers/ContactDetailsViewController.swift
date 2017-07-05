@@ -23,6 +23,9 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	var cached_OAResolved_XMR_address__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	var paymentID__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	//
+	var send_actionButtonView: UICommonComponents.ActionButton!
+	var request_actionButtonView: UICommonComponents.ActionButton!
+	//
 	// Imperatives - Init
 	init(contact: Contact)
 	{
@@ -67,7 +70,25 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 				self.paymentID__fieldView = view
 				sectionView.add(fieldView: view)
 			}
-			self.view.addSubview(sectionView)
+			self.scrollView.addSubview(sectionView)
+		}
+		do {
+			do {
+				let iconImage = UIImage(named: "actionButton_iconImage__send")!
+				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
+				view.addTarget(self, action: #selector(send_tapped), for: .touchUpInside)
+				view.setTitle(NSLocalizedString("Send", comment: ""), for: .normal)
+				self.send_actionButtonView = view
+				self.view.addSubview(view)
+			}
+			do {
+				let iconImage = UIImage(named: "actionButton_iconImage__request")!
+				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
+				view.addTarget(self, action: #selector(request_tapped), for: .touchUpInside)
+				view.setTitle(NSLocalizedString("Request", comment: ""), for: .normal)
+				self.request_actionButtonView = view
+				self.view.addSubview(view)
+			}
 		}
 //		self.view.borderSubviews()
 		self.configureSectionsWithObject()
@@ -129,6 +150,11 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 			andYOffset: 0
 		)
 		self.scrollableContentSizeDidChange(withBottomView: self.sectionView, bottomPadding: 0) // btm padding in .contentInset
+		//
+		// non-scrolling:
+		let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin
+		self.send_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
+		self.request_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
 	}
 	//
 	// Delegation
@@ -151,5 +177,15 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	{
 		self.set_navigationTitle()
 		self.configureSectionsWithObject()
+	}
+	//
+	// Delegation - Interactions - Action buttons
+	func send_tapped()
+	{
+		assert(false, "TODO")
+	}
+	func request_tapped()
+	{
+		assert(false, "TODO")
 	}
 }

@@ -83,6 +83,7 @@ extension UICommonComponents
 		func new_isFormSubmittable() -> Bool
 		{
 			DDLog.Warn("UICommonComponents", "Override \(#function)")
+			assert(false)
 			return true
 		}
 		//

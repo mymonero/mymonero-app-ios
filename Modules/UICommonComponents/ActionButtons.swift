@@ -23,10 +23,14 @@ extension UICommonComponents
 			)
 		}
 		static var spaceBetweenSiblingButtons: CGFloat = 8
+		//
 		static var buttonHeight: CGFloat = 32+2 // +2 because the grey image has shadow around it, and we add extra space for that in the blue and disabled images
 		static var topMargin: CGFloat = 8
 		static var bottomMargin: CGFloat = 8
-		static var wholeButtonsContainerHeight: CGFloat = ActionButton.topMargin + ActionButton.buttonHeight + ActionButton.bottomMargin
+		//
+		static var wholeButtonsContainerHeight = ActionButton.topMargin + ActionButton.buttonHeight + ActionButton.bottomMargin
+		static var wholeButtonsContainerHeight_withoutTopMargin = ActionButton.buttonHeight + ActionButton.bottomMargin
+		static var wholeButtonsContainer_margin_h: CGFloat = 16
 		//
 		var iconImage: UIImage?
 		//

@@ -57,6 +57,7 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 	// Accessors - Overrides
 	override func new_wantsInlineMessageViewForValidationMessages() -> Bool { return false }
 	override func wantsRightSideNextBarButtonItem() -> Bool { return false }
+	override func new_isFormSubmittable() -> Bool { return false } // self does not technically need to be a Form
 	//
 	// Delegation - Internal - Overrides
 	override func _viewControllerIsBeingPoppedFrom()
