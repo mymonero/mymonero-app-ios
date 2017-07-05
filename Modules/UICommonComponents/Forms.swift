@@ -255,6 +255,13 @@ extension UICommonComponents
 			super.viewWillAppear(animated)
 			self.set_isFormSubmittable_needsUpdate()
 		}
+		override func viewWillDisappear(_ animated: Bool)
+		{
+			super.viewWillDisappear(animated)
+			if self.isBeingDismissed || self.navigationController != nil && self.navigationController!.isBeingDismissed {
+				self.view.resignCurrentFirstResponder()
+			}
+		}
 		//
 		// Delegation - Notifications - Keyboard
 		var keyboardIsShowing: Bool = false
