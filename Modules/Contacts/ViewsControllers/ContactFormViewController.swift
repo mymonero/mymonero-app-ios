@@ -472,8 +472,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				height: self.deleteButton!.frame.size.height
 			)
 		}
-		// TODO: derive bottommost view based on existence
-		// … delete record, payment id, address, … and set up way to expand border box to fill view
+
 		// TODO: if applicable set up inset fields for add contact from send funds tab
 		
 		
@@ -523,5 +522,6 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	func deleteButton_tapped()
 	{
+		assert(false, "Override and implement")
 	}
 }

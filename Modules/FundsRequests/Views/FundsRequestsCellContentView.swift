@@ -62,14 +62,18 @@ class FundsRequestsCellContentView: UIView
 	func stopObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
-	//
+		//
 	// Accessors
 	//
 	// Imperatives - Configuration
 	var object: FundsRequest?
 	func configure(withObject object: FundsRequest)
 	{
+		if self.object != nil {
+			self.prepareForReuse() // in case this is not being used in an actual UITableViewCell (which has a prepareForReuse)
+		}
 		assert(self.object == nil)
 		self.object = object
 		self._configureUI()
@@ -83,6 +87,7 @@ class FundsRequestsCellContentView: UIView
 	func startObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
 	//
 	// Imperatives - Overrides
@@ -110,5 +115,11 @@ class FundsRequestsCellContentView: UIView
 			width: labels_width,
 			height: 20 // TODO: size with font for accessibility? NOTE: must support emoji, currently, for locked icon
 			).integral
+	}
+	//
+	// Delegation
+	func _willBeDeleted()
+	{
+		self.tearDown_object() // release
 	}
 }

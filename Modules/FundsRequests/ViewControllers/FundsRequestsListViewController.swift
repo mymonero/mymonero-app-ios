@@ -59,6 +59,8 @@ class FundsRequestsListViewController: ListViewController
 	// Delegation - Interactions
 	func addButton_tapped()
 	{
-		assert(false, "TODO")
+		let viewController = AddFundsRequestFormViewController()
+		let modalViewController = UINavigationController(rootViewController: viewController)
+		self.navigationController!.present(modalViewController, animated: true, completion: nil)
 	}
 }

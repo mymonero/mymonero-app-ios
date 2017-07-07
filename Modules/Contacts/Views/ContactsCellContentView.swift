@@ -72,6 +72,7 @@ class ContactCellContentView: UIView
 	{
 		assert(self.object != nil)
 		NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: self.object!)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
 	//
 	// Accessors
@@ -80,6 +81,9 @@ class ContactCellContentView: UIView
 	var object: Contact?
 	func configure(withObject object: Contact)
 	{
+		if self.object != nil {
+			self.prepareForReuse() // in case this is not being used in an actual UITableViewCell (which has a prepareForReuse)
+		}
 		assert(self.object == nil)
 		self.object = object
 		self._configureUI()
@@ -97,6 +101,7 @@ class ContactCellContentView: UIView
 	{
 		assert(self.object != nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(_infoUpdated), name: Contact.NotificationNames.infoUpdated.notificationName, object: self.object!)
+		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
 	//
 	// Imperatives - Overrides
@@ -130,5 +135,9 @@ class ContactCellContentView: UIView
 	func _infoUpdated()
 	{
 		self._configureUI()
+	}
+	func _willBeDeleted()
+	{
+		self.tearDown_object() // release
 	}
 }

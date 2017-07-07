@@ -72,6 +72,8 @@ class WalletCellContentView: UIView
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.labelChanged.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
+
 	}
 	//
 	// Accessors
@@ -87,12 +89,12 @@ class WalletCellContentView: UIView
 	var labels_x: CGFloat
 	{
 		switch self.sizeClass {
-		case .large48:
-			return 80
-		case .large43:
-			return 75
-		case .medium32:
-			return 66
+			case .large48:
+				return 80
+			case .large43:
+				return 75
+			case .medium32:
+				return 66
 		}
 	}
 	var titleLabels_y: CGFloat
@@ -103,7 +105,7 @@ class WalletCellContentView: UIView
 			case .large43:
 				return 22
 			case .medium32:
-				return 18
+				return 15
 		}
 	}
 	//
@@ -111,6 +113,9 @@ class WalletCellContentView: UIView
 	var object: Wallet?
 	func configure(withObject object: Wallet)
 	{
+		if self.object != nil {
+			self.prepareForReuse() // in case this is not being used in an actual UITableViewCell (which has a prepareForReuse)
+		}
 		assert(self.object == nil)
 		self.object = object
 		self._configureUIWithWallet()
@@ -156,6 +161,7 @@ class WalletCellContentView: UIView
 		NotificationCenter.default.addObserver(self, selector: #selector(_labelChanged), name: Wallet.NotificationNames.labelChanged.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_balanceChanged), name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_swatchColorChanged), name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
+		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
 	//
 	// Imperatives - Overrides
@@ -197,5 +203,9 @@ class WalletCellContentView: UIView
 	@objc func _swatchColorChanged()
 	{
 		self.__configureUIWithWallet_swatchColor()
+	}
+	func _willBeDeleted()
+	{
+		self.tearDown_object() // release
 	}
 }

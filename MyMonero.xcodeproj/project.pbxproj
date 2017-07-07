@@ -139,6 +139,10 @@
 		9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C59EE1F0C41FD003B9266 /* ContactDetailsViewController.swift */; };
 		9F9C59F11F0C45AD003B9266 /* ScrollableInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C59F01F0C45AD003B9266 /* ScrollableInfo.swift */; };
 		9F9C59F31F0C4716003B9266 /* UIResponder+Current.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C59F21F0C4716003B9266 /* UIResponder+Current.swift */; };
+		9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C59F61F0D8313003B9266 /* AddFundsRequestFormViewController.swift */; };
+		9F9C59FB1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C59FA1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift */; };
+		9F9C59FD1F0D89BE003B9266 /* WalletPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9C59FC1F0D89BE003B9266 /* WalletPicker.swift */; };
+		9F9C59FF1F0D8C11003B9266 /* dropdown-arrow-down@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */; };
 		9FA734051F05AF4E00C674D6 /* Wallet_HostPollingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734001F05AF4E00C674D6 /* Wallet_HostPollingController.swift */; };
 		9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734011F05AF4E00C674D6 /* WalletsListController.swift */; };
 		9FA734071F05AF4E00C674D6 /* WalletsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734031F05AF4E00C674D6 /* WalletsListViewController.swift */; };
@@ -316,6 +320,10 @@
 		9F9C59EE1F0C41FD003B9266 /* ContactDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDetailsViewController.swift; sourceTree = "<group>"; };
 		9F9C59F01F0C45AD003B9266 /* ScrollableInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollableInfo.swift; sourceTree = "<group>"; };
 		9F9C59F21F0C4716003B9266 /* UIResponder+Current.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+Current.swift"; sourceTree = "<group>"; };
+		9F9C59F61F0D8313003B9266 /* AddFundsRequestFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFundsRequestFormViewController.swift; sourceTree = "<group>"; };
+		9F9C59FA1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFundsRequestFormSubmissionController.swift; sourceTree = "<group>"; };
+		9F9C59FC1F0D89BE003B9266 /* WalletPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletPicker.swift; sourceTree = "<group>"; };
+		9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dropdown-arrow-down@3x.png"; sourceTree = "<group>"; };
 		9FA734001F05AF4E00C674D6 /* Wallet_HostPollingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet_HostPollingController.swift; sourceTree = "<group>"; };
 		9FA734011F05AF4E00C674D6 /* WalletsListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListController.swift; sourceTree = "<group>"; };
 		9FA734031F05AF4E00C674D6 /* WalletsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewController.swift; sourceTree = "<group>"; };
@@ -411,6 +419,7 @@
 				9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */,
 				9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */,
 				9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */,
+				9F9C59FC1F0D89BE003B9266 /* WalletPicker.swift */,
 				9F22B79E1EFF44B60036B02F /* InlineMessages.swift */,
 				9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */,
 				9F22B7A91F01BAD20036B02F /* CopyButton.swift */,
@@ -635,6 +644,7 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */,
 				9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */,
 				9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */,
 				9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */,
@@ -860,6 +870,7 @@
 			isa = PBXGroup;
 			children = (
 				9FA7340A1F05AF8800C674D6 /* FundsRequestsListController.swift */,
+				9F9C59FA1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift */,
 			);
 			path = ModelControllers;
 			sourceTree = "<group>";
@@ -869,6 +880,7 @@
 			children = (
 				9FA7340C1F05AF8800C674D6 /* FundsRequestsListViewController.swift */,
 				9FA7340D1F05AF8800C674D6 /* FundsRequestsTabNavigationViewController.swift */,
+				9F9C59F61F0D8313003B9266 /* AddFundsRequestFormViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1131,6 +1143,7 @@
 				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,
 				9F9C59E91F0C316C003B9266 /* groupedHighlightableCellBG_normal_standalone@3x.png in Resources */,
 				9F2BFE821EF08ABA006B2F7D /* highlightableCellBG@3x.png in Resources */,
+				9F9C59FF1F0D8C11003B9266 /* dropdown-arrow-down@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
 				9F8E2FF31EE978DF00F89A1D /* icon_tabBar_settings@3x.png in Resources */,
 				9F9C59E01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png in Resources */,
@@ -1240,11 +1253,13 @@
 			files = (
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
 				9F2BFEDE1EF37E58006B2F7D /* FundsRequestListEmptyView.swift in Sources */,
+				9F9C59FD1F0D89BE003B9266 /* WalletPicker.swift in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
+				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
 				9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */,
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
@@ -1315,6 +1330,7 @@
 				9F2BFECA1EF0AA15006B2F7D /* WalletsListEmptyView.swift in Sources */,
 				9F8E2FEA1EE978B700F89A1D /* SendFundsTabNavigationViewController.swift in Sources */,
 				9F2BFEE81EF3964A006B2F7D /* SettingsController.swift in Sources */,
+				9F9C59FB1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */,
 				9F8E30271EED7D7800F89A1D /* EnterExistingPasswordViewController.swift in Sources */,
