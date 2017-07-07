@@ -64,10 +64,13 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 	}
 	//
 	// Imperatives - Convenience - Layout
-	func layOut_walletLabelAndSwatchFields(atYOffset y: CGFloat)
+	func layOut_walletLabelAndSwatchFields(
+		atYOffset y: CGFloat,
+		isTopMostInForm: Bool = false
+	)
 	{ // Call this at the end of your layoutSubviews() override
 		let textField_w = self.new__textField_w
-		let fieldset_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 8 // 8 for greater visual separation, per design; maybe factor
+		let fieldset_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // what we would expect for a starting y offset for form fields…
 		do {
 			self.walletLabel_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
@@ -85,7 +88,7 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 		do {
 			self.walletColorPicker_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: self.walletLabel_inputView.frame.origin.y + self.walletLabel_inputView.frame.size.height + fieldset_topMargin + 3, // 3 for greater visual separation, per design
+				y: self.walletLabel_inputView.frame.origin.y + self.walletLabel_inputView.frame.size.height + fieldset_topMargin,
 				width: textField_w,
 				height: self.walletColorPicker_label.frame.size.height
 			).integral

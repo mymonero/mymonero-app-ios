@@ -9,7 +9,7 @@
 import Foundation
 import RNCryptor
 //
-class PersistableObject
+class PersistableObject: Equatable
 {
 	var _id: String?
 	var insertedAt_date: Date?
@@ -160,4 +160,19 @@ class PersistableObject
 		}
 		return err_str
 	}
+}
+//
+// Equatable implementation
+func ==(lhs: PersistableObject, rhs: PersistableObject) -> Bool
+{
+	if lhs._id == nil {
+		return false
+	}
+	if rhs._id == nil {
+		return false
+	}
+	if lhs._id == rhs._id {
+		return true
+	}
+	return false
 }

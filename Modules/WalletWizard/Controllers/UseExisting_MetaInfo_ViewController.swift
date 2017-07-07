@@ -554,7 +554,10 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			)
 			self.orUse_button.sizeToFit()
 		}
-		self.layOut_walletLabelAndSwatchFields(atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height)
+		self.layOut_walletLabelAndSwatchFields(
+			atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height,
+			isTopMostInForm: false
+		)
 		//
 		self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.inlineMessageValidationView_bottomMargin)
 	}

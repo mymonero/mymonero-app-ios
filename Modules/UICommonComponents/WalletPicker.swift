@@ -24,7 +24,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var tapped_fn: ((Void) -> Void)?
-		var selectedWallet: Wallet
+		var selectedWallet: Wallet?
 		var pickerView: WalletPickerView!
 		var picker_inputField: UITextField!
 		var contentView = WalletCellContentView(sizeClass: .medium32)
@@ -32,11 +32,11 @@ extension UICommonComponents
 		// Lifecycle - Init
 		init(selectedWallet: Wallet?)
 		{
-			assert(WalletPickerButtonView.records.count > 0)
+//			assert(WalletPickerButtonView.records.count > 0) // not actually going to assert this, b/c the Send view will need to be able to have this set up w/o any wallets being available yet
 			if selectedWallet != nil {
 				self.selectedWallet = selectedWallet!
 			} else {
-				self.selectedWallet = WalletPickerButtonView.records.first as! Wallet
+				self.selectedWallet = WalletPickerButtonView.records.first as? Wallet
 			}
 			super.init(pushButtonType: .utility)
 		}
@@ -55,6 +55,31 @@ extension UICommonComponents
 					self.contentView.configure(withObject: wallet)
 					// TODO/NOTE: bubble if necessary
 				}
+				view.reloaded_fn =
+				{ [unowned self] in
+					if let selectedWallet = self.selectedWallet {
+						let records = WalletPickerButtonView.records
+						if records.count == 0 { // e.g. booted state deconstructed
+							self.selectedWallet = nil
+							if self.picker_inputField.isFirstResponder {
+								self.picker_inputField.resignFirstResponder()
+							}
+							self.contentView.prepareForReuse()
+							return
+						}
+//						if records.contains(selectedWallet) == false { // if the selected wallet no longer exists
+//							// we don't need to do anything here, b/c the following will update state
+//						}
+					}
+					let picker_selectedWallet = self.pickerView.selectedWallet
+					if self.selectedWallet != picker_selectedWallet {
+						if self.selectedWallet != nil {
+							self.contentView.configure(withObject: self.selectedWallet!)
+						} else {
+							self.contentView.prepareForReuse() // might as well call it even though it will have handled
+						}
+					}
+				}
 				self.pickerView = view
 			}
 			do {
@@ -68,7 +93,9 @@ extension UICommonComponents
 				view.isUserInteractionEnabled = false // pass touches through to self
 				self.addSubview(view)
 			}
-			self.configure(withRecord: self.selectedWallet) // initial
+			if self.selectedWallet != nil {
+				self.configure(withRecord: self.selectedWallet!)
+			}
 			//
 			let image = UIImage(named: "dropdown-arrow-down")!
 			self.setImage(image, for: .normal)
@@ -140,6 +167,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var didSelect_fn: ((_ record: Wallet) -> Void)?
+		var reloaded_fn: ((Void) -> Void)?
 		//
 		// Lifecycle
 		init()
@@ -185,6 +213,15 @@ extension UICommonComponents
 			)
 		}
 		//
+		// Accessors
+		var selectedWallet: Wallet? {
+			let selectedIndex = self.selectedRow(inComponent: 0)
+			if selectedIndex == -1 {
+				return nil
+			}
+			return WalletPickerView.records[selectedIndex] as? Wallet
+		}
+		//
 		// Delegation - UIPickerView
 		func numberOfComponents(in pickerView: UIPickerView) -> Int
 		{
@@ -216,7 +253,7 @@ extension UICommonComponents
 			viewForRow row: Int,
 			forComponent component: Int,
 			reusing view: UIView?
-			) -> UIView
+		) -> UIView
 		{
 			var mutable_view: UIView? = view
 			if mutable_view == nil {
@@ -233,6 +270,9 @@ extension UICommonComponents
 		func PersistedObjectListController_Notifications_List_updated()
 		{
 			self.reloadComponent(0)
+			if let fn = self.reloaded_fn {
+				fn()
+			}
 		}
 	}
 }

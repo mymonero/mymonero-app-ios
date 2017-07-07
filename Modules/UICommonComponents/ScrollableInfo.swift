@@ -95,13 +95,11 @@ extension UICommonComponents
 		var overridable_wantsBackButton: Bool { return false }
 		//
 		// Accessors - Lookups/Derived - Layout metrics
-		var inlineMessageValidationView_topMargin: CGFloat
-		{
-			return 13
+		var inlineMessageValidationView_topMargin: CGFloat {
+			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
 		}
-		var inlineMessageValidationView_bottomMargin: CGFloat
-		{
-			return 13
+		var inlineMessageValidationView_bottomMargin: CGFloat {
+			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
 		}
 		var yOffsetForViewsBelowValidationMessageView: CGFloat
 		{

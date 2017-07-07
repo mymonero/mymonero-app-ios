@@ -124,7 +124,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	//
 	// Accessors
 	var sanitizedInputValue__toWallet: Wallet {
-		return self.toWallet_inputView.selectedWallet
+		return self.toWallet_inputView.selectedWallet! // we are never expecting this modal to be visible when no wallets exist, so a crash is/ought to be ok 
 	}
 	var sanitizedInputValue__amount: MoneroAmount? {
 		return self.amount_fieldset.inputField.submittableAmount_orNil
@@ -178,6 +178,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	override func _tryToSubmitForm()
 	{
 		NSLog("TODO")
+		let to_wallet = self.toWallet_inputView.selectedWallet
+		let amount_orNil = self.amount_fieldset.inputField.submittableAmount_orNil
+		
+		
 //		let parameters = AddFundsRequestFormSubmissionController.Parameters(
 //			mode: self._overridable_formSubmissionMode,
 //			//

@@ -81,7 +81,10 @@ class CreateWallet_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseV
 		//
 		let topPadding: CGFloat = 13
 		//
-		self.layOut_walletLabelAndSwatchFields(atYOffset: 0)
+		self.layOut_walletLabelAndSwatchFields(
+			atYOffset: 0,
+			isTopMostInForm: true
+		)
 		self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
 	}
 	override func viewDidAppear(_ animated: Bool)
