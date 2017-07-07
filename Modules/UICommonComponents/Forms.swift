@@ -310,7 +310,7 @@ extension UICommonComponents
 			static let marginBelowLabelAboveTextInputView: CGFloat = Form.FieldLabel.visual_marginBelow - FormInputCells.imagePadding_y
 			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 			//
-			static let visual_marginAboveLabelForUnderneathField: CGFloat = 18
+			static let visual_marginAboveLabelForUnderneathField: CGFloat = 22
 			static let marginAboveLabelForUnderneathField_textInputView: CGFloat = Form.FieldLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
 			//
 			// Lifecycle - Init
@@ -496,6 +496,8 @@ extension UICommonComponents
 		static let textFieldHeightCompensation: CGFloat = 2 // I'm not sure where this comes from yet
 		static let height: CGFloat = FormInputField.visual__height + 2*FormInputCells.imagePadding_y + FormInputField.textFieldHeightCompensation
 		//
+		static let textInsets = UIEdgeInsetsMake(8, 10, 8, 10)
+		//
 		var validationErrorMessageLabel: FormFieldAccessoryMessageLabel?
 		var init_placeholder: String?
 		//
@@ -538,11 +540,11 @@ extension UICommonComponents
 		// Accessors - Overrides
 		override func textRect(forBounds bounds: CGRect) -> CGRect
 		{ // placeholder position
-			return bounds.insetBy(dx: 8, dy: 8)
+			return bounds.insetBy(dx: FormInputField.textInsets.left, dy: FormInputField.textInsets.top)
 		}
 		override func editingRect(forBounds bounds: CGRect) -> CGRect
 		{ // text position
-			return bounds.insetBy(dx: 8, dy: 8)
+			return bounds.insetBy(dx: FormInputField.textInsets.left, dy: FormInputField.textInsets.top)
 		}
 		//
 		// Imperatives - Validation errors
@@ -587,12 +589,10 @@ extension UICommonComponents
 		{
 			super.layoutSubviews()
 			if let validationErrorMessageLabel = self.validationErrorMessageLabel {
-				let margin_x: CGFloat = 8
-				let margin_y: CGFloat = 8
 				let frame = CGRect(
-					x: margin_x,
-					y: self.frame.size.height + margin_y,
-					width: self.frame.size.width - 2*margin_x,
+					x: FormInputField.textInsets.left,
+					y: self.frame.size.height + FormInputField.textInsets.top,
+					width: self.frame.size.width - FormInputField.textInsets.left - FormInputField.textInsets.right,
 					height: 0
 				)
 				validationErrorMessageLabel.frame = frame
@@ -635,3 +635,155 @@ extension UICommonComponents
 		}
 	}
 }
+//
+// Amount input
+extension UICommonComponents.Form
+{
+	class AmountInputFieldsetView: UIView
+	{
+		//
+		// Properties
+		let inputField = AmountInputField()
+		let currencyLabel = AmountCurrencyLabel(title: "XMR")
+		//
+		// Lifecycle
+		init()
+		{
+			super.init(frame: .zero)
+			self.setup()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			self.addSubview(inputField)
+			self.addSubview(currencyLabel)
+			//
+			self.setup_layout()
+		}
+		func setup_layout()
+		{
+			self.inputField.frame = CGRect(
+				x: 0,
+				y: 0,
+				width: AmountInputField.w,
+				height: AmountInputField.height
+			)
+			self.currencyLabel.frame = CGRect(
+				x: self.inputField.frame.origin.x + self.inputField.frame.size.width + (8 - UICommonComponents.FormInputCells.imagePadding_x),
+				y: self.inputField.frame.origin.y,
+				width: self.currencyLabel.frame.size.width,
+				height: self.currencyLabel.frame.size.height
+			)
+			self.frame = CGRect(
+				x: 0,
+				y: 0,
+				width: self.currencyLabel.frame.origin.x + self.currencyLabel.frame.size.width,
+				height: self.currencyLabel.frame.size.height
+			)
+		}
+	}
+	class AmountInputField: UICommonComponents.FormInputField
+	{
+		//
+		// Constants
+		static let visual__w: CGFloat = 114
+		static let w: CGFloat = visual__w + 2*UICommonComponents.FormInputCells.imagePadding_x
+		//
+		// Lifecycle
+		init()
+		{
+			super.init(placeholder: "00.00")
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		override func setup()
+		{
+			super.setup()
+			self.keyboardType = .decimalPad
+			self.textAlignment = .right
+		}
+		//
+		// Accessors
+		var isEmpty: Bool {
+			if self.text == nil || self.text! == "" {
+				return true
+			}
+			return false
+		}
+		var hasInputButIsNotSubmittable: Bool {
+			if self.isEmpty {
+				return false // no input
+			}
+			let amount = self.submittableAmount_orNil
+			if amount == nil {
+				return true // has input but not submittable
+			}
+			return false // has input but is submittable
+		}
+		var submittableAmount_orNil: MoneroAmount? {
+			if self.isEmpty {
+				return nil
+			}
+			let amount = MoneroAmount.new(withUserInputAmountString: self.text!)
+			
+			return amount
+		}
+		//
+		// Delegation - To be called manually by whoever instantiates the AmountInputFieldsetView
+		func textField(
+			_ textField: UITextField,
+			shouldChangeCharactersIn range: NSRange,
+			replacementString string: String
+		) -> Bool
+		{
+			let decimalPlaceCharacter = "."
+			do { // first check legal characters
+				let aSet = NSCharacterSet(charactersIn:"0123456789\(decimalPlaceCharacter)").inverted
+				let compSepByCharInSet = string.components(separatedBy: aSet)
+				let numberFiltered = compSepByCharInSet.joined(separator: "")
+				if string != numberFiltered {
+					return false
+				}
+			}
+			do { // disallow more than one decimal character
+				let toString = ((textField.text ?? "") as NSString).replacingCharacters(in: range, with: string)
+				let components = toString.components(separatedBy: decimalPlaceCharacter)
+				if components.count > 2 {
+					return false
+				}
+			}
+			//
+			return true
+		}
+	}
+	class AmountCurrencyLabel: UILabel
+	{
+		//
+		// Properties - Static
+		static let w: CGFloat = 24
+		static let h: CGFloat = AmountInputField.height // relying on vertical centering
+		//
+		// Lifecycle - Init
+		init(title: String)
+		{
+			let frame = CGRect(x: 0, y: 0, width: AmountCurrencyLabel.w, height: AmountCurrencyLabel.h)
+			super.init(frame: frame)
+			self.text = title
+			self.setup()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			self.font = UIFont.smallBoldMonospace
+			self.textColor = UIColor(rgb: 0x8D8B8D)
+			self.numberOfLines = 1
+			self.textAlignment = .left
+		}
+	}
+}
+

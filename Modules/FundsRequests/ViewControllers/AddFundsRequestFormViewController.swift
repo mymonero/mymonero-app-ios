@@ -15,6 +15,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var toWallet_label: UICommonComponents.Form.FieldLabel!
 	var toWallet_inputView: UICommonComponents.WalletPickerButtonView!
 	//
+	var amount_label: UICommonComponents.Form.FieldLabel!
+	var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
+	//
 //	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 	//
 //	var paymentID_label: UICommonComponents.Form.FieldLabel?
@@ -49,6 +52,24 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.toWallet_inputView = view
 			self.scrollView.addSubview(view)
 		}
+		//
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("AMOUNT", comment: ""),
+				sizeToFit: true
+			)
+			self.amount_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.AmountInputFieldsetView()
+			let inputField = view.inputField
+			inputField.delegate = self
+			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+			inputField.returnKeyType = .next
+			self.amount_fieldset = view
+			self.scrollView.addSubview(view)
+		}
 	}
 	override func setup_navigation()
 	{
@@ -71,9 +92,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if self.formSubmissionController != nil {
 			return false
 		}
-//		if self.sanitizedInputValue__amount == "" {
-//			return false
-//		}
+		if self.amount_fieldset.inputField.hasInputButIsNotSubmittable {
+			return false // for ex if they just put in "."
+		}
 		// TODO…
 		return true
 	}
@@ -105,6 +126,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var sanitizedInputValue__toWallet: Wallet {
 		return self.toWallet_inputView.selectedWallet
 	}
+	var sanitizedInputValue__amount: MoneroAmount? {
+		return self.amount_fieldset.inputField.submittableAmount_orNil
+	}
 //	var sanitizedInputValue__paymentID: MoneroPaymentID? {
 //		if self.paymentID_inputView != nil && self.paymentID_inputView!.isHidden != true {
 //			let stripped_paymentID = self.paymentID_inputView!.textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -135,7 +159,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		self.scrollView.isScrollEnabled = false
 		//
 		self.toWallet_inputView.isEnabled = false
-//		self.emoji_inputView.isEnabled = false
+		self.amount_fieldset.inputField.isEnabled = false
 //		self.address_inputView.textView.isEditable = false
 //		self.paymentID_inputView?.textView.isEditable = false
 	}
@@ -146,15 +170,15 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		self.scrollView.isScrollEnabled = true
 		//
 		self.toWallet_inputView.isEnabled = true
-//		self.emoji_inputView.isEnabled = true
+		self.amount_fieldset.inputField.isEnabled = true
 //		self.address_inputView.textView.isEditable = true
 //		self.paymentID_inputView?.textView.isEditable = true
 	}
 	var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()
 	{
-		assert(false)
-//		let parameters = ContactFormSubmissionController.Parameters(
+		NSLog("TODO")
+//		let parameters = AddFundsRequestFormSubmissionController.Parameters(
 //			mode: self._overridable_formSubmissionMode,
 //			//
 //			name: self.sanitizedInputValue__name,
@@ -229,13 +253,27 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				y: ceil(top_yOffset),
 				width: fullWidth_label_w,
 				height: self.toWallet_label.frame.size.height
-				).integral
+			).integral
 			self.toWallet_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
 				y: self.toWallet_label.frame.origin.y + self.toWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 				width: textField_w,
 				height: self.toWallet_inputView.frame.size.height
-				).integral
+			).integral
+		}
+		do {
+			self.amount_label.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.toWallet_inputView.frame.origin.y + self.toWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+				width: fullWidth_label_w,
+				height: self.toWallet_label.frame.size.height
+			).integral
+			self.amount_fieldset.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+				width: self.amount_fieldset.frame.size.width,
+				height: self.amount_fieldset.frame.size.height
+			).integral
 		}
 //		if self.resolving_activityIndicator.isHidden == false {
 //			let size = self.resolving_activityIndicator.new_boundsSize
@@ -309,10 +347,27 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		_ textView: UITextView,
 		shouldChangeTextIn range: NSRange,
 		replacementText text: String
-		) -> Bool
+	) -> Bool
 	{
 		if text == "\n" { // simulate single-line input
 			return self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
+		}
+		return true
+	}
+	//
+	// Delegation - AmountInputField UITextField shunt
+	func textField(
+		_ textField: UITextField,
+		shouldChangeCharactersIn range: NSRange,
+		replacementString string: String
+	) -> Bool
+	{
+		if textField == self.amount_fieldset.inputField { // to support filtering characters
+			return self.amount_fieldset.inputField.textField(
+				textField,
+				shouldChangeCharactersIn: range,
+				replacementString: string
+			)
 		}
 		return true
 	}
@@ -327,10 +382,5 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		assert(self.navigationController!.presentingViewController != nil)
 		// we always expect self to be presented modally
 		self.navigationController?.dismiss(animated: true, completion: nil)
-	}
-	//
-	func deleteButton_tapped()
-	{
-		assert(false, "Override and implement")
 	}
 }

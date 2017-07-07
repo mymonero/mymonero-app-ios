@@ -99,6 +99,10 @@ extension UIFont
 	{
 		return UIFont(name: "Native-Regular", size: 11)!
 	}
+	static var smallBoldMonospace: UIFont
+	{
+		return UIFont(name: "Native-Bold", size: 11)!
+	}
 	static var middlingLightMonospace: UIFont
 	{
 		return UIFont(name: "Native-Light", size: 13)!

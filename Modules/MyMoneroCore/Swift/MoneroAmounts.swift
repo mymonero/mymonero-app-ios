@@ -29,6 +29,23 @@ extension MoneroAmount
 	{
 		return new(withBigIntString: "\(doubleValue)")
 	}
+	static let _formatter = NumberFormatter()
+	static var __hasConfigured_formatter = false
+	static func new(withUserInputAmountString string: String) -> MoneroAmount?
+	{
+		if __hasConfigured_formatter == false {
+			MoneroAmount._formatter.numberStyle = .decimal
+			__hasConfigured_formatter = true
+		}
+		let number = MoneroAmount._formatter.number(from: string)
+		if number == nil {
+			return nil
+		}
+		let double = number!.doubleValue
+		let amount = self.new(withDouble: double)
+		//
+		return amount
+	}
 	static func new(withBigIntString string: String) -> MoneroAmount
 	{ // aka monero_utils.parseMoney
 		if string == "" {
