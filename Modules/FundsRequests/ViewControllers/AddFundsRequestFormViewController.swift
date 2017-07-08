@@ -18,6 +18,14 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var amount_label: UICommonComponents.Form.FieldLabel!
 	var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
 	//
+	var aboveMemo_separatorView: UICommonComponents.Details.FieldSeparatorView!
+	//
+	var memo_label: UICommonComponents.Form.FieldLabel!
+	var memo_inputView: UICommonComponents.FormInputField!
+	//
+	var requestFrom_label: UICommonComponents.Form.FieldLabel!
+	var requestFrom_inputView: UICommonComponents.Form.ContactPickerView!
+	//
 //	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 	//
 //	var paymentID_label: UICommonComponents.Form.FieldLabel?
@@ -25,7 +33,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	//
 //	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
 	//
-//	var deleteButton_separatorView: UIView?
+//	var deleteButton_separatorView: FieldSeparatorView?
 //	var deleteButton: UICommonComponents.LinkButtonView?
 	//
 	// Lifecycle - Init
@@ -41,8 +49,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		super.setup_views()
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("TO", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("TO", comment: "")
 			)
 			self.toWallet_label = view
 			self.scrollView.addSubview(view)
@@ -55,8 +62,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("AMOUNT", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("AMOUNT", comment: "")
 			)
 			self.amount_label = view
 			self.scrollView.addSubview(view)
@@ -70,6 +76,56 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.amount_fieldset = view
 			self.scrollView.addSubview(view)
 		}
+		//
+		do {
+			let view = UICommonComponents.Details.FieldSeparatorView(mode: .contentBackgroundAccent)
+			self.aboveMemo_separatorView = view
+			self.scrollView.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("MEMO", comment: "")
+			)
+			self.memo_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.FormInputField(
+				placeholder: NSLocalizedString("Note about the transaction", comment: "")
+			)
+			let inputField = view
+			inputField.autocorrectionType = .default
+			inputField.autocapitalizationType = .sentences
+			inputField.delegate = self
+			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+			inputField.returnKeyType = .next
+			self.memo_inputView = view
+			self.scrollView.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("REQUEST FROM", comment: "")
+			)
+			self.requestFrom_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.ContactPickerView()
+//			let inputField = view.inputField
+			self.requestFrom_inputView = view
+			self.scrollView.addSubview(view)
+		}
+		//
+		// TODO: resolving indicator view
+		//
+		// TODO: +CREATE NEW CONTACT -> modal -> autopopulate (need/how to emit before dismissed like JS app?)
+		//
+		// TODO: +ADD PAYMENT ID 
+		// TODO: payment id fields, auto visibility and population + contact picker etc
+		
+		
 	}
 	override func setup_navigation()
 	{
@@ -103,7 +159,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	// Accessors - Overrides
 	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
 	{
-		// TODO…
 //		if inputView == self.amount_inputView {
 //			return self.memo_inputView.textView
 //		}
@@ -128,6 +183,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	}
 	var sanitizedInputValue__amount: MoneroAmount? {
 		return self.amount_fieldset.inputField.submittableAmount_orNil
+	}
+	var sanitizedInputValue__selectedContact: Contact? {
+		return self.requestFrom_inputView.selectedContact
 	}
 //	var sanitizedInputValue__paymentID: MoneroPaymentID? {
 //		if self.paymentID_inputView != nil && self.paymentID_inputView!.isHidden != true {
@@ -160,6 +218,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		self.toWallet_inputView.isEnabled = false
 		self.amount_fieldset.inputField.isEnabled = false
+		self.memo_inputView.isEnabled = false
+		self.requestFrom_inputView.inputField.isEnabled = false
+		if let pillView = self.requestFrom_inputView.selectedContactPillView {
+			pillView.xButton.isEnabled = true
+		}
 //		self.address_inputView.textView.isEditable = false
 //		self.paymentID_inputView?.textView.isEditable = false
 	}
@@ -171,6 +234,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		self.toWallet_inputView.isEnabled = true
 		self.amount_fieldset.inputField.isEnabled = true
+		self.memo_inputView.isEnabled = true
+		self.requestFrom_inputView.inputField.isEnabled = true
+		if let pillView = self.requestFrom_inputView.selectedContactPillView {
+			pillView.xButton.isEnabled = true
+		}
 //		self.address_inputView.textView.isEditable = true
 //		self.paymentID_inputView?.textView.isEditable = true
 	}
@@ -279,6 +347,45 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				height: self.amount_fieldset.frame.size.height
 			).integral
 		}
+		do {
+			self.aboveMemo_separatorView.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField, // estimate margin
+				width: textField_w,
+				height: self.aboveMemo_separatorView.frame.size.height
+			)
+		}
+		do {
+			self.memo_label.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.aboveMemo_separatorView.frame.origin.y + self.aboveMemo_separatorView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimate margin
+				width: fullWidth_label_w,
+				height: self.memo_label.frame.size.height
+				).integral
+			self.memo_inputView.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.memo_label.frame.origin.y + self.memo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+				width: textField_w,
+				height: self.memo_inputView.frame.size.height
+			).integral
+		}
+		
+		do {
+			self.requestFrom_label.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.memo_inputView.frame.origin.y + self.memo_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+				width: fullWidth_label_w,
+				height: self.requestFrom_label.frame.size.height
+			).integral
+			self.requestFrom_inputView.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.requestFrom_label.frame.origin.y + self.requestFrom_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+				width: textField_w,
+				height: self.requestFrom_inputView.frame.size.height
+			).integral
+		}
+
+
 //		if self.resolving_activityIndicator.isHidden == false {
 //			let size = self.resolving_activityIndicator.new_boundsSize
 //			self.resolving_activityIndicator.frame = CGRect(
@@ -338,12 +445,26 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 //			)
 //		}
 		
-		let bottomMostView = self.toWallet_inputView // self.paymentID_fieldAccessoryMessageLabel ?? self.deleteButton ?? self.paymentID_inputView ?? self.address_inputView
+		let bottomMostView = self.requestFrom_inputView // TODO: find the bottom most, either the pid field or the add pid  // self.paymentID_fieldAccessoryMessageLabel ?? self.deleteButton ?? self.paymentID_inputView ?? self.address_inputView
 		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView!,
 			bottomPadding: bottomPadding
 		)
+	}
+	override func viewDidAppear(_ animated: Bool)
+	{
+		let isFirstAppearance = self.hasAppearedBefore == false
+		super.viewDidAppear(animated)
+		if isFirstAppearance {
+			DispatchQueue.main.async
+			{ [unowned self] in
+				if self.sanitizedInputValue__selectedContact == nil {
+					assert(self.requestFrom_inputView.inputField.isHidden == false)
+					self.requestFrom_inputView.inputField.becomeFirstResponder()
+				}
+			}
+		}
 	}
 	//
 	// Delegation - UITextView

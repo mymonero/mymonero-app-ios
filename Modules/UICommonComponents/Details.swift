@@ -171,7 +171,7 @@ extension UICommonComponents
 			func add(fieldView: FieldView)
 			{
 				if fieldViews.count > 0 {
-					let separatorView = FieldSeparatorView()
+					let separatorView = FieldSeparatorView(mode: .detailsSectionFieldDelimiter)
 					fieldSeparatorViews.append(separatorView)
 					self.addSubview(separatorView)
 				}
@@ -267,10 +267,31 @@ extension UICommonComponents
 			//
 			static let h: CGFloat = 1/UIScreen.main.scale
 			//
-			init()
+			enum Mode
 			{
-				super.init(frame: .zero)
-				self.backgroundColor = UIColor(rgb: 0x494749)
+				case detailsSectionFieldDelimiter
+				case contiguousCellContainer
+				case contentBackgroundAccent
+				var color: UIColor {
+					switch self {
+						case .detailsSectionFieldDelimiter:
+							return UIColor(rgb: 0x494749)
+						case .contiguousCellContainer:
+							return UIColor(rgb: 0x413e40)
+						case .contentBackgroundAccent:
+							return UIColor(rgb: 0x383638)
+					}
+				}
+
+			}
+			var mode: Mode
+			//
+			init(mode: Mode)
+			{
+				self.mode = mode
+				let frame = CGRect(x: 0, y: 0, width: 0, height: FieldSeparatorView.h)
+				super.init(frame: frame)
+				self.backgroundColor = mode.color
 			}
 			required init?(coder aDecoder: NSCoder) {
 				fatalError("init(coder:) has not been implemented")

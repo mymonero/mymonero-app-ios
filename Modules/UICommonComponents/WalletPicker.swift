@@ -57,7 +57,7 @@ extension UICommonComponents
 				}
 				view.reloaded_fn =
 				{ [unowned self] in
-					if let selectedWallet = self.selectedWallet {
+					if let _ = self.selectedWallet {
 						let records = WalletPickerButtonView.records
 						if records.count == 0 { // e.g. booted state deconstructed
 							self.selectedWallet = nil

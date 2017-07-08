@@ -65,6 +65,7 @@
 		9F2BFF191EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */; };
 		9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30470C1EC657CB00190268 /* MoneroAmounts.swift */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
+		9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D501F10549E0017A20E /* ContactPicker.swift */; };
 		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
 		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
 		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
@@ -245,6 +246,7 @@
 		9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroAmounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroAmounts.swift; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
+		9F740D501F10549E0017A20E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		9F7ADAF81EBD2C1C0073C2BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -424,6 +426,7 @@
 				9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */,
 				9F22B7A91F01BAD20036B02F /* CopyButton.swift */,
 				9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */,
+				9F740D501F10549E0017A20E /* ContactPicker.swift */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -1312,6 +1315,7 @@
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
 				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,
 				9FA734071F05AF4E00C674D6 /* WalletsListViewController.swift in Sources */,
+				9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */,
 				9FAA18B21F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */,
 				9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */,

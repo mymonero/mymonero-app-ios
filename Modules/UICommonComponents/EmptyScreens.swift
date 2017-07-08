@@ -34,7 +34,7 @@ extension UICommonComponents
 		{
 			do {
 				let view = self
-				view.layer.borderColor = UIColor(rgb: 0x373537).cgColor
+				view.layer.borderColor = UICommonComponents.Details.FieldSeparatorView.Mode.contentBackgroundAccent.color.cgColor
 				view.layer.borderWidth = CGFloat(1)/UIScreen.main.scale // hairline
 				view.layer.cornerRadius = 5
 			}

@@ -25,7 +25,7 @@ class ContactsListViewCell: UITableViewCell
 	//
 	let cellContentView = ContactCellContentView()
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
-	let separatorView = UIView()
+	let separatorView = UICommonComponents.Details.FieldSeparatorView(mode: .contiguousCellContainer)
 	//
 	// Lifecycle - Init
 	init()
@@ -50,7 +50,6 @@ class ContactsListViewCell: UITableViewCell
 		self.contentView.addSubview(self.accessoryChevronView)
 		do {
 			let view = self.separatorView
-			view.backgroundColor = UIColor(rgb: 0x413e40)
 			self.contentView.addSubview(view)
 		}
 	}

@@ -28,7 +28,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
 	//
-	var deleteButton_separatorView: UIView?
+	var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView?
 	var deleteButton: UICommonComponents.LinkButtonView?
 	//
 	// Lifecycle - Init
@@ -149,8 +149,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		if self._overridable_wantsDeleteRecordButton {
 			do {
-				let view = UIView()
-				view.backgroundColor = UIColor(red: 56/255, green: 54/255, blue: 56/255, alpha: 100/255)
+				let view = UICommonComponents.Details.FieldSeparatorView(mode: .contentBackgroundAccent)
 				self.deleteButton_separatorView = view
 				self.scrollView.addSubview(view)
 			}
