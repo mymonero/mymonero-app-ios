@@ -21,9 +21,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var aboveMemo_separatorView: UICommonComponents.Details.FieldSeparatorView!
 	//
 	var memo_label: UICommonComponents.Form.FieldLabel!
+	var memo_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
 	var memo_inputView: UICommonComponents.FormInputField!
 	//
 	var requestFrom_label: UICommonComponents.Form.FieldLabel!
+	var requestFrom_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
 	var requestFrom_inputView: UICommonComponents.Form.ContactPickerView!
 	//
 //	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
@@ -91,6 +93,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
+			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+			self.memo_accessoryLabel = view
+			self.scrollView.addSubview(view)
+		}
+		do {
 			let view = UICommonComponents.FormInputField(
 				placeholder: NSLocalizedString("Note about the transaction", comment: "")
 			)
@@ -109,6 +116,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				title: NSLocalizedString("REQUEST FROM", comment: "")
 			)
 			self.requestFrom_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+			self.requestFrom_accessoryLabel = view
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -361,7 +373,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				y: self.aboveMemo_separatorView.frame.origin.y + self.aboveMemo_separatorView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimate margin
 				width: fullWidth_label_w,
 				height: self.memo_label.frame.size.height
-				).integral
+			).integral
+			self.memo_accessoryLabel.frame = CGRect(
+				x: CGFloat.form_labelAccessoryLabel_margin_x,
+				y: self.memo_label.frame.origin.y,
+				width: fullWidth_label_w,
+				height: self.memo_accessoryLabel.frame.size.height
+			).integral
 			self.memo_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
 				y: self.memo_label.frame.origin.y + self.memo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -376,6 +394,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				y: self.memo_inputView.frame.origin.y + self.memo_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.requestFrom_label.frame.size.height
+			).integral
+			self.requestFrom_accessoryLabel.frame = CGRect(
+				x: CGFloat.form_labelAccessoryLabel_margin_x,
+				y: self.requestFrom_label.frame.origin.y,
+				width: fullWidth_label_w,
+				height: self.requestFrom_accessoryLabel.frame.size.height
 			).integral
 			self.requestFrom_inputView.frame = CGRect(
 				x: CGFloat.form_input_margin_x,
