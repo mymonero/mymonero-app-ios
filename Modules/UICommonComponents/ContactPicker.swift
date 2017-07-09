@@ -399,6 +399,7 @@ extension UICommonComponents.Form
 				view.layer.masksToBounds = true
 				view.backgroundColor = self.backgroundColor
 				view.separatorColor = UIColor(rgb: 0xDFDEDF)
+				view.separatorInset = UIEdgeInsets(top: 0, left: 49, bottom: 0, right: 0)
 				self.tableView = view
 				self.addSubview(view)
 			}
@@ -427,6 +428,10 @@ extension UICommonComponents.Form
 		static let reuseIdentifier = "ContactPickerSearchResultsCellView"
 		static let h: CGFloat = 32
 		//
+		// Properties
+		var emojiLabel = UILabel()
+		var nameLabel = UILabel()
+		//
 		// Lifecycle - Init
 		init()
 		{
@@ -447,13 +452,43 @@ extension UICommonComponents.Form
 				view.backgroundColor = UIColor(red: 223/255, green: 222/255, blue: 223/255, alpha: 1)
 				self.selectedBackgroundView = view
 			}
-			// TODO
+			do {
+				let view = self.emojiLabel
+				view.font = UIFont.systemFont(ofSize: 13)
+				view.numberOfLines = 1
+				view.textAlignment = .center
+				self.addSubview(view)
+			}
+			do {
+				let view = self.nameLabel
+				view.font = UIFont.middlingMediumSansSerif
+				view.textAlignment = .left
+				view.numberOfLines = 1
+				view.lineBreakMode = .byTruncatingTail
+				view.textColor = UIColor(rgb: 0x1D1B1D)
+				self.addSubview(view)
+			}
+		}
+		//
+		// Overrides - Imperatives - Layout
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			do {
+				let w: CGFloat = 50
+				self.emojiLabel.frame = CGRect(x: 0, y: 0, width: w, height: self.frame.size.height)
+			}
+			do {
+				let x = self.emojiLabel.frame.origin.x + self.emojiLabel.frame.size.width
+				self.nameLabel.frame = CGRect(x: x, y: 0, width: self.frame.size.width - x - 8, height: self.frame.size.height)
+			}
 		}
 		//
 		// Imperatives - Configuration
 		func configure(withContact contact: Contact)
 		{
-			// TODO
+			self.emojiLabel.text = contact.emoji
+			self.nameLabel.text = contact.fullname
 		}
 	}
 	//
@@ -461,12 +496,64 @@ extension UICommonComponents.Form
 	{
 		//
 		// Constants
+		static let visual__h: CGFloat = 31
+		static let h = SelectedContactPillView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
+		
+		static let emoji_w: CGFloat = 32
+		static let xButton_leftMargin: CGFloat = 8
+		static let xButton_side = SelectedContactPillView.visual__h
 		//
 		// Properties
 		var contact: Contact?
 		var xButton_tapped_fn: ((Void) -> Void)!
 		//
+		let backgroundImageView = UIImageView(image: UICommonComponents.PushButtonCells.Variant.utility.stretchableImage)
+		var emojiLabel = UILabel()
+		var nameLabel = UILabel()
 		var xButton = UIButton()
+		//
+		// Lifecycle - Init
+		init()
+		{
+			super.init(frame: .zero)
+			self.setup()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			do {
+				let view = self.backgroundImageView
+				self.addSubview(view)
+			}
+			do {
+				let view = self.emojiLabel
+				view.font = UIFont.systemFont(ofSize: 13)
+				view.numberOfLines = 1
+				view.textAlignment = .center
+				self.addSubview(view)
+			}
+			do {
+				let view = self.nameLabel
+				view.font = UIFont.middlingBoldMonospace
+				view.textAlignment = .left
+				view.numberOfLines = 1
+				view.lineBreakMode = .byTruncatingTail
+				view.textColor = UIColor(rgb: 0xFCFBFC)
+				self.addSubview(view)
+			}
+			do {
+				let view = self.xButton
+				let image = UIImage(named: "contactPicker_xBtnIcn")!
+				view.contentVerticalAlignment = .center
+				view.contentHorizontalAlignment = .center
+				view.setImage(image, for: .normal)
+				view.adjustsImageWhenHighlighted = true
+				view.addTarget(self, action: #selector(xButton_tapped), for: .touchUpInside)
+				self.addSubview(view)
+			}
+		}
 		//
 		// Lifecycle - Teardown
 		deinit {
@@ -482,12 +569,14 @@ extension UICommonComponents.Form
 		}
 		func teardown_object()
 		{
-			self.contact = nil
 			self.stopObserving_contact()
+			self.contact = nil
 		}
 		func stopObserving_contact()
 		{
-			// TODO: Need/want to observe contact here? Deselect if deleted. Reconfig name/emoji if/when contact info changed
+			let contact = self.contact!
+			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: contact)
+			NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: contact)
 		}
 		//
 		// Imperatives - Configuration
@@ -500,21 +589,23 @@ extension UICommonComponents.Form
 				self.prepareForReuse()
 			}
 			self.contact = contact
-			self.configure_views()
+			self.configureWithContact()
 			self.startObserving_contact()
-		}
-		func configure_views()
-		{
-			// TODO: data vals in label(s)
-			self._sizeSelfAndLayOutSubviews()
-		}
-		func _sizeSelfAndLayOutSubviews()
-		{
-			
 		}
 		func startObserving_contact()
 		{
-			// TODO
+			let contact = self.contact!
+			NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: contact)
+			NotificationCenter.default.addObserver(self, selector: #selector(infoUpdated), name: Contact.NotificationNames.infoUpdated.notificationName, object: contact)
+		}
+		//
+		// Imperatives - Configuration
+		func configureWithContact()
+		{
+			let contact = self.contact!
+			self.nameLabel.text = contact.fullname
+			self.emojiLabel.text = contact.emoji
+			self.setNeedsLayout()
 		}
 		//
 		// Interface - Layout - Imperatives
@@ -524,7 +615,77 @@ extension UICommonComponents.Form
 			inWidth containerWidth: CGFloat
 		)
 		{
-			assert(false, "TODO")
+			self.frame = CGRect(
+				x: x,
+				y: y,
+				width: containerWidth, // just take up whole space so subviews can size accordingly
+				height: SelectedContactPillView.h
+			)
+			// will trigger layoutSubviews()
+		}
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			//
+			assert(self.contact != nil, "Contact was nil")
+			if self.contact == nil {
+				return
+			}
+			//
+			let visual__maxW = self.frame.size.width - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
+			let nameLabel_maxW = visual__maxW - SelectedContactPillView.emoji_w - SelectedContactPillView.xButton_leftMargin - SelectedContactPillView.xButton_side
+			
+			self.emojiLabel.frame = CGRect(
+				x: UICommonComponents.PushButtonCells.imagePaddingForShadow_v,
+				y: UICommonComponents.PushButtonCells.imagePaddingForShadow_v,
+				width: SelectedContactPillView.emoji_w,
+				height: SelectedContactPillView.visual__h
+			)
+			do {
+				self.nameLabel.frame = CGRect(
+					x: self.emojiLabel.frame.origin.x + self.emojiLabel.frame.size.width,
+					y: UICommonComponents.PushButtonCells.imagePaddingForShadow_v,
+					width: 0,
+					height: SelectedContactPillView.visual__h
+				)
+				self.nameLabel.sizeToFit()
+				self.nameLabel.frame = CGRect(
+					x: self.nameLabel.frame.origin.x,
+					y: self.nameLabel.frame.origin.y,
+					width: min(nameLabel_maxW, self.nameLabel.frame.size.width),
+					height: SelectedContactPillView.visual__h // must use full height or will not be vertically aligned
+				)
+			}
+			do {
+				let yOffset: CGFloat = 1
+				self.xButton.frame = CGRect(
+					x: self.nameLabel.frame.origin.x + self.nameLabel.frame.size.width + SelectedContactPillView.xButton_leftMargin,
+					y: UICommonComponents.PushButtonCells.imagePaddingForShadow_v + yOffset,
+					width: SelectedContactPillView.xButton_side,
+					height: SelectedContactPillView.xButton_side - yOffset
+				)
+			}
+			self.backgroundImageView.frame = CGRect(
+				x: 0,
+				y: 0,
+				width: self.xButton.frame.origin.x + self.xButton.frame.size.width + UICommonComponents.PushButtonCells.imagePaddingForShadow_h,
+				height: self.frame.size.height
+			)
+		}
+		//
+		// Delegation
+		func xButton_tapped()
+		{
+			self.xButton_tapped_fn()
+		}
+		//
+		func willBeDeleted()
+		{
+			self.xButton.sendActions(for: .touchUpInside) // simulate tap
+		}
+		func infoUpdated()
+		{
+			self.configureWithContact()
 		}
 	}
 }

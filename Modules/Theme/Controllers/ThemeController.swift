@@ -134,6 +134,10 @@ extension UIFont
 	{
 		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
 	}
+	static var middlingMediumSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
+	}
 	static var middlingSemiboldSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightSemibold)
