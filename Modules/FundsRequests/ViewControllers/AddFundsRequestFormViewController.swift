@@ -125,7 +125,36 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			let view = UICommonComponents.Form.ContactPickerView()
-//			let inputField = view.inputField
+			// TODO: initial contact selection? (from spawn)
+			view.textFieldDidBeginEditing_fn =
+			{ [unowned self] (textField) in				
+				self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
+				// ^- this does not actually do anything at present, given suppressed scroll
+				DispatchQueue.main.asyncAfter(
+					deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
+				) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
+				{ [unowned self] in
+					if view.inputField.isFirstResponder { // jic
+						self.scrollToVisible_requestFrom()
+					}
+				}
+			}
+			view.didUpdateHeight_fn =
+			{
+				self.view.setNeedsLayout() // to get following subviews' layouts to update
+			}
+			view.textFieldDidEndEditing_fn =
+			{ [unowned self] (textField) in
+			}
+			view.didPickContact_fn =
+			{ [unowned self] (contact) in
+			
+			}
+			view.didClearPickedContact_fn =
+			{ [unowned self] (preExistingContact) in
+			}
+			let inputField = view.inputField
+			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			self.requestFrom_inputView = view
 			self.scrollView.addSubview(view)
 		}
@@ -171,15 +200,29 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	// Accessors - Overrides
 	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
 	{
-//		if inputView == self.amount_inputView {
-//			return self.memo_inputView.textView
-//		}
-//		if inputView == self.memo_inputView.textView {
-//			if let paymentID_inputView = self.paymentID_inputView {
-//				return paymentID_inputView.textView
-//			}
-//			return nil
-//		}
+		if inputView == self.toWallet_inputView.picker_inputField {
+			return self.amount_fieldset.inputField
+		}
+		if inputView == self.amount_fieldset.inputField {
+			return self.memo_inputView
+		}
+		if inputView == self.memo_inputView {
+			if self.requestFrom_inputView.inputField.isHidden == false {
+				return self.requestFrom_inputView.inputField
+			} else {
+		// TODO
+//				if let paymentID_inputView = self.paymentID_inputView {
+//					return paymentID_inputView.textView
+//				}
+			}
+			return nil
+		}
+		if inputView == self.requestFrom_inputView.inputField {
+		// TODO
+//				if let paymentID_inputView = self.paymentID_inputView {
+//					return paymentID_inputView.textView
+//				}
+		}
 //		if let paymentID_inputView = self.paymentID_inputView {
 //			if inputView == paymentID_inputView.textView {
 //				return nil
@@ -187,6 +230,15 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 //		}
 		assert(false, "Unexpected")
 		return nil
+	}
+	override func new_wantsBGTapRecognizerToReceive_tapped(onView view: UIView) -> Bool
+	{
+		if view.isAnyAncestor(self.requestFrom_inputView) {
+			// this is to prevent taps on the searchResults tableView from dismissing the input (which btw makes selection of search results rows impossible)
+			// but it's ok if this is the inputField itself
+			return false
+		}
+		return super.new_wantsBGTapRecognizerToReceive_tapped(onView: view)
 	}
 	//
 	// Accessors
@@ -208,6 +260,18 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 //		}
 //		return nil
 //	}
+	//
+	// Imperatives - Contact picker
+	func scrollToVisible_requestFrom()
+	{
+		let toBeVisible_frame__absolute = CGRect(
+			x: 0,
+			y: self.requestFrom_label.frame.origin.y,
+			width: self.requestFrom_inputView.frame.size.width,
+			height: (self.requestFrom_inputView.frame.origin.y - self.requestFrom_label.frame.origin.y) + self.requestFrom_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField
+		)
+		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
+	}
 	//
 	// Imperatives - Resolving indicator
 	// TODO
@@ -235,7 +299,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
 			pillView.xButton.isEnabled = true
 		}
-//		self.address_inputView.textView.isEditable = false
 //		self.paymentID_inputView?.textView.isEditable = false
 	}
 	override func reEnableForm()
@@ -251,7 +314,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
 			pillView.xButton.isEnabled = true
 		}
-//		self.address_inputView.textView.isEditable = true
 //		self.paymentID_inputView?.textView.isEditable = true
 	}
 	var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
@@ -387,7 +449,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				height: self.memo_inputView.frame.size.height
 			).integral
 		}
-		
 		do {
 			self.requestFrom_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
@@ -481,13 +542,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		let isFirstAppearance = self.hasAppearedBefore == false
 		super.viewDidAppear(animated)
 		if isFirstAppearance {
-			DispatchQueue.main.async
-			{ [unowned self] in
-				if self.sanitizedInputValue__selectedContact == nil {
-					assert(self.requestFrom_inputView.inputField.isHidden == false)
-					self.requestFrom_inputView.inputField.becomeFirstResponder()
-				}
-			}
+//			DispatchQueue.main.async
+//			{ [unowned self] in
+//				if self.sanitizedInputValue__selectedContact == nil {
+//					assert(self.requestFrom_inputView.inputField.isHidden == false)
+//					self.requestFrom_inputView.inputField.becomeFirstResponder()
+//				}
+//			}
 		}
 	}
 	//

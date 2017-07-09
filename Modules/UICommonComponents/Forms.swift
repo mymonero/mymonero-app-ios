@@ -10,8 +10,12 @@ import UIKit
 //
 extension UICommonComponents
 {
-	class FormViewController: ScrollableValidatingInfoViewController, UITextFieldDelegate, UITextViewDelegate
+	class FormViewController: ScrollableValidatingInfoViewController,
+		UITextFieldDelegate, UITextViewDelegate, UIGestureRecognizerDelegate
 	{
+		//
+		// Constants
+		static let fieldScrollDuration = 0.25
 		//
 		// Properties - Cached
 		//
@@ -34,8 +38,9 @@ extension UICommonComponents
 				self.scrollView.indicatorStyle = .white
 			}
 			do {
-				let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-				self.scrollView.addGestureRecognizer(tapGestureRecognizer)
+				let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+				recognizer.delegate = self
+				self.scrollView.addGestureRecognizer(recognizer)
 			}
 		}
 		override func startObserving()
@@ -78,6 +83,13 @@ extension UICommonComponents
 		{
 			return nil
 		}
+		func new_wantsBGTapRecognizerToReceive_tapped(onView view: UIView) -> Bool
+		{
+			if view.canBecomeFirstResponder {
+				return false
+			}
+			return true // default
+		}
 		//
 		// Runtime - Accessors - State - Overridable
 		func new_isFormSubmittable() -> Bool
@@ -101,14 +113,21 @@ extension UICommonComponents
 		}
 		//
 		// Runtime - Imperatives - Scrolling
-		func scrollInputViewToVisible(_ inputView: UIView)
-		{
+		var visibleScroll_rect: CGRect {
 			let visibleScroll_size_height = (self.scrollView.bounds.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom)
 			let visibleScroll_size = CGSize(
 				width: scrollView.bounds.size.width,
 				height: visibleScroll_size_height
 			)
 			let visibleScroll_rect = CGRect(origin: scrollView.contentOffset, size: visibleScroll_size)
+			//
+			return visibleScroll_rect
+		}
+		
+		func scrollInputViewToVisible(
+			_ inputView: UIView
+		)
+		{
 			var estimated__margin_y: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.Form.FieldLabel.fixedHeight + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
 				var this_view = inputView
@@ -123,21 +142,53 @@ extension UICommonComponents
 			let margin_y = estimated__margin_y
 			let toBeVisible_frame__relative = inputView.frame.insetBy(dx: 0, dy: -margin_y)
 			let toBeVisible_frame__absolute = inputView.superview == scrollView ? toBeVisible_frame__relative : inputView.convert(toBeVisible_frame__relative, to: scrollView)
+			var scrollEdge: Form.InputScrollEdge
+			do {
+				if toBeVisible_frame__absolute.origin.y < self.scrollView.contentOffset.y {
+					scrollEdge = .top
+				} else {
+					scrollEdge = .bottom
+				}
+			}
+			self.scrollRectToVisible(
+				toBeVisible_frame__absolute: toBeVisible_frame__absolute,
+				atEdge: scrollEdge,
+				finished_fn:
+				{
+				}
+			)
+		}
+		func scrollRectToVisible(
+			toBeVisible_frame__absolute: CGRect,
+			atEdge scrollEdge: UICommonComponents.Form.InputScrollEdge,
+			finished_fn: @escaping ((Void) -> Void)
+		)
+		{
+			let visibleScroll_rect = self.visibleScroll_rect
 			if visibleScroll_rect.contains(toBeVisible_frame__absolute) { // already fully contained - do not scroll
 				return
 			}
 			var contentOffset_y: CGFloat
-			if toBeVisible_frame__absolute.origin.y < self.scrollView.contentOffset.y {
+			if scrollEdge == .top {
 				let toBeVisible_topEdge = toBeVisible_frame__absolute.origin.y
 				contentOffset_y = toBeVisible_topEdge
+			} else if scrollEdge == .bottom {
+				contentOffset_y = toBeVisible_frame__absolute.origin.y - visibleScroll_rect.size.height + toBeVisible_frame__absolute.size.height
 			} else {
-				contentOffset_y = toBeVisible_frame__absolute.origin.y - visibleScroll_size_height + toBeVisible_frame__absolute.size.height
+				assert(false)
+				contentOffset_y = 0
 			}
 			UIView.animate(
-				withDuration: 0.25,
+				withDuration: FormViewController.fieldScrollDuration,
 				animations:
 				{ [unowned self] in
 					self.scrollView.contentOffset = CGPoint(x: 0, y: contentOffset_y)
+				},
+				completion:
+				{ (finished) in
+					if finished {
+						finished_fn()
+					}
 				}
 			)
 		}
@@ -247,9 +298,11 @@ extension UICommonComponents
 				next_inputView.becomeFirstResponder()
 			}
 		}
-		func aField_didBeginEditing(_ inputView: UIView)
+		func aField_didBeginEditing(_ inputView: UIView, butSuppressScroll suppressScrollToVisible: Bool = false)
 		{
-			self.scrollInputViewToVisible(self.scrollView.currentFirstResponder! as! UIView)
+			if suppressScrollToVisible != true {
+				self.scrollInputViewToVisible(self.scrollView.currentFirstResponder! as! UIView)
+			}
 		}
 		//
 		// Delegation - Internal/Convenience - Form submission
@@ -300,9 +353,27 @@ extension UICommonComponents
 			// configuration
 			self.scrollView.contentInset = self.new_contentInset()
 		}
+		//
+		// Delegation - Gestures - Tap
+		func gestureRecognizer(
+			_ gestureRecognizer: UIGestureRecognizer,
+			shouldReceive touch: UITouch
+		) -> Bool
+		{
+			if let view = touch.view {
+				return self.new_wantsBGTapRecognizerToReceive_tapped(onView: view)
+			}
+			return true
+		}
 	}
 	struct Form
 	{ // TODO: port the entire remainder of this file, Form.swift, to this namespace, Form
+		
+		enum InputScrollEdge
+		{
+			case top
+			case bottom
+		}
 		//
 		class FieldLabel: UILabel
 		{
@@ -384,7 +455,7 @@ extension UICommonComponents
 		case textField_bg_noErr = "textField_bg_noErr_stretchable"
 		case textField_bg_error = "textField_bg_error_stretchable"
 		//
-		static var imagePadding_x: CGFloat { return 1 }
+		static var imagePadding_x: CGFloat { return 2 }
 		static var imagePadding_y: CGFloat { return 2 }
 		//
 		var stretchableImage: UIImage
