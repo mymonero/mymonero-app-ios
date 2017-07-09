@@ -499,8 +499,8 @@ extension UICommonComponents.Form
 		static let visual__h: CGFloat = 31
 		static let h = SelectedContactPillView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 		
-		static let emoji_w: CGFloat = 32
-		static let xButton_leftMargin: CGFloat = 8
+		static let emoji_w: CGFloat = 35
+		static let xButton_leftMargin: CGFloat = 7
 		static let xButton_side = SelectedContactPillView.visual__h
 		//
 		// Properties
