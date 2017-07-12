@@ -14,7 +14,13 @@ class OpenAliasResolverRequestMaker
 	// Properties
 	var resolve_requestHandle: HostedMoneroAPIClient.RequestHandle?
 	//
-	// Imperatives - Lifecycle
+	// Lifecycle - Deinit
+	deinit
+	{
+		self.cancelAnyRequestFor_oaResolution() // just in case
+	}
+	//
+	// Imperatives
 	func cancelAnyRequestFor_oaResolution()
 	{
 		if let requestHandle = self.resolve_requestHandle {
@@ -22,9 +28,4 @@ class OpenAliasResolverRequestMaker
 			self.resolve_requestHandle = nil
 		}
 	}
-	//
-	// Accessors - Runtime
-	//
-	// Imperatives - Runtime
-	//
 }

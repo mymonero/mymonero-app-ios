@@ -247,7 +247,6 @@ extension UICommonComponents
 		func show()
 		{
 			if self.isHidden == false {
-				assert(false)
 				return
 			}
 			self.isHidden = false
@@ -256,7 +255,6 @@ extension UICommonComponents
 		func hide()
 		{
 			if self.isHidden == true {
-				assert(false)
 				return
 			}
 			self.isHidden = true

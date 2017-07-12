@@ -28,15 +28,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var requestFrom_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
 	var requestFrom_inputView: UICommonComponents.Form.ContactPickerView!
 	//
-//	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
+	var createNewContact_buttonView: UICommonComponents.LinkButtonView!
+	var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
 	//
-//	var paymentID_label: UICommonComponents.Form.FieldLabel?
-//	var paymentID_inputView: UICommonComponents.FormTextViewContainerView?
-	//
-//	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
-	//
-//	var deleteButton_separatorView: FieldSeparatorView?
-//	var deleteButton: UICommonComponents.LinkButtonView?
+	var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
+	var manualPaymentID_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
+	var manualPaymentID_inputView: UICommonComponents.FormInputField!
 	//
 	// Lifecycle - Init
 	override init()
@@ -144,33 +141,125 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				self.view.setNeedsLayout() // to get following subviews' layouts to update
 			}
 			view.textFieldDidEndEditing_fn =
-			{ [unowned self] (textField) in
+			{ (textField) in
+				// nothing to do in this case
 			}
 			view.didPickContact_fn =
-			{ [unowned self] (contact) in
-			
+			{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
+				do { // configurations regardless
+					self.createNewContact_buttonView.isHidden = true
+				}
+				if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
+					self.addPaymentID_buttonView.isHidden = true // hide if showing
+					self.hideAndClear_manualPaymentIDField() // at least clear; hide for now
+					//
+					// contact picker will show its own resolving indicator while we look up the paymentID again
+					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
+					//
+					self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
+					//
+					return
+				}
+				// does NOT need to resolve an OA address; handle contact's non-OA payment id - if we already have one
+				if let paymentID = contact.payment_id {
+					self.addPaymentID_buttonView.isHidden = true // hide if showing
+					self.show_manualPaymentIDField(withValue: paymentID)
+					// NOTE: ^--- This may seem unusual not to show as a 'detected' payment ID
+					// here but unlike on the Send page, Requests (I think) must be able to be created
+					// with an empty / nil payment ID field even though the user picked a contact.
+				} else {
+					self.addPaymentID_buttonView.isHidden = false // show if hidden
+					self.hideAndClear_manualPaymentIDField() // hide if showing
+				}
+			}
+			view.oaResolve__preSuccess_terminal_validationMessage_fn =
+			{ [unowned self] (localizedString) in
+				self.setValidationMessage(localizedString)
+				self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
+			}
+			view.oaResolve__success_fn =
+			{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+				self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
+				do { // memo field
+					self.memo_inputView.text = tx_description ?? "" // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.
+				}
+				do { // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+					if payment_id != "" {
+						self.addPaymentID_buttonView.isHidden = true // hide if showing
+						self.show_manualPaymentIDField(withValue: payment_id)
+					} else {
+						// we already hid it above… but just in case
+						self.addPaymentID_buttonView.isHidden = false // show if showing
+						self.hideAndClear_manualPaymentIDField()
+					}
+				}
 			}
 			view.didClearPickedContact_fn =
 			{ [unowned self] (preExistingContact) in
+				self.clearValidationMessage() // in case there was an OA addr resolve network err sitting on the screen
+				//
+				self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
+				//
+				self.addPaymentID_buttonView.isHidden = false // show if hidden
+				self.hideAndClear_manualPaymentIDField() // if showing
+				//
+				if preExistingContact.hasOpenAliasAddress {
+					self.memo_inputView.text = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
+				}
+				self.createNewContact_buttonView.isHidden = false // show if hidden
 			}
 			let inputField = view.inputField
 			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 			self.requestFrom_inputView = view
 			self.scrollView.addSubview(view)
 		}
+		do {
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: "+ CREATE NEW CONTACT")
+			view.addTarget(self, action: #selector(createNewContact_tapped), for: .touchUpInside)
+			self.createNewContact_buttonView = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: "+ ADD PAYMENT ID")
+			view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
+			self.addPaymentID_buttonView = view
+			self.scrollView.addSubview(view)
+		}
 		//
-		// TODO: resolving indicator view
 		//
-		// TODO: +CREATE NEW CONTACT -> modal -> autopopulate (need/how to emit before dismissed like JS app?)
-		//
-		// TODO: +ADD PAYMENT ID 
-		// TODO: payment id fields, auto visibility and population + contact picker etc
-		
-		
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("PAYMENT ID", comment: "")
+			)
+			view.isHidden = true // initially
+			self.manualPaymentID_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+			view.isHidden = true // initially
+			self.manualPaymentID_accessoryLabel = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.FormInputField(
+				placeholder: NSLocalizedString("A specific payment ID", comment: "")
+			)
+			view.isHidden = true // initially
+			let inputField = view
+			inputField.autocorrectionType = .no
+			inputField.autocapitalizationType = .none
+			inputField.delegate = self
+			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+			inputField.returnKeyType = .go
+			self.manualPaymentID_inputView = view
+			self.scrollView.addSubview(view)
+		}
 	}
 	override func setup_navigation()
 	{
 		super.setup_navigation()
+		self.navigationItem.title = NSLocalizedString("New Request", comment: "")
 		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 			type: .save,
 			target: self,
@@ -189,47 +278,41 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if self.formSubmissionController != nil {
 			return false
 		}
+		if self.requestFrom_inputView.isResolving {
+			return false
+		}
 		if self.amount_fieldset.inputField.hasInputButIsNotSubmittable {
 			return false // for ex if they just put in "."
 		}
-		// TODO…
 		return true
 	}
-	
 	//
 	// Accessors - Overrides
 	override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
 	{
-		if inputView == self.toWallet_inputView.picker_inputField {
-			return self.amount_fieldset.inputField
+		switch inputView {
+			case self.toWallet_inputView.picker_inputField:
+				return self.amount_fieldset.inputField
+			case self.amount_fieldset.inputField:
+				return self.memo_inputView
+			case self.memo_inputView:
+				if self.requestFrom_inputView.inputField.isHidden == false {
+					return self.requestFrom_inputView.inputField
+				} else if self.manualPaymentID_inputView.isHidden == false {
+					return self.manualPaymentID_inputView
+				}
+				return nil
+			case self.requestFrom_inputView.inputField:
+				if self.manualPaymentID_inputView.isHidden == false {
+					return manualPaymentID_inputView
+				}
+				return nil
+			case self.manualPaymentID_inputView:
+				return nil
+			default:
+				assert(false, "Unexpected")
+				return nil
 		}
-		if inputView == self.amount_fieldset.inputField {
-			return self.memo_inputView
-		}
-		if inputView == self.memo_inputView {
-			if self.requestFrom_inputView.inputField.isHidden == false {
-				return self.requestFrom_inputView.inputField
-			} else {
-		// TODO
-//				if let paymentID_inputView = self.paymentID_inputView {
-//					return paymentID_inputView.textView
-//				}
-			}
-			return nil
-		}
-		if inputView == self.requestFrom_inputView.inputField {
-		// TODO
-//				if let paymentID_inputView = self.paymentID_inputView {
-//					return paymentID_inputView.textView
-//				}
-		}
-//		if let paymentID_inputView = self.paymentID_inputView {
-//			if inputView == paymentID_inputView.textView {
-//				return nil
-//			}
-//		}
-		assert(false, "Unexpected")
-		return nil
 	}
 	override func new_wantsBGTapRecognizerToReceive_tapped(onView view: UIView) -> Bool
 	{
@@ -251,15 +334,34 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var sanitizedInputValue__selectedContact: Contact? {
 		return self.requestFrom_inputView.selectedContact
 	}
-//	var sanitizedInputValue__paymentID: MoneroPaymentID? {
-//		if self.paymentID_inputView != nil && self.paymentID_inputView!.isHidden != true {
-//			let stripped_paymentID = self.paymentID_inputView!.textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-//			if stripped_paymentID != "" {
-//				return stripped_paymentID
-//			}
-//		}
-//		return nil
-//	}
+	var sanitizedInputValue__paymentID: MoneroPaymentID? {
+		if self.manualPaymentID_inputView.text != nil && self.manualPaymentID_inputView!.isHidden != true {
+			let stripped_paymentID = self.manualPaymentID_inputView!.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+			if stripped_paymentID != "" {
+				return stripped_paymentID
+			}
+		}
+		return nil
+	}
+	//
+	// Imperatives - Field visibility/configuration
+	func set_manualPaymentIDField(isHidden: Bool)
+	{
+		self.manualPaymentID_label.isHidden = isHidden
+		self.manualPaymentID_accessoryLabel.isHidden = isHidden
+		self.manualPaymentID_inputView.isHidden = isHidden
+		self.view.setNeedsLayout()
+	}
+	func show_manualPaymentIDField(withValue paymentID: String?)
+	{
+		self.manualPaymentID_inputView.text = paymentID ?? "" // nil to empty field
+		self.set_manualPaymentIDField(isHidden: false)
+	}
+	func hideAndClear_manualPaymentIDField()
+	{
+		self.set_manualPaymentIDField(isHidden: true)
+		self.manualPaymentID_inputView.text = ""
+	}
 	//
 	// Imperatives - Contact picker
 	func scrollToVisible_requestFrom()
@@ -272,18 +374,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		)
 		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
 	}
-	//
-	// Imperatives - Resolving indicator
-	// TODO
-//	func set(resolvingIndicatorIsVisible: Bool)
-//	{
-//		if resolvingIndicatorIsVisible {
-//			self.resolving_activityIndicator.show()
-//		} else {
-//			self.resolving_activityIndicator.hide()
-//		}
-//		self.view.setNeedsLayout()
-//	}
 	//
 	// Runtime - Imperatives - Overrides
 	override func disableForm()
@@ -299,7 +389,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
 			pillView.xButton.isEnabled = true
 		}
-//		self.paymentID_inputView?.textView.isEditable = false
+		self.manualPaymentID_inputView.isEnabled = false
 	}
 	override func reEnableForm()
 	{
@@ -314,7 +404,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
 			pillView.xButton.isEnabled = true
 		}
-//		self.paymentID_inputView?.textView.isEditable = true
+	self.manualPaymentID_inputView.isEnabled = true
 	}
 	var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()
@@ -357,14 +447,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 //				if self.paymentID_inputView != nil {
 //					self.paymentID_inputView!.textView.text = paymentID_orNil ?? ""
 //				}
-//			},
-//			didBeginResolving_fn:
-//			{ [unowned self] in
-//				self.set(resolvingIndicatorIsVisible: true)
-//			},
-//			didEndResolving_fn:
-//			{ [unowned self] in
-//				self.set(resolvingIndicatorIsVisible: false)
 //			},
 //			success_fn:
 //			{ [unowned self] (contactInstance) in
@@ -469,71 +551,77 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				height: self.requestFrom_inputView.frame.size.height
 			).integral
 		}
-
-
-//		if self.resolving_activityIndicator.isHidden == false {
-//			let size = self.resolving_activityIndicator.new_boundsSize
-//			self.resolving_activityIndicator.frame = CGRect(
-//				x: CGFloat.form_label_margin_x,
-//				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
-//				width: size.width,
-//				height: size.height
-//				).integral
-//		}
-//		if self.paymentID_label != nil {
-//			assert(self.paymentID_inputView != nil)
-//			
-//			let addressFieldset_bottomEdge = self.resolving_activityIndicator.isHidden ?
-//				self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height
-//				: self.resolving_activityIndicator.frame.origin.y + self.resolving_activityIndicator.frame.size.height
-//			//
-//			self.paymentID_label!.frame = CGRect(
-//				x: CGFloat.form_label_margin_x,
-//				y: addressFieldset_bottomEdge + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
-//				width: fullWidth_label_w,
-//				height: self.paymentID_label!.frame.size.height
-//				).integral
-//			self.paymentID_inputView!.frame = CGRect(
-//				x: CGFloat.form_input_margin_x,
-//				y: self.paymentID_label!.frame.origin.y + self.paymentID_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-//				width: textField_w,
-//				height: self.paymentID_inputView!.frame.size.height
-//				).integral
-//			if self.paymentID_fieldAccessoryMessageLabel != nil {
-//				self.paymentID_fieldAccessoryMessageLabel!.frame = CGRect(
-//					x: CGFloat.form_label_margin_x,
-//					y: self.paymentID_inputView!.frame.origin.y + self.paymentID_inputView!.frame.size.height + 7,
-//					width: fullWidth_label_w,
-//					height: 0
-//					).integral
-//				self.paymentID_fieldAccessoryMessageLabel!.sizeToFit()
-//			}
-//		} else {
-//			assert(self.paymentID_inputView == nil)
-//			assert(self.paymentID_fieldAccessoryMessageLabel == nil)
-//		}
-//		if self.deleteButton != nil {
-//			assert(self.deleteButton_separatorView != nil)
-//			let justPreviousView = (self.paymentID_fieldAccessoryMessageLabel ?? self.paymentID_inputView ?? self.address_inputView)!
-//			self.deleteButton_separatorView!.frame = CGRect(
-//				x: CGFloat.form_input_margin_x,
-//				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-//				width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
-//				height: 1/UIScreen.main.scale
-//			)
-//			//
-//			self.deleteButton!.frame = CGRect(
-//				x: CGFloat.form_label_margin_x,
-//				y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-//				width: self.deleteButton!.frame.size.width,
-//				height: self.deleteButton!.frame.size.height
-//			)
-//		}
-		
-		let bottomMostView = self.requestFrom_inputView // TODO: find the bottom most, either the pid field or the add pid  // self.paymentID_fieldAccessoryMessageLabel ?? self.deleteButton ?? self.paymentID_inputView ?? self.address_inputView
+		if self.createNewContact_buttonView.isHidden == false {
+			self.createNewContact_buttonView!.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: self.requestFrom_inputView.frame.origin.y + self.requestFrom_inputView.frame.size.height + 8,
+				width: self.createNewContact_buttonView!.frame.size.width,
+				height: self.createNewContact_buttonView!.frame.size.height
+			)
+		}
+		if self.addPaymentID_buttonView.isHidden == false {
+			let lastMostVisibleView: UIView
+			do {
+				if self.createNewContact_buttonView.isHidden == false {
+					lastMostVisibleView = self.createNewContact_buttonView
+				} else {
+					lastMostVisibleView = self.requestFrom_inputView
+				}
+			}
+			self.addPaymentID_buttonView!.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
+				width: self.addPaymentID_buttonView!.frame.size.width,
+				height: self.addPaymentID_buttonView!.frame.size.height
+			)
+		}
+		//
+		if self.manualPaymentID_label.isHidden == false {
+			assert(self.addPaymentID_buttonView.isHidden == true)
+			//
+			let lastMostVisibleView: UIView
+			do {
+				if self.createNewContact_buttonView.isHidden == false {
+					lastMostVisibleView = self.createNewContact_buttonView
+				} else {
+					lastMostVisibleView = self.requestFrom_inputView
+				}
+			}
+			self.manualPaymentID_label.frame = CGRect(
+				x: CGFloat.form_label_margin_x,
+				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
+				width: fullWidth_label_w,
+				height: self.manualPaymentID_label.frame.size.height
+			).integral
+			self.manualPaymentID_accessoryLabel.frame = CGRect(
+				x: CGFloat.form_labelAccessoryLabel_margin_x,
+				y: self.manualPaymentID_label.frame.origin.y,
+				width: fullWidth_label_w,
+				height: self.manualPaymentID_accessoryLabel.frame.size.height
+			).integral
+			self.manualPaymentID_inputView.frame = CGRect(
+				x: CGFloat.form_input_margin_x,
+				y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+				width: textField_w,
+				height: self.manualPaymentID_inputView.frame.size.height
+			).integral
+		}
+		//
+		let bottomMostView: UIView
+		do {
+			if self.manualPaymentID_inputView.isHidden == false {
+				bottomMostView = self.manualPaymentID_inputView
+			} else if self.addPaymentID_buttonView.isHidden == false {
+				bottomMostView = self.addPaymentID_buttonView
+			} else if self.createNewContact_buttonView.isHidden == false {
+				bottomMostView = self.createNewContact_buttonView
+			} else {
+				bottomMostView = self.requestFrom_inputView
+			}
+		}
 		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
-			withBottomView: bottomMostView!,
+			withBottomView: bottomMostView,
 			bottomPadding: bottomPadding
 		)
 	}
@@ -592,5 +680,25 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		assert(self.navigationController!.presentingViewController != nil)
 		// we always expect self to be presented modally
 		self.navigationController?.dismiss(animated: true, completion: nil)
+	}
+	//
+	func createNewContact_tapped()
+	{
+		// TODO: modal -> autopopulate (need/how to emit before dismissed like JS app?)
+		assert(false)
+//		const view = new AddContactFromOtherTabView({
+//			emitNewlySavedContact_fn: function(contact)
+//			{
+//				self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
+//			}
+//		}, self.context)
+//		const navigationView = new StackAndModalNavigationView({}, self.context)
+//		navigationView.SetStackViews([ view ])
+//		self.navigationController.PresentView(navigationView, true)
+	}
+	func addPaymentID_tapped()
+	{
+		self.set_manualPaymentIDField(isHidden: false)
+		self.addPaymentID_buttonView.isHidden = true
 	}
 }

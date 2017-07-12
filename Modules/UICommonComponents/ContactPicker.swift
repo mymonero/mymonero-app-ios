@@ -24,11 +24,16 @@ extension UICommonComponents.Form
 		)
 		var selectedContactPillView: SelectedContactPillView?
 		var autocompleteResultsView: ContactPickerSearchResultsInlinePopoverView!
+		var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 		//
 		var textFieldDidBeginEditing_fn: ((_ textField: UITextField) -> Void)?
 		var textFieldDidEndEditing_fn: ((_ textField: UITextField) -> Void)?
 		var didUpdateHeight_fn: ((Void) -> Void)?
-		var didPickContact_fn: ((_ contact: Contact) -> Void)?
+		//
+		var didPickContact_fn: ((_ contact: Contact, _ doesNeedToResolveItsOAAddress: Bool) -> Void)?
+		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
+		var oaResolve__success_fn: ((_ resolved_xmr_address: MoneroAddress, _ payment_id: MoneroPaymentID?, _ tx_description: String?) -> Void)?
+		//
 		var didClearPickedContact_fn: ((_ preExistingContact: Contact) -> Void)?
 		//
 		//
@@ -60,27 +65,26 @@ extension UICommonComponents.Form
 				self.autocompleteResultsView = view
 				self.addSubview(view)
 			}
+			do {
+				let view = UICommonComponents.ResolvingActivityIndicatorView()
+				view.isHidden = true
+				self.resolving_activityIndicator = view
+				self.addSubview(view)
+			}
 			self.updateBounds() // initial frame, to get h
 			self.startObserving()
 		}
 		func startObserving()
 		{
-			// TODO
-			// observing contacts list controller for deletions
-//			var _contactsListController_EventName_deletedRecordWithId_fn = function(_id)
-//			{ // the currently picked contact was deleted, so unpick it
-//				if (__pickedContact && __pickedContact._id === _id) {
-//					_unpickExistingContact_andRedisplayPickInput(true)
-//				}
-//			}
-//			contactsListController.on(
-//				contactsListController.EventName_deletedRecordWithId(),
-//				_contactsListController_EventName_deletedRecordWithId_fn
-//			)
-
 		}
 		//
 		// Accessors
+		var isResolving: Bool {
+			// different, consistent ways to check this…
+//			return self.resolving_activityIndicator.isHidden == false
+			return self.oaResolverRequestMaker != nil // because we say we must set it back to nil when done resolving
+		}
+		//
 		var new_h: CGFloat {
 			var h: CGFloat
 			if self.selectedContact == nil {
@@ -131,6 +135,10 @@ extension UICommonComponents.Form
 				self.selectedContactPillView!.removeFromSuperview()
 				self.selectedContactPillView = nil
 			}
+			do {
+				self.set(resolvingIndicatorIsVisible: false) // just in case it was visible
+				self.oaResolverRequestMaker = nil // cancel existing requests, if any; and we must do this /before/ the didClearPickedContact_fn callback so that the consumer can check if we're still resolving
+			}
 			if hadExistingContact {
 				if let fn = self.didClearPickedContact_fn {
 					fn(existing_selectedContact!)
@@ -168,6 +176,7 @@ extension UICommonComponents.Form
 			self.inputField.text = ""
 		}
 		//
+		var oaResolverRequestMaker: OpenAliasResolverRequestMaker?
 		func pick(contact: Contact)
 		{ // This function must also be able to handle being called while a contact is already selected
 			//
@@ -178,6 +187,9 @@ extension UICommonComponents.Form
 				}
 			}
 			//
+			let doesNeedToResolve = contact.hasOpenAliasAddress
+			self.oaResolverRequestMaker = nil // deinit any existing; should cancel the existing request
+			//
 			self.__removeAllAndHideSearchResults()
 			self._removeSelectedContactPillView() // but don't do stuff like focusing the input layer
 			self.__clearAndHideInputLayer()
@@ -186,7 +198,33 @@ extension UICommonComponents.Form
 			self._display(pickedContact: contact)
 			//
 			if let fn = self.didPickContact_fn {
-				fn(contact)
+				fn(contact, doesNeedToResolve)
+			}
+			//
+			self.set(resolvingIndicatorIsVisible: doesNeedToResolve)
+			if doesNeedToResolve {
+				let parameters = ContactPickerOpenAliasResolverRequestMaker.Parameters(
+					address: contact.address,
+					oaResolve__preSuccess_terminal_validationMessage_fn:
+					{ [unowned self] (localizedString) in
+						self.set(resolvingIndicatorIsVisible: false)
+						self.oaResolverRequestMaker = nil // must free, and before call-back
+						if let fn = self.oaResolve__preSuccess_terminal_validationMessage_fn {
+							fn(localizedString)
+						}
+					},
+					oaResolve__success_fn:
+					{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+						self.set(resolvingIndicatorIsVisible: false)
+						self.oaResolverRequestMaker = nil // must free, and before call-back
+						if let fn = self.oaResolve__success_fn {
+							fn(resolved_xmr_address, payment_id, tx_description)
+						}
+					}
+				)
+				let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
+				self.oaResolverRequestMaker = resolver
+				resolver.resolve()
 			}
 		}
 		func _display(pickedContact: Contact)
@@ -220,6 +258,17 @@ extension UICommonComponents.Form
 					self.inputField.becomeFirstResponder()
 				}
 			}
+		}
+		//
+		// Imperatives - Resolving indicator
+		func set(resolvingIndicatorIsVisible: Bool)
+		{
+			if resolvingIndicatorIsVisible {
+				self.resolving_activityIndicator.show()
+			} else {
+				self.resolving_activityIndicator.hide()
+			}
+			self.updateBounds()
 		}
 		//
 		// Imperatives - Internal - Layout
@@ -273,6 +322,15 @@ extension UICommonComponents.Form
 					y: 0,
 					inWidth: self.frame.size.width
 				)
+				if self.resolving_activityIndicator.isHidden == false {
+					let size = self.resolving_activityIndicator.new_boundsSize
+					self.resolving_activityIndicator.frame = CGRect(
+						x: 8,
+						y: pillView.frame.origin.y + pillView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
+						width: size.width,
+						height: size.height
+						).integral
+				}
 			}
 		}
 		//
@@ -300,7 +358,6 @@ extension UICommonComponents.Form
 		}
 		func textFieldShouldReturn(_ textField: UITextField) -> Bool
 		{
-			
 			return true
 		}
 		func textField(
@@ -309,7 +366,6 @@ extension UICommonComponents.Form
 			replacementString string: String
 		) -> Bool
 		{
-
 			return true
 		}
 		
@@ -681,11 +737,127 @@ extension UICommonComponents.Form
 		//
 		func willBeDeleted()
 		{
-			self.xButton.sendActions(for: .touchUpInside) // simulate tap
+			self.xButton.sendActions(for: .touchUpInside) // simulate tap to unpick deleted contact - will clear
 		}
 		func infoUpdated()
 		{
 			self.configureWithContact()
+		}
+	}
+	//
+	//
+	class ContactPickerOpenAliasResolverRequestMaker: OpenAliasResolverRequestMaker
+	{
+		struct Parameters
+		{
+			var address: String
+			var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
+			var oaResolve__success_fn: ((_ resolved_xmr_address: MoneroAddress, _ payment_id: MoneroPaymentID?, _ tx_description: String?) -> Void)?
+		}
+		var parameters: Parameters
+		init(parameters: Parameters)
+		{
+			self.parameters = parameters
+		}
+		// deinit already cancels the request, if any
+		//
+		// Imperatives
+		func resolve()
+		{
+			self.resolve_requestHandle = OpenAliasResolver.shared.resolveOpenAliasAddress(
+				openAliasAddress: self.parameters.address,
+				{ [unowned self] (
+					err_str: String?,
+					addressWhichWasPassedIn: String?,
+					response: OpenAliasResolver.OpenAliasResolverResponse?
+				) in
+					if self.parameters.address != addressWhichWasPassedIn {
+						assert(false, "another request's resolution was returned on this form… does that mean it wasn't cancelled from earlier?")
+						return
+					}
+					//
+					let handle_wasNil = self.resolve_requestHandle == nil
+					self.resolve_requestHandle = nil
+					//
+					if err_str != nil {
+						if let fn = self.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {
+							fn(err_str!)
+						}
+						return
+					}
+					// we'll only care about whether the handle was nil after err_str != nil b/c it can be nil on sync callback e.g. on network error
+					if handle_wasNil {
+						// something else may have cancelled the request or it was not able to even return yet (i.e. callback happened synchronously but on non-error case)
+						assert(false)
+						return
+					}
+					let cached_OAResolved_XMR_address = response!.moneroReady_address
+					if cached_OAResolved_XMR_address == nil {
+						if let fn = self.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {
+							fn(NSLocalizedString("OpenAlias address no longer lists Monero address", comment: ""))
+							return
+						}
+					}
+					let paymentID = response!.returned__payment_id
+					let tx_description = response!.tx_description ?? ""
+					if let fn = self.parameters.oaResolve__success_fn {
+						fn(cached_OAResolved_XMR_address!, paymentID, tx_description)
+					}
+				}
+			)
+//			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
+//				contact.address,
+//				function(
+//					err,
+//					addressWhichWasPassedIn,
+//					moneroReady_address,
+//					payment_id, // may be undefined
+//					tx_description,
+//					openAlias_domain,
+//					oaRecords_0_name,
+//					oaRecords_0_description,
+//					dnssec_used_and_secured
+//					)
+//				{
+//					self.resolving_activityIndicatorLayer.style.display = "none"
+//					self.enable_submitButton()
+//					//
+//					if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
+//						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
+//						return
+//					}
+//					self.requestHandle_for_oaResolution = null
+//					//
+//					if (typeof self.pickedContact === 'undefined' || !self.pickedContact) {
+//						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.pickedContact. Bailing")
+//						return
+//					}
+//					if (self.pickedContact.address !== addressWhichWasPassedIn) {
+//						console.warn("⚠️  The addressWhichWasPassedIn to the ResolveOpenAliasAddress call of which this is a callback is different than the currently selected self.pickedContact.address. Bailing")
+//						return
+//					}
+//					if (err) {
+//						self.validationMessageLayer.SetValidationError(err.toString())
+//						return
+//					}
+//					{ // memo field
+//						tx_description = tx_description || "" // to facilitate clearing the memo field
+//						self.memoInputLayer.value = tx_description // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.
+//					}
+//						{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+//							if (typeof payment_id !== 'undefined' && payment_id) {
+//								self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
+//								self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
+//								self.manualPaymentIDInputLayer.value = payment_id
+//							} else {
+//								// we already hid it above… but jic
+//								self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+//								self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+//								self.manualPaymentIDInputLayer.value = ""
+//							}
+//					}
+//				}
+//			)
 		}
 	}
 }

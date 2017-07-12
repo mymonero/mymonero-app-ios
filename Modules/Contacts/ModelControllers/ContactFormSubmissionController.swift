@@ -49,6 +49,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 	{
 		self.parameters = parameters
 	}
+	// deinit already cancels request
 	//
 	// Imperatives
 	func handle()

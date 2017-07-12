@@ -93,7 +93,10 @@ class Contact: PersistableObject
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
 	}
 	//
-	// Interface - Runtime - Accessors/Properties
+	// Interface - Runtime - Accessors/Properties - Convenience
+	var hasOpenAliasAddress: Bool {
+		return MyMoneroCoreUtils.isAddressNotMoneroAddressAndThusProbablyOAAddress(self.address)
+	}
 
 	//
 	// Runtime - Imperatives - Update cases
