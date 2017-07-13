@@ -684,17 +684,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	//
 	func createNewContact_tapped()
 	{
-		// TODO: modal -> autopopulate (need/how to emit before dismissed like JS app?)
-		assert(false)
-//		const view = new AddContactFromOtherTabView({
-//			emitNewlySavedContact_fn: function(contact)
-//			{
-//				self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
-//			}
-//		}, self.context)
-//		const navigationView = new StackAndModalNavigationView({}, self.context)
-//		navigationView.SetStackViews([ view ])
-//		self.navigationController.PresentView(navigationView, true)
+		let viewController = AddContactFromOtherTabFormViewController()
+		viewController.didSave_instance_fn =
+		{ [unowned self] (instance) in
+			self.requestFrom_inputView.pick(contact: instance)
+		}
+		let navigationController = UINavigationController(rootViewController: viewController)
+		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 	func addPaymentID_tapped()
 	{

@@ -11,7 +11,10 @@ import UIKit
 class ContactFormViewController: UICommonComponents.FormViewController
 {
 	//
-	// Properties
+	// Properties - Interface - Settable
+	var didSave_instance_fn: ((_ instance: Contact) -> Void)?
+	//
+	// Properties - Internal
 	var name_label: UICommonComponents.Form.FieldLabel!
 	var name_inputView: UICommonComponents.FormInputField!
 	//
@@ -352,7 +355,10 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	// Delegation - Form submission success
 	func _didSave(instance: Contact)
-	{
+	{ // Overridable but call on super
+		if let fn = self.didSave_instance_fn {
+			fn(instance)
+		}
 		self.navigationController!.dismiss(animated: true, completion: nil)
 	}
 	//
