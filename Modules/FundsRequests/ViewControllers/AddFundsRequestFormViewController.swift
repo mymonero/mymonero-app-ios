@@ -440,10 +440,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		let toWallet = self.toWallet_inputView.selectedWallet!
 		//
-		let amount = self.amount_fieldset.inputField.text! // we already know it's a non-nil submittableAmount
+		let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
 		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil
 		do {
-			assert(submittableDoubleAmount != nil)
+			assert(submittableDoubleAmount != nil || amount == nil || amount == "")
 			if submittableDoubleAmount == nil {
 				self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
 				return

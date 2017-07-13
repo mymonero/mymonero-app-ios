@@ -69,6 +69,7 @@
 		9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */; };
 		9F740D571F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */; };
 		9F740D591F1702DF0017A20E /* FundsRequestDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D581F1702DF0017A20E /* FundsRequestDetailsViewController.swift */; };
+		9F740D5B1F17BE0A0017A20E /* qrCodeMatteBG_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F740D5A1F17BE0A0017A20E /* qrCodeMatteBG_stretchable@3x.png */; };
 		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
 		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
 		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
@@ -253,6 +254,7 @@
 		9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Hierarchy.swift"; sourceTree = "<group>"; };
 		9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromOtherTabFormViewController.swift; sourceTree = "<group>"; };
 		9F740D581F1702DF0017A20E /* FundsRequestDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestDetailsViewController.swift; sourceTree = "<group>"; };
+		9F740D5A1F17BE0A0017A20E /* qrCodeMatteBG_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qrCodeMatteBG_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		9F7ADAF81EBD2C1C0073C2BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -822,6 +824,7 @@
 		9F8E2FFE1EE978EF00F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F740D5A1F17BE0A0017A20E /* qrCodeMatteBG_stretchable@3x.png */,
 				9F8E2FFF1EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png */,
 				9F8E30001EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png */,
 			);
@@ -1135,6 +1138,7 @@
 				9F8E2FFA1EE978E800F89A1D /* actionButton_iconImage__request@3x.png in Resources */,
 				9F1C4B981EC241D4004473CE /* mymonero-js-core-ios-build.js in Resources */,
 				9F8E30411EEDAB9400F89A1D /* wallet-00F4CD@3x.png in Resources */,
+				9F740D5B1F17BE0A0017A20E /* qrCodeMatteBG_stretchable@3x.png in Resources */,
 				9F2BFE861EF08ABA006B2F7D /* pushButtonBG_destructive_highlighted@3x.png in Resources */,
 				9F8E2FEC1EE978B700F89A1D /* actionButton_iconImage__useCamera@3x.png in Resources */,
 				9F9C59E81F0C316C003B9266 /* groupedHighlightableCellBG_normal_middle@3x.png in Resources */,

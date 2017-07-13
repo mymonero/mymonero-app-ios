@@ -16,7 +16,7 @@ class AddFundsRequestFormSubmissionController
 		var toWallet_address: MoneroAddress
 		var optl__fromContact_name: String?
 		var paymentID: MoneroPaymentID?
-		var amount: String
+		var amount: String?
 		var optl__memo: String? // TODO: is this message, or really description?
 //		var description: String? // no support yet
 		//

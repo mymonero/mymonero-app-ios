@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreImage
+import UIKit
 
 class FundsRequest: PersistableObject
 {
@@ -41,7 +42,7 @@ class FundsRequest: PersistableObject
 	var description: String?
 	//
 	// Properties - Transient
-	var qr_outputImage: CIImage!
+	var qrCodeImage: UIImage!
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -123,7 +124,9 @@ class FundsRequest: PersistableObject
 			filter.setValue(uriStringData, forKey: "inputMessage")
 			filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
 			let outputImage = filter.outputImage!
-			self.qr_outputImage = outputImage
+			let context = CIContext(options: nil)
+			let cgImage = context.createCGImage(outputImage, from: outputImage.extent)!
+			self.qrCodeImage = UIImage(cgImage: cgImage, scale: 1, orientation: .up)
 		}
 	}
 	//
@@ -137,8 +140,5 @@ class FundsRequest: PersistableObject
 			paymentId: self.payment_id,
 			message: self.message
 		)
-	}
-	var qrCode_cgImage: CGImage {
-		return self.qr_outputImage.cgImage!
 	}
 }

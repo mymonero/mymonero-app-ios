@@ -11,7 +11,7 @@ import UIKit
 class FundsRequestsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "FundsRequestsListViewCell"
-	static let contentViewHeight: CGFloat = 78
+	static let contentViewHeight: CGFloat = 80
 	static let contentView_margin_h: CGFloat = 16
 	static func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
 	{
@@ -125,7 +125,7 @@ class FundsRequestsListViewCell: UITableViewCell
 		).integral
 		do {
 			if self.separatorView.isHidden == false {
-				let x = cellContentViewFrame.origin.x + 50
+				let x = cellContentViewFrame.origin.x + 80
 				let h: CGFloat = 1/UIScreen.main.scale
 				self.separatorView.frame = CGRect(
 					x: x,
