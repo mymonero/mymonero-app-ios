@@ -363,7 +363,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		self.manualPaymentID_inputView.text = ""
 	}
 	//
-	// Imperatives - Contact picker
+	// Imperatives - Contact picker, contact picking
 	func scrollToVisible_requestFrom()
 	{
 		let toBeVisible_frame__absolute = CGRect(
@@ -373,6 +373,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			height: (self.requestFrom_inputView.frame.origin.y - self.requestFrom_label.frame.origin.y) + self.requestFrom_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField
 		)
 		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
+	}
+	public func reconfigureFormAtRuntime_havingElsewhereSelected(requestFromContact contact: Contact)
+	{
+		self.amount_fieldset.inputField.text = "" // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
+		//
+		self.requestFrom_inputView.pick(contact: contact)
 	}
 	//
 	// Runtime - Imperatives - Overrides
@@ -687,7 +693,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		let viewController = AddContactFromOtherTabFormViewController()
 		viewController.didSave_instance_fn =
 		{ [unowned self] (instance) in
-			self.requestFrom_inputView.pick(contact: instance)
+			self.requestFrom_inputView.pick(contact: instance) // not going to call AtRuntime_reconfigureWith_fromContact() here because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
 		}
 		let navigationController = UINavigationController(rootViewController: viewController)
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
