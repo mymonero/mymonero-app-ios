@@ -110,15 +110,13 @@ extension UICommonComponents.Form
 			var results = [Contact]()
 			for (_, record) in self.records.enumerated() {
 				let matchAgainstField_value = record.fullname!
-				let comparisonResult = matchAgainstField_value.compare(
-					searchString,
-					options: [
-						.diacriticInsensitive,
-						.caseInsensitive
-					]
+				let range = matchAgainstField_value.range(
+					of: searchString,
+					options: [.caseInsensitive, .diacriticInsensitive],
+					range: nil,
+					locale: nil
 				)
-				let isAMatch = comparisonResult == .orderedSame
-				if isAMatch {
+				if range != nil {
 					results.append(record)
 				}
 			}
@@ -155,6 +153,7 @@ extension UICommonComponents.Form
 			assert(self.searchResults != nil)
 			if self.searchResults!.count == 0 {
 				self.__removeAllAndHideSearchResults() // to 'remove' them is slightly redundant but not wrong here
+				self.updateBounds()
 				return
 			}
 			//
@@ -197,10 +196,6 @@ extension UICommonComponents.Form
 			self.selectedContact = contact
 			self._display(pickedContact: contact)
 			//
-			if let fn = self.didPickContact_fn {
-				fn(contact, doesNeedToResolve)
-			}
-			//
 			self.set(resolvingIndicatorIsVisible: doesNeedToResolve)
 			if doesNeedToResolve {
 				let parameters = ContactPickerOpenAliasResolverRequestMaker.Parameters(
@@ -225,6 +220,10 @@ extension UICommonComponents.Form
 				let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
 				self.oaResolverRequestMaker = resolver
 				resolver.resolve()
+			}
+			// making sure to call this callback /after/ having set self.oaResolverRequestMaker so that isResolving will be true if consumer asks for it
+			if let fn = self.didPickContact_fn {
+				fn(contact, doesNeedToResolve)
 			}
 		}
 		func _display(pickedContact: Contact)

@@ -41,7 +41,7 @@ class FundsRequest: PersistableObject
 	var description: String?
 	//
 	// Properties - Transient
-	var qrCodeCGImage: CGImage!
+	var qr_outputImage: CIImage!
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -123,7 +123,7 @@ class FundsRequest: PersistableObject
 			filter.setValue(uriStringData, forKey: "inputMessage")
 			filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
 			let outputImage = filter.outputImage!
-			self.qrCodeCGImage = outputImage.cgImage!
+			self.qr_outputImage = outputImage
 		}
 	}
 	//
@@ -137,5 +137,8 @@ class FundsRequest: PersistableObject
 			paymentId: self.payment_id,
 			message: self.message
 		)
+	}
+	var qrCode_cgImage: CGImage {
+		return self.qr_outputImage.cgImage!
 	}
 }

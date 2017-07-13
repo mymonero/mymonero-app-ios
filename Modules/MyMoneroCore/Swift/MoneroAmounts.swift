@@ -31,7 +31,7 @@ extension MoneroAmount
 	}
 	static let _formatter = NumberFormatter()
 	static var __hasConfigured_formatter = false
-	static func new(withUserInputAmountString string: String) -> MoneroAmount?
+	static func newDouble(withUserInputAmountString string: String) -> Double?
 	{
 		if __hasConfigured_formatter == false {
 			MoneroAmount._formatter.numberStyle = .decimal
@@ -42,6 +42,14 @@ extension MoneroAmount
 			return nil
 		}
 		let double = number!.doubleValue
+		
+		return double
+	}
+	static func new(withUserInputAmountString string: String) -> MoneroAmount?
+	{
+		guard let double = self.newDouble(withUserInputAmountString: string) else {
+			return nil
+		}
 		let amount = self.new(withDouble: double)
 		//
 		return amount

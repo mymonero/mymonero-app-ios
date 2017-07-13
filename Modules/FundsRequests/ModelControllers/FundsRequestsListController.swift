@@ -40,7 +40,7 @@ class FundsRequestsListController: PersistedObjectListController
 		from_fullname: String?,
 		to_walletSwatchColor: Wallet.SwatchColor,
 		to_address: MoneroAddress,
-		payment_id: MoneroPaymentID,
+		payment_id: MoneroPaymentID?,
 		amount: String?,
 		message: String?,
 		description: String?,

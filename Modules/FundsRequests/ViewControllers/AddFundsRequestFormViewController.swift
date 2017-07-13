@@ -27,6 +27,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var requestFrom_label: UICommonComponents.Form.FieldLabel!
 	var requestFrom_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
 	var requestFrom_inputView: UICommonComponents.Form.ContactPickerView!
+	var isWaitingOnFieldBeginEditingScrollTo_requestFrom = false // a bit janky
 	//
 	var createNewContact_buttonView: UICommonComponents.LinkButtonView!
 	var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
@@ -127,10 +128,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			{ [unowned self] (textField) in				
 				self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
 				// ^- this does not actually do anything at present, given suppressed scroll
+				self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = true // sort of janky
 				DispatchQueue.main.asyncAfter(
 					deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
 				) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
 				{ [unowned self] in
+					self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = false // unset
 					if view.inputField.isFirstResponder { // jic
 						self.scrollToVisible_requestFrom()
 					}
@@ -139,6 +142,19 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			view.didUpdateHeight_fn =
 			{
 				self.view.setNeedsLayout() // to get following subviews' layouts to update
+				//
+				// scroll to field in case, e.g., results table updated
+				DispatchQueue.main.asyncAfter(
+					deadline: .now() + 0.1
+				)
+				{ [unowned self] in
+					if self.isWaitingOnFieldBeginEditingScrollTo_requestFrom == true {
+						return // semi-janky -- but is used to prevent potential double scroll oddness
+					}
+					if view.inputField.isFirstResponder {
+						self.scrollToVisible_requestFrom()
+					}
+				}
 			}
 			view.textFieldDidEndEditing_fn =
 			{ (textField) in
@@ -372,6 +388,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			width: self.requestFrom_inputView.frame.size.width,
 			height: (self.requestFrom_inputView.frame.origin.y - self.requestFrom_label.frame.origin.y) + self.requestFrom_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField
 		)
+//		self.scrollRectToVisible(
+//			toBeVisible_frame__absolute: toBeVisible_frame__absolute,
+//			atEdge: .top,
+//			finished_fn: {}
+//		)
 		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
 	}
 	public func reconfigureFormAtRuntime_havingElsewhereSelected(requestFromContact contact: Contact)
@@ -410,66 +431,84 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
 			pillView.xButton.isEnabled = true
 		}
-	self.manualPaymentID_inputView.isEnabled = true
+		self.manualPaymentID_inputView.isEnabled = true
 	}
 	var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()
 	{
-		NSLog("TODO")
-		let to_wallet = self.toWallet_inputView.selectedWallet
-		let amount_orNil = self.amount_fieldset.inputField.submittableAmount_orNil
-		
-		
-//		let parameters = AddFundsRequestFormSubmissionController.Parameters(
-//			mode: self._overridable_formSubmissionMode,
-//			//
-//			name: self.sanitizedInputValue__name,
-//			emoji: self.sanitizedInputValue__emoji,
-//			address: self.sanitizedInputValue__address,
-//			paymentID: self.sanitizedInputValue__paymentID,
-//			canSkipEntireOAResolveAndDirectlyUseInputValues: self._overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues,
-//			//
-//			skippingOAResolve_explicit__cached_OAResolved_XMR_address: self._overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address,
-//			forMode_update__contactInstance: self._overridable_forMode_update__contactInstance,
-//			//
-//			preInputValidation_terminal_validationMessage_fn:
-//			{ [unowned self] (localizedString) in
-//				self.setValidationMessage(localizedString)
-//				self.formSubmissionController = nil // must free as this is a terminal callback
-//			},
-//			passedInputValidation_fn:
-//			{ [unowned self] in
-//				self.clearValidationMessage()
-//				self.disableForm()
-//			},
-//			preSuccess_terminal_validationMessage_fn:
-//			{ [unowned self] (localizedString) in
-//				self.setValidationMessage(localizedString)
-//				self.formSubmissionController = nil // must free as this is a terminal callback
-//				self.reEnableForm() // b/c we disabled it
-//			},
-//			feedBackOverridingPaymentIDValue_fn:
-//			{ [unowned self] (paymentID_orNil) in
-//				if self.paymentID_inputView != nil {
-//					self.paymentID_inputView!.textView.text = paymentID_orNil ?? ""
-//				}
-//			},
-//			success_fn:
-//			{ [unowned self] (contactInstance) in
-//				self.formSubmissionController = nil // must free as this is a terminal callback
-//				self.reEnableForm() // b/c we disabled it
-//				self._didSave(instance: contactInstance)
-//			}
-//		)
-//		let controller = ContactFormSubmissionController(parameters: parameters)
-//		self.formSubmissionController = controller
-//		controller.handle()
+		self.clearValidationMessage()
+		//
+		let toWallet = self.toWallet_inputView.selectedWallet!
+		//
+		let amount = self.amount_fieldset.inputField.text! // we already know it's a non-nil submittableAmount
+		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil
+		do {
+			assert(submittableDoubleAmount != nil)
+			if submittableDoubleAmount == nil {
+				self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
+				return
+			}
+		}
+		if submittableDoubleAmount! <= 0 {
+			self.setValidationMessage(NSLocalizedString("Please enter an amount greater than zero.", comment: ""))
+			return
+		}
+		//
+		let selectedContact = self.requestFrom_inputView.selectedContact
+		let hasPickedAContact = selectedContact != nil
+		let requestFrom_input_text = self.requestFrom_inputView.inputField.text
+		if requestFrom_input_text != nil && requestFrom_input_text! != "" { // they have entered something
+			if hasPickedAContact == false { // but not picked a contact
+				self.setValidationMessage(NSLocalizedString("Please select a contact or clear the contact field below to generate this request.", comment: ""))
+				return
+			}
+		}
+		let fromContact_name_orNil = selectedContact != nil ? selectedContact!.fullname : nil
+		//
+		let paymentID: MoneroPaymentID? = self.manualPaymentID_inputView.isHidden == false ? self.manualPaymentID_inputView.text : nil
+		let memoString = self.memo_inputView.text
+		let parameters = AddFundsRequestFormSubmissionController.Parameters(
+			optl__toWallet_color: toWallet.swatchColor,
+			toWallet_address: toWallet.public_address,
+			optl__fromContact_name: fromContact_name_orNil,
+			paymentID: paymentID,
+			amount: amount,
+			optl__memo: memoString,
+			//
+			preSuccess_terminal_validationMessage_fn:
+			{ [unowned self] (localizedString) in
+				self.setValidationMessage(localizedString)
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.set_isFormSubmittable_needsUpdate()
+				self.reEnableForm() // b/c we disabled it
+			},
+			success_fn:
+			{ [unowned self] (instance) in
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.reEnableForm() // b/c we disabled it
+				self._didSave(instance: instance)
+			}
+		)
+		let controller = AddFundsRequestFormSubmissionController(parameters: parameters)
+		self.formSubmissionController = controller
+		do {
+			self.disableForm()
+			self.set_isFormSubmittable_needsUpdate() // update submittability
+		}
+		controller.handle()
 	}
 	//
 	// Delegation - Form submission success
-	func _didSave(instance: Contact)
+	func _didSave(instance: FundsRequest)
 	{
-		self.navigationController!.dismiss(animated: true, completion: nil)
+		let viewController = FundsRequestDetailsViewController(fundsRequest: instance)
+		let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController! as! RootViewController
+		let fundsRequestsTabNavigationController = rootViewController.tabBarViewController.fundsRequestsTabViewController
+		fundsRequestsTabNavigationController.pushViewController(viewController, animated: false) // NOT animated
+		DispatchQueue.main.async // on next tick to make sure push view finished
+		{ [unowned self] in
+			self.navigationController!.dismiss(animated: true, completion: nil)
+		}
 	}
 	//
 	// Delegation - View

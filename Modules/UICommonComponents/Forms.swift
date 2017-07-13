@@ -837,6 +837,14 @@ extension UICommonComponents.Form
 			
 			return amount
 		}
+		var submittableDouble_orNil: Double? {
+			if self.isEmpty {
+				return nil
+			}
+			let double = MoneroAmount.newDouble(withUserInputAmountString: self.text!)
+			
+			return double
+		}
 		//
 		// Delegation - To be called manually by whoever instantiates the AmountInputFieldsetView
 		func textField(

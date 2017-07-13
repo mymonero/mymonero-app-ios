@@ -315,6 +315,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			{ [unowned self] (localizedString) in
 				self.setValidationMessage(localizedString)
 				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.set_isFormSubmittable_needsUpdate()
 			},
 			passedInputValidation_fn:
 			{ [unowned self] in
@@ -325,6 +326,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			{ [unowned self] (localizedString) in
 				self.setValidationMessage(localizedString)
 				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.set_isFormSubmittable_needsUpdate()
 				self.reEnableForm() // b/c we disabled it
 			},
 			feedBackOverridingPaymentIDValue_fn:
@@ -344,12 +346,14 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			success_fn:
 			{ [unowned self] (contactInstance) in
 				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.set_isFormSubmittable_needsUpdate()
 				self.reEnableForm() // b/c we disabled it
 				self._didSave(instance: contactInstance)
 			}
 		)
 		let controller = ContactFormSubmissionController(parameters: parameters)
 		self.formSubmissionController = controller
+		self.set_isFormSubmittable_needsUpdate() // update submittability
 		controller.handle()
 	}
 	//
