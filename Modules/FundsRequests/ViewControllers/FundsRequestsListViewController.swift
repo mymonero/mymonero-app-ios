@@ -32,7 +32,7 @@ class FundsRequestsListViewController: ListViewController
 	// Accessors - Required overrides
 	override func new_navigationTitle() -> String
 	{
-		return "Monero Requests"
+		return NSLocalizedString("Monero Requests", comment: "")
 	}
 	override func new_emptyStateView() -> UIView?
 	{
@@ -42,18 +42,39 @@ class FundsRequestsListViewController: ListViewController
 	// Delegation - Table
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
 	{
-		var cell = self.tableView.dequeueReusableCell(withIdentifier: FundsRequestsListViewCell.reuseIdentifier) as? FundsRequestsListViewCell
+		var cell = self.tableView.dequeueReusableCell(withIdentifier: ContactsListViewCell.reuseIdentifier) as? FundsRequestsListViewCell
 		if cell == nil {
 			cell = FundsRequestsListViewCell()
 		}
 		let object = self.listController.records[indexPath.row] as! FundsRequest
-		cell!.configure(withObject: object)
+		let index = indexPath.row
+		let cellsCount = self.listController.records.count // it'd be nice if we could cache this - probably on the list controller
+		let cellPosition = UICommonComponents.newCellPosition(
+			withCellIndex: index,
+			cellsCount: cellsCount
+		)
+		cell!.configure(withObject: object, cellPosition: cellPosition)
 		//
 		return cell!
+
+		
 	}
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
-		return FundsRequestsListViewCell.cellHeight
+		let index = indexPath.row
+		let cellsCount = self.listController.records.count // it'd be nice if we could cache this - probably on the list controller
+		let cellPosition = UICommonComponents.newCellPosition(
+			withCellIndex: index,
+			cellsCount: cellsCount
+		)
+		return FundsRequestsListViewCell.cellHeight(withPosition: cellPosition)
+	}
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+	{
+		self.tableView.deselectRow(at: indexPath, animated: true)
+		let record = self.listController.records[indexPath.row] as! FundsRequest
+		let viewController = FundsRequestDetailsViewController(fundsRequest: record)
+		self.navigationController?.pushViewController(viewController, animated: true)
 	}
 	//
 	// Delegation - Interactions

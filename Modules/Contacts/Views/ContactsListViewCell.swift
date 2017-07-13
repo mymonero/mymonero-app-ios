@@ -48,10 +48,7 @@ class ContactsListViewCell: UITableViewCell
 		}
 		self.contentView.addSubview(self.cellContentView)
 		self.contentView.addSubview(self.accessoryChevronView)
-		do {
-			let view = self.separatorView
-			self.contentView.addSubview(view)
-		}
+		self.contentView.addSubview(self.separatorView)
 	}
 	//
 	// Lifecycle - Deinit
