@@ -127,14 +127,14 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	}
 	func configureSectionsWithObject()
 	{
-		self.address__fieldView.value = self.contact.address
+		self.address__fieldView.set(text: self.contact.address)
 		if let value = self.contact.cached_OAResolved_XMR_address {
-			self.cached_OAResolved_XMR_address__fieldView.value = value
+			self.cached_OAResolved_XMR_address__fieldView.set(text: value)
 			self.cached_OAResolved_XMR_address__fieldView.isHidden = false
 		} else {
 			self.cached_OAResolved_XMR_address__fieldView.isHidden = true
 		}
-		self.paymentID__fieldView.value = self.contact.payment_id
+		self.paymentID__fieldView.set(text: self.contact.payment_id)
 		//
 		self.view.setNeedsLayout()
 	}

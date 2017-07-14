@@ -116,7 +116,7 @@ class FundsRequest: PersistableObject
 	func setup()
 	{
 		do { // qrCodeCGImage
-			let uriStringData = self.URI().absoluteString.data(using: .utf8)
+			let uriStringData = self.new_URI.absoluteString.data(using: .utf8)
 			guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
 				assert(false)
 				return
@@ -131,7 +131,7 @@ class FundsRequest: PersistableObject
 	}
 	//
 	// Interface - Runtime - Accessors/Properties
-	func URI() -> URL
+	var new_URI: URL
 	{
 		return MyMoneroCoreUtils.New_RequestFunds_URL(
 			address: self.to_address,

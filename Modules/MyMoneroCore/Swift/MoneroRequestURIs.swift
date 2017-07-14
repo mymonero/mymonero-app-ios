@@ -40,17 +40,17 @@ extension MyMoneroCoreUtils
 		urlComponents.host = address
 		//
 		var queryItems = [URLQueryItem]()
-		if let amount = amount {
-			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.amount.rawValue, value: amount))
+		if let value = amount, value != "" {
+			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.amount.rawValue, value: value))
 		}
-		if let description = description {
-			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.description.rawValue, value: description))
+		if let value = description, value != "" {
+			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.description.rawValue, value: value))
 		}
-		if let paymentId = paymentId {
-			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.paymentID.rawValue, value: paymentId))
+		if let value = paymentId, value != "" {
+			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.paymentID.rawValue, value: value))
 		}
-		if let message = message {
-			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.message.rawValue, value: message))
+		if let value = message, value != "" {
+			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.message.rawValue, value: value))
 		}
 		urlComponents.queryItems = queryItems
 		let url = urlComponents.url

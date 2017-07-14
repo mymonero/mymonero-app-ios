@@ -8,6 +8,7 @@ target 'MyMonero' do
 	pod 'Alamofire', '~> 4.4'
 	pod 'RNCryptor', '~> 5.0.1'
 	pod 'Popover', '~> 1.0.5'
+	pod 'PKHUD', '~> 4.0'
 end
 
 post_install do |installer|

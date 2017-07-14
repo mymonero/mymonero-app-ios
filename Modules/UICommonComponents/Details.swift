@@ -38,6 +38,7 @@ extension UICommonComponents
 		{
 			//
 			// Constants/Types
+			static let interSectionSpacing: CGFloat = 22
 			//
 			// Properties
 			var sectionHeaderTitle: String?
@@ -237,12 +238,10 @@ extension UICommonComponents
 			}
 			//
 			// Properties
-			var value: Any?
 			//
 			// Init
 			init()
 			{
-				self.value = nil
 				super.init(frame: .zero)
 				self.setup()
 			}
@@ -316,36 +315,6 @@ extension UICommonComponents
 			//
 			var valueToDisplayIfZero: String?
 			//
-			override var value: Any? {
-				willSet
-				{
-					var use_valueToDisplayIfZero = false
-					//
-					var displayValue: String?
-					if newValue != nil {
-						if let stringValue = newValue as? String {
-							if stringValue != "" {
-								displayValue = stringValue
-								//
-								self.copyButton.set(text: stringValue)
-								self.copyButton.isEnabled = true
-							} else {
-								use_valueToDisplayIfZero = true
-							}
-						} else {
-							use_valueToDisplayIfZero = true
-						}
-					} else {
-						use_valueToDisplayIfZero = true
-					}
-					if use_valueToDisplayIfZero {
-						displayValue = self.valueToDisplayIfZero
-						self.copyButton.isEnabled = false
-					}
-					self.contentLabel.text = displayValue
-				}
-			}
-			//
 			// Init
 			init(
 				labelVariant: FieldLabel.Variant,
@@ -383,6 +352,35 @@ extension UICommonComponents
 					view.textColor = UIColor(rgb: 0x9E9C9E)
 					self.addSubview(view)
 				}
+			}
+			//
+			// Imperatives - Values
+			func set(text: String?)
+			{
+				self.set(
+					text: text,
+					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: nil
+				)
+			}
+			func set(
+				text: String?,
+				ifNonNil_overridingTextAndZeroValue_attributedDisplayText: NSAttributedString?
+			)
+			{
+				var displayValue: String
+				do { // this block is not (yet) aware of ifNonNil_overridingTextAndZeroValue_attributedDisplayText
+					if let text = text, text != "" {
+						displayValue = text
+					} else {
+						displayValue = self.valueToDisplayIfZero ?? ""
+					}
+				}
+				if let attributedDisplayText = ifNonNil_overridingTextAndZeroValue_attributedDisplayText {
+					self.contentLabel.attributedText = attributedDisplayText
+				} else {
+					self.contentLabel.text = displayValue
+				}
+				self.copyButton.set(text: text) // even if nil
 			}
 			//
 			// Imperatives - Layout - Overrides

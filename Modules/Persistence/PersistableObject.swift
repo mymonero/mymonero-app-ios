@@ -21,6 +21,7 @@ class PersistableObject: Equatable
 	enum NotificationNames: String
 	{
 		case willBeDeleted = "PersistableObject_NotificationNames_willBeDeleted"
+		case wasDeleted = "PersistableObject_NotificationNames_wasDeleted"
 		//
 		var notificationName: NSNotification.Name
 		{
@@ -157,6 +158,13 @@ class PersistableObject: Equatable
 			DDLog.Error("Persistence", "Error while deleting object: \(err_str!.debugDescription)")
 		} else {
 			DDLog.Deleting("Persistence", "Deleted \(self).")
+			DispatchQueue.main.async
+			{ [unowned self] in
+				NotificationCenter.default.post(
+					name: NotificationNames.wasDeleted.notificationName,
+					object: self
+				)
+			}
 		}
 		return err_str
 	}

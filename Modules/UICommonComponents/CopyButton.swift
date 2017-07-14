@@ -8,6 +8,7 @@
 
 import UIKit
 import MobileCoreServices
+import PKHUD
 
 extension UICommonComponents
 {
@@ -41,16 +42,26 @@ extension UICommonComponents
 			//
 			let frame = CGRect(x: 0, y: 0, width: CopyButton.w, height: CopyButton.h)
 			self.frame = frame
+			//
+			self._updateInteractivityByValues() // initial
+
 		}
 		//
 		// Imperatives
-		func set(text: String)
+		func set(text: String?)
 		{
 			self.pasteboardItem_value_text = text
+			self._updateInteractivityByValues()
 		}
-		func set(html: String)
+		func set(html: String?)
 		{
 			self.pasteboardItem_value_html = html
+			self._updateInteractivityByValues()
+		}
+		func _updateInteractivityByValues()
+		{
+			let aValueExists = (self.pasteboardItem_value_html != nil && self.pasteboardItem_value_html != "") || (self.pasteboardItem_value_text != nil && self.pasteboardItem_value_text != "")
+			self.isEnabled = aValueExists
 		}
 		private func doCopy()
 		{
@@ -67,6 +78,9 @@ extension UICommonComponents
 			}
 			assert(pasteboardItems.count != 0) // not that it would be, with the above assert
 			UIPasteboard.general.setItems(pasteboardItems, options: [:])
+			//
+			HUD.flash(.label(NSLocalizedString("Copied", comment: "")), delay: 0.3)
+			//
 			DDLog.Done(
 				"UICommonComponents"/*maybe CopyButton instead*/,
 				"Copied items to pasteboard: \(pasteboardItems)"

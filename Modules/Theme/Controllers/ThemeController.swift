@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PKHUD
 //
 class ThemeController
 {
@@ -33,6 +34,7 @@ class ThemeController
 	func configureAppearance()
 	{
 		self.configureAppearance_navigationBar()
+		self.configureAppearance_PKHUD()
 	}
 	func configureAppearance_navigationBar()
 	{
@@ -46,6 +48,11 @@ class ThemeController
 		]
 		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
+	}
+	func configureAppearance_PKHUD()
+	{
+		PKHUD.sharedHUD.dimsBackground = false // debatable
+		PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled = false // ofc
 	}
 }
 //

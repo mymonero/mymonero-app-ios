@@ -13,6 +13,7 @@
 		9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DB1EC276C30040F52A /* MoneroTransactions.swift */; };
 		9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DC1EC276C30040F52A /* MyMoneroCore.swift */; };
 		9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DD1EC276C30040F52A /* MyMoneroJSCore.swift */; };
+		9F0801441F188A690074B35A /* Homepage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0801431F188A690074B35A /* Homepage.swift */; };
 		9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */; };
 		9F1B57471ED4E92D00410675 /* MoneroMnemonics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1B57461ED4E92D00410675 /* MoneroMnemonics.swift */; };
 		9F1C4B981EC241D4004473CE /* mymonero-js-core-ios-build.js in Resources */ = {isa = PBXBuildFile; fileRef = 9F1C4B971EC241D4004473CE /* mymonero-js-core-ios-build.js */; };
@@ -197,6 +198,7 @@
 		9F00B8DB1EC276C30040F52A /* MoneroTransactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTransactions.swift; sourceTree = "<group>"; };
 		9F00B8DC1EC276C30040F52A /* MyMoneroCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMoneroCore.swift; sourceTree = "<group>"; };
 		9F00B8DD1EC276C30040F52A /* MyMoneroJSCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMoneroJSCore.swift; sourceTree = "<group>"; };
+		9F0801431F188A690074B35A /* Homepage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Homepage.swift; sourceTree = "<group>"; };
 		9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletColorPicker.swift; sourceTree = "<group>"; };
 		9F1B57461ED4E92D00410675 /* MoneroMnemonics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroMnemonics.swift; sourceTree = "<group>"; };
 		9F1C4B971EC241D4004473CE /* mymonero-js-core-ios-build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "mymonero-js-core-ios-build.js"; path = "Modules/MyMoneroCore/build/mymonero-js-core-ios-build.js"; sourceTree = SOURCE_ROOT; };
@@ -599,6 +601,7 @@
 				9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */,
 				9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */,
 				9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */,
+				9F0801431F188A690074B35A /* Homepage.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -915,9 +918,9 @@
 				9FA734191F05AFC000C674D6 /* ContactFormViewController.swift */,
 				9FA7341B1F05D92700C674D6 /* AddContactBaseFormViewController.swift */,
 				9FA7341D1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift */,
+				9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */,
 				9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */,
 				9F9C59EE1F0C41FD003B9266 /* ContactDetailsViewController.swift */,
-				9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */,
 			);
 			path = ViewsControllers;
 			sourceTree = "<group>";
@@ -1276,6 +1279,7 @@
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
+				9F0801441F188A690074B35A /* Homepage.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
 				9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */,
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
