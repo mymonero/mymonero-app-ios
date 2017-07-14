@@ -22,7 +22,6 @@ class FundsRequestsListViewCell: UITableViewCell
 		let imagePadding = groupedHighlightableCellVariant.imagePaddingForShadow
 		return contentViewHeight + imagePadding.top + imagePadding.bottom
 	}
-
 	//
 	let cellContentView = FundsRequestsCellContentView()
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)

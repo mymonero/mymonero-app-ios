@@ -28,6 +28,8 @@ class FundsRequestsCellContentView: UIView
 	let memoLabel = UILabel()
 	let senderLabel = UILabel()
 	//
+	var willBeDisplayedWithRightSideAccessoryChevron = true // configurable after init, else also call self.setNeedsLayout
+	//
 	// Lifecycle - Init
 	init()
 	{
@@ -149,7 +151,7 @@ class FundsRequestsCellContentView: UIView
 			)
 		}
 		let labels_x: CGFloat = self.iconView.frame.origin.x + self.iconView.frame.size.width + 20
-		let labels_rightMargin: CGFloat = 40
+		let labels_rightMargin: CGFloat = self.willBeDisplayedWithRightSideAccessoryChevron ? 40 : 16
 		let labels_width = self.frame.size.width - labels_x - labels_rightMargin
 		self.amountLabel.frame = CGRect(
 			x: labels_x,

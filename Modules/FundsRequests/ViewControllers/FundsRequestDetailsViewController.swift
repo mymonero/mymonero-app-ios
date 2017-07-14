@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PKHUD
 
 extension UICommonComponents.Details
 {
@@ -27,7 +28,11 @@ extension UICommonComponents.Details
 		// Init
 		init(fundsRequest: FundsRequest)
 		{
-			self.cellContentView.configure(withObject: fundsRequest)
+			do {
+				let view = self.cellContentView
+				view.willBeDisplayedWithRightSideAccessoryChevron = false // so we get proper right margin
+				view.configure(withObject: fundsRequest)
+			}
 			super.init()
 		}
 		required init?(coder aDecoder: NSCoder) {
@@ -297,7 +302,34 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	}
 	func tapped_rightBarButtonItem()
 	{
-		assert(false, "TODO: save to photo roll")
+		UIImageWriteToSavedPhotosAlbum(self.fundsRequest.qrCodeImage, self, #selector(_savedToPhotosAlbum(image:error:context:)), nil)
+	}
+	func _savedToPhotosAlbum(image: UIImage?, error: Error?, context: Any?)
+	{
+		if error != nil {
+			let alertController = UIAlertController(
+				title: NSLocalizedString("Error saving QR Code", comment: ""),
+				message: NSLocalizedString("Please ensure MyMonero can access Photos via iOS Settings > Privacy.", comment: ""),
+				// error!.localizedDescription doesn't appear to be a good match to display here
+				preferredStyle: .alert
+			)
+			alertController.addAction(
+				UIAlertAction(
+					title: NSLocalizedString("OK", comment: ""),
+					style: .default
+					)
+				{ (result: UIAlertAction) -> Void in
+				}
+			)
+			self.navigationController!.present(alertController, animated: true, completion: nil)
+			return
+		}
+		HUD.flash(
+			.label(
+				NSLocalizedString("Saved to Camera Roll album.", comment: "")
+			),
+			delay: 1
+		)
 	}
 	//
 	// Delegation - Internal
