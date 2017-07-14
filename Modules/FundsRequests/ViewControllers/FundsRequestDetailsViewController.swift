@@ -176,9 +176,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.wasDeleted.notificationName, object: self.fundsRequest)
 	}
 	//
-	//
-	// Constructor - Accessors
-	//
+	// Accessors - Factories
 	var new_requesteeMessagePlaintextString: String
 	{
 		var value = "" // must use \r\n instead of \n for Windows
@@ -332,7 +330,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		)
 	}
 	//
-	// Delegation - Internal
+	// Delegation - Notifications - Object
 	func wasDeleted()
 	{ // was instead of willBe b/c willBe is premature and won't let us see a returned deletion error 
 		if self.navigationController!.topViewController! != self {

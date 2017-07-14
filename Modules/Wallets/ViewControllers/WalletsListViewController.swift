@@ -80,6 +80,13 @@ class WalletsListViewController: ListViewController
 		//
 		return cell!
 	}
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+	{
+		self.tableView.deselectRow(at: indexPath, animated: true)
+		let record = self.listController.records[indexPath.row] as! Wallet
+		let viewController = WalletDetailsViewController(wallet: record)
+		self.navigationController?.pushViewController(viewController, animated: true)
+	}
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
 		return WalletsListViewCell.cellHeight
