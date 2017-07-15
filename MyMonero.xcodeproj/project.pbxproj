@@ -66,6 +66,14 @@
 		9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */; };
 		9F2BFF191EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */; };
 		9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30470C1EC657CB00190268 /* MoneroAmounts.swift */; };
+		9F33E6E61F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */; };
+		9F33E6E71F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */; };
+		9F33E6E81F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */; };
+		9F33E6E91F1A9F9C00610662 /* balanceDisplayBG_stretchable_orange@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E11F1A9F9C00610662 /* balanceDisplayBG_stretchable_orange@3x.png */; };
+		9F33E6EA1F1A9F9C00610662 /* balanceDisplayBG_stretchable_purple@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E21F1A9F9C00610662 /* balanceDisplayBG_stretchable_purple@3x.png */; };
+		9F33E6EB1F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E31F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png */; };
+		9F33E6EC1F1A9F9C00610662 /* balanceDisplayBG_stretchable_teal@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E41F1A9F9C00610662 /* balanceDisplayBG_stretchable_teal@3x.png */; };
+		9F33E6ED1F1A9F9C00610662 /* balanceDisplayBG_stretchable_yellow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E51F1A9F9C00610662 /* balanceDisplayBG_stretchable_yellow@3x.png */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
 		9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D501F10549E0017A20E /* ContactPicker.swift */; };
 		9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */; };
@@ -254,6 +262,14 @@
 		9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroAmounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroAmounts.swift; sourceTree = "<group>"; };
+		9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_blue@3x.png"; sourceTree = "<group>"; };
+		9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_darkGrey@3x.png"; sourceTree = "<group>"; };
+		9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_lightGrey@3x.png"; sourceTree = "<group>"; };
+		9F33E6E11F1A9F9C00610662 /* balanceDisplayBG_stretchable_orange@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_orange@3x.png"; sourceTree = "<group>"; };
+		9F33E6E21F1A9F9C00610662 /* balanceDisplayBG_stretchable_purple@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_purple@3x.png"; sourceTree = "<group>"; };
+		9F33E6E31F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_salmon@3x.png"; sourceTree = "<group>"; };
+		9F33E6E41F1A9F9C00610662 /* balanceDisplayBG_stretchable_teal@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_teal@3x.png"; sourceTree = "<group>"; };
+		9F33E6E51F1A9F9C00610662 /* balanceDisplayBG_stretchable_yellow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_yellow@3x.png"; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
 		9F740D501F10549E0017A20E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Hierarchy.swift"; sourceTree = "<group>"; };
@@ -758,6 +774,14 @@
 		9F8E2F961EE8837300F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */,
+				9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */,
+				9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */,
+				9F33E6E11F1A9F9C00610662 /* balanceDisplayBG_stretchable_orange@3x.png */,
+				9F33E6E21F1A9F9C00610662 /* balanceDisplayBG_stretchable_purple@3x.png */,
+				9F33E6E31F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png */,
+				9F33E6E41F1A9F9C00610662 /* balanceDisplayBG_stretchable_teal@3x.png */,
+				9F33E6E51F1A9F9C00610662 /* balanceDisplayBG_stretchable_yellow@3x.png */,
 				9F8E2F971EE8837300F89A1D /* icon_tabBar_wallets@3x.png */,
 				9F8E2F981EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png */,
 			);
@@ -1145,9 +1169,11 @@
 				9F2BFF191EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png in Resources */,
 				9F9C59DF1F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png in Resources */,
 				9F8E2FFA1EE978E800F89A1D /* actionButton_iconImage__request@3x.png in Resources */,
+				9F33E6EA1F1A9F9C00610662 /* balanceDisplayBG_stretchable_purple@3x.png in Resources */,
 				9F1C4B981EC241D4004473CE /* mymonero-js-core-ios-build.js in Resources */,
 				9F8E30411EEDAB9400F89A1D /* wallet-00F4CD@3x.png in Resources */,
 				9F740D5B1F17BE0A0017A20E /* qrCodeMatteBG_stretchable@3x.png in Resources */,
+				9F33E6EC1F1A9F9C00610662 /* balanceDisplayBG_stretchable_teal@3x.png in Resources */,
 				9F2BFE861EF08ABA006B2F7D /* pushButtonBG_destructive_highlighted@3x.png in Resources */,
 				9F8E2FEC1EE978B700F89A1D /* actionButton_iconImage__useCamera@3x.png in Resources */,
 				9F9C59E81F0C316C003B9266 /* groupedHighlightableCellBG_normal_middle@3x.png in Resources */,
@@ -1155,9 +1181,11 @@
 				9FAA18A31F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png in Resources */,
 				9F8E303A1EEDAB9400F89A1D /* addButtonIcon_10@3x.png in Resources */,
 				9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */,
+				9F33E6E71F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png in Resources */,
 				9F9C59ED1F0C316C003B9266 /* highlightableCellBG@3x.png in Resources */,
 				9F8E2FFD1EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png in Resources */,
 				9F8E30441EEDAB9400F89A1D /* wallet-D975E1@3x.png in Resources */,
+				9F33E6EB1F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png in Resources */,
 				9F9C59EB1F0C316C003B9266 /* highlightableCellBG_disabled@3x.png in Resources */,
 				9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */,
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
@@ -1167,6 +1195,7 @@
 				9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */,
 				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,
 				9F9C59E91F0C316C003B9266 /* groupedHighlightableCellBG_normal_standalone@3x.png in Resources */,
+				9F33E6E91F1A9F9C00610662 /* balanceDisplayBG_stretchable_orange@3x.png in Resources */,
 				9F2BFE821EF08ABA006B2F7D /* highlightableCellBG@3x.png in Resources */,
 				9F9C59FF1F0D8C11003B9266 /* dropdown-arrow-down@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
@@ -1205,10 +1234,12 @@
 				9F8E2FFB1EE978E800F89A1D /* actionButton_iconImage__send@3x.png in Resources */,
 				9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */,
 				9F8E30401EEDAB9400F89A1D /* wallet-00C6FF@3x.png in Resources */,
+				9F33E6E61F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png in Resources */,
 				9F9C59E11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png in Resources */,
 				9FCE96C91F04130200A5837D /* terms_checkbox_checked@3x.png in Resources */,
 				9F8E30021EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png in Resources */,
 				9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */,
+				9F33E6ED1F1A9F9C00610662 /* balanceDisplayBG_stretchable_yellow@3x.png in Resources */,
 				9F9C59EA1F0C316C003B9266 /* groupedHighlightableCellBG_normal_top@3x.png in Resources */,
 				9F8E2FE01EE8A76200F89A1D /* tabBarBGColorImage@3x.png in Resources */,
 				9F22B7991EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png in Resources */,
@@ -1217,6 +1248,7 @@
 				9F2BFE891EF08ABA006B2F7D /* pushButtonBG_utility_highlighted@3x.png in Resources */,
 				9F9C59E41F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_middle@3x.png in Resources */,
 				9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */,
+				9F33E6E81F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png in Resources */,
 				9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

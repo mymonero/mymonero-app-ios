@@ -12,6 +12,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 {
 	//
 	// Constants/Types
+	static let margin_h: CGFloat = 16
 	//
 	// Properties
 	var wallet: Wallet
@@ -39,6 +40,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 			view.indicatorStyle = .white
 			view.backgroundColor = .contentBackgroundColor
 			view.separatorStyle = .none
+			view.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0.01)) // prevent undesired visual top padding
 		}
 		view.delegate = self
 		view.dataSource = self
@@ -169,6 +171,7 @@ class WalletDetailsBalanceViewCell: UICommonComponents.Tables.ReusableTableViewC
 	{
 		super.setup()
 		do {
+			self.selectionStyle = .none
 			self.backgroundColor = UIColor.contentBackgroundColor
 			self.addSubview(self.balanceDisplayView)
 		}
@@ -178,7 +181,10 @@ class WalletDetailsBalanceViewCell: UICommonComponents.Tables.ReusableTableViewC
 	override func layoutSubviews()
 	{
 		super.layoutSubviews()
-		self.balanceDisplayView.frame = self.bounds
+		self.balanceDisplayView.frame = self.bounds.insetBy(
+			dx: WalletDetailsViewController.margin_h - WalletBalanceDisplayView.imagePaddingInsets.left,
+			dy: -WalletBalanceDisplayView.imagePaddingInsets.top
+		)
 	}
 	override func configure(with configuration: UICommonComponents.Tables.ReusableTableViewCell.Configuration)
 	{
@@ -201,11 +207,24 @@ class WalletDetailsBalanceViewCell: UICommonComponents.Tables.ReusableTableViewC
 	}
 }
 
-class WalletBalanceDisplayView: UIView
+class WalletBalanceDisplayView: UIImageView
 {
 	//
 	// Constants
 	static let height: CGFloat = 71
+	//
+	static let imagePaddingInsets = UIEdgeInsetsMake(2, 1, 2, 1)
+	static let cornerRadius: CGFloat = 5
+	static func stretchableBackgroundImage(forSwatchColor swatchColor: Wallet.SwatchColor) -> UIImage
+	{
+		let name = "balanceDisplayBG_stretchable_\(swatchColor.colorName)"
+		let image = UIImage(named: name)!
+		let stretchableImage = image.stretchableImage(
+			withLeftCapWidth: Int(imagePaddingInsets.left + cornerRadius),
+			topCapHeight: Int(imagePaddingInsets.top + cornerRadius)
+		)
+		return stretchableImage
+	}
 	//
 	// Properties
 	let label = UILabel()
@@ -221,17 +240,21 @@ class WalletBalanceDisplayView: UIView
 	}
 	func setup()
 	{
-		let view = self.label
-		view.numberOfLines = 1
-		view.lineBreakMode = .byTruncatingTail
-		view.font = UIFont(name: UIFont.lightMonospaceFontName, size: 32)
-		self.addSubview(view)
+		do {
+			let view = self.label
+			view.numberOfLines = 1
+			view.lineBreakMode = .byTruncatingTail
+			view.font = UIFont(name: UIFont.lightMonospaceFontName, size: 32)
+			self.addSubview(view)
+		}
 	}
 	//
 	// Overrides
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		self.label.frame = self.bounds.insetBy(dx: 10, dy: 5) // TODO
+		let imagePaddingInsets = type(of: self).imagePaddingInsets
+		let contentFrame = self.bounds.insetBy(dx: imagePaddingInsets.left, dy: imagePaddingInsets.top)
+		self.label.frame = contentFrame.insetBy(dx: 10, dy: 5) // TODO
 	}
 	//
 	// Accessors
@@ -243,7 +266,6 @@ class WalletBalanceDisplayView: UIView
 		}
 	}
 	func paddingZeroesSectionColor(withWallet wallet: Wallet) -> UIColor {
-		
 		if wallet.swatchColor.isADarkColor {
 			return UIColor(red: 248/255, green: 247/255, blue: 248/255, alpha: 0.2)
 		} else {
@@ -290,14 +312,14 @@ class WalletBalanceDisplayView: UIView
 			attributedText.addAttributes(
 				[
 					NSForegroundColorAttributeName: mainSectionColor,
-					],
+				],
 				range: NSMakeRange(0, finalized_main_string.characters.count)
 			)
 			if finalized_paddingZeros_string.characters.count > 0 {
 				attributedText.addAttributes(
 					[
 						NSForegroundColorAttributeName: paddingZeroesSectionColor,
-						],
+					],
 					range: NSMakeRange(
 						finalized_main_string.characters.count,
 						attributedText.string.characters.count - finalized_paddingZeros_string.characters.count
@@ -317,6 +339,6 @@ class WalletBalanceDisplayView: UIView
 	}
 	func _configureBackgroundColor(withWallet wallet: Wallet)
 	{
-		self.backgroundColor = UIColor(rgb: wallet.swatchColor.rgbIntValue) // TODO: img?
+		self.image = type(of: self).stretchableBackgroundImage(forSwatchColor: wallet.swatchColor)
 	}
 }

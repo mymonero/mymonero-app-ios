@@ -70,6 +70,26 @@ class Wallet: PersistableObject
 			return order
 		}
 		//
+		var colorName: String {
+			switch self {
+			case .darkGrey:
+				return "darkGrey"
+			case .lightGrey:
+				return "lightGrey"
+			case .teal:
+				return "teal"
+			case .purple:
+				return "purple"
+			case .salmon:
+				return "salmon"
+			case .orange:
+				return "orange"
+			case .yellow:
+				return "yellow"
+			case .blue:
+				return "blue"
+			}
+		}
 		var rgbIntValue: Int {
 			switch self {
 				case .darkGrey:
