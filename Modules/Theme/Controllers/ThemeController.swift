@@ -95,34 +95,45 @@ extension UIFont
 {
 	//
 	// Monospace - "Native"
+	static var lightMonospaceFontName: String {
+		return "Native-Light"
+	}
+	static var regularMonospaceFontName: String {
+		return "Native-Regular"
+	}
+	static var boldMonospaceFontName: String {
+		return "Native-Bold"
+	}
+	//
 	static var visualSizeIncreased_smallRegularMonospace: UIFont // a special case
 	{
-		return UIFont(name: "Native-Regular", size: 12)!
+		return UIFont(name: self.regularMonospaceFontName, size: 12)!
 	}
 	static var smallLightMonospace: UIFont
 	{
-		return UIFont(name: "Native-Light", size: 11)!
+		return UIFont(name: self.lightMonospaceFontName, size: 11)!
 	}
 	static var smallRegularMonospace: UIFont
 	{
-		return UIFont(name: "Native-Regular", size: 11)!
+		return UIFont(name: self.regularMonospaceFontName, size: 11)!
 	}
 	static var smallBoldMonospace: UIFont
 	{
-		return UIFont(name: "Native-Bold", size: 11)!
+		return UIFont(name: self.boldMonospaceFontName, size: 11)!
 	}
 	static var middlingLightMonospace: UIFont
 	{
-		return UIFont(name: "Native-Light", size: 13)!
+		return UIFont(name: self.lightMonospaceFontName, size: 13)!
 	}
 	static var middlingRegularMonospace: UIFont
 	{
-		return UIFont(name: "Native-Regular", size: 13)!
+		return UIFont(name: self.regularMonospaceFontName, size: 13)!
 	}
 	static var middlingBoldMonospace: UIFont
 	{
-		return UIFont(name: "Native-Bold", size: 13)!
+		return UIFont(name: self.boldMonospaceFontName, size: 13)!
 	}
+	
 	//
 	// Sans Serif - (systemFont should be "San Francisco")
 	static var smallSemiboldSansSerif: UIFont

@@ -70,6 +70,32 @@ class Wallet: PersistableObject
 			return order
 		}
 		//
+		var rgbIntValue: Int {
+			switch self {
+				case .darkGrey:
+					return 0x6B696B
+				case .lightGrey:
+					return 0xCFCECF
+				case .teal:
+					return 0x00F4CD
+				case .purple:
+					return 0xD975E1
+				case .salmon:
+					return 0xF97777
+				case .orange:
+					return 0xEB8316
+				case .yellow:
+					return 0xEACF12
+				case .blue:
+					return 0x00C6FF
+			}
+		}
+		func colorHexString_withoutPoundPrefix() -> String {
+			let hexColorString = self.colorHexString()
+			let hexColorString_sansPound = (hexColorString as NSString).substring(from: 1) // strip "#" sign
+			
+			return hexColorString_sansPound
+		}
 		func colorHexString() -> String { return self.rawValue }
 		func jsonRepresentation() -> String { return self.rawValue }
 		static func new(from_jsonRepresentation jsonRepresentation: String) -> SwatchColor

@@ -185,6 +185,7 @@
 		9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */; };
 		9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */; };
 		9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */; };
+		9FD70E091F1988FB000FE675 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD70E081F1988FB000FE675 /* Tables.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
@@ -373,6 +374,7 @@
 		9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__startOver@3x.png"; sourceTree = "<group>"; };
 		9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__tryAgain@3x.png"; sourceTree = "<group>"; };
+		9FD70E081F1988FB000FE675 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
@@ -425,6 +427,7 @@
 				9F9C59F01F0C45AD003B9266 /* ScrollableInfo.swift */,
 				9F1D002D1EE345DF00A4B3A5 /* Forms.swift */,
 				9F1D002F1EE345E500A4B3A5 /* Details.swift */,
+				9FD70E081F1988FB000FE675 /* Tables.swift */,
 				9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */,
 				9F2BFE731EEEDEE3006B2F7D /* HighlightableCells.swift */,
 				9F8E30131EED6F2600F89A1D /* PushButton.swift */,
@@ -1373,6 +1376,7 @@
 				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
 				9FA734171F05AFAB00C674D6 /* ContactsListViewController.swift in Sources */,
 				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
+				9FD70E091F1988FB000FE675 /* Tables.swift in Sources */,
 				9F9C59F11F0C45AD003B9266 /* ScrollableInfo.swift in Sources */,
 				9F1B57471ED4E92D00410675 /* MoneroMnemonics.swift in Sources */,
 				9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */,

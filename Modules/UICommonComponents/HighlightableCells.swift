@@ -44,33 +44,6 @@ extension UICommonComponents
 			}
 		}
 	}
-	//
-	enum CellPosition
-	{
-		case top
-		case middle
-		case bottom
-		case standalone
-	}
-	static func newCellPosition(withCellIndex cellIndex: Int, cellsCount: Int) -> CellPosition
-	{ // would place this as new(::) within CellPosition but there might be a compiler bug; complains about extra arg
-		assert(cellsCount > 0)
-		if cellsCount == 1  {
-			return .standalone
-		} else if cellIndex == 0 {
-			return .top
-		} else if cellIndex == cellsCount - 1 {
-			return .bottom
-		} else {
-			return .middle
-		}
-	}
-	enum CellState
-	{
-		case normal
-		case highlighted
-		case disabled
-	}
 	struct GroupedHighlightableCells
 	{
 		// the grey image has shadow around it and so needs padding
