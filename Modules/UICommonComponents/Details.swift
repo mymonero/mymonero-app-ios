@@ -171,19 +171,52 @@ extension UICommonComponents
 			var fieldSeparatorViews: [FieldSeparatorView] = []
 			func add(fieldView: FieldView)
 			{
-				if fieldViews.count > 0 {
+				if self.fieldViews.count > 0 {
 					let separatorView = FieldSeparatorView(mode: .detailsSectionFieldDelimiter)
 					fieldSeparatorViews.append(separatorView)
 					self.addSubview(separatorView)
 				}
-				fieldViews.append(fieldView)
+				self.fieldViews.append(fieldView)
 				self.addSubview(fieldView)
+			}
+			func removeAllFieldViews()
+			{
+				if self.fieldViews.count > 0 {
+					for (_, fieldView) in self.fieldViews.enumerated() {
+						fieldView.removeFromSuperview()
+					}
+					self.fieldViews = []
+				}
+				if self.fieldSeparatorViews.count > 0 {
+					for (_, fieldSeparatorView) in self.fieldSeparatorViews.enumerated() {
+						fieldSeparatorView.removeFromSuperview()
+					}
+					self.fieldSeparatorViews = []
+				}
+			}
+			func set(fieldViews to_fieldViews: [FieldView])
+			{
+				self.removeAllFieldViews()
+				for (_, fieldView) in to_fieldViews.enumerated() {
+					self.add(fieldView: fieldView)
+				}
 			}
 			//
 			func sizeToFitAndLayOutSubviews(
 				withContainingWidth containingWidth: CGFloat,
 				andYOffset yOffset: CGFloat
 			)
+			{
+				let selfFrame = self.sizeToFitAndLayOutSubviews_butReturnInsteadOfModifyingSelfFrame(
+					withContainingWidth: containingWidth,
+					andYOffset: yOffset
+				)
+				self.frame = selfFrame
+			}
+			func sizeToFitAndLayOutSubviews_butReturnInsteadOfModifyingSelfFrame(
+				withContainingWidth containingWidth: CGFloat,
+				andYOffset yOffset: CGFloat
+			) -> CGRect
 			{
 				let self_width = containingWidth - 2*UICommonComponents.Details.SectionContentContainerView.x
 				let frame_withoutHeight = CGRect(
@@ -194,8 +227,7 @@ extension UICommonComponents
 				)
 				let numberOfFields = fieldViews.count
 				if numberOfFields == 0 {
-					self.frame = frame_withoutHeight
-					return
+					return frame_withoutHeight
 				}
 				var currentField_yOffset: CGFloat = 0
 				for (idx, fieldView) in fieldViews.enumerated() {
@@ -205,6 +237,7 @@ extension UICommonComponents
 						withXOffset: contentInsets.left,
 						andYOffset: currentField_yOffset + contentInsets.top
 					)
+					NSLog("fieldView frame: \(fieldView.frame)")
 					currentField_yOffset = fieldView.frame.origin.y + fieldView.frame.size.height + contentInsets.bottom
 					//
 					if idx < numberOfFields - 1 { // any but the last field
@@ -223,7 +256,7 @@ extension UICommonComponents
 					let last_fieldView = fieldViews.last!
 					frame_withHeight.size.height = last_fieldView.frame.origin.y + last_fieldView.frame.size.height + last_fieldView.contentInsets.bottom
 				}
-				self.frame = frame_withHeight
+				return frame_withHeight
 			}
 
 		}
@@ -335,6 +368,7 @@ extension UICommonComponents
 				super.setup()
 				do {
 					let view = FieldLabel(variant: self.labelVariant, title: self.fieldTitle)
+					view.isUserInteractionEnabled = false // do not receive/obscure touches
 					self.titleLabel = view
 					self.addSubview(view)
 				}
@@ -345,6 +379,7 @@ extension UICommonComponents
 				}
 				do {
 					let view = UILabel()
+					view.isUserInteractionEnabled = false
 					self.contentLabel = view
 					// TODO? configure here? or in subclass?
 					view.numberOfLines = 0
@@ -392,7 +427,7 @@ extension UICommonComponents
 			{
 				let content_x: CGFloat = 0 // self will have xOffset so content can be at 0
 				let content_rightMargin: CGFloat = 36
-				let content_w = containingWidth - content_x - content_rightMargin - self.copyButton.frame.size.width
+				let content_w = containingWidth - content_x - content_rightMargin - CopyButton.visual_w
 				self.titleLabel.frame = CGRect(
 					x: content_x,
 					y: 0,
@@ -400,18 +435,12 @@ extension UICommonComponents
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
 				self.copyButton.frame = CGRect(
-					x: containingWidth - self.copyButton.frame.size.width,
+					x: containingWidth - self.copyButton.frame.size.width + CopyButton.usabilityPadding_h,
 					y: self.titleLabel.frame.origin.y - (CopyButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since CopyButton.h is increased for usability
 					width: CopyButton.w,
 					height: CopyButton.h 
 				).integral
-				self.contentLabel.frame = CGRect(
-					x: content_x,
-					y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 12,
-					width: content_w,
-					height: 0
-				)
-				self.contentLabel.sizeToFit() // to get height
+				self.layOut_contentLabel(content_x: content_x, content_w: content_w)
 				//
 				let bottomPadding: CGFloat = 0
 				self.frame = CGRect(
@@ -420,6 +449,16 @@ extension UICommonComponents
 					width: containingWidth,
 					height: self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height + bottomPadding
 				)
+			}
+			func layOut_contentLabel(content_x: CGFloat, content_w: CGFloat)
+			{ // overridable
+				self.contentLabel.frame = CGRect(
+					x: content_x,
+					y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 12,
+					width: content_w,
+					height: 0
+				)
+				self.contentLabel.sizeToFit() // to get height
 			}
 		}
 		//

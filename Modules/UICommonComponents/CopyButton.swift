@@ -16,8 +16,10 @@ extension UICommonComponents
 	{
 		//
 		// Constants
-		static let w: CGFloat = 33
+		static let usabilityPadding_h: CGFloat = 16
+		static let w: CGFloat = visual_w + usabilityPadding_h*2 // this should probably be increased for usability
 		static let h: CGFloat = 30 // for usability
+		static let visual_w: CGFloat = 33
 		//
 		// Properties
 		private var pasteboardItem_value_text: String?

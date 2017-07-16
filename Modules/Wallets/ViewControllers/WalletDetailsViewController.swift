@@ -8,6 +8,8 @@
 
 import UIKit
 
+struct WalletDetails {}
+
 class WalletDetailsViewController: UICommonComponents.Details.ViewController, UITableViewDelegate, UITableViewDataSource
 {
 	//
@@ -16,6 +18,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	//
 	// Properties
 	var wallet: Wallet
+	var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
 	//
 	var tableView: UITableView {
 		return self.scrollView as! UITableView
@@ -26,6 +29,9 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	init(wallet: Wallet)
 	{
 		self.wallet = wallet
+		self.infoDisclosingCellView = WalletDetails.InfoDisclosing.Cell(
+			wantsMnemonicDisplay: wallet.mnemonicString != nil
+		)
 		super.init()
 	}
 	required init?(coder aDecoder: NSCoder) {
@@ -40,7 +46,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 			view.indicatorStyle = .white
 			view.backgroundColor = .contentBackgroundColor
 			view.separatorStyle = .none
-			view.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0.01)) // prevent undesired visual top padding
+			view.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude)) // prevent undesired visual top padding
 		}
 		view.delegate = self
 		view.dataSource = self
@@ -69,6 +75,9 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	override func startObserving()
 	{
 		super.startObserving()
+		
+		// TODO: all observations -> reconfig/reload cells
+		
 		NotificationCenter.default.addObserver(self, selector: #selector(wasDeleted), name: PersistableObject.NotificationNames.wasDeleted.notificationName, object: self.wallet)
 	}
 	override func stopObserving()
@@ -82,7 +91,9 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	{
 		switch indexPath.section {
 			case 0:
-				return WalletDetailsBalanceViewCell.self
+				return WalletDetails.Balance.Cell.self
+			case 1:
+				return type(of: self.infoDisclosingCellView) //WalletDetails.InfoDisclosing.Cell.self
 			default:
 				assert(false)
 				return UICommonComponents.Tables.ReusableTableViewCell.self
@@ -124,9 +135,13 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 		let reuseIdentifier = cellType.reuseIdentifier()
 		var lazy_cell: UICommonComponents.Tables.ReusableTableViewCell?
 		do {
-			lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
-			if lazy_cell == nil {
-				lazy_cell = cellType.init()
+			if indexPath.section == 1 { // infodisclosing
+				lazy_cell = self.infoDisclosingCellView
+			} else {
+				lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
+				if lazy_cell == nil {
+					lazy_cell = cellType.init()
+				}
 			}
 		}
 		let cell = lazy_cell!
@@ -141,204 +156,93 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	}
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
 	{
-		return 1
+		switch section {
+			case 0: // balance
+				return 1
+			case 1: // infodisclosing
+				return 1
+			default:
+				assert(false)
+				return 0
+		}
+	}
+	func numberOfSections(in tableView: UITableView) -> Int
+	{
+		var count = 0
+		count += 1 // balance
+		count += 1 // infodisclosing
+//		count += 1 // transactions et al
+		
+		return count
+	}
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+	{
+		tableView.deselectRow(at: indexPath, animated: true)
+		if indexPath.section == 1 { // infodisclosing
+			let contentContainerView_toFrame = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate_returningContentContainerViewFrame()
+			UIView.animate(
+				withDuration: 0.34,
+				delay: 0,
+				options: [.curveEaseInOut],
+				animations:
+				{
+					self.tableView.beginUpdates()
+					do { // we must animate the content container height change too
+						self.infoDisclosingCellView.contentContainerView.frame = contentContainerView_toFrame // note this will change the value from which the cellHeight itself is derived
+					}
+					self.tableView.endUpdates()
+				},
+				completion:
+				{ (finished) in
+				}
+			)
+			self.infoDisclosingCellView.configureForJustToggledDisclosureState(animated: true)
+		}
 	}
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
+		if indexPath.section == 1 { // infodisclosing
+			NSLog("self.infoDisclosingCellView.cellHeight \(self.infoDisclosingCellView.cellHeight)")
+			return self.infoDisclosingCellView.cellHeight
+		}
 		return self.cellViewType(forCellAtIndexPath: indexPath).height()
 	}
 	func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
 	{
-		return 0
+		let baseSpacing: CGFloat = 16
+		if section == 0 {
+			return .leastNormalMagnitude // must be this rather than 0
+		} else if section == 1 {
+			return baseSpacing/* Note: Not sure why the following must be commented out -WalletDetails.Balance.DisplayView.imagePaddingInsets.bottom*/
+		} else if section == 2 {
+			// remove top shadow height for transactions… but only if not showing resolving indicator
+			// TODO
+//			if self.isShowingScanningBlockchainActivityIndicator {
+//				return baseSpacing + scanningBlockchainActivityIndicatorTableHeaderView.frame.size.height
+//			} else {
+				let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
+					withState: .normal,
+					position: .top
+				)
+				let imagePadding = groupedHighlightableCellVariant.imagePaddingForShadow
+				//
+				return baseSpacing - imagePadding.top
+//			}
+		}
+		assert(false)
+		return .leastNormalMagnitude
 	}
 	func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat
 	{
-		return 0
+		return .leastNormalMagnitude // must be this rather than 0
+	}
+	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
+	{
+		return nil
+	}
+	func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
+	{
+		return nil
 	}
 }
 
-class WalletDetailsBalanceViewCell: UICommonComponents.Tables.ReusableTableViewCell
-{
-	override class func reuseIdentifier() -> String {
-		return "UICommonComponents.Details.WalletDetailsBalanceViewCell"
-	}
-	override class func height() -> CGFloat {
-		return WalletBalanceDisplayView.height
-	}
-	//
-	let balanceDisplayView = WalletBalanceDisplayView()
-	override func setup()
-	{
-		super.setup()
-		do {
-			self.selectionStyle = .none
-			self.backgroundColor = UIColor.contentBackgroundColor
-			self.addSubview(self.balanceDisplayView)
-		}
-	}
-	//
-	// Overrides
-	override func layoutSubviews()
-	{
-		super.layoutSubviews()
-		self.balanceDisplayView.frame = self.bounds.insetBy(
-			dx: WalletDetailsViewController.margin_h - WalletBalanceDisplayView.imagePaddingInsets.left,
-			dy: -WalletBalanceDisplayView.imagePaddingInsets.top
-		)
-	}
-	override func configure(with configuration: UICommonComponents.Tables.ReusableTableViewCell.Configuration)
-	{
-		let wallet = configuration.dataObject as? Wallet
-		if wallet == nil {
-			assert(false)
-			return
-		}
-		if wallet!.didFailToInitialize_flag == true || wallet!.didFailToBoot_flag == true {
-			self.balanceDisplayView.label.textColor = .white
-			self.balanceDisplayView.label.text = NSLocalizedString("ERROR LOADING", comment: "")
-		} else if wallet!.hasEverFetched_accountInfo == false {
-			self.balanceDisplayView.set(
-				utilityText: NSLocalizedString("LOADING…", comment: ""),
-				withWallet: wallet!
-			)
-		} else {
-			self.balanceDisplayView.set(balanceWithWallet: wallet!)
-		}
-	}
-}
-
-class WalletBalanceDisplayView: UIImageView
-{
-	//
-	// Constants
-	static let height: CGFloat = 71
-	//
-	static let imagePaddingInsets = UIEdgeInsetsMake(2, 1, 2, 1)
-	static let cornerRadius: CGFloat = 5
-	static func stretchableBackgroundImage(forSwatchColor swatchColor: Wallet.SwatchColor) -> UIImage
-	{
-		let name = "balanceDisplayBG_stretchable_\(swatchColor.colorName)"
-		let image = UIImage(named: name)!
-		let stretchableImage = image.stretchableImage(
-			withLeftCapWidth: Int(imagePaddingInsets.left + cornerRadius),
-			topCapHeight: Int(imagePaddingInsets.top + cornerRadius)
-		)
-		return stretchableImage
-	}
-	//
-	// Properties
-	let label = UILabel()
-	//
-	// Init
-	init()
-	{
-		super.init(frame: .zero)
-		self.setup()
-	}
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	func setup()
-	{
-		do {
-			let view = self.label
-			view.numberOfLines = 1
-			view.lineBreakMode = .byTruncatingTail
-			view.font = UIFont(name: UIFont.lightMonospaceFontName, size: 32)
-			self.addSubview(view)
-		}
-	}
-	//
-	// Overrides
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		let imagePaddingInsets = type(of: self).imagePaddingInsets
-		let contentFrame = self.bounds.insetBy(dx: imagePaddingInsets.left, dy: imagePaddingInsets.top)
-		self.label.frame = contentFrame.insetBy(dx: 10, dy: 5) // TODO
-	}
-	//
-	// Accessors
-	func mainSectionColor(withWallet wallet: Wallet) -> UIColor {
-		if wallet.swatchColor.isADarkColor {
-			return UIColor(rgb: 0xF8F7F8) // so use light text
-		} else {
-			return UIColor(rgb: 0x161416) // so use dark text
-		}
-	}
-	func paddingZeroesSectionColor(withWallet wallet: Wallet) -> UIColor {
-		if wallet.swatchColor.isADarkColor {
-			return UIColor(red: 248/255, green: 247/255, blue: 248/255, alpha: 0.2)
-		} else {
-			return UIColor(red: 29/255, green: 26/255, blue: 29/255, alpha: 0.2)
-		}
-	}
-	//
-	// Imperatives
-	func set(balanceWithWallet wallet: Wallet)
-	{
-		var finalized_main_string = ""
-		var finalized_paddingZeros_string = ""
-		do {
-			let raw_balanceString = wallet.balance_formattedString
-			let coinUnitPlaces = MoneroConstants.currency_unitPlaces
-			let raw_balanceString__components = raw_balanceString.components(separatedBy: ".")
-			if raw_balanceString__components.count == 1 {
-				let balance_aspect_integer = raw_balanceString__components[0]
-				if balance_aspect_integer == "0" {
-					finalized_main_string = ""
-					finalized_paddingZeros_string = "00." + String(repeating: "0", count: coinUnitPlaces)
-				} else {
-					finalized_main_string = balance_aspect_integer + "."
-					finalized_paddingZeros_string = String(repeating: "0", count: coinUnitPlaces)
-				}
-			} else if raw_balanceString__components.count == 2 {
-				finalized_main_string = raw_balanceString
-				let decimalComponent = raw_balanceString__components[1]
-				let decimalComponent_length = decimalComponent.characters.count
-				if decimalComponent_length < coinUnitPlaces + 2 {
-					finalized_paddingZeros_string = String(repeating: "0", count: coinUnitPlaces - decimalComponent_length + 2)
-				}
-			} else {
-				assert(false, "Couldn't parse formatted balance string.")
-				finalized_main_string = raw_balanceString
-				finalized_paddingZeros_string = ""
-			}
-		}
-		let attributes: [String: Any] = [:]
-		let attributedText = NSMutableAttributedString(string: "\(finalized_main_string)\(finalized_paddingZeros_string)", attributes: attributes)
-		let mainSectionColor = self.mainSectionColor(withWallet: wallet)
-		let paddingZeroesSectionColor = self.paddingZeroesSectionColor(withWallet: wallet)
-		do {
-			attributedText.addAttributes(
-				[
-					NSForegroundColorAttributeName: mainSectionColor,
-				],
-				range: NSMakeRange(0, finalized_main_string.characters.count)
-			)
-			if finalized_paddingZeros_string.characters.count > 0 {
-				attributedText.addAttributes(
-					[
-						NSForegroundColorAttributeName: paddingZeroesSectionColor,
-					],
-					range: NSMakeRange(
-						finalized_main_string.characters.count,
-						attributedText.string.characters.count - finalized_paddingZeros_string.characters.count
-					)
-				)
-			}
-		}
-		self.label.textColor = paddingZeroesSectionColor // for the '…' during truncation
-		self.label.attributedText = attributedText
-		self._configureBackgroundColor(withWallet: wallet)
-	}
-	func set(utilityText text: String, withWallet wallet: Wallet)
-	{
-		self.label.textColor = self.mainSectionColor(withWallet: wallet)
-		self.label.text = text
-		self._configureBackgroundColor(withWallet: wallet)
-	}
-	func _configureBackgroundColor(withWallet wallet: Wallet)
-	{
-		self.image = type(of: self).stretchableBackgroundImage(forSwatchColor: wallet.swatchColor)
-	}
-}
