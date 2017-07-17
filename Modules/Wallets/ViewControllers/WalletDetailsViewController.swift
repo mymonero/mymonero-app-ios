@@ -100,10 +100,37 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 		}
 	}
 	//
-	// Imperatives
+	// Imperatives - Configuration
 	func set_navigationTitle()
 	{
 		self.navigationItem.title = self.wallet.walletLabel
+	}
+	//
+	// Imperatives - InfoDisclosing
+	
+	func toggleInfoDisclosureCell()
+	{ // not a huge fan of all this coupling but at least we can put it in a method
+		let (contentContainerView_toFrame, isHiding) = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate()
+		UIView.animate(
+			withDuration: 0.24,
+			delay: 0,
+			options: [.curveEaseIn],
+			animations:
+			{
+				self.tableView.beginUpdates()
+				do { // we must animate the content container height change too
+					self.infoDisclosingCellView.contentContainerView.frame = contentContainerView_toFrame // note this will change the value from which the cellHeight itself is derived
+				}
+				self.tableView.endUpdates()
+			},
+			completion:
+			{ (finished) in
+				if finished {
+					self.infoDisclosingCellView.hasFinishedCellToggleAnimation(isHiding: isHiding)
+				}
+			}
+		)
+		self.infoDisclosingCellView.configureForJustToggledDisclosureState(animated: true, isHiding: isHiding)
 	}
 	//
 	// Overrides - Layout
@@ -179,30 +206,12 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	{
 		tableView.deselectRow(at: indexPath, animated: true)
 		if indexPath.section == 1 { // infodisclosing
-			let contentContainerView_toFrame = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate_returningContentContainerViewFrame()
-			UIView.animate(
-				withDuration: 0.34,
-				delay: 0,
-				options: [.curveEaseInOut],
-				animations:
-				{
-					self.tableView.beginUpdates()
-					do { // we must animate the content container height change too
-						self.infoDisclosingCellView.contentContainerView.frame = contentContainerView_toFrame // note this will change the value from which the cellHeight itself is derived
-					}
-					self.tableView.endUpdates()
-				},
-				completion:
-				{ (finished) in
-				}
-			)
-			self.infoDisclosingCellView.configureForJustToggledDisclosureState(animated: true)
+			self.toggleInfoDisclosureCell()
 		}
 	}
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
 		if indexPath.section == 1 { // infodisclosing
-			NSLog("self.infoDisclosingCellView.cellHeight \(self.infoDisclosingCellView.cellHeight)")
 			return self.infoDisclosingCellView.cellHeight
 		}
 		return self.cellViewType(forCellAtIndexPath: indexPath).height()

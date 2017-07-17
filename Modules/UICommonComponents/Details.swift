@@ -207,15 +207,19 @@ extension UICommonComponents
 				andYOffset yOffset: CGFloat
 			)
 			{
-				let selfFrame = self.sizeToFitAndLayOutSubviews_butReturnInsteadOfModifyingSelfFrame(
+				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 					withContainingWidth: containingWidth,
-					andYOffset: yOffset
+					andYOffset: yOffset,
+					givenSpecificFieldViews: self.fieldViews,
+					alsoLayOutSharedSeparatorViewsForDisplay: true // because sizeToFitAndLayOutSubviews() is for immediate display
 				)
 				self.frame = selfFrame
 			}
-			func sizeToFitAndLayOutSubviews_butReturnInsteadOfModifyingSelfFrame(
+			func sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 				withContainingWidth containingWidth: CGFloat,
-				andYOffset yOffset: CGFloat
+				andYOffset yOffset: CGFloat,
+				givenSpecificFieldViews specific_fieldViews: [FieldView],
+				alsoLayOutSharedSeparatorViewsForDisplay: Bool // pass false if you actually only want to use this to measure the fieldViews
 			) -> CGRect
 			{
 				let self_width = containingWidth - 2*UICommonComponents.Details.SectionContentContainerView.x
@@ -225,40 +229,48 @@ extension UICommonComponents
 					width: self_width,
 					height: 0
 				)
-				let numberOfFields = fieldViews.count
+				let numberOfFields = specific_fieldViews.count
 				if numberOfFields == 0 {
 					return frame_withoutHeight
 				}
 				var currentField_yOffset: CGFloat = 0
-				for (idx, fieldView) in fieldViews.enumerated() {
+				for (idx, fieldView) in specific_fieldViews.enumerated() {
 					let contentInsets = fieldView.contentInsets
+					//
+					// fieldViews are actually sized here - it might be nicer if we could just measure them instead
 					fieldView.sizeToFitAndLayOutSubviews(
 						withContainingWidth: self_width - contentInsets.left - contentInsets.right,
 						withXOffset: contentInsets.left,
 						andYOffset: currentField_yOffset + contentInsets.top
 					)
-					NSLog("fieldView frame: \(fieldView.frame)")
 					currentField_yOffset = fieldView.frame.origin.y + fieldView.frame.size.height + contentInsets.bottom
 					//
 					if idx < numberOfFields - 1 { // any but the last field
-						let separatorView = self.fieldSeparatorViews[idx] // we expect there to be done
-						separatorView.frame = CGRect(
-							x: contentInsets.left,
-							y: currentField_yOffset,
-							width: self_width - contentInsets.left, // no right offset - flush with edge
-							height: FieldSeparatorView.h
-						)
-						currentField_yOffset = separatorView.frame.origin.y + separatorView.frame.size.height // update - but do not add .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
+						// updating currentField_yOffset - not adding .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
+						let h = FieldSeparatorView.h
+						let topMargin: CGFloat = 0 // just calling these out
+						let bottomMargin: CGFloat = 0
+						if alsoLayOutSharedSeparatorViewsForDisplay == true { // should be true if we actually intend to display the fieldViews right here rather than just measure them
+							let separatorView = self.fieldSeparatorViews[idx] // we expect there to be done
+							separatorView.frame = CGRect(
+								x: contentInsets.left,
+								y: currentField_yOffset + topMargin,
+								width: self_width - contentInsets.left, // no right offset - flush with edge
+								height: FieldSeparatorView.h
+							)
+							currentField_yOffset = separatorView.frame.origin.y + separatorView.frame.size.height + bottomMargin // update - but do not add .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
+						} else { // just use the fixed height
+							currentField_yOffset += topMargin + h + bottomMargin
+						}
 					}
 				}
 				var frame_withHeight = frame_withoutHeight
 				do { // finalize
-					let last_fieldView = fieldViews.last!
+					let last_fieldView = specific_fieldViews.last!
 					frame_withHeight.size.height = last_fieldView.frame.origin.y + last_fieldView.frame.size.height + last_fieldView.contentInsets.bottom
 				}
 				return frame_withHeight
 			}
-
 		}
 		//
 		// Field & field separator views

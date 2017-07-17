@@ -52,6 +52,7 @@ extension WalletDetails
 			{
 				super.setup()
 				do {
+					self.layer.masksToBounds = true // minor detail… :)
 					self.selectionStyle = .none
 					self.backgroundColor = UIColor.contentBackgroundColor
 				}
@@ -82,13 +83,21 @@ extension WalletDetails
 			}
 			//
 			// Imperatives - Disclosure
-			func toggleDisclosureAndPrepareToAnimate_returningContentContainerViewFrame() -> CGRect
+			func toggleDisclosureAndPrepareToAnimate(
+			) -> (
+				selfFrame: CGRect,
+				isHiding: Bool
+			)
 			{
-				return self.contentContainerView.toggleDisclosureAndPrepareToAnimate_returningNewSelfFrame()
+				return self.contentContainerView.toggleDisclosureAndPrepareToAnimate()
 			}
-			func configureForJustToggledDisclosureState(animated: Bool)
+			func configureForJustToggledDisclosureState(animated: Bool, isHiding: Bool)
 			{
 				self.contentContainerView.configureForJustToggledDisclosureState(animated: animated)
+			}
+			func hasFinishedCellToggleAnimation(isHiding: Bool)
+			{
+				self.contentContainerView.hasFinishedCellToggleAnimation(isHiding: isHiding)
 			}
 		}
 		
@@ -171,7 +180,11 @@ extension WalletDetails
 			{
 				self.wantsMnemonicDisplay = wantsMnemonicDisplay
 				super.init()
-				self.addSubview(self.arrowIconView)
+				do {
+					let view = self.arrowIconView
+					view.layer.anchorPoint = CGPoint(x: 0.38, y: 0.55) // to make it look more like it's rotating around the center - normalizing padding in the image would probably be a better way to do this
+					self.addSubview(view)
+				}
 			}
 			required init?(coder aDecoder: NSCoder) {
 				fatalError("init(coder:) has not been implemented")
@@ -220,12 +233,29 @@ extension WalletDetails
 			//
 			// Imperatives - Disclosure
 			// I.
-			func toggleDisclosureAndPrepareToAnimate_returningNewSelfFrame() -> CGRect
+			func toggleDisclosureAndPrepareToAnimate(
+			) -> (
+				selfFrame: CGRect,
+				isHiding: Bool
+			)
 			{
+				let isHiding = self.isDisclosed
 				self.isDisclosed = !self.isDisclosed
-				self.regenerateArrayOfFieldViews()
-				//
-				return self.sizeAndLayOutSubviews_returningSelfFrame()
+				var selfFrame: CGRect
+				if isHiding == false {
+					self.regenerateArrayOfFieldViews()
+					selfFrame = self.sizeAndLayOutSubviews_returningSelfFrame() // because we can measure the already existing field views
+				} else {
+					let to_fieldViews = self._new_fieldViews // but do not actually display them yet!
+					selfFrame = self.sizeAndLayOutSubviews_returningSelfFrame(
+						givenFieldViews: to_fieldViews,
+						alsoLayOutSharedSeparatorViewsForDisplay: false // because we're not going to defer modifying them until it's "our turn" to do so - as we are deferring regeneration of of fieldView list to the completion of animation
+					)
+				}
+				return (
+					selfFrame: selfFrame,
+					isHiding: isHiding
+				)
 			}
 			// II.
 			func configureForJustToggledDisclosureState(animated: Bool)
@@ -235,29 +265,57 @@ extension WalletDetails
 					do { // arrow
 						let degreesAngle: Double = self.isDisclosed ? 90 : 0
 						let radiansAngle: Double = degreesAngle * .pi / 180
-						self.arrowIconView.layer.transform = CATransform3DRotate(
+						let rotationTransform = CATransform3DRotate(
 							CATransform3DIdentity,
 							CGFloat(radiansAngle), // rotation
 							0,
 							0,
-							1
+							1 // around z
 						)
+						self.arrowIconView.layer.transform = CATransform3DConcat(CATransform3DIdentity, rotationTransform)
 					}
 				}
 				if animated {
-					UIView.animate(withDuration: 0.2, animations: configure)
+					UIView.animate(
+						withDuration: 0.14, // should appear relatively snappy
+						delay: 0,
+						options: [.beginFromCurrentState, .curveEaseOut],
+						animations: configure,
+						completion:
+						{ (finished) in
+						}
+					)
 				} else {
 					configure()
+				}
+			}
+			func hasFinishedCellToggleAnimation(isHiding: Bool)
+			{
+				if isHiding == true { // this was deferred until here for visual effect
+					self.regenerateArrayOfFieldViews()
+					let _/*no need for selfFrame here*/ = self.sizeAndLayOutSubviews_returningSelfFrame() // or we could just size only the separatorViews (after having established an interface method to pair with having only initially measured the subviews, of course) if we wanted a slight optimization
 				}
 			}
 			//
 			// Imperatives - Layout
 			func sizeAndLayOutSubviews_returningSelfFrame() -> CGRect
 			{
-				let selfFrame = self.sizeToFitAndLayOutSubviews_butReturnInsteadOfModifyingSelfFrame(
+				return self.sizeAndLayOutSubviews_returningSelfFrame(
+					givenFieldViews: self.fieldViews,
+					alsoLayOutSharedSeparatorViewsForDisplay: true // because this is being called for immediate display, not for measuring
+				)
+			}
+			func sizeAndLayOutSubviews_returningSelfFrame(
+				givenFieldViews: [UICommonComponents.Details.FieldView],
+				alsoLayOutSharedSeparatorViewsForDisplay: Bool
+			) -> CGRect
+			{
+				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 					withContainingWidth: self.superview!.frame.size.width,
-					andYOffset: 0
-				)				
+					andYOffset: 0,
+					givenSpecificFieldViews: givenFieldViews,
+					alsoLayOutSharedSeparatorViewsForDisplay: alsoLayOutSharedSeparatorViewsForDisplay
+				)
 				return selfFrame
 			}
 			//
@@ -265,11 +323,9 @@ extension WalletDetails
 			override func layoutSubviews()
 			{
 				super.layoutSubviews()
-				self.arrowIconView.frame = CGRect(
-					x: 19,
-					y: 19,
-					width: self.arrowIconView.frame.size.width,
-					height: self.arrowIconView.frame.size.height
+				self.arrowIconView.center = CGPoint( // bounds is already set
+					x: 19 + self.arrowIconView.frame.size.width/2,
+					y: 19 + self.arrowIconView.frame.size.height/2
 				)
 			}
 		}
