@@ -19,6 +19,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	// Properties
 	var wallet: Wallet
 	var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
+	var scanningBlockchainActivityIndicatorSectionHeaderView: UICommonComponents.GraphicAndLabelActivityIndicatorView!
 	//
 	var tableView: UITableView {
 		return self.scrollView as! UITableView
@@ -56,7 +57,15 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	override func setup_views()
 	{
 		super.setup_views()
-		self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
+		do {
+			self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
+		}
+		do { // table header views
+			let view = UICommonComponents.GraphicAndLabelActivityIndicatorView()
+			view.set(labelText: NSLocalizedString("Scanning…", comment: ""))
+			view.isHidden = true // initial
+			self.scanningBlockchainActivityIndicatorSectionHeaderView = view
+		}
 	}
 	override func setup_navigation()
 	{
@@ -87,6 +96,12 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	}
 	//
 	// Accessors
+	// - State
+	var shouldShowScanningBlockchainActivityIndicator: Bool {
+		return self.wallet.isAccountScannerCatchingUp // TODO: return false if wallet needs to do import
+	}
+	//
+	// - Transforms
 	func cellViewType(forCellAtIndexPath indexPath: IndexPath) -> UICommonComponents.Tables.ReusableTableViewCell.Type
 	{
 		switch indexPath.section {
@@ -107,7 +122,6 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	}
 	//
 	// Imperatives - InfoDisclosing
-	
 	func toggleInfoDisclosureCell()
 	{ // not a huge fan of all this coupling but at least we can put it in a method
 		let (contentContainerView_toFrame, isHiding) = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate()
@@ -188,6 +202,9 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 				return 1
 			case 1: // infodisclosing
 				return 1
+			case 2: // transactions
+				return 0 // TODO
+//				return self.wallet.transactions?.count
 			default:
 				assert(false)
 				return 0
@@ -198,7 +215,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 		var count = 0
 		count += 1 // balance
 		count += 1 // infodisclosing
-//		count += 1 // transactions et al
+		count += 1 // transactions, 'scanning', 'import', …
 		
 		return count
 	}
@@ -225,10 +242,9 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 			return baseSpacing/* Note: Not sure why the following must be commented out -WalletDetails.Balance.DisplayView.imagePaddingInsets.bottom*/
 		} else if section == 2 {
 			// remove top shadow height for transactions… but only if not showing resolving indicator
-			// TODO
-//			if self.isShowingScanningBlockchainActivityIndicator {
-//				return baseSpacing + scanningBlockchainActivityIndicatorTableHeaderView.frame.size.height
-//			} else {
+			if self.shouldShowScanningBlockchainActivityIndicator {
+				return baseSpacing + self.scanningBlockchainActivityIndicatorSectionHeaderView.frame.size.height
+			} else {
 				let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
 					withState: .normal,
 					position: .top
@@ -236,7 +252,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 				let imagePadding = groupedHighlightableCellVariant.imagePaddingForShadow
 				//
 				return baseSpacing - imagePadding.top
-//			}
+			}
 		}
 		assert(false)
 		return .leastNormalMagnitude
@@ -247,6 +263,22 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	}
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
 	{
+		if section == 2 { // transactions - so, scanning blockchain header
+			if self.shouldShowScanningBlockchainActivityIndicator {
+				let view = self.scanningBlockchainActivityIndicatorSectionHeaderView! // dunno why ! is necessary here
+				if view.isHidden {
+					DispatchQueue.main.async
+					{ [unowned self] in
+						self.scanningBlockchainActivityIndicatorSectionHeaderView.hide()
+					}
+				}
+				return view
+			} else {
+				if self.scanningBlockchainActivityIndicatorSectionHeaderView.isHidden == false {
+					self.scanningBlockchainActivityIndicatorSectionHeaderView.hide() // to stop animation
+				}
+			}
+		}
 		return nil
 	}
 	func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView?

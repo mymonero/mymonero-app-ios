@@ -126,7 +126,6 @@ extension UICommonComponents
 		func stopAnimating()
 		{
 			if self.isAnimating == false {
-				assert(false)
 				return
 			}
 			for (_, bulbView) in bulbViews.enumerated() {
