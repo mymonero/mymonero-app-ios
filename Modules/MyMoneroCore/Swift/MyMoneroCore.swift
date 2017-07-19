@@ -93,14 +93,30 @@ struct MoneroHistoricalTransactionRecord: Equatable
 	let mixin: Int
 	//
 	let mempool: Bool
-	let unlock_time: Int // TODO: is this really an int?
+	let unlock_time: Double
 	let height: Int
+	//
+	let cached__isConfirmed: Bool
+	let cached__isUnlocked: Bool
+	let cached__lockedReason: String? // only calculated if isUnlocked=true
+	static func isConfirmed(givenTransactionHeight height: Int, andWalletBlockchainHeight blockchain_height: Int) -> Bool
+	{
+		return MyMoneroCoreUtils.IsTransactionConfirmed(height, blockchain_height)
+	}
+	static func isUnlocked(givenTransactionHeight height: Int, andWalletBlockchainHeight blockchain_height: Int) -> Bool
+	{
+		return MyMoneroCoreUtils.IsTransactionConfirmed(height, blockchain_height)
+	}
+	static func lockedReason(givenTransactionUnlockTime unlock_time: Double, andWalletBlockchainHeight blockchain_height: Int) -> String
+	{
+		return MyMoneroCoreUtils.LockedTransactionReason(unlock_time, blockchain_height)
+	}
 	//
 	// Equatable
 	static func ==(
 		l: MoneroHistoricalTransactionRecord,
 		r: MoneroHistoricalTransactionRecord
-		) -> Bool
+	) -> Bool
 	{
 		if l.amount != r.amount {
 			return false
@@ -143,12 +159,40 @@ struct MoneroHistoricalTransactionRecord: Equatable
 		return true
 	}
 	//
-	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroHistoricalTransactionRecord]
+	static func newArray(
+		withCoreParsed_jsonDicts dicts: [[String: Any]],
+		wallet__blockchainHeight: Int
+	) -> [MoneroHistoricalTransactionRecord]
 	{
-		return dicts.map{ MoneroHistoricalTransactionRecord.new(withCoreParsed_jsonDict: $0) }
+		return dicts.map
+		{
+			return MoneroHistoricalTransactionRecord.new(
+				withCoreParsed_jsonDict: $0,
+				wallet__blockchainHeight: wallet__blockchainHeight
+			)
+		}
 	}
-	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroHistoricalTransactionRecord
+	static func new(
+		withCoreParsed_jsonDict dict: [String: Any],
+		wallet__blockchainHeight: Int
+	) -> MoneroHistoricalTransactionRecord
 	{
+		let height = dict["height"] as! Int
+		let unlockTime = dict["unlock_time"] as? Double ?? 0
+		//
+		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
+			givenTransactionHeight: height,
+			andWalletBlockchainHeight: wallet__blockchainHeight
+		)
+		let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
+			givenTransactionHeight: height,
+			andWalletBlockchainHeight: wallet__blockchainHeight
+		)
+		let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
+			givenTransactionUnlockTime: unlockTime,
+			andWalletBlockchainHeight: wallet__blockchainHeight
+		) : nil
+		//
 		let instance = MoneroHistoricalTransactionRecord(
 			amount: MoneroAmount("\(dict["amount"] as! String)")!,
 			totalSent: MoneroAmount("\(dict["total_sent"] as! String)")!,
@@ -163,8 +207,12 @@ struct MoneroHistoricalTransactionRecord: Equatable
 			mixin: dict["mixin"] as! Int,
 			//
 			mempool: dict["mempool"] as! Bool,
-			unlock_time: dict["unlock_time"] as? Int ?? 0,
-			height: dict["height"] as! Int
+			unlock_time: unlockTime,
+			height: height,
+			//
+			cached__isConfirmed: isConfirmed,
+			cached__isUnlocked: isUnlocked,
+			cached__lockedReason: lockedReason
 		)
 		return instance
 	}
@@ -197,8 +245,27 @@ struct MoneroHistoricalTransactionRecord: Equatable
 		}
 		return dict
 	}
-	static func new(fromJSONRepresentation jsonRepresentation: [String: Any]) -> MoneroHistoricalTransactionRecord
+	static func new(
+		fromJSONRepresentation jsonRepresentation: [String: Any],
+		wallet__blockchainHeight: Int
+	) -> MoneroHistoricalTransactionRecord
 	{
+		let height = jsonRepresentation["height"] as! Int
+		let unlockTime = jsonRepresentation["unlock_time"] as! Double
+		//
+		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
+			givenTransactionHeight: height,
+			andWalletBlockchainHeight: wallet__blockchainHeight
+		)
+		let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
+			givenTransactionHeight: height,
+			andWalletBlockchainHeight: wallet__blockchainHeight
+		)
+		let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
+			givenTransactionUnlockTime: unlockTime,
+			andWalletBlockchainHeight: wallet__blockchainHeight
+		) : nil
+
 		return self.init(
 			amount: MoneroAmount(jsonRepresentation["amount"] as! String)!,
 			totalSent: MoneroAmount(jsonRepresentation["total_sent"] as! String)!,
@@ -213,13 +280,26 @@ struct MoneroHistoricalTransactionRecord: Equatable
 			paymentId: jsonRepresentation["paymentId"] as? MoneroPaymentID,
 			mixin: jsonRepresentation["mixin"] as! Int,
 			mempool: jsonRepresentation["mempool"] as! Bool,
-			unlock_time: jsonRepresentation["unlock_time"] as! Int,
-			height: jsonRepresentation["height"] as! Int
+			unlock_time: unlockTime,
+			height: height,
+			//
+			cached__isConfirmed: isConfirmed,
+			cached__isUnlocked: isUnlocked,
+			cached__lockedReason: lockedReason
 		)
 	}
-	static func newArray(fromJSONRepresentations array: [[String: Any]]) -> [MoneroHistoricalTransactionRecord]
+	static func newArray(
+		fromJSONRepresentations array: [[String: Any]],
+		wallet__blockchainHeight: Int
+	) -> [MoneroHistoricalTransactionRecord]
 	{
-		return array.map{ MoneroHistoricalTransactionRecord.new(fromJSONRepresentation: $0) }
+		return array.map
+		{
+			return MoneroHistoricalTransactionRecord.new(
+				fromJSONRepresentation: $0,
+				wallet__blockchainHeight: wallet__blockchainHeight
+			)
+		}
 	}
 }
 struct MoneroSpentOutputDescription: Equatable

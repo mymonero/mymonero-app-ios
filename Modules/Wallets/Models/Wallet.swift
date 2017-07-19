@@ -380,7 +380,8 @@ class Wallet: PersistableObject
 		}
 		if let jsonRepresentations = dictRepresentation[DictKey.transactions.rawValue] {
 			self.transactions = MoneroHistoricalTransactionRecord.newArray(
-				fromJSONRepresentations: jsonRepresentations as! [[String: Any]]
+				fromJSONRepresentations: jsonRepresentations as! [[String: Any]],
+				wallet__blockchainHeight: self.blockchain_height!
 			)
 		}
 		//
@@ -573,9 +574,7 @@ class Wallet: PersistableObject
 		return true
 	}
 	//
-	//
 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
-	//
 	func Boot_havingLoadedDecryptedExistingInitDoc(
 		_ fn: @escaping (_ err_str: String?) -> Void
 	)
@@ -583,9 +582,7 @@ class Wallet: PersistableObject
 		self._trampolineFor_successfullyBooted(fn)
 	}
 	//
-	//
 	// Runtime - Imperatives - Private - Booting
-	//
 	func __trampolineFor_failedToBootWith_fnAndErrStr(
 		fn: (_ err_str: String?) -> Void,
 		err_str: String?

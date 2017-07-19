@@ -21,6 +21,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var bulbViews: [GraphicActivityIndicatorPartBulbView] = []
+		var delayBetweenLoops_scheduledTimer: Timer?
 		//
 		// Lifecycle
 		init()
@@ -112,14 +113,17 @@ extension UICommonComponents
 								{ [unowned self] (finished) in
 									if finished {
 										if idx == GraphicActivityIndicatorView.numberOf_bulbViews - 1 {
-											DispatchQueue.main.asyncAfter(
-												deadline: .now() + delayBetweenLoops,
-												execute:
-												{ [unowned self] in
+											let scheduledTimer = Timer.scheduledTimer(
+												withTimeInterval: delayBetweenLoops,
+												repeats: false,
+												block:
+												{ [unowned self] (timer) in
+													self.delayBetweenLoops_scheduledTimer = nil
 													self.isAnimatingALoop = false
 													self._animateNextLoop()
 												}
 											)
+											self.delayBetweenLoops_scheduledTimer = scheduledTimer
 										}
 									}
 								}
@@ -133,6 +137,10 @@ extension UICommonComponents
 		{
 			if self.isAnimating == false {
 				return
+			}
+			if let timer = self.delayBetweenLoops_scheduledTimer {
+				timer.invalidate()
+				self.delayBetweenLoops_scheduledTimer = nil // important to prevent crashes on deinit
 			}
 			for (_, bulbView) in bulbViews.enumerated() {
 				bulbView.layer.removeAllAnimations()

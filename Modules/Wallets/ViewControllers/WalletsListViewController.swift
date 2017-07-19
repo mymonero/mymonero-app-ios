@@ -29,7 +29,11 @@ class WalletsListViewController: ListViewController
 		if self.listController.hasBooted == false || self.listController.records.count == 0 {
 			self.navigationItem.rightBarButtonItem = nil // b/c we have the empty state action buttons
 		} else {
-			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(type: .add, target: self, action: #selector(addButton_tapped))
+			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+				type: .add,
+				target: self,
+				action: #selector(addButton_tapped)
+			)
 		}
 	}
 	//
@@ -37,17 +41,19 @@ class WalletsListViewController: ListViewController
 	override func new_navigationTitle() -> String
 	{
 		if self.listController.hasBooted == false || self.listController.records.count == 0 {
-			return "MyMonero"
+			return NSLocalizedString("MyMonero", comment: "")
 		}
-		return "My Monero Wallets"
+		return NSLocalizedString("My Monero Wallets", comment: "")
 	}
 	override func new_emptyStateView() -> UIView?
 	{
 		let view = WalletsListEmptyView(
-			useExisting_tapped_fn: { [unowned self] in
+			useExisting_tapped_fn:
+			{ [unowned self] in
 				self._presentAddWalletWizard(inTaskMode: .firstTime_useExisting)
 			},
-			createNew_tapped_fn: { [unowned self] in
+			createNew_tapped_fn:
+			{ [unowned self] in
 				self._presentAddWalletWizard(inTaskMode: .firstTime_createWallet)
 			}
 		)
@@ -84,7 +90,7 @@ class WalletsListViewController: ListViewController
 	{
 		self.tableView.deselectRow(at: indexPath, animated: true)
 		let record = self.listController.records[indexPath.row] as! Wallet
-		let viewController = WalletDetailsViewController(wallet: record)
+		let viewController = WalletDetails.ViewController(wallet: record)
 		self.navigationController?.pushViewController(viewController, animated: true)
 	}
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat

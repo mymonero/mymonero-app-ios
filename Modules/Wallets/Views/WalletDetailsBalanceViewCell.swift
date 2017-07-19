@@ -15,9 +15,10 @@ extension WalletDetails
 		class Cell: UICommonComponents.Tables.ReusableTableViewCell
 		{
 			override class func reuseIdentifier() -> String {
-				return "UICommonComponents.Details.WalletDetails.Balance.Cell"
+				return "WalletDetails.Balance.Cell"
 			}
-			override class func height() -> CGFloat {
+			override class func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
+			{
 				return DisplayView.height
 			}
 			//
@@ -37,7 +38,7 @@ extension WalletDetails
 			{
 				super.layoutSubviews()
 				self.balanceDisplayView.frame = self.bounds.insetBy(
-					dx: WalletDetailsViewController.margin_h - DisplayView.imagePaddingInsets.left,
+					dx: WalletDetails.ViewController.margin_h - DisplayView.imagePaddingInsets.left,
 					dy: -DisplayView.imagePaddingInsets.top
 				)
 			}

@@ -47,6 +47,7 @@ extension UICommonComponents
 			struct Configuration
 			{
 				let cellPosition: UICommonComponents.CellPosition
+				let indexPath: IndexPath
 				let dataObject: Any?
 			}
 			//
@@ -55,7 +56,7 @@ extension UICommonComponents
 				assert(false, "Override this")
 				return "UICommonComponents.Details._override this_"
 			}
-			class func height() -> CGFloat {
+			class func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat {
 				assert(false, "Override this")
 				return 0
 			}

@@ -15,9 +15,10 @@ extension WalletDetails
 		class Cell: UICommonComponents.Tables.ReusableTableViewCell
 		{
 			override class func reuseIdentifier() -> String {
-				return "UICommonComponents.Details.WalletDetails.InfoDisclosing.Cell"
+				return "WalletDetails.InfoDisclosing.Cell"
 			}
-			override class func height() -> CGFloat {
+			override class func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
+			{
 				assert(false, "Intentionally not implemented")
 				return 5
 			}

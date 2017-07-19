@@ -620,7 +620,10 @@ extension MyMoneroCoreJS // for Parsing
 			do {
 				if let serialized_transactions = returnValuesByKey["serialized_transactions"] as? [[String: Any]] {
 					for (_, dict) in serialized_transactions.enumerated() {
-						let transactionRecord = MoneroHistoricalTransactionRecord.new(withCoreParsed_jsonDict: dict)
+						let transactionRecord = MoneroHistoricalTransactionRecord.new(
+							withCoreParsed_jsonDict: dict,
+							wallet__blockchainHeight: blockchain_height! // if we have txs to parse, I think we can assume height != 0
+						)
 						transactions.append(transactionRecord)
 					}
 				}
