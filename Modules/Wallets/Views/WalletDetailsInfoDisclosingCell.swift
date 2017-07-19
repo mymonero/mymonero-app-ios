@@ -25,10 +25,18 @@ extension WalletDetails
 			// Declared instead for consumer (tableView)
 			var cellHeight: CGFloat {
 				if self.isDisclosed {
-					return self.contentContainerView.frame.size.height // rely on having been sized already
+					return type(of: self).cellHeight( // rely on having been sized already
+						with_contentContainerView_toFrame: self.contentContainerView.frame
+					)
 				} else { // start with constant since we might not be sized yet
 					return WalletDetails.InfoDisclosing.ContentContainerView.height__closed
 				}
+			}
+			static func cellHeight(
+				with_contentContainerView_toFrame contentContainerView_toFrame: CGRect
+			) -> CGFloat
+			{
+				return contentContainerView_toFrame.size.height
 			}
 			//
 			// Properties - Internally managed
@@ -92,13 +100,35 @@ extension WalletDetails
 			{
 				return self.contentContainerView.toggleDisclosureAndPrepareToAnimate()
 			}
-			func configureForJustToggledDisclosureState(animated: Bool, isHiding: Bool)
+			func animateToJustToggledDisclosureState(
+				animated: Bool,
+				isHiding: Bool,
+				to__contentContainerView_toFrame: CGRect
+			)
 			{
-				self.contentContainerView.configureForJustToggledDisclosureState(animated: animated)
-			}
-			func hasFinishedCellToggleAnimation(isHiding: Bool)
-			{
-				self.contentContainerView.hasFinishedCellToggleAnimation(isHiding: isHiding)
+				self.contentContainerView.configureForJustToggledDisclosureState(
+					animated: animated
+				)
+				//
+				UIView.animate(
+					withDuration: 0.3, // probably would be most optimal to make contentContainerView animated directly by self frame; this 0.3 and easeInOut merely approximates the beginUpdates() and endUpdates()
+					delay: 0,
+					options: [
+						.curveEaseInOut
+					],
+					animations:
+					{ // we must animate the content container height change too
+						self.contentContainerView.frame = to__contentContainerView_toFrame
+					},
+					completion:
+					{ (finished) in
+						if finished {
+							self.contentContainerView.hasFinishedCellToggleAnimation(
+								isHiding: isHiding
+							)
+						}
+					}
+				)
 			}
 		}
 		

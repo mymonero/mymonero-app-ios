@@ -148,29 +148,27 @@ extension WalletDetails
 		}
 		//
 		// Imperatives - InfoDisclosing
+		var infoDisclosing_contentContainerView_toFrame: CGRect?
 		func toggleInfoDisclosureCell()
 		{ // not a huge fan of all this coupling but at least we can put it in a method
 			let (contentContainerView_toFrame, isHiding) = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate()
-			UIView.animate(
-				withDuration: 0.24,
-				delay: 0,
-				options: [.curveEaseIn],
-				animations:
-				{
-					self.tableView.beginUpdates()
-					do { // we must animate the content container height change too
-						self.infoDisclosingCellView.contentContainerView.frame = contentContainerView_toFrame // note this will change the value from which the cellHeight itself is derived
-					}
-					self.tableView.endUpdates()
-				},
-				completion:
-				{ (finished) in
-					if finished {
-						self.infoDisclosingCellView.hasFinishedCellToggleAnimation(isHiding: isHiding)
-					}
+			do { // now animate the actual cell height
+				self.tableView.beginUpdates() // this opens its own animation context, so it must be outside of the .animate below… but because it must be outside, it seems to mess with the
+				do {
+					assert(self.infoDisclosing_contentContainerView_toFrame == nil)
+					self.infoDisclosing_contentContainerView_toFrame = contentContainerView_toFrame
 				}
+				self.tableView.endUpdates() // regardless of whether it finished
+				do {
+					assert(self.infoDisclosing_contentContainerView_toFrame != nil)
+					self.infoDisclosing_contentContainerView_toFrame = nil // zero
+				}
+			}
+			self.infoDisclosingCellView.animateToJustToggledDisclosureState(
+				animated: true,
+				isHiding: isHiding,
+				to__contentContainerView_toFrame: contentContainerView_toFrame
 			)
-			self.infoDisclosingCellView.configureForJustToggledDisclosureState(animated: true, isHiding: isHiding)
 		}
 		//
 		// Overrides - Layout
@@ -262,6 +260,9 @@ extension WalletDetails
 			if indexPath.section == 0 {
 				return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
 			} else if indexPath.section == 1 { // infodisclosing
+				if let frame = self.infoDisclosing_contentContainerView_toFrame { // while animating disclosure toggle - done due to how begin and endUpdates works with a custom animation context
+					return type(of: self.infoDisclosingCellView).cellHeight(with_contentContainerView_toFrame: frame)
+				}
 				return self.infoDisclosingCellView.cellHeight
 			} else if indexPath.section == 2 { // transactions
 				return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
@@ -282,7 +283,7 @@ extension WalletDetails
 				if self.shouldShowImportTransactionsButton {
 					return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: baseSpacing)
 				} else if self.shouldShowScanningBlockchainActivityIndicator {
-					return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 8)
+					return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 10)
 				} else {
 					let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
 						withState: .normal,
