@@ -25,12 +25,15 @@ extension WalletDetails
 			// Declared instead for consumer (tableView)
 			var cellHeight: CGFloat {
 				if self.isDisclosed {
-					return type(of: self).cellHeight( // rely on having been sized already
-						with_contentContainerView_toFrame: self.contentContainerView.frame
-					)
-				} else { // start with constant since we might not be sized yet
-					return WalletDetails.InfoDisclosing.ContentContainerView.height__closed
+					if self.contentContainerView.frame.size.height != 0 {
+						return type(of: self).cellHeight( // rely on having been sized already
+							with_contentContainerView_toFrame: self.contentContainerView.frame
+						)
+					}
+					assert(false)
 				}
+				// start with constant since we might not be sized yet
+				return WalletDetails.InfoDisclosing.ContentContainerView.height__closed
 			}
 			static func cellHeight(
 				with_contentContainerView_toFrame contentContainerView_toFrame: CGRect

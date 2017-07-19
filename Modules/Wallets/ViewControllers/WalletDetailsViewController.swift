@@ -180,7 +180,9 @@ extension WalletDetails
 		// Delegation - Interactions
 		func tapped_rightBarButtonItem()
 		{
-			assert(false, "display wallet edit modal")
+			let viewController = EditWallet.ViewController(wallet: self.wallet)
+			let navigationController = UINavigationController(rootViewController: viewController)
+			self.navigationController!.present(navigationController, animated: true, completion: nil)
 		}
 		//
 		// Delegation - Notifications
