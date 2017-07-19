@@ -230,13 +230,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: "+ CREATE NEW CONTACT")
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("+ CREATE NEW CONTACT", comment: ""))
 			view.addTarget(self, action: #selector(createNewContact_tapped), for: .touchUpInside)
 			self.createNewContact_buttonView = view
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: "+ ADD PAYMENT ID")
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
 			view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
 			self.addPaymentID_buttonView = view
 			self.scrollView.addSubview(view)

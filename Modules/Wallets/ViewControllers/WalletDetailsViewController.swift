@@ -207,8 +207,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 			case 1: // infodisclosing
 				return 1
 			case 2: // transactions
-				return 0 // TODO
-//				return self.wallet.transactions?.count
+				return self.wallet.transactions?.count
 			default:
 				assert(false)
 				return 0
@@ -248,7 +247,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 			// remove top shadow height for transactions… but only if not showing resolving indicator
 			// here is some header view mode precedence logic
 			if self.shouldShowImportTransactionsButton {
-				return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 8)
+				return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: baseSpacing)
 			} else if self.shouldShowScanningBlockchainActivityIndicator {
 				return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 8)
 			} else {
@@ -339,7 +338,18 @@ extension WalletDetails
 					)
 					break
 				case .importTransactionsButton:
-					assert(false, "TODO")
+					let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("IMPORT TRANSACTIONS", comment: ""))
+					view.addTarget(self, action: #selector(importTransactions_tapped), for: .touchUpInside)
+					view.frame = CGRect(
+						x: CGFloat.form_label_margin_x,
+						y: 0, // will set
+						width: view.frame.size.width,
+						height: view.frame.size.height
+					)
+
+					self.contentView = view
+					self.addSubview(view)
+
 					break
 			}
 		}
@@ -364,6 +374,12 @@ extension WalletDetails
 				width: view.frame.size.width,
 				height: view.frame.size.height
 			)
+		}
+		//
+		// Delegation - Interactions
+		func importTransactions_tapped()
+		{
+			assert(false, "TODO")
 		}
 	}
 }
