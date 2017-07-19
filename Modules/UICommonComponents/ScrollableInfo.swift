@@ -93,6 +93,10 @@ extension UICommonComponents
 			return true
 		}
 		var overridable_wantsBackButton: Bool { return false }
+		func new_navigationBarTitleColor() -> UIColor?
+		{ // overridable
+			return nil // for themeController default 
+		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
 		var inlineMessageValidationView_topMargin: CGFloat {
@@ -135,6 +139,15 @@ extension UICommonComponents
 			}
 			self.messageView!.clearAndHide() // as you can see, no ! required here. compiler bug?
 			// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
+		}
+		//
+		// Imperatives - Convenience - Navigation bar title color
+		func configureNavigationBarTitleColor()
+		{
+			ThemeController.shared.styleViewController_navigationBarTitleTextAttributes(
+				viewController: self,
+				titleTextColor: self.new_navigationBarTitleColor()
+			)
 		}
 		//
 		// Imperatives - Internal - Layout
@@ -181,6 +194,11 @@ extension UICommonComponents
 			if self.hasAppearedBefore == false {
 				self.hasAppearedBefore = true
 			}
+		}
+		override func viewWillAppear(_ animated: Bool)
+		{
+			super.viewWillAppear(animated)
+			self.configureNavigationBarTitleColor() // for transactions details support plus clearing it for popping vc
 		}
 	}
 	

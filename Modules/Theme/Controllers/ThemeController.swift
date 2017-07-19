@@ -44,7 +44,7 @@ class ThemeController
 		UINavigationBar.appearance().titleTextAttributes =
 		[
 			NSFontAttributeName: UIFont.middlingBoldSansSerif,
-			NSForegroundColorAttributeName: UIColor.white
+			NSForegroundColorAttributeName: UIColor.normalNavigationBarTitleColor
 		]
 		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
@@ -53,6 +53,21 @@ class ThemeController
 	{
 		PKHUD.sharedHUD.dimsBackground = false // debatable
 		PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled = false // ofc
+	}
+	//
+	// Imperatives - Convenience
+	func styleViewController_navigationBarTitleTextAttributes(
+		viewController: UIViewController,
+		titleTextColor: UIColor? // nil to reset
+	)
+	{
+		let navigationBar = viewController.navigationController!.navigationBar
+		navigationBar.titleTextAttributes =
+		[
+			NSFontAttributeName: UIFont.middlingBoldSansSerif,
+			NSForegroundColorAttributeName: titleTextColor ?? UIColor.normalNavigationBarTitleColor
+		]
+
 	}
 }
 //
@@ -88,6 +103,11 @@ extension UIColor
 	static var disabledLinkColor: UIColor
 	{
 		return UIColor(rgb: 0xD4D4D4)
+	}
+	//
+	static var normalNavigationBarTitleColor: UIColor
+	{
+		return UIColor.white
 	}
 }
 //

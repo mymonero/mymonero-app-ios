@@ -283,10 +283,17 @@ extension WalletDetails
 			tableView.deselectRow(at: indexPath, animated: true)
 			if indexPath.section == 1 { // infodisclosing
 				self.toggleInfoDisclosureCell()
+				return
 			} else if indexPath.section == 2 { // transactions
 				let transaction = self.wallet.transactions![indexPath.row]
-				assert(false, "push transaction")
+				let viewController = TransactionDetails.ViewController(transaction: transaction)
+				self.navigationController!.pushViewController(
+					viewController,
+					animated: true
+				)
+				return
 			}
+			assert(false)
 		}
 		func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 		{
@@ -339,13 +346,25 @@ extension WalletDetails
 		{
 			if section == 2 { // transactions - so, scanning blockchain header
 				// here is some header view mode logic
+				// we hang onto self.transactionsSectionHeaderView so that on reloadData etc we can keep showing the same state, e.g. animation step
 				if self.shouldShowImportTransactionsButton {
-					return WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
+					if let view = self.transactionsSectionHeaderView {
+						if view.mode != .importTransactionsButton {
+							self.transactionsSectionHeaderView = nil // free existing
+						}
+					}
+					self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
 				} else if self.shouldShowScanningBlockchainActivityIndicator {
-					return WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
+					if let view = self.transactionsSectionHeaderView {
+						if view.mode != .scanningIndicator {
+							self.transactionsSectionHeaderView = nil  // free existing
+						}
+					}
+					self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
 				} else {
-					return nil
+					self.transactionsSectionHeaderView = nil  // free existing
 				}
+				return self.transactionsSectionHeaderView
 			}
 			return nil
 		}

@@ -9,70 +9,6 @@
 import UIKit
 import PKHUD
 
-extension UICommonComponents.Details
-{
-	class FundsRequestCellFieldView: UICommonComponents.Details.FieldView
-	{
-		//
-		// Constants - Overrides
-		override var contentInsets: UIEdgeInsets {
-			return UIEdgeInsetsMake(0, 0, 0, 0)
-		}
-		//
-		// Constants
-		static let cellHeight: CGFloat = 80
-		//
-		// Properties
-		let cellContentView = FundsRequestsCellContentView()
-		//
-		// Init
-		init(fundsRequest: FundsRequest)
-		{
-			do {
-				let view = self.cellContentView
-				view.willBeDisplayedWithRightSideAccessoryChevron = false // so we get proper right margin
-				view.configure(withObject: fundsRequest)
-			}
-			super.init()
-		}
-		required init?(coder aDecoder: NSCoder) {
-			fatalError("init(coder:) has not been implemented")
-		}
-		override func setup()
-		{
-			super.setup()
-			self.addSubview(self.cellContentView)
-		}
-		//
-		// Imperatives - Layout - Overrides
-		override func sizeToFitAndLayOutSubviews(
-			withContainingWidth containingWidth: CGFloat,
-			withXOffset xOffset: CGFloat,
-			andYOffset yOffset: CGFloat
-		)
-		{
-			let content_x: CGFloat = 0 // self will have xOffset so content can be at 0
-			let content_rightMargin: CGFloat = 0
-			let content_w = containingWidth - content_x - content_rightMargin
-			//
-			self.cellContentView.frame = CGRect(
-				x: content_x,
-				y: 0,
-				width: content_w,
-				height: FundsRequestCellFieldView.cellHeight
-			)
-			//
-			self.frame = CGRect(
-				x: xOffset,
-				y: yOffset,
-				width: containingWidth,
-				height: FundsRequestCellFieldView.cellHeight
-			)
-		}
-	}
-
-}
-
 class FundsRequestDetailsViewController: UICommonComponents.Details.ViewController
 {
 	//
@@ -338,5 +274,69 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 			return
 		}
 		self.navigationController!.popViewController(animated: true)
+	}
+}
+//
+//
+extension UICommonComponents.Details
+{
+	class FundsRequestCellFieldView: UICommonComponents.Details.FieldView
+	{
+		//
+		// Constants - Overrides
+		override var contentInsets: UIEdgeInsets {
+			return UIEdgeInsetsMake(0, 0, 0, 0)
+		}
+		//
+		// Constants
+		static let cellHeight: CGFloat = 80
+		//
+		// Properties
+		let cellContentView = FundsRequestsCellContentView()
+		//
+		// Init
+		init(fundsRequest: FundsRequest)
+		{
+			do {
+				let view = self.cellContentView
+				view.willBeDisplayedWithRightSideAccessoryChevron = false // so we get proper right margin
+				view.configure(withObject: fundsRequest)
+			}
+			super.init()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		override func setup()
+		{
+			super.setup()
+			self.addSubview(self.cellContentView)
+		}
+		//
+		// Imperatives - Layout - Overrides
+		override func sizeToFitAndLayOutSubviews(
+			withContainingWidth containingWidth: CGFloat,
+			withXOffset xOffset: CGFloat,
+			andYOffset yOffset: CGFloat
+			)
+		{
+			let content_x: CGFloat = 0 // self will have xOffset so content can be at 0
+			let content_rightMargin: CGFloat = 0
+			let content_w = containingWidth - content_x - content_rightMargin
+			//
+			self.cellContentView.frame = CGRect(
+				x: content_x,
+				y: 0,
+				width: content_w,
+				height: FundsRequestCellFieldView.cellHeight
+			)
+			//
+			self.frame = CGRect(
+				x: xOffset,
+				y: yOffset,
+				width: containingWidth,
+				height: FundsRequestCellFieldView.cellHeight
+			)
+		}
 	}
 }
