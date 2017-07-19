@@ -516,7 +516,7 @@ class Wallet: PersistableObject
 			return true
 		}
 		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
-		if nBlocksBehind >= 10 {
+		if nBlocksBehind >= 10 { // grace interval, i believe
 			return true
 		} else if nBlocksBehind < 0 {
 			DDLog.Warn("Wallets", "nBlocksBehind < 0")

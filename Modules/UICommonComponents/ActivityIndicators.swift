@@ -39,6 +39,12 @@ extension UICommonComponents
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
 		}
+		deinit
+		{
+			if self.isAnimating { // jic but may not be necessary
+				self.stopAnimating()
+			}
+		}
 		//
 		// Overrides - Imperatives
 		override func layoutSubviews()
@@ -226,12 +232,18 @@ extension UICommonComponents
 		//
 		// Accessors - Layout
 		var new_boundsSize: CGSize {
+			var size = self.new_boundsSize_withoutVSpacing
+			size.height += 12 // for v spacing
+			//
+			return size
+		}
+		var new_boundsSize_withoutVSpacing: CGSize {
 			return CGSize(
 				width: self.label.frame.origin.x + self.label.frame.size.width,
 				height: max(
 					self.label.frame.origin.y + self.label.frame.size.height,
 					self.activityIndicator.frame.origin.y + self.activityIndicator.frame.size.height
-				) + 12 // for v spacing
+				)
 			)
 		}
 		//
@@ -246,6 +258,7 @@ extension UICommonComponents
 		func show()
 		{
 			if self.isHidden == false {
+				DDLog.Warn("UICommonComponents.ActivityIndicators", ".show() called but isHidden=false; bailing.")
 				return
 			}
 			self.isHidden = false
@@ -254,6 +267,7 @@ extension UICommonComponents
 		func hide()
 		{
 			if self.isHidden == true {
+				DDLog.Warn("UICommonComponents.ActivityIndicators", ".hide() called but isHidden=true; bailing.")
 				return
 			}
 			self.isHidden = true

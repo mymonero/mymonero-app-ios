@@ -9,7 +9,7 @@
 import UIKit
 
 struct WalletDetails {}
-
+//
 class WalletDetailsViewController: UICommonComponents.Details.ViewController, UITableViewDelegate, UITableViewDataSource
 {
 	//
@@ -19,7 +19,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	// Properties
 	var wallet: Wallet
 	var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
-	var scanningBlockchainActivityIndicatorSectionHeaderView: UICommonComponents.GraphicAndLabelActivityIndicatorView!
+	var transactionsSectionHeaderView: WalletDetails.TransactionsSectionHeaderView!
 	//
 	var tableView: UITableView {
 		return self.scrollView as! UITableView
@@ -59,12 +59,6 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 		super.setup_views()
 		do {
 			self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
-		}
-		do { // table header views
-			let view = UICommonComponents.GraphicAndLabelActivityIndicatorView()
-			view.set(labelText: NSLocalizedString("Scanning…", comment: ""))
-			view.isHidden = true // initial
-			self.scanningBlockchainActivityIndicatorSectionHeaderView = view
 		}
 	}
 	override func setup_navigation()
@@ -243,7 +237,7 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 		} else if section == 2 {
 			// remove top shadow height for transactions… but only if not showing resolving indicator
 			if self.shouldShowScanningBlockchainActivityIndicator {
-				return baseSpacing + self.scanningBlockchainActivityIndicatorSectionHeaderView.frame.size.height
+				return WalletDetails.TransactionsSectionHeaderView.topPadding() + WalletDetails.TransactionsSectionHeaderView.height(forMode: .scanningIndicator)
 			} else {
 				let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
 					withState: .normal,
@@ -265,18 +259,8 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	{
 		if section == 2 { // transactions - so, scanning blockchain header
 			if self.shouldShowScanningBlockchainActivityIndicator {
-				let view = self.scanningBlockchainActivityIndicatorSectionHeaderView! // dunno why ! is necessary here
-				if view.isHidden {
-					DispatchQueue.main.async
-					{ [unowned self] in
-						self.scanningBlockchainActivityIndicatorSectionHeaderView.hide()
-					}
-				}
-				return view
+				return WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
 			} else {
-				if self.scanningBlockchainActivityIndicatorSectionHeaderView.isHidden == false {
-					self.scanningBlockchainActivityIndicatorSectionHeaderView.hide() // to stop animation
-				}
 			}
 		}
 		return nil
@@ -286,4 +270,74 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 		return nil
 	}
 }
-
+//
+extension WalletDetails
+{
+	class TransactionsSectionHeaderView: UIView
+	{
+		enum Mode
+		{
+			case scanningIndicator
+			case importTransactionsButton
+		}
+		static func topPadding() -> CGFloat
+		{
+			return 16
+		}
+		static func height(forMode: Mode) -> CGFloat
+		{
+			return WalletDetails.TransactionsSectionHeaderView.topPadding() + 16 // TODO: get fixed height instead of '16'
+		}
+		var mode: Mode
+		var contentView: UIView!
+		init(mode: Mode)
+		{
+			self.mode = mode
+			super.init(frame: .zero)
+			self.setup()
+		}		
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			switch mode {
+				case .scanningIndicator:
+					let view = UICommonComponents.GraphicAndLabelActivityIndicatorView()
+					view.set(labelText: NSLocalizedString("SCANNING BLOCKCHAIN…", comment: ""))
+					do {
+						let size = view.new_boundsSize_withoutVSpacing // cause we manage v spacing here
+						view.frame = CGRect( // initial
+							x: CGFloat.form_label_margin_x,
+							y: type(of: self).topPadding(),
+							width: size.width,
+							height: size.height
+						)
+					}
+					view.isHidden = true // quirk of activityIndicator API - must start hidden in order to .show(), which triggers startAnimating() - could just reach in and call startAnimating directly, or improve API
+					self.contentView = view
+					self.addSubview(view)
+					DispatchQueue.main.asyncAfter(
+						deadline: .now() + 0.05,
+						execute:
+						{
+							view.show() // can show off the bat b/c visibility logic directly controls self lifecycle
+						}
+					)
+					break
+				case .importTransactionsButton:
+					assert(false, "TODO")
+					break
+			}
+		}
+		//
+		deinit
+		{
+		}
+		//
+		//
+		var indicatorView: UICommonComponents.GraphicAndLabelActivityIndicatorView {
+			return self.contentView as! UICommonComponents.GraphicAndLabelActivityIndicatorView
+		}
+	}
+}
