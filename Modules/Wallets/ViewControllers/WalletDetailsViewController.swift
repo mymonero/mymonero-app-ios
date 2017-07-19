@@ -84,12 +84,54 @@ extension WalletDetails
 			
 			// TODO: all observations -> reconfig/reload cells
 			
-			NotificationCenter.default.addObserver(self, selector: #selector(wasDeleted), name: PersistableObject.NotificationNames.wasDeleted.notificationName, object: self.wallet)
+			NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.wallet)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(infoUpdated),
+				name: Wallet.NotificationNames.balanceChanged.notificationName,
+				object: self.wallet
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(infoUpdated),
+				name: Wallet.NotificationNames.heightsUpdated.notificationName,
+				object: self.wallet
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(infoUpdated),
+				name: Wallet.NotificationNames.labelChanged.notificationName, // could go straight to nav bar title changed but preferable to go to a labelChanged instead
+				object: self.wallet
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(infoUpdated),
+				name: Wallet.NotificationNames.spentOutputsChanged.notificationName,
+				object: self.wallet
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(infoUpdated),
+				name: Wallet.NotificationNames.swatchColorChanged.notificationName,
+				object: self.wallet
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(infoUpdated),
+				name: Wallet.NotificationNames.transactionsChanged.notificationName,
+				object: self.wallet
+			)
 		}
 		override func stopObserving()
 		{
 			super.stopObserving()
-			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.wasDeleted.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.heightsUpdated.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.labelChanged.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.spentOutputsChanged.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.transactionsChanged.notificationName, object: self.wallet)
 		}
 		//
 		// Accessors
@@ -183,16 +225,6 @@ extension WalletDetails
 			let viewController = EditWallet.ViewController(wallet: self.wallet)
 			let navigationController = UINavigationController(rootViewController: viewController)
 			self.navigationController!.present(navigationController, animated: true, completion: nil)
-		}
-		//
-		// Delegation - Notifications
-		func wasDeleted()
-		{
-			if self.navigationController!.topViewController! != self {
-				assert(false)
-				return
-			}
-			self.navigationController!.popViewController(animated: true)
 		}
 		//
 		// Delegation - Table
@@ -320,6 +352,21 @@ extension WalletDetails
 		func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
 		{
 			return nil
+		}
+		//
+		// Delegation - Notifications
+		func willBeDeleted()
+		{
+			if self.navigationController!.topViewController! != self {
+				assert(false)
+				return
+			}
+			self.navigationController!.popViewController(animated: true)
+		}
+		func infoUpdated()
+		{
+			self.set_navigationTitle()
+			self.tableView.reloadData()
 		}
 	}
 }
