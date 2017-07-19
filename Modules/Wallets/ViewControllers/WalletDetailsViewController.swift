@@ -92,7 +92,17 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	// Accessors
 	// - State
 	var shouldShowScanningBlockchainActivityIndicator: Bool {
-		return self.wallet.isAccountScannerCatchingUp // TODO: return false if wallet needs to do import
+		assert(self.shouldShowImportTransactionsButton == false) // putting this check outside so priority logic is dictated elsewhere (in delegate methods)
+		return self.wallet.isAccountScannerCatchingUp
+	}
+	var shouldShowImportTransactionsButton: Bool {
+		if self.wallet.hasEverFetched_transactions != false {
+			let transactions = wallet.transactions ?? []
+			if transactions.count > 0 {
+				return false // if transactions are appearing, we're going to assume we don't need to show the prompt button
+			}
+		}
+		return wallet.shouldDisplayImportAccountOption ?? false // default false on nil
 	}
 	//
 	// - Transforms
@@ -236,8 +246,11 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 			return baseSpacing/* Note: Not sure why the following must be commented out -WalletDetails.Balance.DisplayView.imagePaddingInsets.bottom*/
 		} else if section == 2 {
 			// remove top shadow height for transactions… but only if not showing resolving indicator
-			if self.shouldShowScanningBlockchainActivityIndicator {
-				return WalletDetails.TransactionsSectionHeaderView.topPadding() + WalletDetails.TransactionsSectionHeaderView.height(forMode: .scanningIndicator)
+			// here is some header view mode precedence logic
+			if self.shouldShowImportTransactionsButton {
+				return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 8)
+			} else if self.shouldShowScanningBlockchainActivityIndicator {
+				return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 8)
 			} else {
 				let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
 					withState: .normal,
@@ -258,9 +271,13 @@ class WalletDetailsViewController: UICommonComponents.Details.ViewController, UI
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
 	{
 		if section == 2 { // transactions - so, scanning blockchain header
-			if self.shouldShowScanningBlockchainActivityIndicator {
+			// here is some header view mode logic
+			if self.shouldShowImportTransactionsButton {
+				return WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
+			} else if self.shouldShowScanningBlockchainActivityIndicator {
 				return WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
 			} else {
+				return nil
 			}
 		}
 		return nil
@@ -280,13 +297,9 @@ extension WalletDetails
 			case scanningIndicator
 			case importTransactionsButton
 		}
-		static func topPadding() -> CGFloat
+		static func fullViewHeight(forMode: Mode, topPadding: CGFloat) -> CGFloat
 		{
-			return 16
-		}
-		static func height(forMode: Mode) -> CGFloat
-		{
-			return WalletDetails.TransactionsSectionHeaderView.topPadding() + 16 // TODO: get fixed height instead of '16'
+			return topPadding + 16 // TODO: get fixed height instead of '16'
 		}
 		var mode: Mode
 		var contentView: UIView!
@@ -309,7 +322,7 @@ extension WalletDetails
 						let size = view.new_boundsSize_withoutVSpacing // cause we manage v spacing here
 						view.frame = CGRect( // initial
 							x: CGFloat.form_label_margin_x,
-							y: type(of: self).topPadding(),
+							y: 0, // will set in layoutSubviews
 							width: size.width,
 							height: size.height
 						)
@@ -338,6 +351,19 @@ extension WalletDetails
 		//
 		var indicatorView: UICommonComponents.GraphicAndLabelActivityIndicatorView {
 			return self.contentView as! UICommonComponents.GraphicAndLabelActivityIndicatorView
+		}
+		//
+		// Overrides - Imperatives
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			let view = self.contentView! // why is ! necessary?
+			view.frame = CGRect(
+				x: view.frame.origin.x,
+				y: self.frame.size.height - view.frame.size.height, // need to set Y
+				width: view.frame.size.width,
+				height: view.frame.size.height
+			)
 		}
 	}
 }
