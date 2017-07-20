@@ -53,13 +53,6 @@ extension WalletDetails
 				view.isHidden = true // quirk of activityIndicator API - must start hidden in order to .show(), which triggers startAnimating() - could just reach in and call startAnimating directly, or improve API
 				self.contentView = view
 				self.addSubview(view)
-				DispatchQueue.main.asyncAfter(
-					deadline: .now() + 0.05,
-					execute:
-					{
-						view.show() // can show off the bat b/c visibility logic directly controls self lifecycle
-					}
-				)
 				break
 			case .importTransactionsButton:
 				let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("IMPORT TRANSACTIONS", comment: ""))

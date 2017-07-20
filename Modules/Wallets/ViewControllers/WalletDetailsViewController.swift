@@ -391,7 +391,9 @@ extension WalletDetails
 			if let view = self.transactionsSectionHeaderView {
 				if view.mode == .scanningIndicator {
 					if view.indicatorView.activityIndicator.isAnimating == false {
-						view.indicatorView.activityIndicator.startAnimating()
+						if view.superview != nil { // if actually visible
+							view.indicatorView.activityIndicator.startAnimating()
+						}
 					}
 				}
 			}
@@ -400,6 +402,32 @@ extension WalletDetails
 		{
 			super.viewWillDisappear(animated)
 			if let view = self.transactionsSectionHeaderView {
+				if view.mode == .scanningIndicator {
+					if view.indicatorView.activityIndicator.isAnimating == true {
+						view.indicatorView.activityIndicator.stopAnimating()
+					}
+				}
+			}
+		}
+		func tableView(_ tableView: UITableView, willDisplayHeaderView headerView: UIView, forSection section: Int)
+		{
+			if section == 2 { // transactions
+				assert(headerView == self.transactionsSectionHeaderView)
+				let view = self.transactionsSectionHeaderView!
+				if view.mode == .scanningIndicator {
+					if view.indicatorView.isHidden { // for very first time
+						view.indicatorView.show() // will also start it animating
+					} else if view.indicatorView.activityIndicator.isAnimating == false { // already visible but not animating!
+						view.indicatorView.activityIndicator.startAnimating()
+					}
+				}
+			}
+		}
+		func tableView(_ tableView: UITableView, didEndDisplayingHeaderView headerView: UIView, forSection section: Int)
+		{
+			if section == 2 { // transactions
+				assert(headerView == self.transactionsSectionHeaderView)
+				let view = self.transactionsSectionHeaderView!
 				if view.mode == .scanningIndicator {
 					if view.indicatorView.activityIndicator.isAnimating == true {
 						view.indicatorView.activityIndicator.stopAnimating()
