@@ -31,6 +31,7 @@ extension TransactionDetails
 		//
 		// Properties
 		var transaction: MoneroHistoricalTransactionRecord
+		var wallet: Wallet
 		//
 		var sectionView_details = UICommonComponents.Details.SectionView(
 			sectionHeaderTitle: NSLocalizedString("DETAILS", comment: "")
@@ -44,9 +45,10 @@ extension TransactionDetails
 		//
 		//
 		// Imperatives - Init
-		init(transaction: MoneroHistoricalTransactionRecord)
+		init(transaction: MoneroHistoricalTransactionRecord, inWallet wallet: Wallet)
 		{
 			self.transaction = transaction
+			self.wallet = wallet
 			super.init()
 		}
 		required init?(coder aDecoder: NSCoder) {
@@ -132,10 +134,12 @@ extension TransactionDetails
 		override func startObserving()
 		{
 			super.startObserving()
+			NotificationCenter.default.addObserver(self, selector: #selector(wallet_transactionsChanged), name: Wallet.NotificationNames.transactionsChanged.notificationName, object: self.wallet)
 		}
 		override func stopObserving()
 		{
 			super.stopObserving()
+			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.transactionsChanged.notificationName, object: self.wallet)
 		}
 		//
 		// Accessors - Overrides
@@ -170,7 +174,7 @@ extension TransactionDetails
 		func configureUI()
 		{
 			self.set_navigationTitleAndColor()
-			// TODO: status messages
+			//
 			var validationMessage = ""
 			if transaction.isJustSentTransientTransactionRecord || transaction.cached__isConfirmed == false {
 				validationMessage += NSLocalizedString("Your Monero is on its way.", comment: "")
@@ -232,33 +236,25 @@ extension TransactionDetails
 		}
 		//
 		// Delegation - Notifications
-		func infoUpdated()
+		func wallet_transactionsChanged()
 		{
-			self.configureUI()
+			var updated_transaction: MoneroHistoricalTransactionRecord? // to find
+			do {
+				let transactions = self.wallet.transactions!
+				for (_, this_transaction) in transactions.enumerated() {
+					if this_transaction.hash == self.transaction.hash {
+						updated_transaction = this_transaction
+						break
+					}
+				}
+			}
+			if updated_transaction != nil {
+				self.transaction = updated_transaction! // grab updated record
+				self.configureUI() // may not be this one which was updated but it's not that expensive to reconfig UI
+			} else {
+				assert(false, "Didn't find same transaction in already open details view. Probably a server bug.")
+			}
 		}
-		// TODO:
-//		func wallet_EventName_transactionsChanged()
-//		{
-//			var updated_transaction = null // to find
-//			const transactions = self.wallet.New_StateCachedTransactions() // important to use this instead of .transactions
-//			const transactions_length = transactions.length
-//			for (let i = 0 ; i < transactions_length ; i++) {
-//				const this_transaction = transactions[i]
-//				if (this_transaction.hash === self.transaction.hash) {
-//					updated_transaction = this_transaction
-//					break
-//				}
-//			}
-//			if (updated_transaction !== null) {
-//				self.transaction = updated_transaction
-//				if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-//					self.navigationController.SetNavigationBarTitleNeedsUpdate()
-//				}
-//				self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
-//			} else {
-//				throw "Didn't find same transaction in already open details view. Probably a server bug."
-//			}
-//		}
 		//
 		// Delegation - View lifecycle
 		override func viewWillAppear(_ animated: Bool)

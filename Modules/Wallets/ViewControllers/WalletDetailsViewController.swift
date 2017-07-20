@@ -137,10 +137,6 @@ extension WalletDetails
 		// Accessors
 		// - State
 		var shouldShowScanningBlockchainActivityIndicator: Bool {
-			
-			
-			return true //
-			
 			assert(self.shouldShowImportTransactionsButton == false) // putting this check outside so priority logic is dictated elsewhere (in delegate methods)
 			return self.wallet.isAccountScannerCatchingUp
 		}
@@ -292,7 +288,7 @@ extension WalletDetails
 				return
 			} else if indexPath.section == 2 { // transactions
 				let transaction = self.wallet.transactions![indexPath.row]
-				let viewController = TransactionDetails.ViewController(transaction: transaction)
+				let viewController = TransactionDetails.ViewController(transaction: transaction, inWallet: self.wallet)
 				self.navigationController!.pushViewController(
 					viewController,
 					animated: true
