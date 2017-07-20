@@ -120,6 +120,10 @@ extension UICommonComponents
 		//
 		// Runtime - Imperatives - Convenience/Overridable - Validation error
 		func setValidationMessage(_ message: String)
+		{ // legacy
+			self.set(validationMessage: message, wantsXButton: true)
+		}
+		func set(validationMessage message: String, wantsXButton: Bool)
 		{
 			if self.new_wantsInlineMessageViewForValidationMessages() == false {
 				assert(false, "override \(#function)")
@@ -127,7 +131,8 @@ extension UICommonComponents
 			}
 			let view = self.messageView! // this ! is not necessary according to the var's optionality but there seems to be a compiler bug
 			view.set(text: message)
-			self.layOut_messageView() // this can be slightly redundant, but it is called here so we lay out before showing. maybe rework this so it doesn't require laying out twice and checking visibility. maybe a flag saying "ought to be showing". maybe.
+			view.set(mode: wantsXButton ? .withCloseButton : .noCloseButton)
+			self.layOut_messageView() // this can be slightly redundant, but it is called here so we lay out before showing (and so contents reflow if wantsXButton changed). maybe rework this so it doesn't require laying out twice and checking visibility. maybe a flag saying "ought to be showing". maybe.
 			view.show()
 			self.view.setNeedsLayout() // so views (below messageView) get re-laid-out
 		}

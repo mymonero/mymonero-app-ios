@@ -21,7 +21,7 @@ extension UICommonComponents
 		}
 		//
 		// Properties
-		let mode: Mode
+		var mode: Mode
 		let label = UILabel()
 		var closeButton: UIButton?
 		//
@@ -91,6 +91,25 @@ extension UICommonComponents
 		func set(text: String)
 		{ // after this, be sure to call layOut(…) and then show()
 			label.text = text
+		}
+		func set(mode: Mode)
+		{ // NOTE: any caller of this should also re-call self.layOut(…)
+			self.mode = mode
+			if mode == .withCloseButton {
+				if self.closeButton == nil {
+					let view = UIButton(type: .custom)
+					self.closeButton = view
+					view.setImage(UIImage(named: "inlineMessageDialog_closeBtn"), for: .normal)
+					view.adjustsImageWhenHighlighted = true
+					view.addTarget(self, action: #selector(closeButton_tapped), for: .touchUpInside)
+					self.addSubview(view)
+				}
+			} else {
+				if let view = self.closeButton {
+					view.removeFromSuperview()
+					self.closeButton = nil
+				}
+			}
 		}
 		func show()
 		{

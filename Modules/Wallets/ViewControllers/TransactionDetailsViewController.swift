@@ -171,24 +171,23 @@ extension TransactionDetails
 		{
 			self.set_navigationTitleAndColor()
 			// TODO: status messages
-//			if transaction.cached__isUnlocked == false {
-//				if (self.validationMessageLayer__isLocked.userHasClosedThisLayer !== true) {
-//					let lockedReason = self.wallet.TransactionLockedReason(self.transaction)
-//					var messageString = "This transaction is currently locked. " + lockedReason
-//					self.validationMessageLayer__isLocked.SetValidationError(messageString) // this shows the validation err msg
-//				}
-//			} else {
-//				self.validationMessageLayer__isLocked.style.display = "none"
-//			}
-//			if transaction.isJustSentTransaction || transaction.cached__isConfirmed == false {
-//				if self.validationMessageLayer__onItsWay.userHasClosedThisLayer !== true {
-//					self.validationMessageLayer__onItsWay.style.display = "block"
-//				} else {
-//					// do not re-show since user has already closed it
-//				}
-//			} else {
-//				self.validationMessageLayer__onItsWay.style.display = "none"
-//			}
+			var validationMessage = ""
+			if transaction.isJustSentTransientTransactionRecord || transaction.cached__isConfirmed == false {
+				validationMessage += NSLocalizedString("Your Monero is on its way.", comment: "")
+			}
+			if transaction.cached__isUnlocked == false {
+				assert(transaction.cached__lockedReason != nil)
+				if validationMessage != "" {
+					validationMessage += "\n\n"
+				}
+				validationMessage += NSLocalizedString("Transaction currently locked. Reason: ", comment: "")
+				validationMessage += transaction.cached__lockedReason! // this is not necessarily a good localized way to concat strings
+			}
+			if validationMessage != "" {
+				self.set(validationMessage: validationMessage, wantsXButton: false)
+			} else {
+				self.clearValidationMessage()
+			}
 			do {
 				let value = TransactionDetails.lazy_cell_dateFormatter().string(from: self.transaction.timestamp).uppercased()
 				self.date__fieldView.set(text: value)

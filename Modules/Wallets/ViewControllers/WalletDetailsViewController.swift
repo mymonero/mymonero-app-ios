@@ -22,7 +22,7 @@ extension WalletDetails
 		// Properties
 		var wallet: Wallet
 		var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
-		var transactionsSectionHeaderView: WalletDetails.TransactionsSectionHeaderView!
+		var transactionsSectionHeaderView: WalletDetails.TransactionsSectionHeaderView?
 		//
 		var tableView: UITableView {
 			return self.scrollView as! UITableView
@@ -137,6 +137,10 @@ extension WalletDetails
 		// Accessors
 		// - State
 		var shouldShowScanningBlockchainActivityIndicator: Bool {
+			
+			
+			return true //
+			
 			assert(self.shouldShowImportTransactionsButton == false) // putting this check outside so priority logic is dictated elsewhere (in delegate methods)
 			return self.wallet.isAccountScannerCatchingUp
 		}
@@ -281,7 +285,9 @@ extension WalletDetails
 		func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
 		{
 			tableView.deselectRow(at: indexPath, animated: true)
-			if indexPath.section == 1 { // infodisclosing
+			if indexPath.section == 0 { // balance
+				return // nothing to do except return early
+			} else if indexPath.section == 1 { // infodisclosing
 				self.toggleInfoDisclosureCell()
 				return
 			} else if indexPath.section == 2 { // transactions
@@ -348,19 +354,13 @@ extension WalletDetails
 				// here is some header view mode logic
 				// we hang onto self.transactionsSectionHeaderView so that on reloadData etc we can keep showing the same state, e.g. animation step
 				if self.shouldShowImportTransactionsButton {
-					if let view = self.transactionsSectionHeaderView {
-						if view.mode != .importTransactionsButton {
-							self.transactionsSectionHeaderView = nil // free existing
-						}
+					if self.transactionsSectionHeaderView == nil || self.transactionsSectionHeaderView!.mode != .importTransactionsButton {
+						self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
 					}
-					self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
 				} else if self.shouldShowScanningBlockchainActivityIndicator {
-					if let view = self.transactionsSectionHeaderView {
-						if view.mode != .scanningIndicator {
-							self.transactionsSectionHeaderView = nil  // free existing
-						}
+					if self.transactionsSectionHeaderView == nil || self.transactionsSectionHeaderView!.mode != .scanningIndicator {
+						self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
 					}
-					self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
 				} else {
 					self.transactionsSectionHeaderView = nil  // free existing
 				}
@@ -386,6 +386,30 @@ extension WalletDetails
 		{
 			self.set_navigationTitle()
 			self.tableView.reloadData()
+		}
+		//
+		// Delegation - View lifecycle
+		override func viewDidAppear(_ animated: Bool)
+		{
+			super.viewDidAppear(animated)
+			if let view = self.transactionsSectionHeaderView {
+				if view.mode == .scanningIndicator {
+					if view.indicatorView.activityIndicator.isAnimating == false {
+						view.indicatorView.activityIndicator.startAnimating()
+					}
+				}
+			}
+		}
+		override func viewWillDisappear(_ animated: Bool)
+		{
+			super.viewWillDisappear(animated)
+			if let view = self.transactionsSectionHeaderView {
+				if view.mode == .scanningIndicator {
+					if view.indicatorView.activityIndicator.isAnimating == true {
+						view.indicatorView.activityIndicator.stopAnimating()
+					}
+				}
+			}
 		}
 	}
 }

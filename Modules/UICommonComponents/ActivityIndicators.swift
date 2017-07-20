@@ -144,6 +144,7 @@ extension UICommonComponents
 			}
 			for (_, bulbView) in bulbViews.enumerated() {
 				bulbView.layer.removeAllAnimations()
+				bulbView.configureAs_off()
 			}
 			self.isAnimating = false
 			self.isAnimatingALoop = false

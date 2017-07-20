@@ -112,6 +112,8 @@ struct MoneroHistoricalTransactionRecord: Equatable
 		return MyMoneroCoreUtils.LockedTransactionReason(unlock_time, blockchain_height)
 	}
 	//
+	var isJustSentTransientTransactionRecord: Bool = false // transient
+	//
 	// Equatable
 	static func ==(
 		l: MoneroHistoricalTransactionRecord,
@@ -212,7 +214,9 @@ struct MoneroHistoricalTransactionRecord: Equatable
 			//
 			cached__isConfirmed: isConfirmed,
 			cached__isUnlocked: isUnlocked,
-			cached__lockedReason: lockedReason
+			cached__lockedReason: lockedReason,
+			//
+			isJustSentTransientTransactionRecord: false
 		)
 		return instance
 	}
@@ -285,7 +289,9 @@ struct MoneroHistoricalTransactionRecord: Equatable
 			//
 			cached__isConfirmed: isConfirmed,
 			cached__isUnlocked: isUnlocked,
-			cached__lockedReason: lockedReason
+			cached__lockedReason: lockedReason,
+			//
+			isJustSentTransientTransactionRecord: false
 		)
 	}
 	static func newArray(
