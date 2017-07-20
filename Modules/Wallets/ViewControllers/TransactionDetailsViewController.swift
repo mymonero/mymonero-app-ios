@@ -198,7 +198,7 @@ extension TransactionDetails
 //				self.memo__fieldView.set(text: value)
 //			}
 			do {
-				// TODO: array of multivaluefieldrowdescriptions w/clr etc
+				// TODO: array of multivaluefieldrowdescriptions w/clr etc for amount and two fees
 				let floatAmount = self.transaction.approxFloatAmount
 				let value = "\(floatAmount)"
 				self.amountsFeesTotals__fieldView.set(text: value, color: floatAmount < 0 ? UIColor(rgb: 0xF97777) : nil)
@@ -216,7 +216,18 @@ extension TransactionDetails
 				self.paymentID__fieldView.set(text: value)
 			}
 			//
-			// TODO: set right nav bar btn text display
+			do {
+				let text =
+					self.transaction.cached__isConfirmed
+					? NSLocalizedString("CONFIRMED", comment: "")
+					: NSLocalizedString("PENDING", comment: "")
+				self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+					type: .valueDisplayLabel,
+					target: nil,
+					action: nil,
+					title_orNilForDefault: text // .valueDisplayLabel is implemented such that it requires an initial title passed in - cannot do at object's runtime yet
+				)
+			}
 			//
 			self.view.setNeedsLayout()
 		}
