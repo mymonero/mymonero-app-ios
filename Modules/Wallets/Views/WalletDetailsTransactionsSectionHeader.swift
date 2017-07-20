@@ -12,6 +12,7 @@ extension WalletDetails
 {
 	class TransactionsSectionHeaderView: UIView
 	{
+		//
 		enum Mode
 		{
 			case scanningIndicator
@@ -24,6 +25,11 @@ extension WalletDetails
 		{
 			return topPadding + 16 + TransactionsSectionHeaderView.bottomPadding // TODO: get fixed height instead of '16'
 		}
+		//
+		// Properties - Settable after init
+		var importTransactions_tapped_fn: ((Void) -> Void)?
+		//
+		// Properties - Settable via init
 		var mode: Mode
 		var contentView: UIView!
 		init(mode: Mode)
@@ -101,7 +107,9 @@ extension WalletDetails
 		// Delegation - Interactions
 		func importTransactions_tapped()
 		{
-			assert(false, "TODO")
+			if let fn = self.importTransactions_tapped_fn {
+				fn()
+			}
 		}
 	}
 }

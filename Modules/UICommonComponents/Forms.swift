@@ -454,14 +454,16 @@ extension UICommonComponents
 	{
 		case textField_bg_noErr = "textField_bg_noErr_stretchable"
 		case textField_bg_error = "textField_bg_error_stretchable"
+		case textField_bg_disabled_noErr = "textField_bg_disabled_noErr_stretchable"
+		case textField_bg_disabled_error = "textField_bg_disabled_error_stretchable"
 		//
-		static var imagePadding_x: CGFloat { return 2 }
-		static var imagePadding_y: CGFloat { return 2 }
+		static var imagePadding_x: CGFloat { return 1 }
+		static var imagePadding_y: CGFloat { return 1 }
 		//
 		var stretchableImage: UIImage
 		{
 			return UIImage(named: self.rawValue)!
-				.stretchableImage(withLeftCapWidth: 5, topCapHeight: 5)
+				.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
 		}
 	}
 	class FormTextViewContainerView: UIView
@@ -599,13 +601,18 @@ extension UICommonComponents
 	class FormInputField: UITextField
 	{
 		static let visual__height: CGFloat = 32
-		static let textFieldHeightCompensation: CGFloat = 2 // I'm not sure where this comes from yet
-		static let height: CGFloat = FormInputField.visual__height + 2*FormInputCells.imagePadding_y + FormInputField.textFieldHeightCompensation
+		static let height: CGFloat = FormInputField.visual__height + 2*FormInputCells.imagePadding_y
 		//
 		static let textInsets = UIEdgeInsetsMake(8, 10, 8, 10)
 		//
 		var validationErrorMessageLabel: FormFieldAccessoryMessageLabel?
 		var init_placeholder: String?
+		//
+		override var isEnabled: Bool {
+			didSet {
+				self._configureBackground()
+			}
+		}
 		//
 		init(placeholder: String?)
 		{
@@ -615,6 +622,7 @@ extension UICommonComponents
 				width: CGFloat(0),
 				height: FormInputField.height
 			)
+			NSLog("FormInputField.height \(FormInputField.height)")
 			self.init_placeholder = placeholder
 			super.init(frame: frame)
 			self.setup()
@@ -638,7 +646,6 @@ extension UICommonComponents
 				self.attributedPlaceholder = string
 			}
 			self.textColor = UIColor(rgb: 0xDFDEDF)
-			//
 			self.borderStyle = .none
 			self.configureWithValidationError(nil)
 		}
@@ -660,8 +667,6 @@ extension UICommonComponents
 				self.clearValidationError()
 				return
 			}
-			let backgroundImage = FormInputCells.textField_bg_error.stretchableImage
-			self.background = backgroundImage
 			if self.validationErrorMessageLabel == nil {
 				let view = FormFieldAccessoryMessageLabel(text: nil)
 				view.textColor = UIColor.standaloneValidationTextOrDestructiveLinkContentColor
@@ -669,17 +674,16 @@ extension UICommonComponents
 				self.addSubview(view)
 			}
 			self.validationErrorMessageLabel!.setMessageText(message)
+			self._configureBackground() // AFTER setting self.validationErrorMessageLabel
 			self.setNeedsLayout()
 		}
 		func clearValidationError()
 		{
-			let backgroundImage = FormInputCells.textField_bg_noErr.stretchableImage
-			self.background = backgroundImage
-			//
 			if self.validationErrorMessageLabel != nil {
 				self.validationErrorMessageLabel!.removeFromSuperview()
 				self.validationErrorMessageLabel = nil
 			}
+			self._configureBackground() // AFTER zeroing self.validationErrorMessageLabel
 		}
 		func configureWithValidationError(_ message: String?)
 		{
@@ -687,6 +691,17 @@ extension UICommonComponents
 				self.clearValidationError()
 			} else {
 				self.setValidationError(message!)
+			}
+		}
+		//
+		func _configureBackground()
+		{
+			if self.validationErrorMessageLabel != nil {
+				self.background = FormInputCells.textField_bg_error.stretchableImage
+				self.disabledBackground = FormInputCells.textField_bg_disabled_error.stretchableImage
+			} else {
+				self.background = FormInputCells.textField_bg_noErr.stretchableImage
+				self.disabledBackground = FormInputCells.textField_bg_disabled_noErr.stretchableImage
 			}
 		}
 		//
@@ -704,6 +719,41 @@ extension UICommonComponents
 				validationErrorMessageLabel.frame = frame
 				validationErrorMessageLabel.sizeToFit()
 			}
+		}
+	}
+	//
+	class FormAccessoryMessageLabel: UILabel
+	{
+		init(text: String?)
+		{
+			super.init(frame: .zero)
+			self.setup()
+			if text != nil {
+				self.setMessageText(text!)
+			}
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			self.font = UIFont.middlingRegularSansSerif
+			self.textColor = UIColor(rgb: 0x9E9C9E)
+			self.numberOfLines = 0
+			self.textAlignment = .center
+		}
+		//
+		func setMessageText(_ text: String)
+		{
+			let paragraphStyle = NSMutableParagraphStyle()
+			paragraphStyle.lineSpacing = 3
+			let string = NSMutableAttributedString(string: text)
+			string.addAttribute(
+				NSParagraphStyleAttributeName,
+				value: paragraphStyle,
+				range: NSRange(location: 0, length: text.characters.count)
+			)
+			self.attributedText = string
 		}
 	}
 	//

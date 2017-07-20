@@ -82,6 +82,11 @@
 		9F33E6F91F20016000610662 /* EditWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6F81F20016000610662 /* EditWalletViewController.swift */; };
 		9F33E6FB1F2004DD00610662 /* EditFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FA1F2004DD00610662 /* EditFormSubmissionController.swift */; };
 		9F33E6FD1F200CC000610662 /* TransactionDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FC1F200CC000610662 /* TransactionDetailsViewController.swift */; };
+		9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */; };
+		9F33E7021F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7001F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png */; };
+		9F33E7031F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */; };
+		9F33E7061F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */; };
+		9F33E7071F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
 		9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D501F10549E0017A20E /* ContactPicker.swift */; };
 		9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */; };
@@ -286,6 +291,11 @@
 		9F33E6F81F20016000610662 /* EditWalletViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditWalletViewController.swift; sourceTree = "<group>"; };
 		9F33E6FA1F2004DD00610662 /* EditFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F33E6FC1F200CC000610662 /* TransactionDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewController.swift; sourceTree = "<group>"; };
+		9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportTransactionsModalViewController.swift; sourceTree = "<group>"; };
+		9F33E7001F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_error_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_error_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
 		9F740D501F10549E0017A20E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Hierarchy.swift"; sourceTree = "<group>"; };
@@ -695,6 +705,8 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F33E7001F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png */,
+				9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */,
 				9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */,
 				9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */,
 				9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */,
@@ -725,6 +737,8 @@
 				9F2BFE7C1EF08ABA006B2F7D /* pushButtonBG_disabled@3x.png */,
 				9F2BFE7D1EF08ABA006B2F7D /* pushButtonBG_utility_highlighted@3x.png */,
 				9F2BFE7E1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png */,
+				9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */,
+				9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */,
 				9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */,
 				9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */,
 				9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */,
@@ -927,6 +941,7 @@
 				9F0801451F1965DD0074B35A /* WalletDetailsViewController.swift */,
 				9F33E6F81F20016000610662 /* EditWalletViewController.swift */,
 				9F33E6FC1F200CC000610662 /* TransactionDetailsViewController.swift */,
+				9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1212,7 +1227,9 @@
 				9F33E6EB1F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png in Resources */,
 				9F9C59EB1F0C316C003B9266 /* highlightableCellBG_disabled@3x.png in Resources */,
 				9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */,
+				9F33E7071F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */,
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
+				9F33E7021F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F9C59E31F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_bottom@3x.png in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
@@ -1253,6 +1270,7 @@
 				9F2BFE841EF08ABA006B2F7D /* pushButtonBG_action_highlighted@3x.png in Resources */,
 				9F9C59EC1F0C316C003B9266 /* highlightableCellBG_highlighted@3x.png in Resources */,
 				9F8E2FFC1EE978E800F89A1D /* icon_tabBar_contacts@3x.png in Resources */,
+				9F33E7031F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */,
 				9F8E2FF41EE978DF00F89A1D /* icon_tabBar_settings__active@3x.png in Resources */,
 				9F8E30011EE978EF00F89A1D /* icon_tabBar_fundsRequests@3x.png in Resources */,
 				9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */,
@@ -1264,6 +1282,7 @@
 				9FCE96C91F04130200A5837D /* terms_checkbox_checked@3x.png in Resources */,
 				9F8E30021EE978EF00F89A1D /* icon_tabBar_fundsRequests__active@3x.png in Resources */,
 				9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */,
+				9F33E7061F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */,
 				9F33E6ED1F1A9F9C00610662 /* balanceDisplayBG_stretchable_yellow@3x.png in Resources */,
 				9F9C59EA1F0C316C003B9266 /* groupedHighlightableCellBG_normal_top@3x.png in Resources */,
 				9F8E2FE01EE8A76200F89A1D /* tabBarBGColorImage@3x.png in Resources */,
@@ -1357,6 +1376,7 @@
 				9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */,
 				9F2BFEE01EF382BD006B2F7D /* ContactsListViewCell.swift in Sources */,
 				9FA734051F05AF4E00C674D6 /* Wallet_HostPollingController.swift in Sources */,
+				9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroAmounts.swift in Sources */,
 				9F2BFF121EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift in Sources */,
 				9F2BFF0F1EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift in Sources */,

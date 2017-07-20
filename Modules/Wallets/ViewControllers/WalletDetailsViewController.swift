@@ -141,6 +141,11 @@ extension WalletDetails
 			return self.wallet.isAccountScannerCatchingUp
 		}
 		var shouldShowImportTransactionsButton: Bool {
+			
+			// TODO: remove, debug only
+			return true
+			
+			
 			if self.wallet.hasEverFetched_transactions != false {
 				let transactions = wallet.transactions ?? []
 				if transactions.count > 0 {
@@ -149,7 +154,6 @@ extension WalletDetails
 			}
 			return wallet.shouldDisplayImportAccountOption ?? false // default false on nil
 		}
-		//
 		// - Transforms
 		func cellViewType(forCellAtIndexPath indexPath: IndexPath) -> UICommonComponents.Tables.ReusableTableViewCell.Type
 		{
@@ -182,6 +186,19 @@ extension WalletDetails
 			assert(false)
 			return .standalone
 		}
+		// - Factories - Views - Sections - Transactions
+		var _new_transactionSectionHeaderView_importTransactionsButton: WalletDetails.TransactionsSectionHeaderView {
+			let view = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
+			view.importTransactions_tapped_fn =
+				{ [unowned self] in
+					self.present_importTransactionsModal()
+			}
+			return view
+		}
+		var _new_transactionSectionHeaderView_scanningIndicator: WalletDetails.TransactionsSectionHeaderView {
+			let view = WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
+			return view
+		}
 		//
 		// Imperatives - Configuration
 		func set_navigationTitle()
@@ -211,6 +228,14 @@ extension WalletDetails
 				isHiding: isHiding,
 				to__contentContainerView_toFrame: contentContainerView_toFrame
 			)
+		}
+		//
+		// Imperatives - Import modal
+		func present_importTransactionsModal()
+		{
+			let viewController = ImportTransactionsModal.ViewController(wallet: self.wallet)
+			let navigationController = UINavigationController(rootViewController: viewController)
+			self.navigationController!.present(navigationController, animated: true, completion: nil)
 		}
 		//
 		// Overrides - Layout
@@ -351,11 +376,11 @@ extension WalletDetails
 				// we hang onto self.transactionsSectionHeaderView so that on reloadData etc we can keep showing the same state, e.g. animation step
 				if self.shouldShowImportTransactionsButton {
 					if self.transactionsSectionHeaderView == nil || self.transactionsSectionHeaderView!.mode != .importTransactionsButton {
-						self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
+						self.transactionsSectionHeaderView = self._new_transactionSectionHeaderView_importTransactionsButton
 					}
 				} else if self.shouldShowScanningBlockchainActivityIndicator {
 					if self.transactionsSectionHeaderView == nil || self.transactionsSectionHeaderView!.mode != .scanningIndicator {
-						self.transactionsSectionHeaderView = WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
+						self.transactionsSectionHeaderView = self._new_transactionSectionHeaderView_scanningIndicator
 					}
 				} else {
 					self.transactionsSectionHeaderView = nil  // free existing

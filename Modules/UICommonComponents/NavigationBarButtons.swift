@@ -18,6 +18,7 @@ extension UICommonComponents
 			case add
 			case cancel
 			case save
+			case send
 			case edit
 			case valueDisplayLabel
 		}
@@ -51,7 +52,7 @@ extension UICommonComponents
 			var pushButtonType: UICommonComponents.PushButton.PushButtonType!
 			switch type
 			{
-				case .add, .save:
+				case .add, .save, .send:
 					pushButtonType = .action
 					break
 				case .cancel, .edit, .back:
@@ -87,6 +88,10 @@ extension UICommonComponents
 					break
 				case .save:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Save", comment: ""), for: .normal)
+					sizeToFitAndAddPadding = true
+					break
+				case .send:
+					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Send", comment: ""), for: .normal)
 					sizeToFitAndAddPadding = true
 					break
 				case .edit:
