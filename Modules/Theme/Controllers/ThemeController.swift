@@ -104,6 +104,10 @@ extension UIColor
 	{
 		return UIColor(rgb: 0xD4D4D4)
 	}
+	static var disabledAndSemiVisibleLinkColor: UIColor
+	{
+		return UIColor(red: 73/255, green: 71/255, blue: 73/255, alpha: 40)
+	}
 	//
 	static var normalNavigationBarTitleColor: UIColor
 	{

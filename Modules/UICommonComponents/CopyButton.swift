@@ -39,7 +39,7 @@ extension UICommonComponents
 			self.setTitle(NSLocalizedString("COPY", comment: ""), for: .normal)
 			self.titleLabel!.font = UIFont.smallBoldSansSerif
 			self.setTitleColor(.utilityOrConstructiveLinkColor, for: .normal)
-			self.setTitleColor(.disabledLinkColor, for: .disabled)
+			self.setTitleColor(.disabledAndSemiVisibleLinkColor, for: .disabled)
 			self.addTarget(self, action: #selector(did_touchUpInside), for: .touchUpInside)
 			//
 			let frame = CGRect(x: 0, y: 0, width: CopyButton.w, height: CopyButton.h)

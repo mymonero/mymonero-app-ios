@@ -474,6 +474,176 @@ extension UICommonComponents
 			}
 		}
 		//
+		class ShortStringFieldContentView: UIView
+		{
+			//
+			// Properties
+			var labelVariant: FieldLabel.Variant
+			var fieldTitle: String
+			//
+			var titleLabel: FieldLabel!
+			var contentLabel: UILabel! // TODO a class?
+			//
+			var valueToDisplayIfZero: String?
+			//
+			// Init
+			init(
+				labelVariant: FieldLabel.Variant,
+				title: String,
+				valueToDisplayIfZero: String?
+			)
+			{
+				self.labelVariant = labelVariant
+				self.fieldTitle = title
+				self.valueToDisplayIfZero = valueToDisplayIfZero
+				super.init(frame: .zero)
+				self.setup()
+			}
+			required init?(coder aDecoder: NSCoder) {
+				fatalError("init(coder:) has not been implemented")
+			}
+			func setup()
+			{
+				do {
+					let view = FieldLabel(variant: self.labelVariant, title: self.fieldTitle)
+					view.isUserInteractionEnabled = false // do not receive/obscure touches
+					self.titleLabel = view
+					self.addSubview(view)
+				}
+				do {
+					let view = UILabel()
+					view.isUserInteractionEnabled = false
+					self.contentLabel = view
+					view.numberOfLines = 1
+					view.textAlignment = .right
+					view.lineBreakMode = .byTruncatingTail
+					view.font = .middlingRegularMonospace
+					self.addSubview(view)
+				}
+			}
+			//
+			// Imperatives - Values
+			func set(text: String?)
+			{
+				self.set(text: text, color: nil)
+			}
+			func set(text: String?, color: UIColor?)
+			{
+				var displayValue: String
+				do { // this block is not (yet) aware of ifNonNil_overridingTextAndZeroValue_attributedDisplayText
+					if let text = text, text != "" {
+						displayValue = text
+					} else {
+						displayValue = self.valueToDisplayIfZero ?? ""
+					}
+				}
+				if color != nil {
+					self.contentLabel.textColor = color
+				} else {
+					self.contentLabel.textColor = UIColor(rgb: 0x9E9C9E)
+				}
+				self.contentLabel.text = displayValue
+			}
+			//
+			// Imperatives - Layout - Overrides
+			func sizeToFitAndLayOutSubviews(withContainingWidth containingWidth: CGFloat)
+			{
+				let content_x: CGFloat = 0 // super will have xOffset so content can be at 0
+				let content_rightMargin: CGFloat = 0
+				let content_w = containingWidth - content_x - content_rightMargin
+				self.titleLabel.frame = CGRect(
+					x: content_x,
+					y: 1,
+					width: content_w,
+					height: self.titleLabel.frame.size.height // it already has a fixed height
+				)
+				self.layOut_contentLabel(content_x: content_x, content_w: content_w)
+				//
+				let bottomPadding: CGFloat = 0
+				self.frame = CGRect(
+					x: 0,
+					y: 0,
+					width: containingWidth,
+					height: self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height + bottomPadding
+				)
+			}
+			func layOut_contentLabel(content_x: CGFloat, content_w: CGFloat)
+			{ // overridable
+				let margin_x: CGFloat = 63 // may be improved by being obtained from a sized titleLabel
+				self.contentLabel.frame = CGRect(
+					x: content_x + margin_x,
+					y: 0,
+					width: content_w - margin_x,
+					height: 15
+				)
+			}
+		}
+		class ShortStringFieldView: FieldView
+		{
+			//
+			// Constants
+			override var contentInsets: UIEdgeInsets {
+				return UIEdgeInsetsMake(15, 16, 15, 16)
+			}
+			//
+			// Properties
+			var contentView: ShortStringFieldContentView
+			//
+			// Init
+			init(
+				labelVariant: FieldLabel.Variant,
+				title: String,
+				valueToDisplayIfZero: String?
+			)
+			{
+				self.contentView = ShortStringFieldContentView(
+					labelVariant: labelVariant,
+					title: title,
+					valueToDisplayIfZero: valueToDisplayIfZero
+				)
+				super.init()
+			}
+			required init?(coder aDecoder: NSCoder) {
+				fatalError("init(coder:) has not been implemented")
+			}
+			override func setup()
+			{
+				super.setup()
+				do {
+					let view = self.contentView
+					self.addSubview(view)
+				}
+			}
+			//
+			// Imperatives - Values
+			func set(text: String?)
+			{
+				self.contentView.set(text: text)
+			}
+			func set(text: String?, color: UIColor?)
+			{
+				self.contentView.set(text: text, color: color)
+			}
+			//
+			// Imperatives - Layout - Overrides
+			override func sizeToFitAndLayOutSubviews(
+				withContainingWidth containingWidth: CGFloat,
+				withXOffset xOffset: CGFloat,
+				andYOffset yOffset: CGFloat
+			)
+			{
+				self.contentView.sizeToFitAndLayOutSubviews(withContainingWidth: containingWidth) // this will set its bounds
+				//
+				self.frame = CGRect(
+					x: xOffset,
+					y: yOffset,
+					width: self.contentView.frame.size.width,
+					height: self.contentView.frame.size.height
+				)
+
+			}
+		}
+		//
 		class FieldLabel: UILabel
 		{
 			enum Variant
