@@ -24,8 +24,14 @@ extension WalletDetails
 		
 		class Cell: UICommonComponents.Tables.ReusableTableViewCell
 		{
+			//
+			// Static - Constants
+			static let contentView_margin_h: CGFloat = 16
+			//
+			// Static - Shared
 			static let dateFormatter = DateFormatter()
 			//
+			// Class - Overrides
 			override class func reuseIdentifier() -> String {
 				return "WalletDetails.Transaction.Cell"
 			}
@@ -38,8 +44,8 @@ extension WalletDetails
 				let imagePadding = groupedHighlightableCellVariant.imagePaddingForShadow
 				return 70 + imagePadding.top + imagePadding.bottom
 			}
-
 			//
+			// Properties
 			let cellContentView = ContentView()
 			let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
 			let separatorView = UICommonComponents.Details.FieldSeparatorView(mode: .contiguousCellContainer)
@@ -103,9 +109,9 @@ extension WalletDetails
 					self.bounds,
 					UIEdgeInsetsMake(
 						0,
-						ContactsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.left,
+						WalletDetails.Transaction.Cell.contentView_margin_h - imagePaddingForShadowInsets.left,
 						0,
-						ContactsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.right
+						WalletDetails.Transaction.Cell.contentView_margin_h - imagePaddingForShadowInsets.right
 					)
 				)
 				self.contentView.frame = frame

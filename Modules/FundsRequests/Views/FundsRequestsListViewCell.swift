@@ -103,9 +103,9 @@ class FundsRequestsListViewCell: UITableViewCell
 			self.bounds,
 			UIEdgeInsetsMake(
 				0,
-				ContactsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.left,
+				FundsRequestsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.left,
 				0,
-				ContactsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.right
+				FundsRequestsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.right
 			)
 		)
 		self.contentView.frame = frame

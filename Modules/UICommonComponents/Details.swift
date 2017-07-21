@@ -161,8 +161,8 @@ extension UICommonComponents
 			}
 			func setup()
 			{
-				self.layer.borderColor = UIColor(rgb: 0x494749).cgColor
-				self.layer.borderWidth = 1/UIScreen.main.scale
+				self.layer.borderColor = UICommonComponents.Details.FieldSeparatorView.Mode.contentBackgroundAccent.color.cgColor
+				self.layer.borderWidth = UICommonComponents.Details.FieldSeparatorView.h
 				self.layer.cornerRadius = 5
 			}
 			//
@@ -323,11 +323,11 @@ extension UICommonComponents
 						case .contiguousCellContainer:
 							return UIColor(rgb: 0x413e40)
 						case .contentBackgroundAccent:
-							return UIColor(rgb: 0x383638)
+							return UIColor(rgb: 0x494749) // was 383638 but 494749 looks better
 					}
 				}
-
 			}
+			//
 			var mode: Mode
 			//
 			init(mode: Mode)

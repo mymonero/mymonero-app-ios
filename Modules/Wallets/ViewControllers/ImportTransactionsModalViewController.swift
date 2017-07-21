@@ -103,6 +103,7 @@ extension ImportTransactionsModal
 					placeholder: nil
 				)
 				let inputField = view
+				inputField.placeholder = "import.mymonero.com"
 				inputField.isEnabled = false
 				self.toAddress_inputView = view
 				self.scrollView.addSubview(view)

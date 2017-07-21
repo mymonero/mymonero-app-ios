@@ -141,11 +141,6 @@ extension WalletDetails
 			return self.wallet.isAccountScannerCatchingUp
 		}
 		var shouldShowImportTransactionsButton: Bool {
-			
-			// TODO: remove, debug only
-			return true
-			
-			
 			if self.wallet.hasEverFetched_transactions != false {
 				let transactions = wallet.transactions ?? []
 				if transactions.count > 0 {
@@ -153,6 +148,9 @@ extension WalletDetails
 				}
 			}
 			return wallet.shouldDisplayImportAccountOption ?? false // default false on nil
+		}
+		var hasTransactions: Bool {
+			return self.wallet.transactions != nil && self.wallet.transactions!.count > 0
 		}
 		// - Transforms
 		func cellViewType(forCellAtIndexPath indexPath: IndexPath) -> UICommonComponents.Tables.ReusableTableViewCell.Type
@@ -163,7 +161,11 @@ extension WalletDetails
 				case 1:
 					return type(of: self.infoDisclosingCellView) //WalletDetails.InfoDisclosing.Cell.self
 				case 2:
-					return WalletDetails.Transaction.Cell.self
+					if self.hasTransactions {
+						return WalletDetails.Transaction.Cell.self
+					} else {
+						return WalletDetails.TransactionsEmptyState.Cell.self
+					}
 				default:
 					return UICommonComponents.Tables.ReusableTableViewCell.self
 			}
@@ -175,13 +177,17 @@ extension WalletDetails
 			} else if indexPath.section == 1 { // infodisclosing
 				return .standalone // never need this though
 			} else if indexPath.section == 2 { // transactions
-				let index = indexPath.row
-				let cellsCount = self.wallet.transactions!.count
-				let cellPosition = UICommonComponents.newCellPosition(
-					withCellIndex: index,
-					cellsCount: cellsCount
-				)
-				return cellPosition
+				if self.hasTransactions {
+					let index = indexPath.row
+					let cellsCount = self.wallet.transactions!.count
+					let cellPosition = UICommonComponents.newCellPosition(
+						withCellIndex: index,
+						cellsCount: cellsCount
+					)
+					return cellPosition
+				} else {
+					return .standalone
+				}
 			}
 			assert(false)
 			return .standalone
@@ -190,8 +196,8 @@ extension WalletDetails
 		var _new_transactionSectionHeaderView_importTransactionsButton: WalletDetails.TransactionsSectionHeaderView {
 			let view = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
 			view.importTransactions_tapped_fn =
-				{ [unowned self] in
-					self.present_importTransactionsModal()
+			{ [unowned self] in
+				self.present_importTransactionsModal()
 			}
 			return view
 		}
@@ -288,7 +294,11 @@ extension WalletDetails
 				case 1: // infodisclosing
 					return 1
 				case 2: // transactions
-					return self.wallet.transactions?.count ?? 0
+					if self.hasTransactions {
+						return self.wallet.transactions?.count ?? 0
+					} else {
+						return 1 // for empty state cell
+					}
 				default:
 					assert(false)
 					return 0
@@ -300,7 +310,7 @@ extension WalletDetails
 			count += 1 // balance
 			count += 1 // infodisclosing
 			count += 1 // transactions, 'scanning', 'import', …
-			
+			//
 			return count
 		}
 		func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
@@ -312,6 +322,9 @@ extension WalletDetails
 				self.toggleInfoDisclosureCell()
 				return
 			} else if indexPath.section == 2 { // transactions
+				if self.hasTransactions == false {
+					return // empty state cell
+				}
 				let transaction = self.wallet.transactions![indexPath.row]
 				let viewController = TransactionDetails.ViewController(transaction: transaction, inWallet: self.wallet)
 				self.navigationController!.pushViewController(
