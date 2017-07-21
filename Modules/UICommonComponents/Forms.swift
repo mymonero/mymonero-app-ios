@@ -740,12 +740,12 @@ extension UICommonComponents
 			self.font = UIFont.middlingRegularSansSerif
 			self.textColor = UIColor(rgb: 0x9E9C9E)
 			self.numberOfLines = 0
-			self.textAlignment = .center
 		}
 		//
 		func setMessageText(_ text: String)
 		{
 			let paragraphStyle = NSMutableParagraphStyle()
+			paragraphStyle.alignment = .center // must be set here
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
@@ -753,6 +753,7 @@ extension UICommonComponents
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.characters.count)
 			)
+			
 			self.attributedText = string
 		}
 	}

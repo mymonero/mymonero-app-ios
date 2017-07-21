@@ -51,6 +51,13 @@ struct HostedMoneroAPIClient_Parsing
 	{
 		let amount_outs: [MoneroRandomAmountAndOutputs]
 	}
+	struct ParsedResult_ImportRequestInfoAndStatus
+	{
+		let payment_id: MoneroPaymentID
+		let payment_address: MoneroAddress
+		let import_fee: MoneroAmount
+		let feeReceiptStatus: String?
+	}
 }
 //
 enum HostedMoneroAPI_Endpoint: String
@@ -62,6 +69,7 @@ enum HostedMoneroAPI_Endpoint: String
 	case RandomOuts = "get_random_outs"
 	case TXTRecords = "get_txt_records"
 	case SubmitSerializedSignedTransaction = "submit_raw_tx"
+	case ImportRequestInfoAndStatus = "import_wallet_request"
 }
 //
 struct HostedMoneroAPIClient_HostConfig
@@ -302,6 +310,39 @@ final class HostedMoneroAPIClient
 			self._shared_onMain_callBackFromRequest(nil, result, fn)
 		}
 		//
+		return requestHandle
+	}
+	//
+	// Import request info
+	func ImportRequestInfoAndStatus(
+		address: MoneroAddress,
+		view_key__private: MoneroKey,
+		_ fn: @escaping (
+			_ err_str: String?,
+			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_ImportRequestInfoAndStatus?
+		) -> Void
+	) -> RequestHandle?
+	{
+		let parameters: [String: Any] =
+		[
+			"address": address,
+			"view_key": view_key__private
+		]
+		let endpoint = HostedMoneroAPI_Endpoint.ImportRequestInfoAndStatus
+		let requestHandle = self._request(endpoint, parameters)
+		{ [unowned self] (err_str, response_data, response_jsonDict) in
+			if let err_str = err_str {
+				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
+				return
+			}
+			let result = HostedMoneroAPIClient_Parsing.ParsedResult_ImportRequestInfoAndStatus(
+				payment_id: response_jsonDict!["payment_id"] as! MoneroPaymentID,
+				payment_address: response_jsonDict!["payment_address"] as! MoneroAddress,
+				import_fee: MoneroAmount(response_jsonDict!["import_fee"] as! String)!,
+				feeReceiptStatus: response_jsonDict!["status"] as? String
+			)
+			self._shared_onMain_callBackFromRequest(err_str, result, fn)
+		}
 		return requestHandle
 	}
 	//

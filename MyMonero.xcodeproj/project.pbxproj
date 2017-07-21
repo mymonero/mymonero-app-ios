@@ -87,6 +87,7 @@
 		9F33E7031F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */; };
 		9F33E7061F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */; };
 		9F33E7071F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */; };
+		9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
 		9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D501F10549E0017A20E /* ContactPicker.swift */; };
 		9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */; };
@@ -296,6 +297,7 @@
 		9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportTransactionsModalFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
 		9F740D501F10549E0017A20E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Hierarchy.swift"; sourceTree = "<group>"; };
@@ -929,6 +931,7 @@
 				9FA734001F05AF4E00C674D6 /* Wallet_HostPollingController.swift */,
 				9FA734011F05AF4E00C674D6 /* WalletsListController.swift */,
 				9F33E6FA1F2004DD00610662 /* EditFormSubmissionController.swift */,
+				9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */,
 			);
 			path = ModelControllers;
 			sourceTree = "<group>";
@@ -1399,6 +1402,7 @@
 				9F2BFF141EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
+				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
 				9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */,
 				9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */,

@@ -149,7 +149,7 @@ extension EditWallet
 				walletLabel: self.walletLabel!,
 				swatchColor: self.walletColorPicker_inputView.currentlySelected_color!,
 				preSuccess_terminal_validationMessage_fn:
-				{ (localized_errStr) in
+				{ [unowned self] (localized_errStr) in
 					self.setValidationMessage(localized_errStr)
 				})
 				{ (wallet) in

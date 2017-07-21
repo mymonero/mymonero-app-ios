@@ -52,9 +52,10 @@ extension ImportTransactionsModal
 			super.setup_views()
 			do {
 				let view = UICommonComponents.FormAccessoryMessageLabel(
-					text: "" // for now … we will show 'loading' and then the final results
+					text: NSLocalizedString("Loading…", comment: "") // for now…
 				)
 				self.informationalLabel = view
+				self.scrollView.addSubview(view)
 			}
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
@@ -146,18 +147,31 @@ extension ImportTransactionsModal
 			)
 		}
 		//
+		// Lifecycle - Deinit
+		deinit
+		{
+			self.teardown()
+		}
+		func teardown()
+		{
+			if self.importRequestInfoAndStatus_requestHandle != nil {
+				self.importRequestInfoAndStatus_requestHandle!.cancel()
+				self.importRequestInfoAndStatus_requestHandle = nil
+			}
+		}
+		//
 		// Accessors - Overrides
 		override func new_isFormSubmittable() -> Bool
 		{
-			if self.formSubmissionController != nil {
+			if self.submissionController != nil {
 				return false
 			}
-			if self.amount_fieldset.inputField.submittableDouble_orNil == nil {
-				// until it's filled with an amount
-				return false // for ex if they just put in "."
+			if self.importRequestInfoAndStatus_requestHandle != nil {
+				return false
 			}
-			assert(self.toAddress_inputView.text != nil && self.toAddress_inputView.text != "")
-			assert(self.paymentID_inputView.text != nil && self.paymentID_inputView.text != "")
+			if self.importRequestInfoAndStatus_receivedResult == nil {
+				return false // not yet received
+			}
 			// and since everything else is disabled, I'll presume no other validation necessary
 			return true
 		}
@@ -167,6 +181,87 @@ extension ImportTransactionsModal
 		// Accessors
 		var sanitizedInputValue__toWallet: Wallet {
 			return self.fromWallet_inputView.selectedWallet! // we are never expecting this modal to be visible when no wallets exist, so a crash is/ought to be ok
+		}
+		//
+		// Imperatives - Import info request
+		var hasAlreadyInitiatedRequest = false
+		var importRequestInfoAndStatus_requestHandle: HostedMoneroAPIClient.RequestHandle?
+		var importRequestInfoAndStatus_receivedResult: HostedMoneroAPIClient_Parsing.ParsedResult_ImportRequestInfoAndStatus?
+		func doDataRequest_ifNecessary()
+		{
+			if self.hasAlreadyInitiatedRequest {
+				return
+			}
+			self.hasAlreadyInitiatedRequest = true
+			assert(self.importRequestInfoAndStatus_requestHandle == nil)
+			self.importRequestInfoAndStatus_requestHandle = HostedMoneroAPIClient.shared.ImportRequestInfoAndStatus(
+				address: self.wallet.public_address,
+				view_key__private: self.wallet.private_keys.view
+			)
+			{ (err_str, result) in
+				self.importRequestInfoAndStatus_requestHandle = nil // regardless
+				if err_str != nil {
+					self.informationalLabel.text = "" // clear for now
+					self.setValidationMessage(err_str!) // will also call setNeedsLayout for us
+					return
+				}
+				self.importRequestInfoAndStatus_receivedResult = result
+				self.configureWithInfoRequestResult()
+			}
+		}
+		func configureWithInfoRequestResult()
+		{
+			self.clearValidationMessage()
+			self.set_isFormSubmittable_needsUpdate() // enable submission
+			//
+			let result = self.importRequestInfoAndStatus_receivedResult!
+			let payment_id = result.payment_id
+			let payment_address = result.payment_address
+			let import_fee = result.import_fee
+			let feeReceiptStatus = result.feeReceiptStatus
+			//
+			let formatted_importFee = import_fee.humanReadableString
+			do {
+				self.informationalLabel.setMessageText(
+					String(
+						format: NSLocalizedString(
+							"This requires a one-time import fee of %@ XMR",
+							comment: ""
+						),
+						formatted_importFee
+						) + (feeReceiptStatus != nil ? "\n(Status: \(feeReceiptStatus!).)" : "")
+				)
+				//
+				// TODO
+//				const tooltipText = "Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to import.mymonero.com."
+//				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+//				self.informationalHeaderLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
+			}
+			do {
+				self.toAddress_inputView.text = payment_address
+				self.toAddress_labelAccessory_copyButton.set(text: payment_address)
+				//
+				self.paymentID_inputView.text = payment_id
+				self.paymentID_labelAccessory_copyButton.set(text: payment_id)
+				//
+				var amountStr = formatted_importFee
+				if amountStr.contains(".") == false {
+					amountStr += ".00"
+				}
+				amountStr = "0" + amountStr
+				self.amount_fieldset.inputField.text = amountStr
+			}
+			do {
+//				// const command = `transfer 3 import.mymonero.com ${import_fee__JSBigInt} ${payment_id}`
+//				const tooltipText = "For convenience you may send the fee from MyMonero here, or the official CLI or GUI tools, or any other Monero wallet.<br/><br/>Please be sure to use the exact payment ID below, so the server knows which wallet to import."
+//				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+//				const layer = view.layer
+//				self.walletSelectLabelLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
+			}
+			//
+			// TODO: display the fee receipt status somehow…?
+			NSLog("fee receipt status is… \(feeReceiptStatus.debugDescription)")
+			self.view.setNeedsLayout()
 		}
 		//
 		// Runtime - Imperatives - Overrides
@@ -186,45 +281,35 @@ extension ImportTransactionsModal
 			self.fromWallet_inputView.isEnabled = true
 			// do not enable other fixed-value input fields…
 		}
-		var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
+		var submissionController: ImportTransactionsModal.SubmissionController? // TODO: maybe standardize into FormViewController
 		override func _tryToSubmitForm()
 		{
+			if self.submissionController != nil {
+				assert(false) // should be impossible
+				return
+			}
 			self.clearValidationMessage()
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
-			//
-			// TODO get amt etc from data payload received from import req
-//			let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
-//			let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil
-//			let parameters = AddFundsRequestFormSubmissionController.Parameters(
-//				optl__toWallet_color: toWallet.swatchColor,
-//				toWallet_address: toWallet.public_address,
-//				optl__fromContact_name: fromContact_name_orNil,
-//				paymentID: paymentID,
-//				amount: amount,
-//				optl__memo: memoString,
-//				//
-//				preSuccess_terminal_validationMessage_fn:
-//				{ [unowned self] (localizedString) in
-//					self.setValidationMessage(localizedString)
-//					self.formSubmissionController = nil // must free as this is a terminal callback
-//					self.set_isFormSubmittable_needsUpdate()
-//					self.reEnableForm() // b/c we disabled it
-//				},
-//				success_fn:
-//				{ [unowned self] (instance) in
-//					self.formSubmissionController = nil // must free as this is a terminal callback
-//					self.reEnableForm() // b/c we disabled it
-//					self._didSave(instance: instance)
-//				}
-//			)
-//			let controller = AddFundsRequestFormSubmissionController(parameters: parameters)
-//			self.formSubmissionController = controller
-//			do {
-//				self.disableForm()
-//				self.set_isFormSubmittable_needsUpdate() // update submittability
-//			}
-//			controller.handle()
+			let result = self.importRequestInfoAndStatus_receivedResult!
+			let parameters = ImportTransactionsModal.SubmissionController.Parameters(
+				fromWallet: fromWallet,
+				infoRequestParsingResult: result,
+				preSuccess_terminal_validationMessage_fn:
+				{ [unowned self] (localized_errStr) in
+					self.setValidationMessage(localized_errStr)
+				})
+				{ [unowned self] in
+					// success
+					self.navigationController?.dismiss(animated: true, completion: nil)
+				}
+			let controller = ImportTransactionsModal.SubmissionController(parameters: parameters)
+			self.submissionController = controller
+			do {
+				self.disableForm()
+				self.set_isFormSubmittable_needsUpdate() // update submittability
+			}
+			controller.handle()
 		}
 		//
 		// Delegation - Form submission success
@@ -243,13 +328,20 @@ extension ImportTransactionsModal
 			let fullWidth_label_w = self.new__fieldLabel_w
 			//
 			do {
+				let w = textField_w
 				self.informationalLabel.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: CGFloat.form_input_margin_x,
 					y: ceil(top_yOffset),
-					width: fullWidth_label_w,
+					width: w,
 					height: 0
 				).integral
 				self.informationalLabel.sizeToFit()
+				self.informationalLabel.frame = CGRect(
+					x: self.informationalLabel.frame.origin.x,
+					y: self.informationalLabel.frame.origin.y,
+					width: w, // now return to original width to get centering (as the text run may have been too short to take up the whole h space)
+					height: self.informationalLabel.frame.size.height
+				).integral
 			}
 			do {
 				self.fromWallet_label.frame = CGRect(
@@ -337,6 +429,13 @@ extension ImportTransactionsModal
 			assert(self.navigationController!.presentingViewController != nil)
 			// we always expect self to be presented modally
 			self.navigationController?.dismiss(animated: true, completion: nil)
+		}
+		//
+		// Delegation
+		override func viewDidAppear(_ animated: Bool)
+		{
+			super.viewDidAppear(animated)
+			self.doDataRequest_ifNecessary()
 		}
 	}
 }
