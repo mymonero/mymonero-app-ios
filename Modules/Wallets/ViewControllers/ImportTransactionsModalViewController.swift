@@ -158,6 +158,11 @@ extension ImportTransactionsModal
 				self.importRequestInfoAndStatus_requestHandle!.cancel()
 				self.importRequestInfoAndStatus_requestHandle = nil
 			}
+			if self.submissionController != nil {
+				// TODO
+//				self.submissionController!.cancel()
+				self.submissionController = nil
+			}
 		}
 		//
 		// Accessors - Overrides
@@ -259,8 +264,6 @@ extension ImportTransactionsModal
 //				self.walletSelectLabelLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
 			}
 			//
-			// TODO: display the fee receipt status somehow…?
-			NSLog("fee receipt status is… \(feeReceiptStatus.debugDescription)")
 			self.view.setNeedsLayout()
 		}
 		//
@@ -272,6 +275,10 @@ extension ImportTransactionsModal
 			self.scrollView.isScrollEnabled = false
 			self.fromWallet_inputView.isEnabled = false
 			// no need to redundantly disable other fixed-value input fields…
+			//
+			// and, b/c SendFunds is not yet coded to allow cancellation, we temporarily disable cancel here to prevent the user from accidentally sending redundant funds
+			self.navigationItem.leftBarButtonItem?.isEnabled = false
+
 		}
 		override func reEnableForm()
 		{
@@ -280,6 +287,9 @@ extension ImportTransactionsModal
 			self.scrollView.isScrollEnabled = true
 			self.fromWallet_inputView.isEnabled = true
 			// do not enable other fixed-value input fields…
+			//
+			// must re-enable cancel btn
+			self.navigationItem.leftBarButtonItem?.isEnabled = true
 		}
 		var submissionController: ImportTransactionsModal.SubmissionController? // TODO: maybe standardize into FormViewController
 		override func _tryToSubmitForm()
@@ -288,7 +298,17 @@ extension ImportTransactionsModal
 				assert(false) // should be impossible
 				return
 			}
-			self.clearValidationMessage()
+			do {
+				self.set(
+					validationMessage: NSLocalizedString(
+						"Sending \(self.importRequestInfoAndStatus_receivedResult!.import_fee.humanReadableString) XMR…",
+						comment: ""
+					),
+					wantsXButton: false
+				)
+				self.disableForm()
+				self.set_isFormSubmittable_needsUpdate() // update submittability
+			}
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
 			let result = self.importRequestInfoAndStatus_receivedResult!
@@ -297,18 +317,29 @@ extension ImportTransactionsModal
 				infoRequestParsingResult: result,
 				preSuccess_terminal_validationMessage_fn:
 				{ [unowned self] (localized_errStr) in
+					self.reEnableForm() // important
 					self.setValidationMessage(localized_errStr)
 				})
-				{ [unowned self] in
-					// success
-					self.navigationController?.dismiss(animated: true, completion: nil)
+				{ [unowned self] in // success
+					self.submissionController = nil // free
+					self.set(
+						validationMessage: NSLocalizedString("Sent!", comment: ""),
+						wantsXButton: false
+					)
+					DispatchQueue.main.asyncAfter( 
+						deadline: .now() + 1.0, // for effect
+						execute:
+						{ [unowned self] in // Now dismiss
+							self.navigationController?.dismiss(animated: true, completion: nil)
+						}
+					)
+					DispatchQueue.main.async
+					{ // and fire off a request to have the wallet get the latest (real) tx records
+						fromWallet.hostPollingController!._fetch_addressTransactions() // TODO: maybe fix up the API for this
+					}					
 				}
 			let controller = ImportTransactionsModal.SubmissionController(parameters: parameters)
 			self.submissionController = controller
-			do {
-				self.disableForm()
-				self.set_isFormSubmittable_needsUpdate() // update submittability
-			}
 			controller.handle()
 		}
 		//

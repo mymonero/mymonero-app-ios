@@ -52,6 +52,9 @@ struct HostedMonero_SendFunds
 //
 extension HostedMoneroAPIClient
 {
+	// TODO: port this to something akin to an OperationQueue so that it can be canceled properly
+	
+	
 	static func SendFunds( // assumes isRingCT=true - not intended to support non-rct nor sweep_all-like txs
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
@@ -61,6 +64,9 @@ extension HostedMoneroAPIClient
 		mymoneroCore: MyMoneroCore,
 		hostedMoneroAPIClient: HostedMoneroAPIClient,
 		payment_id: MoneroPaymentID?,
+//		preSuccess_obtainedSubmitTransactionRequestHandle: @escaping (
+//			_ requestHandle: HostedMoneroAPIClient.RequestHandle
+//		) -> Void,
 		success_fn: @escaping (
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
@@ -420,7 +426,7 @@ extension HostedMoneroAPIClient
 				let final_networkFee = passedIn_attemptAt_network_minimumFee // just to make things clear
 				DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
 				// status: submitting…
-				let _ = hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
+				let _/*requestHandle*/ = hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
 					address: wallet__public_address,
 					view_key__private: wallet__private_keys.view,
 					serializedSignedTx: serialized_signedTx,
@@ -436,6 +442,7 @@ extension HostedMoneroAPIClient
 						) // 🎉
 					}
 				)
+//				preSuccess_obtainedSubmitTransactionRequestHandle(requestHandle)
 			}
 		}
 	}

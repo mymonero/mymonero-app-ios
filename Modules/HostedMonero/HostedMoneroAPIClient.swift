@@ -710,7 +710,7 @@ extension MyMoneroCoreJS // for Parsing
 			}
 			let returnValuesByKey = any as! [String: Any]
 			let unusedOuts = returnValuesByKey["unusedOuts"] as! [[String: Any]]
-			let unspentOutputs = returnValuesByKey["unspentOuts"] as! [[String: Any]]
+			let unspentOutputs = returnValuesByKey["unspentOutputs"] as! [[String: Any]]
 			//
 			var final_unusedOutputs: [MoneroOutputDescription] = []
 			do { // finalize

@@ -154,6 +154,7 @@ extension EditWallet
 				})
 				{ (wallet) in
 					// success
+					self.submissionController = nil // free
 					self.dismissModal()
 				}
 			let controller = EditWallet.SubmissionController(parameters: parameters)

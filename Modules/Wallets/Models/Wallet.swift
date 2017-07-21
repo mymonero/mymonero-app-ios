@@ -731,7 +731,7 @@ class Wallet: PersistableObject
 		func __isLocked() -> Bool { return self.isSendingFunds }
 		if __isLocked() {
 			failWithErr_fn("Currently sending funds. Please try again when complete.")
-			return
+			return // TODO nil
 		}
 		func __lock()
 		{
@@ -746,7 +746,7 @@ class Wallet: PersistableObject
 			// TODO: re-enable user idle and screen dim
 		}
 		__lock()
-		HostedMoneroAPIClient.SendFunds(
+		let _/*TODO requestHandle*/ = HostedMoneroAPIClient.SendFunds(
 			target_address: target_address,
 			amount: amount,
 			wallet__public_address: self.public_address,
@@ -766,6 +766,7 @@ class Wallet: PersistableObject
 				failWithErr_fn(err_str)
 			}
 		)
+		return // TODO requestHandle
 	}
 	//
 	//
