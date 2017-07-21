@@ -65,6 +65,7 @@ extension ImportTransactionsModal
 				self.scrollView.addSubview(view)
 			}
 			do {
+				// TODO? attempt to pick sensible wallet based on balance?
 				let view = UICommonComponents.WalletPickerButtonView(selectedWallet: nil)
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
