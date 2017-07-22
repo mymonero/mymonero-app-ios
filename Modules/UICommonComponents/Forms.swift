@@ -469,10 +469,30 @@ extension UICommonComponents
 	class FormTextViewContainerView: UIView
 	{
 		var textView: FormTextView!
-		let stretchableBackgroundImage = FormInputCells.textField_bg_noErr.stretchableImage
+		static let stretchableBackgroundImage = FormInputCells.textField_bg_noErr.stretchableImage
+		static let disabled_stretchableBackgroundImage = FormInputCells.textField_bg_disabled_noErr.stretchableImage
 		//
 		static let visual__height: CGFloat = 64
 		static let height: CGFloat = FormTextViewContainerView.visual__height + 2*UICommonComponents.FormInputCells.imagePadding_y
+		//
+		func heightThatFits(width fixedWidth: CGFloat) -> CGFloat
+		{
+			let fittingSize = self.textView.sizeThatFits(
+				CGSize(
+					width: fixedWidth,
+					height: CGFloat.greatestFiniteMagnitude
+				)
+			)
+			return fittingSize.height + 2 * 8
+		}
+		//
+		override var isHidden: Bool {
+			didSet {
+				if self.isHidden == false {
+					self.setNeedsDisplay() // draw disabled bg if started from hidden
+				}
+			}
+		}
 		//
 		init(placeholder: String?)
 		{
@@ -496,6 +516,13 @@ extension UICommonComponents
 			self.addSubview(self.textView)
 		}
 		//
+		// Imperatives
+		func set(isEnabled: Bool)
+		{
+			self.textView.isEditable = isEnabled
+			self.setNeedsDisplay() // redraw bg
+		}
+		//
 		// Imperatives - Overrides
 		override func layoutSubviews()
 		{
@@ -512,8 +539,11 @@ extension UICommonComponents
 		}
 		override func draw(_ rect: CGRect)
 		{
-			self.stretchableBackgroundImage.draw(in: rect)
-			//
+			if self.textView.isEditable == false {
+				FormTextViewContainerView.disabled_stretchableBackgroundImage.draw(in: rect)
+			} else {
+				FormTextViewContainerView.stretchableBackgroundImage.draw(in: rect)
+			}
 			super.draw(rect)
 		}
 	}
@@ -521,6 +551,15 @@ extension UICommonComponents
 	{
 		var placeholder: String?
 		var placeholderLabel: UILabel?
+		override var isEditable: Bool {
+			willSet {
+				if newValue == true {
+					self.textColor = UIColor(rgb: 0x6B696B)
+				} else {
+					self.textColor = UIColor(rgb: 0x7C7A7C)
+				}
+			}
+		}
 		init(placeholder: String?)
 		{
 			super.init(frame: .zero, textContainer: nil)
@@ -532,7 +571,6 @@ extension UICommonComponents
 		{
 			fatalError("init(coder:) has not been implemented")
 		}
-		var stretchableBackgroundImage = FormInputCells.textField_bg_noErr.stretchableImage
 		func setup()
 		{
 			self.backgroundColor = UIColor.clear

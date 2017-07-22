@@ -13,10 +13,6 @@ extension UICommonComponents
 	class WalletPickerButtonView: UICommonComponents.PushButton
 	{
 		//
-		// Constants
-		static let listController = WalletsListController.shared
-		static let records = listController.records // array instance never changes, but is mutated
-		//
 		static let visual__h: CGFloat = 66
 		static let h = WalletPickerButtonView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 		//
@@ -32,11 +28,11 @@ extension UICommonComponents
 		// Lifecycle - Init
 		init(selectedWallet: Wallet?)
 		{
-//			assert(WalletPickerButtonView.records.count > 0) // not actually going to assert this, b/c the Send view will need to be able to have this set up w/o any wallets being available yet
+//			assert(WalletsListController.shared.records.count > 0) // not actually going to assert this, b/c the Send view will need to be able to have this set up w/o any wallets being available yet
 			if selectedWallet != nil {
 				self.selectedWallet = selectedWallet!
 			} else {
-				self.selectedWallet = WalletPickerButtonView.records.first as? Wallet
+				self.selectedWallet = WalletsListController.shared.records.first as? Wallet
 			}
 			super.init(pushButtonType: .utility)
 		}
@@ -59,7 +55,7 @@ extension UICommonComponents
 				{ [unowned self] in
 					do { // reconfigure /self/ with selected wallet, not picker
 						if let _ = self.selectedWallet {
-							let records = WalletPickerButtonView.records
+							let records = WalletsListController.shared.records
 							if records.count == 0 { // e.g. booted state deconstructed
 								self.selectedWallet = nil
 								if self.picker_inputField.isFirstResponder {
@@ -222,13 +218,13 @@ extension UICommonComponents
 			if selectedIndex == -1 {
 				return nil
 			}
-			return WalletPickerView.records[selectedIndex] as? Wallet
+			return WalletsListController.shared.records[selectedIndex] as? Wallet
 		}
 		//
 		// Imperatives - Programmatic picking
 		func pickWallet(atRow row: Int)
 		{
-			let record = WalletPickerView.records[row] as! Wallet
+			let record = WalletsListController.shared.records[row] as! Wallet
 			if let fn = self.didSelect_fn {
 				fn(record)
 			}
@@ -241,7 +237,7 @@ extension UICommonComponents
 		}
 		func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
 		{
-			return WalletPickerView.records.count
+			return WalletsListController.shared.records.count
 		}
 		func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat
 		{
@@ -269,7 +265,7 @@ extension UICommonComponents
 				mutable_view = WalletCellContentView(sizeClass: .medium32)
 			}
 			let cellView = mutable_view as! WalletCellContentView
-			let record = WalletPickerView.records[row] as! Wallet
+			let record = WalletsListController.shared.records[row] as! Wallet
 			cellView.configure(withObject: record)
 			//
 			return cellView

@@ -14,9 +14,24 @@ extension UICommonComponents.Form
 	{
 		//
 		// Constants
-		static let maxHeight: CGFloat = UICommonComponents.FormInputField.height + ContactPickerSearchResultsInlinePopoverView.maxHeight
+//		static let maxHeight: CGFloat = UICommonComponents.FormInputField.height + ContactPickerSearchResultsInlinePopoverView.maxHeight
+		//
+		// Types
+		enum InputMode
+		{
+			case contactsOnly
+			case contactsAndAddresses
+		}
+		enum AccessoryInfoDisplayMode
+		{
+			case noResolvedFields
+			case paymentIds_andResolvedAddrs
+		}
 		//
 		// Properties
+		var inputMode: InputMode
+		var displayMode: AccessoryInfoDisplayMode
+		//
 		var selectedContact: Contact?
 		//
 		var inputField = UICommonComponents.FormInputField(
@@ -25,6 +40,13 @@ extension UICommonComponents.Form
 		var selectedContactPillView: SelectedContactPillView?
 		var autocompleteResultsView: ContactPickerSearchResultsInlinePopoverView!
 		var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
+		//
+		// optl
+		var resolvedXMRAddr_label: UICommonComponents.Form.FieldLabel?
+		var resolvedXMRAddr_inputView: UICommonComponents.FormTextViewContainerView?
+		var resolvedPaymentID_label: UICommonComponents.Form.FieldLabel?
+		var resolvedPaymentID_inputView: UICommonComponents.FormTextViewContainerView?
+		// TODO: resolvedPaymentID_detectedIconAndLabelView
 		//
 		var textFieldDidBeginEditing_fn: ((_ textField: UITextField) -> Void)?
 		var textFieldDidEndEditing_fn: ((_ textField: UITextField) -> Void)?
@@ -38,8 +60,14 @@ extension UICommonComponents.Form
 		//
 		//
 		// Lifecycle
-		init()
+		convenience init()
 		{
+			self.init(inputMode: .contactsOnly, displayMode: .noResolvedFields)
+		}
+		init(inputMode: InputMode, displayMode: AccessoryInfoDisplayMode)
+		{
+			self.inputMode = inputMode
+			self.displayMode = displayMode
 			super.init(frame: .zero)
 			self.setup()
 		}
@@ -58,7 +86,6 @@ extension UICommonComponents.Form
 			}
 			do {
 				let view = ContactPickerSearchResultsInlinePopoverView()
-				
 				view.tableView.delegate = self
 				view.tableView.dataSource = self
 				view.isHidden = true
@@ -70,6 +97,45 @@ extension UICommonComponents.Form
 				view.isHidden = true
 				self.resolving_activityIndicator = view
 				self.addSubview(view)
+			}
+			if self.displayMode == .paymentIds_andResolvedAddrs {
+				do {
+					let view = UICommonComponents.Form.FieldLabel(
+						title: NSLocalizedString("MONERO ADDRESS", comment: ""),
+						sizeToFit: true
+					)
+					view.isHidden = true
+					self.resolvedXMRAddr_label = view
+					self.addSubview(view)
+				}
+				do {
+					let view = UICommonComponents.FormTextViewContainerView(
+						placeholder: nil
+					)
+					view.set(isEnabled: false)
+					view.isHidden = true
+					self.resolvedXMRAddr_inputView = view
+					self.addSubview(view)
+				}
+				//
+				do {
+					let view = UICommonComponents.Form.FieldLabel(
+						title: NSLocalizedString("PAYMENT ID", comment: ""),
+						sizeToFit: true
+					)
+					view.isHidden = true
+					self.resolvedPaymentID_label = view
+					self.addSubview(view)
+				}
+				do {
+					let view = UICommonComponents.FormTextViewContainerView(
+						placeholder: nil
+					)
+					view.set(isEnabled: false)
+					view.isHidden = true
+					self.resolvedPaymentID_inputView = view
+					self.addSubview(view)
+				}
 			}
 			self.updateBounds() // initial frame, to get h
 			self.startObserving()
@@ -86,18 +152,22 @@ extension UICommonComponents.Form
 		}
 		//
 		var new_h: CGFloat {
-			var h: CGFloat
-			if self.selectedContact == nil {
-				h = self.inputField.frame.origin.y + self.inputField.frame.size.height
-				if self.autocompleteResultsView.isHidden == false {
-					h = self.autocompleteResultsView.frame.origin.y + self.autocompleteResultsView.frame.size.height
+			if self.displayMode == .paymentIds_andResolvedAddrs {
+				if self.resolvedPaymentID_inputView!.isHidden == false {
+					return self.resolvedPaymentID_inputView!.frame.origin.y + self.resolvedPaymentID_inputView!.frame.size.height
+				} else if self.resolvedXMRAddr_inputView!.isHidden == false {
+					return self.resolvedXMRAddr_inputView!.frame.origin.y + self.resolvedXMRAddr_inputView!.frame.size.height
 				}
-			} else {
-				let pillView = self.selectedContactPillView!
-				h = pillView.frame.origin.y + pillView.frame.size.height
 			}
+			if self.selectedContact == nil {
+				if self.autocompleteResultsView.isHidden == false {
+					return self.autocompleteResultsView.frame.origin.y + self.autocompleteResultsView.frame.size.height
+				}
+				return self.inputField.frame.origin.y + self.inputField.frame.size.height
+			}
+			let pillView = self.selectedContactPillView!
 			//
-			return h
+			return pillView.frame.origin.y + pillView.frame.size.height
 		}
 		var records: [Contact] { return ContactsListController.shared.records as! [Contact] }
 		var searchString: String? {
@@ -136,6 +206,10 @@ extension UICommonComponents.Form
 			do {
 				self.set(resolvingIndicatorIsVisible: false) // just in case it was visible
 				self.oaResolverRequestMaker = nil // cancel existing requests, if any; and we must do this /before/ the didClearPickedContact_fn callback so that the consumer can check if we're still resolving
+			}
+			if self.displayMode == .paymentIds_andResolvedAddrs {
+				self._hide_resolved_XMRAddress()
+				self._hide_resolved_paymentID()
 			}
 			if hadExistingContact {
 				if let fn = self.didClearPickedContact_fn {
@@ -204,6 +278,12 @@ extension UICommonComponents.Form
 					{ [unowned self] (localizedString) in
 						self.set(resolvingIndicatorIsVisible: false)
 						self.oaResolverRequestMaker = nil // must free, and before call-back
+						do {
+							if self.displayMode == .paymentIds_andResolvedAddrs {
+								self._hide_resolved_XMRAddress()
+								self._hide_resolved_paymentID()
+							}
+						}
 						if let fn = self.oaResolve__preSuccess_terminal_validationMessage_fn {
 							fn(localizedString)
 						}
@@ -212,6 +292,16 @@ extension UICommonComponents.Form
 					{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
 						self.set(resolvingIndicatorIsVisible: false)
 						self.oaResolverRequestMaker = nil // must free, and before call-back
+						do {
+							if self.displayMode == .paymentIds_andResolvedAddrs {
+								self._display(resolved_XMRAddress: resolved_xmr_address)
+								if payment_id != nil && payment_id != "" {
+									self._display(resolved_paymentID: payment_id!)
+								} else {
+									self._hide_resolved_paymentID()
+								}
+							}
+						}
 						if let fn = self.oaResolve__success_fn {
 							fn(resolved_xmr_address, payment_id, tx_description)
 						}
@@ -220,6 +310,15 @@ extension UICommonComponents.Form
 				let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
 				self.oaResolverRequestMaker = resolver
 				resolver.resolve()
+			} else {
+				if self.displayMode == .paymentIds_andResolvedAddrs {
+					self._hide_resolved_XMRAddress()
+					if contact.payment_id != nil && contact.payment_id != "" {
+						self._display(resolved_paymentID: contact.payment_id!)
+					} else {
+						self._hide_resolved_paymentID()
+					}
+				}
 			}
 			// making sure to call this callback /after/ having set self.oaResolverRequestMaker so that isResolving will be true if consumer asks for it
 			if let fn = self.didPickContact_fn {
@@ -270,9 +369,40 @@ extension UICommonComponents.Form
 			self.updateBounds()
 		}
 		//
+		// Imperatives - Resolved values
+		func _display(resolved_XMRAddress value: String)
+		{
+			self.resolvedXMRAddr_inputView!.textView.text = value
+			self.resolvedXMRAddr_label!.isHidden = false
+			self.resolvedXMRAddr_inputView!.isHidden = false
+			self.updateBounds()
+		}
+		func _hide_resolved_XMRAddress()
+		{
+			self.resolvedXMRAddr_label!.isHidden = true
+			self.resolvedXMRAddr_inputView!.isHidden = true
+			self.updateBounds()
+		}
+		func _display(resolved_paymentID value: String)
+		{
+			self.resolvedPaymentID_inputView!.textView.text = value
+			self.resolvedPaymentID_label!.isHidden = false
+			self.resolvedPaymentID_inputView!.isHidden = false
+			self.updateBounds()
+		}
+		func _hide_resolved_paymentID()
+		{
+			self.resolvedPaymentID_label!.isHidden = true
+			self.resolvedPaymentID_inputView!.isHidden = true
+			self.updateBounds()
+		}
+		//
 		// Imperatives - Internal - Layout
 		private func updateBounds()
 		{
+			// would be nice if we could batch this per runloop to avoid redundant calculations
+			// hopefully devices are fast enough for it to be negligible
+			
 			self.sizeAndLayOutSubviews()
 			self.bounds = CGRect(
 				x: 0,
@@ -287,6 +417,7 @@ extension UICommonComponents.Form
 		}
 		func sizeAndLayOutSubviews()
 		{
+			let bottomMostView_beforeAccessoryViews: UIView!
 			if self.selectedContact == nil {
 				self.inputField.frame = CGRect(
 					x: 0,
@@ -310,6 +441,9 @@ extension UICommonComponents.Form
 						width: self.frame.size.width - 2*UICommonComponents.FormInputCells.imagePadding_x,
 						height: h
 					)
+					bottomMostView_beforeAccessoryViews = self.autocompleteResultsView
+				} else {
+					bottomMostView_beforeAccessoryViews = self.inputField
 				}
 			} else {
 				guard let pillView = self.selectedContactPillView else {
@@ -328,7 +462,60 @@ extension UICommonComponents.Form
 						y: pillView.frame.origin.y + pillView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
 						width: size.width,
 						height: size.height
-						).integral
+					).integral
+					bottomMostView_beforeAccessoryViews = self.resolving_activityIndicator
+				} else {
+					bottomMostView_beforeAccessoryViews = pillView
+				}
+			}
+			//
+			if self.displayMode == .paymentIds_andResolvedAddrs {
+				assert(bottomMostView_beforeAccessoryViews != nil)
+				assert(self.resolvedXMRAddr_inputView != nil)
+				assert(self.resolvedPaymentID_inputView != nil)
+				let labels_x =  CGFloat.form_label_margin_x - CGFloat.form_input_margin_x // this is a little weird but is the tradeoff for having self positioned at input_x automatically instead of 0
+				if self.resolvedXMRAddr_inputView!.isHidden == false {
+					let yOffset = bottomMostView_beforeAccessoryViews.frame.origin.y + bottomMostView_beforeAccessoryViews.frame.size.height + 10
+					self.resolvedXMRAddr_label!.frame = CGRect(
+						x: labels_x,
+						y: yOffset,
+						width: self.frame.size.width - 2*labels_x,
+						height: self.resolvedXMRAddr_label!.frame.size.height
+					).integral
+					self.resolvedXMRAddr_inputView!.frame = CGRect(
+						x: 0,
+						y: self.resolvedXMRAddr_label!.frame.origin.y + self.resolvedXMRAddr_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+						width: self.frame.size.width,
+						height: self.resolvedXMRAddr_inputView!.heightThatFits(width: self.frame.size.width)
+					).integral
+					// TODO: size text view to its content size
+				}
+				if self.resolvedPaymentID_inputView!.isHidden == false {
+					let mostPreviouslyVisibleView: UIView
+					let topMargin: CGFloat
+					do {
+						if self.resolvedXMRAddr_inputView!.isHidden == false {
+							mostPreviouslyVisibleView = self.resolvedXMRAddr_inputView!
+							topMargin = 10
+						} else {
+							mostPreviouslyVisibleView = bottomMostView_beforeAccessoryViews
+							topMargin = 8
+						}
+					}
+					let yOffset = mostPreviouslyVisibleView.frame.origin.y + mostPreviouslyVisibleView.frame.size.height + topMargin
+					self.resolvedPaymentID_label!.frame = CGRect(
+						x: labels_x,
+						y: yOffset,
+						width: self.frame.size.width - 2*labels_x,
+						height: self.resolvedPaymentID_label!.frame.size.height
+					).integral
+					self.resolvedPaymentID_inputView!.frame = CGRect(
+						x: 0,
+						y: self.resolvedPaymentID_label!.frame.origin.y + self.resolvedPaymentID_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+						width: self.frame.size.width,
+						height: self.resolvedPaymentID_inputView!.heightThatFits(width: self.frame.size.width)
+					).integral
+					// TODO: size text view to its content size
 				}
 			}
 		}

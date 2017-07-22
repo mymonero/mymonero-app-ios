@@ -280,8 +280,8 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		self.name_inputView.isEnabled = false
 		self.emoji_inputView.isEnabled = false
-		self.address_inputView.textView.isEditable = false
-		self.paymentID_inputView?.textView.isEditable = false
+		self.address_inputView.set(isEnabled: false)
+		self.paymentID_inputView?.set(isEnabled: false)
 	}
 	override func reEnableForm()
 	{
@@ -291,8 +291,8 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		self.name_inputView.isEnabled = true
 		self.emoji_inputView.isEnabled = true
-		self.address_inputView.textView.isEditable = true
-		self.paymentID_inputView?.textView.isEditable = true
+		self.address_inputView.set(isEnabled: true)
+		self.paymentID_inputView?.set(isEnabled: true)
 	}
 	var formSubmissionController: ContactFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()

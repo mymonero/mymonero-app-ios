@@ -83,8 +83,10 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.Form.ContactPickerView()
-				// TODO: initial contact selection? (from spawn)
+				let view = UICommonComponents.Form.ContactPickerView(
+					inputMode: .contactsAndAddresses,
+					displayMode: .paymentIds_andResolvedAddrs
+				)
 				view.textFieldDidBeginEditing_fn =
 				{ [unowned self] (textField) in
 					self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
@@ -502,7 +504,7 @@ extension SendFundsForm
 				let lastMostVisibleView = self.sendTo_inputView!
 				self.addPaymentID_buttonView!.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
+					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 12,
 					width: self.addPaymentID_buttonView!.frame.size.width,
 					height: self.addPaymentID_buttonView!.frame.size.height
 				)
@@ -513,7 +515,7 @@ extension SendFundsForm
 				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
 				self.manualPaymentID_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
+					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 12,
 					width: fullWidth_label_w,
 					height: self.manualPaymentID_label.frame.size.height
 				).integral
@@ -546,13 +548,13 @@ extension SendFundsForm
 			let isFirstAppearance = self.hasAppearedBefore == false
 			super.viewDidAppear(animated)
 			if isFirstAppearance {
-				//			DispatchQueue.main.async
-				//			{ [unowned self] in
-				//				if self.sanitizedInputValue__selectedContact == nil {
-				//					assert(self.sendTo_inputView.inputField.isHidden == false)
-				//					self.sendTo_inputView.inputField.becomeFirstResponder()
-				//				}
-				//			}
+//				DispatchQueue.main.async
+//				{ [unowned self] in
+//					if self.sanitizedInputValue__selectedContact == nil {
+//						assert(self.sendTo_inputView.inputField.isHidden == false)
+//						self.sendTo_inputView.inputField.becomeFirstResponder()
+//					}
+//				}
 			}
 		}
 		//

@@ -334,10 +334,10 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		self.orUse_button.isEnabled = false
 		self.walletColorPicker_inputView.set(isEnabled: false)
 		self.walletLabel_inputView.isEnabled = false
-		self.walletMnemonic_inputView.textView.isEditable = false
-		self.addr_inputView.textView.isEditable = false
-		self.viewKey_inputView.textView.isEditable = false
-		self.spendKey_inputView.textView.isEditable = false
+		self.walletMnemonic_inputView.set(isEnabled: false)
+		self.addr_inputView.set(isEnabled: false)
+		self.viewKey_inputView.set(isEnabled: false)
+		self.spendKey_inputView.set(isEnabled: false)
 	}
 	override func reEnableForm()
 	{
@@ -348,10 +348,10 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		self.orUse_button.isEnabled = true
 		self.walletColorPicker_inputView.set(isEnabled: true)
 		self.walletLabel_inputView.isEnabled = true
-		self.walletMnemonic_inputView.textView.isEditable = true
-		self.addr_inputView.textView.isEditable = true
-		self.viewKey_inputView.textView.isEditable = true
-		self.spendKey_inputView.textView.isEditable = true
+		self.walletMnemonic_inputView.set(isEnabled: true)
+		self.addr_inputView.set(isEnabled: true)
+		self.viewKey_inputView.set(isEnabled: true)
+		self.spendKey_inputView.set(isEnabled: true)
 	}
 	var isSubmitting = false
 	override func _tryToSubmitForm()
