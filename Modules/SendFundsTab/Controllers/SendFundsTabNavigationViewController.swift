@@ -10,6 +10,8 @@ import UIKit
 
 class SendFundsTabNavigationViewController: UINavigationController
 {
+	let sendFundsViewController = SendFundsForm.ViewController()
+	//
 	init()
 	{
 		super.init(nibName: nil, bundle: nil)
@@ -26,5 +28,6 @@ class SendFundsTabNavigationViewController: UINavigationController
 			image: UIImage(named: "icon_tabBar_sendFunds")!.withRenderingMode(.alwaysOriginal),
 			selectedImage: UIImage(named: "icon_tabBar_sendFunds__active")!.withRenderingMode(.alwaysOriginal)
 		)
+		self.viewControllers = [ self.sendFundsViewController ]
 	}
 }

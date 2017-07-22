@@ -57,26 +57,29 @@ extension UICommonComponents
 				}
 				view.reloaded_fn =
 				{ [unowned self] in
-					if let _ = self.selectedWallet {
-						let records = WalletPickerButtonView.records
-						if records.count == 0 { // e.g. booted state deconstructed
-							self.selectedWallet = nil
-							if self.picker_inputField.isFirstResponder {
-								self.picker_inputField.resignFirstResponder()
+					do { // reconfigure /self/ with selected wallet, not picker
+						if let _ = self.selectedWallet {
+							let records = WalletPickerButtonView.records
+							if records.count == 0 { // e.g. booted state deconstructed
+								self.selectedWallet = nil
+								if self.picker_inputField.isFirstResponder {
+									self.picker_inputField.resignFirstResponder()
+								}
+								self.contentView.prepareForReuse()
+								return
 							}
-							self.contentView.prepareForReuse()
-							return
-						}
-//						if records.contains(selectedWallet) == false { // if the selected wallet no longer exists
-//							// we don't need to do anything here, b/c the following will update state
-//						}
-					}
-					let picker_selectedWallet = self.pickerView.selectedWallet
-					if self.selectedWallet != picker_selectedWallet {
-						if self.selectedWallet != nil {
-							self.contentView.configure(withObject: self.selectedWallet!)
 						} else {
+							NSLog("Going to check selectedWallet no currently selected wallet")
+						}
+						let picker_selectedWallet = self.pickerView.selectedWallet
+						if picker_selectedWallet == nil {
 							self.contentView.prepareForReuse() // might as well call it even though it will have handled
+						}
+						let selectedWallet = picker_selectedWallet!
+						if self.selectedWallet == nil || self.selectedWallet! != selectedWallet {
+							self.contentView.configure(withObject: selectedWallet)
+						} else {
+							DDLog.Warn("UICommonComponents.WalletPicker", "reloaded but was same")
 						}
 					}
 				}
@@ -222,6 +225,15 @@ extension UICommonComponents
 			return WalletPickerView.records[selectedIndex] as? Wallet
 		}
 		//
+		// Imperatives - Programmatic picking
+		func pickWallet(atRow row: Int)
+		{
+			let record = WalletPickerView.records[row] as! Wallet
+			if let fn = self.didSelect_fn {
+				fn(record)
+			}
+		}
+		//
 		// Delegation - UIPickerView
 		func numberOfComponents(in pickerView: UIPickerView) -> Int
 		{
@@ -237,10 +249,7 @@ extension UICommonComponents
 		}
 		func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
 		{
-			let record = WalletPickerView.records[row] as! Wallet
-			if let fn = self.didSelect_fn {
-				fn(record)
-			}
+			self.pickWallet(atRow: row)
 		}
 		func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat
 		{
