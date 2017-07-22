@@ -622,7 +622,6 @@ extension UICommonComponents
 				width: CGFloat(0),
 				height: FormInputField.height
 			)
-			NSLog("FormInputField.height \(FormInputField.height)")
 			self.init_placeholder = placeholder
 			super.init(frame: frame)
 			self.setup()

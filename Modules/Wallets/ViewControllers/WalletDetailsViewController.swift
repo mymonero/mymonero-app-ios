@@ -61,7 +61,7 @@ extension WalletDetails
 		{
 			super.setup_views()
 			do {
-				self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
+				self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 0/*14 commented as janky semi-fix to unwanted visual btm padding */, 0)
 			}
 		}
 		override func setup_navigation()
