@@ -553,11 +553,7 @@ extension UICommonComponents
 		var placeholderLabel: UILabel?
 		override var isEditable: Bool {
 			willSet {
-				if newValue == true {
-					self.textColor = UIColor(rgb: 0x6B696B)
-				} else {
-					self.textColor = UIColor(rgb: 0x7C7A7C)
-				}
+				self._configureTextFontAndColor(withManual_isEnabled: newValue)
 			}
 		}
 		init(placeholder: String?)
@@ -574,14 +570,13 @@ extension UICommonComponents
 		func setup()
 		{
 			self.backgroundColor = UIColor.clear
-			self.textColor = UIColor(rgb: 0xDFDEDF)
-			self.font = UIFont.middlingLightMonospace
+			self.configureTextFontAndColor()
 			self.textContainerInset = UIEdgeInsetsMake(6, 4, 0, 4)
 			//
 			let view = UILabel(frame: .zero)
 			view.numberOfLines = 0 // to fix line wrapping bug
 			view.textColor = UIColor(rgb: 0x6B696B)
-			view.font = UIFont.middlingRegularMonospace// LightMonospace - too light
+			view.font = UIFont.middlingRegularMonospace // light is too light
 			if let placeholder = self.placeholder {
 				view.text = placeholder
 			} else {
@@ -597,6 +592,20 @@ extension UICommonComponents
 				name: NSNotification.Name.UITextViewTextDidChange,
 				object: nil
 			)
+		}
+		func configureTextFontAndColor()
+		{
+			self._configureTextFontAndColor(withManual_isEnabled: self.isEditable)
+		}
+		func _configureTextFontAndColor(withManual_isEnabled isEnabled: Bool)
+		{
+			if isEnabled {
+				self.textColor = UIColor(rgb: 0xDFDEDF)
+				self.font = UIFont.middlingLightMonospace
+			} else {
+				self.textColor = UIColor(rgb: 0x7C7A7C)
+				self.font = UIFont.middlingRegularMonospace // light is too light
+			}
 		}
 		//
 		// Lifecycle - Deinit

@@ -144,4 +144,14 @@ class ListViewController: UITableViewController
 		self.configure_emptyStateView()
 		self.tableView.reloadData()
 	}
+	//
+	// Delegation - View lifecycle
+	override func viewWillAppear(_ animated: Bool)
+	{
+		super.viewWillAppear(animated)
+		ThemeController.shared.styleViewController_navigationBarTitleTextAttributes(
+			viewController: self,
+			titleTextColor: nil // default
+		) // to support clearing potential red clr transactions details on popping to self
+	}
 }

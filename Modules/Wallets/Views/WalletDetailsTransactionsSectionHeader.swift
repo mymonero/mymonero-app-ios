@@ -31,10 +31,12 @@ extension WalletDetails
 		//
 		// Properties - Settable via init
 		var mode: Mode
+		var wallet: Wallet
 		var contentView: UIView!
-		init(mode: Mode)
+		init(mode: Mode, wallet: Wallet)
 		{
 			self.mode = mode
+			self.wallet = wallet
 			super.init(frame: .zero)
 			self.setup()
 		}
@@ -43,17 +45,25 @@ extension WalletDetails
 		}
 		func setup()
 		{
-			switch mode {
+			switch self.mode {
 			case .scanningIndicator:
-				let view = UICommonComponents.GraphicAndLabelActivityIndicatorView()
-				view.set(labelText: NSLocalizedString("SCANNING BLOCKCHAIN…", comment: ""))
+				let view = UICommonComponents.GraphicAndTwoUpLabelsActivityIndicatorView()
+				view.set(labelText: NSLocalizedString("SCANNING…", comment: ""))
+				view.set(
+					accessoryLabelText: String(
+						format: NSLocalizedString(
+							"%d blocks behind",
+							comment: ""
+						),
+						self.wallet.nBlocksBehind
+					)
+				)
 				do {
-					let size = view.new_boundsSize_withoutVSpacing // cause we manage v spacing here
 					view.frame = CGRect( // initial
 						x: CGFloat.form_label_margin_x,
 						y: 0, // will set in layoutSubviews
-						width: size.width,
-						height: size.height
+						width: 0, // we'll set this in layoutSubviews
+						height: view.new_height_withoutVSpacing // cause we manage v spacing here
 					)
 				}
 				view.isHidden = true // quirk of activityIndicator API - must start hidden in order to .show(), which triggers startAnimating() - could just reach in and call startAnimating directly, or improve API
@@ -86,8 +96,8 @@ extension WalletDetails
 		}
 		//
 		//
-		var indicatorView: UICommonComponents.GraphicAndLabelActivityIndicatorView {
-			return self.contentView as! UICommonComponents.GraphicAndLabelActivityIndicatorView
+		var indicatorView: UICommonComponents.GraphicAndTwoUpLabelsActivityIndicatorView {
+			return self.contentView as! UICommonComponents.GraphicAndTwoUpLabelsActivityIndicatorView
 		}
 		//
 		// Overrides - Imperatives
@@ -96,10 +106,12 @@ extension WalletDetails
 			super.layoutSubviews()
 			//
 			let view = self.contentView! // why is ! necessary?
+			let x = view.frame.origin.x // allow setup to specify x
+			let w = self.mode == .importTransactionsButton ? view.frame.size.width : self.frame.size.width - 2*x // preserving sizedToFit LinkButtonView
 			view.frame = CGRect(
-				x: view.frame.origin.x,
+				x: x,
 				y: self.frame.size.height - view.frame.size.height - TransactionsSectionHeaderView.bottomPadding, // need to set Y
-				width: view.frame.size.width,
+				width: w,
 				height: view.frame.size.height
 			)
 		}

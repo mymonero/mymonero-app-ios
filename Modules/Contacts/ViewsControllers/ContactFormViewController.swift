@@ -424,12 +424,11 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			).integral
 		}
 		if self.resolving_activityIndicator.isHidden == false {
-			let size = self.resolving_activityIndicator.new_boundsSize
 			self.resolving_activityIndicator.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
 				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
-				width: size.width,
-				height: size.height
+				width: fullWidth_label_w,
+				height: self.resolving_activityIndicator.new_height
 			).integral
 		}
 		if self.paymentID_label != nil {

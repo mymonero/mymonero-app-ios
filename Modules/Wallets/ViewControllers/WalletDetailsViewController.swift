@@ -194,7 +194,10 @@ extension WalletDetails
 		}
 		// - Factories - Views - Sections - Transactions
 		var _new_transactionSectionHeaderView_importTransactionsButton: WalletDetails.TransactionsSectionHeaderView {
-			let view = WalletDetails.TransactionsSectionHeaderView(mode: .importTransactionsButton)
+			let view = WalletDetails.TransactionsSectionHeaderView(
+				mode: .importTransactionsButton,
+				wallet: self.wallet
+			)
 			view.importTransactions_tapped_fn =
 			{ [unowned self] in
 				self.present_importTransactionsModal()
@@ -202,7 +205,10 @@ extension WalletDetails
 			return view
 		}
 		var _new_transactionSectionHeaderView_scanningIndicator: WalletDetails.TransactionsSectionHeaderView {
-			let view = WalletDetails.TransactionsSectionHeaderView(mode: .scanningIndicator)
+			let view = WalletDetails.TransactionsSectionHeaderView(
+				mode: .scanningIndicator,
+				wallet: self.wallet
+			)
 			return view
 		}
 		//

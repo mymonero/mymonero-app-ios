@@ -240,19 +240,16 @@ extension UICommonComponents
 		}
 		//
 		// Accessors - Layout
-		var new_boundsSize: CGSize {
-			var size = self.new_boundsSize_withoutVSpacing
-			size.height += 12 // for v spacing
+		var new_height: CGFloat {
+			var height = self.new_height_withoutVSpacing
+			height += 12 // for v spacing
 			//
-			return size
+			return height
 		}
-		var new_boundsSize_withoutVSpacing: CGSize {
-			return CGSize(
-				width: self.label.frame.origin.x + self.label.frame.size.width,
-				height: max(
-					self.label.frame.origin.y + self.label.frame.size.height,
-					self.activityIndicator.frame.origin.y + self.activityIndicator.frame.size.height
-				)
+		var new_height_withoutVSpacing: CGFloat {
+			return max(
+				self.label.frame.origin.y + self.label.frame.size.height,
+				self.activityIndicator.frame.origin.y + self.activityIndicator.frame.size.height
 			)
 		}
 		//
@@ -299,6 +296,35 @@ extension UICommonComponents
 				y: 0,
 				width: self.label.frame.size.width,
 				height: self.label.frame.size.height
+			)
+		}
+	}
+	class GraphicAndTwoUpLabelsActivityIndicatorView: GraphicAndLabelActivityIndicatorView
+	{
+		var accessoryLabel = Form.FieldLabel(title: "", sizeToFit: false)
+		override func setup()
+		{
+			super.setup()
+			self.accessoryLabel.textAlignment = .right
+			self.addSubview(accessoryLabel)
+		}
+		//
+		// Imperatives
+		func set(accessoryLabelText text: String)
+		{
+			self.accessoryLabel.text = text
+			// no need for re-layout here b/c accessoryLabel isn't sized to fit... (yet?)
+		}
+		//
+		// Overrides - Imperatives
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			self.accessoryLabel.frame = CGRect(
+				x: 0,
+				y: self.label.frame.origin.y,
+				width: self.frame.size.width,
+				height: self.accessoryLabel.frame.size.height
 			)
 		}
 	}

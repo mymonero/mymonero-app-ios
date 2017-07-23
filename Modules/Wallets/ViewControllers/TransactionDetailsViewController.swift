@@ -207,7 +207,7 @@ extension TransactionDetails
 				self.amountsFeesTotals__fieldView.set(text: value, color: floatAmount < 0 ? UIColor(rgb: 0xF97777) : nil)
 			}
 			do {
-				let value = "\(self.transaction.mixin)"
+				let value = "\(self.transaction.mixin + 1)" // ringsize is mixin + 1
 				self.ringsize__fieldView.set(text: value)
 			}
 			do {

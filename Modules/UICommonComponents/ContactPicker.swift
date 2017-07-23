@@ -469,12 +469,12 @@ extension UICommonComponents.Form
 					inWidth: self.frame.size.width
 				)
 				if self.resolving_activityIndicator.isHidden == false {
-					let size = self.resolving_activityIndicator.new_boundsSize
+					let x: CGFloat = 8
 					self.resolving_activityIndicator.frame = CGRect(
-						x: 8,
+						x: x,
 						y: pillView.frame.origin.y + pillView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
-						width: size.width,
-						height: size.height
+						width: self.frame.size.width - 2*x,
+						height: self.resolving_activityIndicator.new_height
 					).integral
 					bottomMostView_beforeAccessoryViews = self.resolving_activityIndicator
 				} else {

@@ -122,4 +122,14 @@ class ForgotPasswordViewController: UIViewController
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)
 	}
+	//
+	// Delegation - View lifecycle
+	override func viewWillAppear(_ animated: Bool)
+	{
+		super.viewWillAppear(animated)
+		ThemeController.shared.styleViewController_navigationBarTitleTextAttributes(
+			viewController: self,
+			titleTextColor: nil // default
+		) // probably not necessary but probably a good idea here to support clearing potential red clr transactions details on popping to self
+	}
 }
