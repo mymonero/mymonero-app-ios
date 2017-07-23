@@ -233,7 +233,7 @@ extension SendFundsForm
 			if self.sendTo_inputView.isResolving {
 				return false
 			}
-			if self.amount_fieldset.inputField.submittableAmount_orNil != nil { // amount is required
+			if self.amount_fieldset.inputField.submittableAmount_orNil == nil { // amount is required
 				return false
 			}
 			// TODO: whether has picked a contact or entered addr etc
