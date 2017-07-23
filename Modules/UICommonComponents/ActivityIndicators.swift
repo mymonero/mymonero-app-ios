@@ -276,7 +276,8 @@ extension UICommonComponents
 		func hide()
 		{
 			if self.isHidden == true {
-				DDLog.Warn("UICommonComponents.ActivityIndicators", ".hide() called but isHidden=true; bailing.")
+				// common
+//				DDLog.Warn("UICommonComponents.ActivityIndicators", ".hide() called but isHidden=true; bailing.")
 				return
 			}
 			self.isHidden = true

@@ -1020,59 +1020,6 @@ extension UICommonComponents.Form
 					}
 				}
 			)
-//			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
-//				contact.address,
-//				function(
-//					err,
-//					addressWhichWasPassedIn,
-//					moneroReady_address,
-//					payment_id, // may be undefined
-//					tx_description,
-//					openAlias_domain,
-//					oaRecords_0_name,
-//					oaRecords_0_description,
-//					dnssec_used_and_secured
-//					)
-//				{
-//					self.resolving_activityIndicatorLayer.style.display = "none"
-//					self.enable_submitButton()
-//					//
-//					if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
-//						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
-//						return
-//					}
-//					self.requestHandle_for_oaResolution = null
-//					//
-//					if (typeof self.pickedContact === 'undefined' || !self.pickedContact) {
-//						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.pickedContact. Bailing")
-//						return
-//					}
-//					if (self.pickedContact.address !== addressWhichWasPassedIn) {
-//						console.warn("⚠️  The addressWhichWasPassedIn to the ResolveOpenAliasAddress call of which this is a callback is different than the currently selected self.pickedContact.address. Bailing")
-//						return
-//					}
-//					if (err) {
-//						self.validationMessageLayer.SetValidationError(err.toString())
-//						return
-//					}
-//					{ // memo field
-//						tx_description = tx_description || "" // to facilitate clearing the memo field
-//						self.memoInputLayer.value = tx_description // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.
-//					}
-//						{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-//							if (typeof payment_id !== 'undefined' && payment_id) {
-//								self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
-//								self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
-//								self.manualPaymentIDInputLayer.value = payment_id
-//							} else {
-//								// we already hid it above… but jic
-//								self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
-//								self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
-//								self.manualPaymentIDInputLayer.value = ""
-//							}
-//					}
-//				}
-//			)
 		}
 	}
 }
