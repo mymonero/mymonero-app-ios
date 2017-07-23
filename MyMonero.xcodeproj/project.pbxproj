@@ -203,6 +203,7 @@
 		9FAA18B21F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B11F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift */; };
 		9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
+		9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8AE901F241D2600AA553D /* IconAndMessage.swift */; };
 		9FCE96C21F03022900A5837D /* Collections+Shuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
 		9FCE96C91F04130200A5837D /* terms_checkbox_checked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */; };
@@ -416,6 +417,7 @@
 		9FAA18B11F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAliasResolverRequestMaker.swift; sourceTree = "<group>"; };
 		9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormSubmissionController.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
+		9FC8AE901F241D2600AA553D /* IconAndMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconAndMessage.swift; sourceTree = "<group>"; };
 		9FCE96C11F03022900A5837D /* Collections+Shuffle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+Shuffle.swift"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox_checked@3x.png"; sourceTree = "<group>"; };
@@ -490,6 +492,7 @@
 				9F22B7A91F01BAD20036B02F /* CopyButton.swift */,
 				9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */,
 				9F740D501F10549E0017A20E /* ContactPicker.swift */,
+				9FC8AE901F241D2600AA553D /* IconAndMessage.swift */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -1421,6 +1424,7 @@
 				9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
+				9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */,
 				9FA734181F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift in Sources */,
 				9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */,
 				9F0801461F1965DD0074B35A /* WalletDetailsViewController.swift in Sources */,

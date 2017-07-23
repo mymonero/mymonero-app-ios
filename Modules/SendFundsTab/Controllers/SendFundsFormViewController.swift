@@ -208,7 +208,7 @@ extension SendFundsForm
 				inputField.autocapitalizationType = .none
 				inputField.delegate = self
 				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-				inputField.returnKeyType = .go
+				inputField.returnKeyType = .next
 				self.manualPaymentID_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -216,16 +216,11 @@ extension SendFundsForm
 		override func setup_navigation()
 		{
 			super.setup_navigation()
-			self.navigationItem.title = NSLocalizedString("New Request", comment: "")
+			self.navigationItem.title = NSLocalizedString("Send Monero", comment: "")
 			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .save,
+				type: .send,
 				target: self,
 				action: #selector(tapped_rightBarButtonItem)
-			)
-			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .cancel,
-				target: self,
-				action: #selector(tapped_barButtonItem_cancel)
 			)
 		}
 		//
@@ -238,8 +233,8 @@ extension SendFundsForm
 			if self.sendTo_inputView.isResolving {
 				return false
 			}
-			if self.amount_fieldset.inputField.hasInputButIsNotSubmittable {
-				return false // for ex if they just put in "."
+			if self.amount_fieldset.inputField.submittableAmount_orNil != nil { // amount is required
+				return false
 			}
 			// TODO: whether has picked a contact or entered addr etc
 			return true
@@ -592,12 +587,6 @@ extension SendFundsForm
 		func tapped_rightBarButtonItem()
 		{
 			self.aFormSubmissionButtonWasPressed()
-		}
-		func tapped_barButtonItem_cancel()
-		{
-			assert(self.navigationController!.presentingViewController != nil)
-			// we always expect self to be presented modally
-			self.navigationController?.dismiss(animated: true, completion: nil)
 		}
 		//
 		func addPaymentID_tapped()

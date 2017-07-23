@@ -46,7 +46,7 @@ extension UICommonComponents.Form
 		var resolvedXMRAddr_inputView: UICommonComponents.FormTextViewContainerView?
 		var resolvedPaymentID_label: UICommonComponents.Form.FieldLabel?
 		var resolvedPaymentID_inputView: UICommonComponents.FormTextViewContainerView?
-		// TODO: resolvedPaymentID_detectedIconAndLabelView
+		var detected_iconAndMessageView: UICommonComponents.DetectedIconAndMessageView?
 		//
 		var textFieldDidBeginEditing_fn: ((_ textField: UITextField) -> Void)?
 		var textFieldDidEndEditing_fn: ((_ textField: UITextField) -> Void)?
@@ -136,6 +136,13 @@ extension UICommonComponents.Form
 					self.resolvedPaymentID_inputView = view
 					self.addSubview(view)
 				}
+				//
+				do {
+					let view = UICommonComponents.DetectedIconAndMessageView()
+					view.isHidden = true
+					self.addSubview(view)
+					self.detected_iconAndMessageView = view
+				}
 			}
 			self.updateBounds() // initial frame, to get h
 			self.startObserving()
@@ -153,10 +160,8 @@ extension UICommonComponents.Form
 		//
 		var new_h: CGFloat {
 			if self.displayMode == .paymentIds_andResolvedAddrs {
-				if self.resolvedPaymentID_inputView!.isHidden == false {
-					return self.resolvedPaymentID_inputView!.frame.origin.y + self.resolvedPaymentID_inputView!.frame.size.height
-				} else if self.resolvedXMRAddr_inputView!.isHidden == false {
-					return self.resolvedXMRAddr_inputView!.frame.origin.y + self.resolvedXMRAddr_inputView!.frame.size.height
+				if self.detected_iconAndMessageView!.isHidden == false {
+					return self.detected_iconAndMessageView!.frame.origin.y + self.detected_iconAndMessageView!.frame.size.height
 				}
 			}
 			if self.selectedContact == nil {
@@ -375,12 +380,16 @@ extension UICommonComponents.Form
 			self.resolvedXMRAddr_inputView!.textView.text = value
 			self.resolvedXMRAddr_label!.isHidden = false
 			self.resolvedXMRAddr_inputView!.isHidden = false
+			self.detected_iconAndMessageView!.isHidden = false
 			self.updateBounds()
 		}
 		func _hide_resolved_XMRAddress()
 		{
 			self.resolvedXMRAddr_label!.isHidden = true
 			self.resolvedXMRAddr_inputView!.isHidden = true
+			if self.resolvedPaymentID_inputView!.isHidden == true {
+				self.detected_iconAndMessageView!.isHidden = true
+			}
 			self.updateBounds()
 		}
 		func _display(resolved_paymentID value: String)
@@ -388,12 +397,16 @@ extension UICommonComponents.Form
 			self.resolvedPaymentID_inputView!.textView.text = value
 			self.resolvedPaymentID_label!.isHidden = false
 			self.resolvedPaymentID_inputView!.isHidden = false
+			self.detected_iconAndMessageView!.isHidden = false
 			self.updateBounds()
 		}
 		func _hide_resolved_paymentID()
 		{
 			self.resolvedPaymentID_label!.isHidden = true
 			self.resolvedPaymentID_inputView!.isHidden = true
+			if self.resolvedXMRAddr_inputView!.isHidden == true {
+				self.detected_iconAndMessageView!.isHidden = true
+			}
 			self.updateBounds()
 		}
 		//
@@ -488,7 +501,6 @@ extension UICommonComponents.Form
 						width: self.frame.size.width,
 						height: self.resolvedXMRAddr_inputView!.heightThatFits(width: self.frame.size.width)
 					).integral
-					// TODO: size text view to its content size
 				}
 				if self.resolvedPaymentID_inputView!.isHidden == false {
 					let mostPreviouslyVisibleView: UIView
@@ -515,8 +527,25 @@ extension UICommonComponents.Form
 						width: self.frame.size.width,
 						height: self.resolvedPaymentID_inputView!.heightThatFits(width: self.frame.size.width)
 					).integral
-					// TODO: size text view to its content size
 				}
+				if self.detected_iconAndMessageView!.isHidden == false {
+					let mostPreviouslyVisibleView: UIView
+					do {
+						if self.resolvedPaymentID_inputView!.isHidden == false {
+							mostPreviouslyVisibleView = self.resolvedPaymentID_inputView!
+						} else {
+							mostPreviouslyVisibleView = self.resolvedXMRAddr_inputView!
+						}
+					}
+					let yOffset = mostPreviouslyVisibleView.frame.origin.y + mostPreviouslyVisibleView.frame.size.height + (7 - UICommonComponents.FormInputCells.imagePadding_y)
+					self.detected_iconAndMessageView!.frame = CGRect(
+						x: labels_x,
+						y: yOffset,
+						width: self.frame.size.width - 2*labels_x,
+						height: self.detected_iconAndMessageView!.frame.size.height
+					).integral
+				}
+
 			}
 		}
 		//

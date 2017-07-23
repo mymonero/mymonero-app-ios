@@ -483,7 +483,7 @@ extension UICommonComponents
 					height: CGFloat.greatestFiniteMagnitude
 				)
 			)
-			return fittingSize.height + 2 * 8
+			return fittingSize.height + 8 + 7
 		}
 		//
 		override var isHidden: Bool {
