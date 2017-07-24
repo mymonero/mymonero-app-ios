@@ -10,7 +10,7 @@ import UIKit
 
 extension UICommonComponents.Form
 {
-	class ContactPickerView: UIView, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource
+	class ContactAndAddressPickerView: UIView, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource
 	{
 		//
 		// Constants
@@ -50,9 +50,21 @@ extension UICommonComponents.Form
 		//
 		var textFieldDidBeginEditing_fn: ((_ textField: UITextField) -> Void)?
 		var textFieldDidEndEditing_fn: ((_ textField: UITextField) -> Void)?
+		var didFinishTypingInInput_afterMediumDelay_fn: ((Void) -> Void)?
 		var didUpdateHeight_fn: ((Void) -> Void)?
 		//
 		var didPickContact_fn: ((_ contact: Contact, _ doesNeedToResolveItsOAAddress: Bool) -> Void)?
+		//
+		var changedTextContent_fn: ((Void) -> Void)?
+		var clearedTextContent_fn: ((Void) -> Void)?
+		var isValidatingOrResolvingNonZeroTextInput: Bool = false // internally managed; do not set
+		var hasValidTextInput_moneroAddress = false // internally managed; do not set
+		var hasValidTextInput_resolvedOAAddress = false // internally managed; do not set
+		var willValidateNonZeroTextInput_fn: ((Void) -> Void)?
+		var finishedValidatingTextInput_foundInvalidMoneroAddress_fn: ((Void) -> Void)?
+		var finishedValidatingTextInput_foundValidMoneroAddress_fn: ((_ detectedEmbedded_paymentID: MoneroPaymentID?) -> Void)?
+		var willBeginResolvingPossibleOATextInput_fn: ((Void) -> Void)?
+		//
 		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
 		var oaResolve__success_fn: ((_ resolved_xmr_address: MoneroAddress, _ payment_id: MoneroPaymentID?, _ tx_description: String?) -> Void)?
 		//
@@ -267,6 +279,7 @@ extension UICommonComponents.Form
 			//
 			let doesNeedToResolve = contact.hasOpenAliasAddress
 			self.oaResolverRequestMaker = nil // deinit any existing; should cancel the existing request
+			// only not setting resolvingIndicatorIsVisible here b/c we always do it just below
 			//
 			self.__removeAllAndHideSearchResults()
 			self._removeSelectedContactPillView() // but don't do stuff like focusing the input layer
@@ -430,7 +443,7 @@ extension UICommonComponents.Form
 		}
 		func sizeAndLayOutSubviews()
 		{
-			let bottomMostView_beforeAccessoryViews: UIView!
+			let bottomMostView_beforeAccessoryAndResolvingViews: UIView!
 			if self.selectedContact == nil {
 				self.inputField.frame = CGRect(
 					x: 0,
@@ -454,9 +467,9 @@ extension UICommonComponents.Form
 						width: self.frame.size.width - 2*UICommonComponents.FormInputCells.imagePadding_x,
 						height: h
 					)
-					bottomMostView_beforeAccessoryViews = self.autocompleteResultsView
+					bottomMostView_beforeAccessoryAndResolvingViews = self.autocompleteResultsView
 				} else {
-					bottomMostView_beforeAccessoryViews = self.inputField
+					bottomMostView_beforeAccessoryAndResolvingViews = self.inputField
 				}
 			} else {
 				guard let pillView = self.selectedContactPillView else {
@@ -468,18 +481,21 @@ extension UICommonComponents.Form
 					y: 0,
 					inWidth: self.frame.size.width
 				)
-				if self.resolving_activityIndicator.isHidden == false {
-					let x: CGFloat = 8
-					self.resolving_activityIndicator.frame = CGRect(
-						x: x,
-						y: pillView.frame.origin.y + pillView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
-						width: self.frame.size.width - 2*x,
-						height: self.resolving_activityIndicator.new_height
+				bottomMostView_beforeAccessoryAndResolvingViews = pillView
+			}
+			//
+			var bottomMostView_beforeAccessoryViews: UIView!
+			if self.resolving_activityIndicator.isHidden == false {
+				let x: CGFloat = 8
+				self.resolving_activityIndicator.frame = CGRect(
+					x: x,
+					y: bottomMostView_beforeAccessoryAndResolvingViews.frame.origin.y + bottomMostView_beforeAccessoryAndResolvingViews.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
+					width: self.frame.size.width - 2*x,
+					height: self.resolving_activityIndicator.new_height
 					).integral
-					bottomMostView_beforeAccessoryViews = self.resolving_activityIndicator
-				} else {
-					bottomMostView_beforeAccessoryViews = pillView
-				}
+				bottomMostView_beforeAccessoryViews = self.resolving_activityIndicator
+			} else {
+				bottomMostView_beforeAccessoryViews = bottomMostView_beforeAccessoryAndResolvingViews
 			}
 			//
 			if self.displayMode == .paymentIds_andResolvedAddrs {
@@ -556,6 +572,112 @@ extension UICommonComponents.Form
 			self.sizeAndLayOutSubviews()
 		}
 		//
+		// Imperatives - 
+		func validateTextInputAsPossibleAddress()
+		{
+			assert(self.inputMode == .contactsAndAddresses)
+			let possibleAddress = self.inputField.text ?? ""
+			let hasEnteredNoAddressContent = possibleAddress == ""
+			//
+			self.oaResolverRequestMaker = nil // will call its own .cancel… on its deinit
+			self.set(resolvingIndicatorIsVisible: false) // jic cancellation needs
+			//
+			self._hide_resolved_XMRAddress()
+			self._hide_resolved_paymentID()
+			//
+			if let fn = self.changedTextContent_fn {
+				fn() // allow observers to clear validation msg
+			}
+			//
+			if hasEnteredNoAddressContent {
+				if let fn = self.clearedTextContent_fn {
+					fn() // allow consumers to re-show their add payment id buttons, etc
+				}
+				return
+			}
+			//
+			self.isValidatingOrResolvingNonZeroTextInput = true // essential that it's set back to false before any subsequent exit
+			if let fn = willValidateNonZeroTextInput_fn {
+				fn()
+			}
+			//
+			let couldBeOAAddress = MyMoneroCoreUtils.doesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
+			if couldBeOAAddress == false {
+				MyMoneroCore.shared.DecodeAddress(possibleAddress)
+				{ [unowned self] (err_str, decodedAddressComponents) in
+					if let _ = err_str {
+						DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode as a Monero address.")
+						self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
+						if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+							fn()
+						}
+						return // just return silently
+					}
+					let integratedAddress_paymentId = decodedAddressComponents!.intPaymentId
+					let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
+					var returning_paymentID: MoneroPaymentID?
+					if isIntegratedAddress {
+						returning_paymentID = integratedAddress_paymentId // use this one instead
+//						self._display(resolved_XMRAddress: decodedAddressComponents!.decodedAddress) // would be super cool to do this here
+						self._display(resolved_paymentID: returning_paymentID!)
+					}
+					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
+					self.hasValidTextInput_moneroAddress = true // IS valid; isValidOA is already false
+					if let fn = self.finishedValidatingTextInput_foundValidMoneroAddress_fn {
+						// consumer can display yielded payment id
+						fn(returning_paymentID)
+					}
+				}
+				return
+			}
+			// then this could be an OA address…
+			self.set(resolvingIndicatorIsVisible: true)
+			if let fn = self.willBeginResolvingPossibleOATextInput_fn {
+				fn()
+			}
+			let parameters = ContactPickerOpenAliasResolverRequestMaker.Parameters(
+				address: possibleAddress,
+				oaResolve__preSuccess_terminal_validationMessage_fn:
+				{ [unowned self] (localizedString) in
+					self.set(resolvingIndicatorIsVisible: false)
+					self.oaResolverRequestMaker = nil // must free, and before call-back
+					//
+					self._hide_resolved_XMRAddress()
+					self._hide_resolved_paymentID()
+					//
+					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
+					// but set no success flags
+					//
+					if let fn = self.oaResolve__preSuccess_terminal_validationMessage_fn {
+						fn(localizedString)
+					}
+				},
+				oaResolve__success_fn:
+				{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+					self.set(resolvingIndicatorIsVisible: false)
+					self.oaResolverRequestMaker = nil // must free, and before call-back
+					do {
+						self._display(resolved_XMRAddress: resolved_xmr_address)
+						if payment_id != nil && payment_id != "" {
+							self._display(resolved_paymentID: payment_id!)
+						} else {
+							self._hide_resolved_paymentID()
+						}
+					}
+					//
+					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
+					self.hasValidTextInput_resolvedOAAddress = true // IS valid; isValidMoneroAddress is already false
+					//
+					if let fn = self.oaResolve__success_fn {
+						fn(resolved_xmr_address, payment_id, tx_description)
+					}
+				}
+			)
+			let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
+			self.oaResolverRequestMaker = resolver
+			resolver.resolve()
+		}
+		//
 		// Delegation - Text field
 		func textFieldDidBeginEditing(_ textField: UITextField)
 		{
@@ -583,16 +705,56 @@ extension UICommonComponents.Form
 		{
 			return true
 		}
-		
+		var mediumDelay_waitingToFinishTypingTimer: Timer?
 		func inputField_editingChanged()
 		{
+			do { // zeroing text input state
+				self.hasValidTextInput_moneroAddress = false
+				self.hasValidTextInput_resolvedOAAddress = false
+			}
+			do { // cancel just in case
+				self.set(resolvingIndicatorIsVisible: false)
+				self.oaResolverRequestMaker = nil // must free, and before call-back
+			}
 			if self.inputField.isHidden == true || self.inputField.isFirstResponder == false {
 				return // in case we're editing .text programmatically
 			}
-			self._searchForAndDisplaySearchResults() // TODO? wait for sufficient pause in typing
-			// TODO: wait for "finished typing"-type pause and call self._didFinishTypingInInput_fn()
-			// …… or pass that off to consumer
-
+			//
+			self._searchForAndDisplaySearchResults() // b/c this computation is local, and cheap, we can do it immediately w/o waiting for delay
+			do {
+				// wait for sufficient pause in typing
+				if self.mediumDelay_waitingToFinishTypingTimer != nil {
+					self.mediumDelay_waitingToFinishTypingTimer!.invalidate()
+					self.mediumDelay_waitingToFinishTypingTimer = nil
+				}
+				self.mediumDelay_waitingToFinishTypingTimer = Timer.scheduledTimer(
+					withTimeInterval: 0.3,
+					repeats: false,
+					block:
+					{ [unowned self] (timer) in
+						do {
+							assert(timer == self.mediumDelay_waitingToFinishTypingTimer)
+							self.mediumDelay_waitingToFinishTypingTimer!.invalidate() // necessary?
+							self.mediumDelay_waitingToFinishTypingTimer = nil
+						}
+						DispatchQueue.main.async
+						{ [unowned self] in
+							if let fn = self.didFinishTypingInInput_afterMediumDelay_fn {
+								fn()
+							}
+						}
+						self.didFinishTypingInInput_afterMediumDelay()
+					}
+				)
+			}
+		}
+		//
+		// Delegation - Text field interaction signals
+		func didFinishTypingInInput_afterMediumDelay()
+		{
+			if self.inputMode == .contactsAndAddresses {
+				self.validateTextInputAsPossibleAddress() // we'll do this even though results may be visible… because it's very unlikely that results will show up for an address/domain
+			}
 		}
 		//
 		// Delegation - Table
@@ -981,21 +1143,25 @@ extension UICommonComponents.Form
 		{
 			self.resolve_requestHandle = OpenAliasResolver.shared.resolveOpenAliasAddress(
 				openAliasAddress: self.parameters.address,
-				{ [unowned self] (
+				{ [weak self] ( // rather than unowned
 					err_str: String?,
 					addressWhichWasPassedIn: String?,
 					response: OpenAliasResolver.OpenAliasResolverResponse?
 				) in
-					if self.parameters.address != addressWhichWasPassedIn {
+					if self == nil {
+						return
+					}
+					let this = self!
+					if this.parameters.address != addressWhichWasPassedIn {
 						assert(false, "another request's resolution was returned on this form… does that mean it wasn't cancelled from earlier?")
 						return
 					}
 					//
-					let handle_wasNil = self.resolve_requestHandle == nil
-					self.resolve_requestHandle = nil
+					let handle_wasNil = this.resolve_requestHandle == nil
+					this.resolve_requestHandle = nil
 					//
 					if err_str != nil {
-						if let fn = self.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {
+						if let fn = this.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {
 							fn(err_str!)
 						}
 						return
@@ -1008,14 +1174,14 @@ extension UICommonComponents.Form
 					}
 					let cached_OAResolved_XMR_address = response!.moneroReady_address
 					if cached_OAResolved_XMR_address == nil {
-						if let fn = self.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {
+						if let fn = this.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {
 							fn(NSLocalizedString("OpenAlias address no longer lists Monero address", comment: ""))
 							return
 						}
 					}
 					let paymentID = response!.returned__payment_id
 					let tx_description = response!.tx_description ?? ""
-					if let fn = self.parameters.oaResolve__success_fn {
+					if let fn = this.parameters.oaResolve__success_fn {
 						fn(cached_OAResolved_XMR_address!, paymentID, tx_description)
 					}
 				}

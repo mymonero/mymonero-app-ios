@@ -26,7 +26,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	//
 	var requestFrom_label: UICommonComponents.Form.FieldLabel!
 	var requestFrom_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
-	var requestFrom_inputView: UICommonComponents.Form.ContactPickerView!
+	var requestFrom_inputView: UICommonComponents.Form.ContactAndAddressPickerView!
 	var isWaitingOnFieldBeginEditingScrollTo_requestFrom = false // a bit janky
 	//
 	var createNewContact_buttonView: UICommonComponents.LinkButtonView!
@@ -122,10 +122,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.Form.ContactPickerView()
+			let view = UICommonComponents.Form.ContactAndAddressPickerView()
 			// TODO: initial contact selection? (from spawn)
 			view.textFieldDidBeginEditing_fn =
-			{ [unowned self] (textField) in				
+			{ [unowned self] (textField) in
+				self.view.setNeedsLayout() // to be certain we get the updated bottom padding
+				//
 				self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
 				// ^- this does not actually do anything at present, given suppressed scroll
 				self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = true // sort of janky
@@ -388,12 +390,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			width: self.requestFrom_inputView.frame.size.width,
 			height: (self.requestFrom_inputView.frame.origin.y - self.requestFrom_label.frame.origin.y) + self.requestFrom_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField
 		)
-//		self.scrollRectToVisible(
-//			toBeVisible_frame__absolute: toBeVisible_frame__absolute,
-//			atEdge: .top,
-//			finished_fn: {}
-//		)
-		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
+		self.scrollRectToVisible(
+			toBeVisible_frame__absolute: toBeVisible_frame__absolute,
+			atEdge: .top,
+			finished_fn: {}
+		)
+//		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
 	}
 	public func reconfigureFormAtRuntime_havingElsewhereSelected(requestFromContact contact: Contact)
 	{
@@ -559,7 +561,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		do {
 			self.memo_label.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: self.aboveMemo_separatorView.frame.origin.y + self.aboveMemo_separatorView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimate margin
+				y: self.aboveMemo_separatorView.frame.origin.y
+					+ ceil(self.aboveMemo_separatorView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
+					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimated margin
 				width: fullWidth_label_w,
 				height: self.memo_label.frame.size.height
 			).integral
@@ -664,7 +668,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				bottomMostView = self.requestFrom_inputView
 			}
 		}
-		let bottomPadding: CGFloat = 18
+		let bottomPadding: CGFloat = 18 + (self.requestFrom_inputView.inputField.isFirstResponder ? 300/*prevent height disparity when view not large enough to stay scrolled to top*/ : 0)
 		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView,
 			bottomPadding: bottomPadding

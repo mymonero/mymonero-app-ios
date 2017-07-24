@@ -18,7 +18,7 @@ struct ParsedOARecipientDescription
 //
 extension MyMoneroCoreUtils
 {
-	static func isAddressNotMoneroAddressAndThusProbablyOAAddress(_ address: String) -> Bool // i.e. we already believe it to be an address
+	static func doesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(_ address: String) -> Bool // i.e. we already believe it to be an address
 	{
 		if address.range(of: ".") != nil { // assumed to be an OA address as XMR addresses do not have periods, and OA addrs must
 			return true

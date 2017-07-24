@@ -26,7 +26,7 @@ extension SendFundsForm
 		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
 		//
 		var sendTo_label: UICommonComponents.Form.FieldLabel!
-		var sendTo_inputView: UICommonComponents.Form.ContactPickerView!
+		var sendTo_inputView: UICommonComponents.Form.ContactAndAddressPickerView!
 		var isWaitingOnFieldBeginEditingScrollTo_sendTo = false // a bit janky
 		//
 		var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
@@ -83,12 +83,17 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.Form.ContactPickerView(
+				let view = UICommonComponents.Form.ContactAndAddressPickerView(
 					inputMode: .contactsAndAddresses,
 					displayMode: .paymentIds_andResolvedAddrs
 				)
+				view.inputField.set(
+					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")
+				)
 				view.textFieldDidBeginEditing_fn =
 				{ [unowned self] (textField) in
+					self.view.setNeedsLayout() // to be certain we get the updated bottom padding
+					
 					self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
 					// ^- this does not actually do anything at present, given suppressed scroll
 					self.isWaitingOnFieldBeginEditingScrollTo_sendTo = true // sort of janky
@@ -125,7 +130,7 @@ extension SendFundsForm
 				}
 				view.didPickContact_fn =
 				{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
-					self.addPaymentID_buttonView.isHidden = true // hide if showing
+					self.set_addPaymentID_buttonView(isHidden: true) // hide if showing
 					self.hideAndClear_manualPaymentIDField() // if there's a pid we'll show it as 'Detected' anyway
 					// TODO:
 //					self._hideResolvedAddress() // no possible need to show this in this scenario
@@ -139,13 +144,35 @@ extension SendFundsForm
 						return
 					}
 					//
-					// does NOT need to resolve an OA address; handle contact's non-OA payment id - if we already have one
-					// TODO:
-					if let paymentID = contact.payment_id {
-//						self._display(resolvedPaymentID: payment_id)
-					} else {
-//						self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
+					// contact picker will handle showing resolved addr / pid etc
+				}
+				view.changedTextContent_fn =
+				{ [unowned self] in
+					self.clearValidationMessage() // in case any from text resolve
+				}
+				view.clearedTextContent_fn =
+				{ [unowned self] in
+					if self.manualPaymentID_inputView.isHidden {
+						self.set_addPaymentID_buttonView(isHidden: false) // show if hidden as we may have hidden it
 					}
+				}
+				view.willValidateNonZeroTextInput_fn =
+				{ [unowned self] in
+					self.set_isFormSubmittable_needsUpdate()
+				}
+				view.finishedValidatingTextInput_foundValidMoneroAddress_fn =
+				{ [unowned self] (detectedEmbedded_paymentID) in
+					self.set_isFormSubmittable_needsUpdate()
+					if detectedEmbedded_paymentID != nil { // i.e. integrated address supplying one - we show it as 'detected'
+						self.set_addPaymentID_buttonView(isHidden: true)
+						self.hideAndClear_manualPaymentIDField()
+					}
+				}
+				view.willBeginResolvingPossibleOATextInput_fn =
+				{
+					self.hideAndClear_manualPaymentIDField()
+					self.set_addPaymentID_buttonView(isHidden: true)
+					self.clearValidationMessage() // this is probably redundant here
 				}
 				view.oaResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
@@ -155,12 +182,24 @@ extension SendFundsForm
 				view.oaResolve__success_fn =
 				{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
 					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
-					do { // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-						if payment_id != "" && payment_id != nil {
-							// TODO
-//							self._display(resolvedPaymentID: payment_id)
+					//
+					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+					//
+					// the ContactPicker also already handles displaying the resolved addr and pids
+					//
+					do { // now since the contact picker's mode is handling resolving text inputs too:
+						if view.hasValidTextInput_resolvedOAAddress {
+							if payment_id != nil && payment_id != "" { // just to make sure we're not showing these,
+								// we already hid the + and manual pid input views
+							} else {
+								if self.manualPaymentID_inputView.isHidden { // if manual payment field not showing
+									self.set_addPaymentID_buttonView(isHidden: false) // then make sure we are at least showing the + payment ID btn
+								} else {
+									// it should be the case here that either add pymt id btn or manual payment field is visible
+								}
+							}
 						} else {
-							// we already hid it above
+							assert(view.selectedContact != nil) // or they'd better have selected a contact!!
 						}
 					}
 				}
@@ -170,7 +209,7 @@ extension SendFundsForm
 					//
 					self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
 					//
-					self.addPaymentID_buttonView.isHidden = false // show if hidden
+					self.set_addPaymentID_buttonView(isHidden: false) // show if hidden
 					self.hideAndClear_manualPaymentIDField() // if showing
 					//
 					if preExistingContact.hasOpenAliasAddress {
@@ -233,10 +272,17 @@ extension SendFundsForm
 			if self.sendTo_inputView.isResolving {
 				return false
 			}
+			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
+				return false
+			}
 			if self.amount_fieldset.inputField.submittableAmount_orNil == nil { // amount is required
 				return false
 			}
-			// TODO: whether has picked a contact or entered addr etc
+			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
+				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
+				&& self.sendTo_inputView.selectedContact == nil {
+				return false
+			}
 			return true
 		}
 		//
@@ -314,6 +360,12 @@ extension SendFundsForm
 			self.manualPaymentID_inputView.text = ""
 		}
 		//
+		func set_addPaymentID_buttonView(isHidden: Bool)
+		{
+			self.addPaymentID_buttonView.isHidden = isHidden
+			self.view.setNeedsLayout()
+		}
+		//
 		// Imperatives - Contact picker, contact picking
 		func scrollToVisible_sendTo()
 		{
@@ -323,12 +375,12 @@ extension SendFundsForm
 				width: self.sendTo_inputView.frame.size.width,
 				height: (self.sendTo_inputView.frame.origin.y - self.sendTo_label.frame.origin.y) + self.sendTo_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField
 			)
-			//		self.scrollRectToVisible(
-			//			toBeVisible_frame__absolute: toBeVisible_frame__absolute,
-			//			atEdge: .top,
-			//			finished_fn: {}
-			//		)
-			self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
+			self.scrollRectToVisible(
+				toBeVisible_frame__absolute: toBeVisible_frame__absolute,
+				atEdge: .top,
+				finished_fn: {}
+			)
+//			self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
 		}
 		public func reconfigureFormAtRuntime_havingElsewhereSelected(sendToContact contact: Contact)
 		{
@@ -532,7 +584,7 @@ extension SendFundsForm
 					bottomMostView = self.sendTo_inputView
 				}
 			}
-			let bottomPadding: CGFloat = 18
+			let bottomPadding: CGFloat = 18 + (self.sendTo_inputView.inputField.isFirstResponder ? 300/*prevent height disparity when view not large enough to stay scrolled to top*/ : 0)
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,
 				bottomPadding: bottomPadding
@@ -591,8 +643,8 @@ extension SendFundsForm
 		//
 		func addPaymentID_tapped()
 		{
+			self.set_addPaymentID_buttonView(isHidden: true)
 			self.set_manualPaymentIDField(isHidden: false)
-			self.addPaymentID_buttonView.isHidden = true
 		}
 	}
 }

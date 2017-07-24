@@ -95,7 +95,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 			return
 		}
 		//
-		let isPresumedToBeOAAddress = MyMoneroCoreUtils.isAddressNotMoneroAddressAndThusProbablyOAAddress(self.parameters.address)
+		let isPresumedToBeOAAddress = MyMoneroCoreUtils.doesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.address)
 		if isPresumedToBeOAAddress == false {
 			self._handleValidated_xmrAddressSubmission()
 		} else {

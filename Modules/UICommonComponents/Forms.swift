@@ -15,7 +15,7 @@ extension UICommonComponents
 	{
 		//
 		// Constants
-		static let fieldScrollDuration = 0.25
+		static let fieldScrollDuration = 0.3 // oddly this must not exceed .4 or some sort of layout racing happens and the eventual scroll offset becomes wrong
 		//
 		// Properties - Cached
 		//
@@ -180,6 +180,8 @@ extension UICommonComponents
 			}
 			UIView.animate(
 				withDuration: FormViewController.fieldScrollDuration,
+				delay: 0,
+				options: [ .curveEaseInOut ],
 				animations:
 				{ [unowned self] in
 					self.scrollView.contentOffset = CGPoint(x: 0, y: contentOffset_y)
@@ -520,6 +522,10 @@ extension UICommonComponents
 		func set(isEnabled: Bool)
 		{
 			self.textView.isEditable = isEnabled
+			do { // whether or not to ignore touches, to support bg taps to blur 
+				self.isUserInteractionEnabled = isEnabled
+				self.textView.isUserInteractionEnabled = isEnabled
+			}
 			self.setNeedsDisplay() // redraw bg
 		}
 		//
@@ -680,16 +686,7 @@ extension UICommonComponents
 		{
 			self.font = UIFont.middlingLightMonospace
 			if self.init_placeholder != nil {
-				let string = NSMutableAttributedString(string: self.init_placeholder!)
-				let range = NSRange(location: 0, length: self.init_placeholder!.characters.count)
-				string.addAttributes(
-					[
-						NSForegroundColorAttributeName: UIColor(rgb: 0x6B696B),
-						NSFontAttributeName: UIFont.middlingRegularMonospace // light is too light
-					],
-					range: range
-				)
-				self.attributedPlaceholder = string
+				self.set(placeholder: self.init_placeholder!)
 			}
 			self.textColor = UIColor(rgb: 0xDFDEDF)
 			self.borderStyle = .none
@@ -704,6 +701,21 @@ extension UICommonComponents
 		override func editingRect(forBounds bounds: CGRect) -> CGRect
 		{ // text position
 			return bounds.insetBy(dx: FormInputField.textInsets.left, dy: FormInputField.textInsets.top)
+		}
+		//
+		// Imperatives - Placeholder
+		func set(placeholder text: String)
+		{
+			let string = NSMutableAttributedString(string: text)
+			let range = NSRange(location: 0, length: text.characters.count)
+			string.addAttributes(
+				[
+					NSForegroundColorAttributeName: UIColor(rgb: 0x6B696B),
+					NSFontAttributeName: UIFont.middlingRegularMonospace // light is too light
+				],
+				range: range
+			)
+			self.attributedPlaceholder = string
 		}
 		//
 		// Imperatives - Validation errors
