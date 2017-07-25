@@ -28,7 +28,6 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	//
 	var paymentID_label: UICommonComponents.Form.FieldLabel?
 	var paymentID_inputView: UICommonComponents.FormTextViewContainerView?
-	//
 	var paymentID_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
 	//
 	var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView?
@@ -118,37 +117,37 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.resolving_activityIndicator = view
 			self.scrollView.addSubview(view)
 		}
-		// TODO: check if paymentID needed by overridable flag
-		do {
-			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("PAYMENT ID", comment: ""),
-				sizeToFit: true
-			)
-			self.paymentID_label = view
-			self.scrollView.addSubview(view)
-		}
-		do { // TODO: config as immutable by overridable flag
-			let view = UICommonComponents.FormTextViewContainerView(
-				placeholder: NSLocalizedString("Optional", comment: "")
-			)
-			view.textView.autocorrectionType = .no
-			view.textView.autocapitalizationType = .none
-			view.textView.spellCheckingType = .no
-			view.textView.returnKeyType = .go
-			view.textView.delegate = self
-			self.paymentID_inputView = view
-			if let value = self.new_initial_value_paymentID {
-				view.textView.text = value
+		if self._overridable_wants_paymentIDField {
+			do {
+				let view = UICommonComponents.Form.FieldLabel(
+					title: NSLocalizedString("PAYMENT ID", comment: ""),
+					sizeToFit: true
+				)
+				self.paymentID_label = view
+				self.scrollView.addSubview(view)
 			}
-			self.scrollView.addSubview(view)
-		}
-		// TODO: check if field needs to be displayed:
-		do {
-			let view = UICommonComponents.FormFieldAccessoryMessageLabel(
-				text: NSLocalizedString("Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated.", comment: "")
-			)
-			self.paymentID_fieldAccessoryMessageLabel = view
-			self.scrollView.addSubview(view)
+			do {
+				let view = UICommonComponents.FormTextViewContainerView(
+					placeholder: NSLocalizedString("Optional", comment: "")
+				)
+				view.textView.autocorrectionType = .no
+				view.textView.autocapitalizationType = .none
+				view.textView.spellCheckingType = .no
+				view.textView.returnKeyType = .go
+				view.textView.delegate = self
+				self.paymentID_inputView = view
+				if let value = self.new_initial_value_paymentID {
+					view.textView.text = value
+				}
+				self.scrollView.addSubview(view)
+			}
+			if self._overridable_wants_paymentID_fieldAccessoryMessageLabel {
+				let view = UICommonComponents.FormFieldAccessoryMessageLabel(
+					text: NSLocalizedString("Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated.", comment: "")
+				)
+				self.paymentID_fieldAccessoryMessageLabel = view
+				self.scrollView.addSubview(view)
+			}
 		}
 		if self._overridable_wantsDeleteRecordButton {
 			do {
@@ -206,12 +205,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			return self.address_inputView.textView
 		}
 		if inputView == self.address_inputView.textView {
-			if let paymentID_inputView = self.paymentID_inputView {
+			if let paymentID_inputView = self.paymentID_inputView, paymentID_inputView.isHidden == false {
 				return paymentID_inputView.textView
 			}
 			return nil
 		}
-		if let paymentID_inputView = self.paymentID_inputView {
+		if let paymentID_inputView = self.paymentID_inputView, paymentID_inputView.isHidden == false {
 			if inputView == paymentID_inputView.textView {
 				return nil
 			}
@@ -226,7 +225,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var _overridable_formSubmissionMode: ContactFormSubmissionController.Mode { return .insert }
 	var _overridable_defaultNil_skippingOAResolve_explicit__cached_OAResolved_XMR_address: MoneroAddress? { return nil }
 	var _overridable_forMode_update__contactInstance: Contact? { return nil }
+	var _overridable_wantsInputPermanentlyDisabled_address: Bool { return false }
+	var _overridable_wantsInputPermanentlyDisabled_paymentID: Bool { return false }
+	//
 	var _overridable_wantsDeleteRecordButton: Bool { return false }
+	var _overridable_wants_paymentIDField: Bool { return true }
+	var _overridable_wants_paymentID_fieldAccessoryMessageLabel: Bool { return true }
 	//
 	var new_initial_value_name: String? { return nil }
 	var new_initial_value_emoji: Emoji.EmojiCharacter {
@@ -291,8 +295,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		self.name_inputView.isEnabled = true
 		self.emoji_inputView.isEnabled = true
-		self.address_inputView.set(isEnabled: true)
-		self.paymentID_inputView?.set(isEnabled: true)
+		if self._overridable_wantsInputPermanentlyDisabled_address != true {
+			self.address_inputView.set(isEnabled: true)
+		}
+		if self._overridable_wantsInputPermanentlyDisabled_paymentID != true {
+			self.paymentID_inputView?.set(isEnabled: true)
+		}
 	}
 	var formSubmissionController: ContactFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()
@@ -353,7 +361,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		)
 		let controller = ContactFormSubmissionController(parameters: parameters)
 		self.formSubmissionController = controller
-		self.set_isFormSubmittable_needsUpdate() // update submittability
+		do {
+			self.set_isFormSubmittable_needsUpdate() // update submittability only after setting formSubmissionController
+		}
 		controller.handle()
 	}
 	//
@@ -433,7 +443,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		if self.paymentID_label != nil {
 			assert(self.paymentID_inputView != nil)
-			
+			//
 			let addressFieldset_bottomEdge = self.resolving_activityIndicator.isHidden ?
 				self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height
 			: self.resolving_activityIndicator.frame.origin.y + self.resolving_activityIndicator.frame.size.height

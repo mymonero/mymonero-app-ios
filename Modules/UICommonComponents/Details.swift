@@ -235,6 +235,16 @@ extension UICommonComponents
 				}
 				var currentField_yOffset: CGFloat = 0
 				for (idx, fieldView) in specific_fieldViews.enumerated() {
+					let isNotYetAtEnd = idx < numberOfFields - 1
+					if fieldView.isHidden == true {
+						if isNotYetAtEnd {
+							if alsoLayOutSharedSeparatorViewsForDisplay {
+								let separatorView = self.fieldSeparatorViews[idx] // we expect there to be one
+								separatorView.isHidden = true
+							}
+						}
+						continue // skip
+					}
 					let contentInsets = fieldView.contentInsets
 					//
 					// fieldViews are actually sized here - it might be nicer if we could just measure them instead
@@ -245,13 +255,14 @@ extension UICommonComponents
 					)
 					currentField_yOffset = fieldView.frame.origin.y + fieldView.frame.size.height + contentInsets.bottom
 					//
-					if idx < numberOfFields - 1 { // any but the last field
+					if isNotYetAtEnd { // any but the last field
 						// updating currentField_yOffset - not adding .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
 						let h = FieldSeparatorView.h
 						let topMargin: CGFloat = 0 // just calling these out
 						let bottomMargin: CGFloat = 0
-						if alsoLayOutSharedSeparatorViewsForDisplay == true { // should be true if we actually intend to display the fieldViews right here rather than just measure them
-							let separatorView = self.fieldSeparatorViews[idx] // we expect there to be done
+						if alsoLayOutSharedSeparatorViewsForDisplay { // should be true if we actually intend to display the fieldViews right here rather than just measure them
+							let separatorView = self.fieldSeparatorViews[idx] // we expect there to be one
+							separatorView.isHidden = false // just in case it was hidden
 							separatorView.frame = CGRect(
 								x: contentInsets.left,
 								y: currentField_yOffset + topMargin,

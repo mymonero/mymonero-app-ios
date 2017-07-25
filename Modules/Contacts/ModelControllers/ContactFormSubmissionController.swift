@@ -68,39 +68,42 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				)
 				return
 			}
-			if self.parameters.canSkipEntireOAResolveAndDirectlyUseInputValues == true {
-				let paymentID_exists = self.parameters.paymentID != nil && self.parameters.paymentID! != ""
-				let paymentID_existsAndIsNotValid = paymentID_exists && MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(
-					self.parameters.paymentID!
-				) == false
-				if paymentID_existsAndIsNotValid {
-					self.parameters.preInputValidation_terminal_validationMessage_fn(
-						NSLocalizedString("Please enter a valid payment ID.", comment: "")
-					)
-					return
+		}
+		let isPresumedToBeOAAddress = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.address)
+		do {
+			if isPresumedToBeOAAddress {
+				if self.parameters.canSkipEntireOAResolveAndDirectlyUseInputValues == true {
+					let paymentID_exists = self.parameters.paymentID != nil && self.parameters.paymentID! != ""
+					let paymentID_existsAndIsNotValid = paymentID_exists && MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(self.parameters.paymentID!) == false
+					if paymentID_existsAndIsNotValid {
+						self.parameters.preInputValidation_terminal_validationMessage_fn(
+							NSLocalizedString("Please enter a valid payment ID.", comment: "")
+						)
+						return
+					}
 				}
-				return
+			} else {
+				
 			}
 		}
 		//
 		// Now we can enter submission process
 		self.parameters.passedInputValidation_fn()
 		//
-		if self.parameters.canSkipEntireOAResolveAndDirectlyUseInputValues == true {
-			DDLog.Info("Contacts", "Skipping OA resolve on ContactForm submit.")
-			self.__proceedTo_persistContact(
-				withPaymentID: self.parameters.paymentID, // now, by now, we've already validated that if they've entered a paymentID, it's valid
-				cached_OAResolved_XMR_address: self.parameters.skippingOAResolve_explicit__cached_OAResolved_XMR_address
-			)
+		if isPresumedToBeOAAddress {
+			if self.parameters.canSkipEntireOAResolveAndDirectlyUseInputValues == true {
+				DDLog.Info("Contacts", "Skipping OA resolve on ContactForm submit.")
+				self.__proceedTo_persistContact(
+					withPaymentID: self.parameters.paymentID, // now, by now, we've already validated that if they've entered a paymentID, it's valid
+					cached_OAResolved_XMR_address: self.parameters.skippingOAResolve_explicit__cached_OAResolved_XMR_address
+				)
+				return
+			}
+			self._handleValidated_oaAddressSubmission()
 			return
 		}
-		//
-		let isPresumedToBeOAAddress = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.address)
-		if isPresumedToBeOAAddress == false {
-			self._handleValidated_xmrAddressSubmission()
-		} else {
-			self._handleValidated_oaAddressSubmission()
-		}
+		// normal or integrated xmr addr
+		self._handleValidated_xmrAddressSubmission()
 	}
 	func _handleValidated_xmrAddressSubmission()
 	{

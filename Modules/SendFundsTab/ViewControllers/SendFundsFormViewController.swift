@@ -389,7 +389,7 @@ extension SendFundsForm
 		{
 			super.disableForm()
 			//
-			self.scrollView.isScrollEnabled = false
+//			self.scrollView.isScrollEnabled = false
 			//
 			self.fromWallet_inputView.isEnabled = false
 			self.amount_fieldset.inputField.isEnabled = false
@@ -398,6 +398,7 @@ extension SendFundsForm
 				pillView.xButton.isEnabled = true
 			}
 			self.manualPaymentID_inputView.isEnabled = false
+			self.addPaymentID_buttonView.isEnabled = false
 			
 			// TODO: disable action buttons too
 		}
@@ -405,7 +406,8 @@ extension SendFundsForm
 		{
 			super.reEnableForm()
 			//
-			self.scrollView.isScrollEnabled = true
+			// allowing scroll so user can check while sending despite no cancel support existing yet
+//			self.scrollView.isScrollEnabled = true
 			//
 			self.fromWallet_inputView.isEnabled = true
 			self.amount_fieldset.inputField.isEnabled = true
@@ -414,7 +416,7 @@ extension SendFundsForm
 				pillView.xButton.isEnabled = true
 			}
 			self.manualPaymentID_inputView.isEnabled = true
-
+			self.addPaymentID_buttonView.isEnabled = true
 			// TODO: enable action buttons too
 		}
 		var formSubmissionController: SendFundsForm.SubmissionController?
@@ -489,7 +491,7 @@ extension SendFundsForm
 					)
 				},
 				success_fn:
-				{ [unowned self] (mockedTransaction) in
+				{ [unowned self] (mockedTransaction, isXMRAddressIntegrated) in
 					self.formSubmissionController = nil // must free as this is a terminal callback
 					// will re-enable form shortly (after presentation)
 					//
@@ -509,11 +511,15 @@ extension SendFundsForm
 								deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
 								execute:
 								{ [unowned self] in
-									// TODO
-									let viewController = UIViewController()/*AddContactFromSendTabFormViewController(
-										enteredAddressValue: enteredAddressValue
-										// TODO: more values as necessary
-									)*/
+									let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
+										enteredAddressValue: enteredAddressValue!, // ! b/c selected contact was nil
+										isXMRAddressIntegrated: isXMRAddressIntegrated,
+										resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
+										sentWith_paymentID: mockedTransaction.paymentId
+									)
+									let viewController = AddContactFromSendFundsTabFormViewController(
+										parameters: parameters
+									)
 									let navigationController = UINavigationController(rootViewController: viewController)
 									self.navigationController!.present(navigationController, animated: true, completion: nil)
 								}
@@ -582,13 +588,13 @@ extension SendFundsForm
 					y: ceil(top_yOffset),
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
-					).integral
+				).integral
 				self.fromWallet_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
 					height: self.fromWallet_inputView.frame.size.height
-					).integral
+				).integral
 			}
 			do {
 				self.amount_label.frame = CGRect(
@@ -596,13 +602,13 @@ extension SendFundsForm
 					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
-					).integral
+				).integral
 				self.amount_fieldset.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: self.amount_fieldset.frame.size.width,
 					height: self.amount_fieldset.frame.size.height
-					).integral
+				).integral
 			}
 			do {
 				self.sendTo_label.frame = CGRect(
@@ -610,13 +616,13 @@ extension SendFundsForm
 					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 					width: fullWidth_label_w,
 					height: self.sendTo_label.frame.size.height
-					).integral
+				).integral
 				self.sendTo_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.sendTo_label.frame.origin.y + self.sendTo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.sendTo_inputView.frame.size.height
-					).integral
+				).integral
 			}
 			//
 			if self.addPaymentID_buttonView.isHidden == false {

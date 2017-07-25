@@ -81,7 +81,7 @@ extension UICommonComponents
 			assert(pasteboardItems.count != 0) // not that it would be, with the above assert
 			UIPasteboard.general.setItems(pasteboardItems, options: [:])
 			//
-			HUD.flash(.label(NSLocalizedString("Copied", comment: "")), delay: 0.3)
+			HUD.flash(.label(NSLocalizedString("Copied", comment: "")), delay: 0.05) // would like to be able to modify fade-out duration of HUD
 			//
 			DDLog.Done(
 				"UICommonComponents"/*maybe CopyButton instead*/,

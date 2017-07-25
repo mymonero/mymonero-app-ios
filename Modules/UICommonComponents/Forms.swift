@@ -414,6 +414,7 @@ extension UICommonComponents
 			func setup()
 			{
 				self.font = UIFont.smallRegularMonospace
+				self.isUserInteractionEnabled = false // do not intercept touches destined for the form background tap recognizer
 				self.textColor = UIColor(rgb: 0xF8F7F8)
 				self.numberOfLines = 1
 			}
