@@ -59,7 +59,7 @@ extension TransactionDetails
 		override func setup_views()
 		{
 			super.setup_views()
-			self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
+			self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 14, 0)
 			// TODO: contact sent-to or received-from
 			do {
 				let sectionView = self.sectionView_details
@@ -165,7 +165,7 @@ extension TransactionDetails
 			self.sectionView_details.sizeToFitAndLayOutSubviews(
 				withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 				withXOffset: 0,
-				andYOffset: 0
+				andYOffset: self.yOffsetForViewsBelowValidationMessageView
 			)
 			self.scrollableContentSizeDidChange(withBottomView: self.sectionView_details, bottomPadding: 12) // btm padding in .contentInset
 		}

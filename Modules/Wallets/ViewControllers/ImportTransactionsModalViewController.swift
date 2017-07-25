@@ -308,8 +308,6 @@ extension ImportTransactionsModal
 					),
 					wantsXButton: false
 				)
-				self.disableForm()
-				self.set_isFormSubmittable_needsUpdate() // update submittability
 			}
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
@@ -342,6 +340,10 @@ extension ImportTransactionsModal
 				}
 			let controller = ImportTransactionsModal.SubmissionController(parameters: parameters)
 			self.submissionController = controller
+			do {
+				self.disableForm()
+				self.set_isFormSubmittable_needsUpdate() // update submittability; after setting self.submissionController
+			}
 			controller.handle()
 		}
 		//

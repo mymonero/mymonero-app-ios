@@ -291,6 +291,7 @@ extension UICommonComponents
 		func aField_didReturnWithKey_go(_ inputView: UIView)
 		{
 			if self.navigationItem.rightBarButtonItem!.isEnabled {
+				self.scrollView.resignCurrentFirstResponder()
 				self._tryToSubmitForm()
 			}
 		}
@@ -310,6 +311,7 @@ extension UICommonComponents
 		// Delegation - Internal/Convenience - Form submission
 		func aFormSubmissionButtonWasPressed()
 		{
+			self.scrollView.resignCurrentFirstResponder()
 			self._tryToSubmitForm()
 		}
 		//

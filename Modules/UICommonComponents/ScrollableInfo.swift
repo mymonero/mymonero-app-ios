@@ -100,10 +100,10 @@ extension UICommonComponents
 		//
 		// Accessors - Lookups/Derived - Layout metrics
 		var inlineMessageValidationView_topMargin: CGFloat {
-			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
+			return 16
 		}
 		var inlineMessageValidationView_bottomMargin: CGFloat {
-			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
+			return 16
 		}
 		var yOffsetForViewsBelowValidationMessageView: CGFloat
 		{

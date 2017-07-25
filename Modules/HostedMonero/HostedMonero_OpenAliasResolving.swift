@@ -31,7 +31,7 @@ extension HostedMoneroAPIClient
 		) -> Void
 	) -> HostedMoneroAPIClient.RequestHandle?
 	{
-		if MyMoneroCoreUtils.doesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(openAliasAddress) == false {
+		if MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(openAliasAddress) == false {
 			let err_str = "Asked to resolve non-OpenAlias address"
 			fn(err_str, nil) // although technically should be a code fault
 			return nil

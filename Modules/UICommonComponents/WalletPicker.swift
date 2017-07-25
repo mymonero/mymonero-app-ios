@@ -65,7 +65,7 @@ extension UICommonComponents
 								return
 							}
 						} else {
-							NSLog("Going to check selectedWallet no currently selected wallet")
+							DDLog.Info("UICommonComponents.WalletPicker", "Going to check selectedWallet no currently selected wallet")
 						}
 						let picker_selectedWallet = self.pickerView.selectedWallet
 						if picker_selectedWallet == nil {
@@ -73,6 +73,7 @@ extension UICommonComponents
 						}
 						let selectedWallet = picker_selectedWallet!
 						if self.selectedWallet == nil || self.selectedWallet! != selectedWallet {
+							self.selectedWallet = selectedWallet
 							self.contentView.configure(withObject: selectedWallet)
 						} else {
 							DDLog.Warn("UICommonComponents.WalletPicker", "reloaded but was same")

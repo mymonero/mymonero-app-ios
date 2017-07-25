@@ -147,7 +147,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 		self.sectionView.sizeToFitAndLayOutSubviews(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
-			andYOffset: 0
+			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
 		self.scrollableContentSizeDidChange(withBottomView: self.sectionView, bottomPadding: 0) // btm padding in .contentInset
 		//

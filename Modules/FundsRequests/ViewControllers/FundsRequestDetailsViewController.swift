@@ -174,7 +174,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		self.sectionView_instanceCell.sizeToFitAndLayOutSubviews(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
-			andYOffset: 0
+			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
 		//
 		self.sectionView_link.sizeToFitAndLayOutSubviews(

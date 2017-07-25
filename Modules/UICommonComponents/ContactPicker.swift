@@ -211,6 +211,15 @@ extension UICommonComponents.Form
 		}
 		//
 		// Imperatives - UI state modifications
+		func clearAndReset()
+		{
+			self.unpickSelectedContact_andRedisplayInputField(
+				skipFocusingInputField: true // do not re-focus input
+			)
+			self.inputField.text = ""
+			self._hide_resolved_XMRAddress()
+			self._hide_resolved_paymentID()
+		}
 		func _removeSelectedContactPillView()
 		{
 			let hadExistingContact = self.selectedContact != nil
@@ -350,7 +359,7 @@ extension UICommonComponents.Form
 				view.xButton_tapped_fn =
 				{ [unowned self] in
 					if self.inputField.isEnabled == false {
-						DDLog.Info("UICommonComponents", "💬  Disallowing user unpick of contact while inputLayer is disabled.")
+						DDLog.Info("UICommonComponents", "Disallowing user unpick of contact while inputField is disabled.")
 						return
 					}
 					self.unpickSelectedContact_andRedisplayInputField(skipFocusingInputField: false)
@@ -572,7 +581,7 @@ extension UICommonComponents.Form
 			self.sizeAndLayOutSubviews()
 		}
 		//
-		// Imperatives - 
+		// Imperatives - Internal - Manually input addresses
 		func validateTextInputAsPossibleAddress()
 		{
 			assert(self.inputMode == .contactsAndAddresses)
@@ -601,7 +610,7 @@ extension UICommonComponents.Form
 				fn()
 			}
 			//
-			let couldBeOAAddress = MyMoneroCoreUtils.doesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
+			let couldBeOAAddress = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
 			if couldBeOAAddress == false {
 				MyMoneroCore.shared.DecodeAddress(possibleAddress)
 				{ [unowned self] (err_str, decodedAddressComponents) in

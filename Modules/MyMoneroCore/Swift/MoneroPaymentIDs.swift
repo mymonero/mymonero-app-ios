@@ -12,7 +12,7 @@ extension MyMoneroCoreUtils
 {
 	static func isValidPaymentIDOrNoPaymentID(_ paymentId: String?) -> Bool
 	{
-		if let paymentId = paymentId {
+		if let paymentId = paymentId, paymentId != "" {
 			let pattern = "^[0-9a-fA-F]{64}$"
 			if paymentId.characters.count != 64 || paymentId.range(of: pattern, options: .regularExpression) == nil { // not a valid 64 char pid
 				return false // then not valid

@@ -132,8 +132,6 @@ extension SendFundsForm
 				{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
 					self.set_addPaymentID_buttonView(isHidden: true) // hide if showing
 					self.hideAndClear_manualPaymentIDField() // if there's a pid we'll show it as 'Detected' anyway
-					// TODO:
-//					self._hideResolvedAddress() // no possible need to show this in this scenario
 					//
 					if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
 						// contact picker will show its own resolving indicator while we look up the paymentID again
@@ -211,10 +209,6 @@ extension SendFundsForm
 					//
 					self.set_addPaymentID_buttonView(isHidden: false) // show if hidden
 					self.hideAndClear_manualPaymentIDField() // if showing
-					//
-					if preExistingContact.hasOpenAliasAddress {
-						// TODO?
-					}
 				}
 				let inputField = view.inputField
 				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
@@ -339,6 +333,7 @@ extension SendFundsForm
 					return stripped_paymentID
 				}
 			}
+			// TODO:
 			return nil
 		}
 		//
@@ -403,6 +398,8 @@ extension SendFundsForm
 				pillView.xButton.isEnabled = true
 			}
 			self.manualPaymentID_inputView.isEnabled = false
+			
+			// TODO: disable action buttons too
 		}
 		override func reEnableForm()
 		{
@@ -417,68 +414,144 @@ extension SendFundsForm
 				pillView.xButton.isEnabled = true
 			}
 			self.manualPaymentID_inputView.isEnabled = true
+
+			// TODO: enable action buttons too
 		}
-		var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
+		var formSubmissionController: SendFundsForm.SubmissionController?
 		override func _tryToSubmitForm()
 		{
 			self.clearValidationMessage()
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
 			//
-			let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
-			let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil
+			let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
+			let amount_submittableDouble = self.amount_fieldset.inputField.submittableDouble_orNil
 			do {
-				assert(submittableDoubleAmount != nil || amount == nil || amount == "")
-				if submittableDoubleAmount == nil {
+				assert(amount_submittableDouble != nil && amountText != nil && amountText != "")
+				if amount_submittableDouble == nil {
 					self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
 					return
 				}
 			}
-			if submittableDoubleAmount! <= 0 {
-				self.setValidationMessage(NSLocalizedString("Please enter an amount greater than zero.", comment: ""))
+			if amount_submittableDouble! <= 0 {
+				self.setValidationMessage(NSLocalizedString("The amount to send must be greater than zero.", comment: ""))
 				return
 			}
 			//
-			let selectedContact = self.sendTo_inputView.selectedContact
-			let hasPickedAContact = selectedContact != nil
-			let sendTo_input_text = self.sendTo_inputView.inputField.text
-			if sendTo_input_text != nil && sendTo_input_text! != "" { // they have entered something
-				if hasPickedAContact == false { // but not picked a contact
-					// TODO: validation station
-				}
-			}
-			let fromContact_name_orNil = selectedContact != nil ? selectedContact!.fullname : nil
+			self.disableForm() // optimistic
 			//
-//			let paymentID: MoneroPaymentID? = self.manualPaymentID_inputView.isHidden == false ? self.manualPaymentID_inputView.text : nil
-//			let parameters = AddFundsRequestFormSubmissionController.Parameters(
-//				optl__fromWallet_color: fromWallet.swatchColor,
-//				fromWallet_address: fromWallet.public_address,
-//				optl__fromContact_name: fromContact_name_orNil,
-//				paymentID: paymentID,
-//				amount: amount,
-//				optl__memo: memoString,
-//				//
-//				preSuccess_terminal_validationMessage_fn:
-//				{ [unowned self] (localizedString) in
-//					self.setValidationMessage(localizedString)
-//					self.formSubmissionController = nil // must free as this is a terminal callback
-//					self.set_isFormSubmittable_needsUpdate()
-//					self.reEnableForm() // b/c we disabled it
-//				},
-//				success_fn:
-//				{ [unowned self] (instance) in
-//					self.formSubmissionController = nil // must free as this is a terminal callback
-//					self.reEnableForm() // b/c we disabled it
-//					self._didSave(instance: instance)
-//				}
-//			)
-//			let controller = AddFundsRequestFormSubmissionController(parameters: parameters)
-//			self.formSubmissionController = controller
-//			do {
-//				self.disableForm()
-//				self.set_isFormSubmittable_needsUpdate() // update submittability
-//			}
-//			controller.handle()
+			let selectedContact = self.sendTo_inputView.selectedContact
+			let enteredAddressValue = self.sendTo_inputView.inputField.text
+			//
+			let resolvedAddress = self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text
+			let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
+			//
+			let manuallyEnteredPaymentID = self.manualPaymentID_inputView.text
+			let manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentID_inputView.isHidden == false
+			//
+			let resolvedPaymentID = self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? ""
+			let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
+			//
+			//
+			let parameters = SendFundsForm.SubmissionController.Parameters(
+				fromWallet: fromWallet,
+				amount_submittableDouble: amount_submittableDouble!,
+				//
+				selectedContact: selectedContact,
+				enteredAddressValue: enteredAddressValue,
+				//
+				resolvedAddress: resolvedAddress,
+				resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
+				//
+				manuallyEnteredPaymentID: manuallyEnteredPaymentID,
+				manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
+				resolvedPaymentID: resolvedPaymentID,
+				resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible,
+				//
+				preSuccess_terminal_validationMessage_fn:
+				{ [unowned self] (localizedString) in
+					self.set(
+						validationMessage: localizedString,
+						wantsXButton: true
+					)
+					self.formSubmissionController = nil // must free as this is a terminal callback
+					self.set_isFormSubmittable_needsUpdate()
+					self.reEnableForm() // b/c we disabled it
+				},
+				preSuccess_passedValidation_willBeginSending:
+				{ [unowned self] in
+					self.set(
+						validationMessage: String(
+							format: NSLocalizedString("Sending %@ XMR…", comment: ""),
+							self.amount_fieldset.inputField.submittableAmount_orNil!.humanReadableString
+						),
+						wantsXButton: false
+					)
+				},
+				success_fn:
+				{ [unowned self] (mockedTransaction) in
+					self.formSubmissionController = nil // must free as this is a terminal callback
+					// will re-enable form shortly (after presentation)
+					//
+					do {
+						let viewController = TransactionDetails.ViewController(
+							transaction: mockedTransaction,
+							inWallet: fromWallet
+						)
+						self.navigationController!.pushViewController(
+							viewController,
+							animated: true
+						)
+					}
+					do { // and after a delay, present AddContactFromSendTabView
+						if selectedContact == nil { // so they went with a text input address
+							DispatchQueue.main.asyncAfter(
+								deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+								execute:
+								{ [unowned self] in
+									// TODO
+									let viewController = UIViewController()/*AddContactFromSendTabFormViewController(
+										enteredAddressValue: enteredAddressValue
+										// TODO: more values as necessary
+									)*/
+									let navigationController = UINavigationController(rootViewController: viewController)
+									self.navigationController!.present(navigationController, animated: true, completion: nil)
+								}
+							)
+						}
+					}
+					do { // finally, clean up form
+						DispatchQueue.main.asyncAfter(
+							deadline: .now() + 0.5, // after the navigation transition just above has taken place
+							execute:
+							{ [unowned self] in
+								self._clearForm()
+								// and lastly, importantly, re-enable everything
+								self.reEnableForm()
+							}
+						)
+					}
+				}
+			)
+			let controller = SendFundsForm.SubmissionController(parameters: parameters)
+			self.formSubmissionController = controller
+			do {
+				self.disableForm()
+				self.set_isFormSubmittable_needsUpdate() // update submittability; after setting self.submissionController
+			}
+			controller.handle()
+		}
+		//
+		// Impertives - Clearing form
+		func _clearForm()
+		{
+			self.clearValidationMessage()
+			self.amount_fieldset.inputField.text = ""
+			self.sendTo_inputView.clearAndReset()
+			do {
+				self.hideAndClear_manualPaymentIDField()
+				self.set_addPaymentID_buttonView(isHidden: false)
+			}
 		}
 		//
 		// Delegation - Form submission success
