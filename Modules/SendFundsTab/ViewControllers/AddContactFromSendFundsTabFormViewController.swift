@@ -16,8 +16,9 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	{
 		var enteredAddressValue: String // not nil; this ought to also always be the .address we save to the Contact
 		var isXMRAddressIntegrated: Bool
+		var integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 		var resolvedAddress: MoneroAddress?
-		var sentWith_paymentID: MoneroPaymentID?
+		var sentWith_paymentID: MoneroPaymentID? // nil for integrated addr
 	}
 	//
 	// Parameters - Initial
@@ -73,11 +74,16 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		}
 		if self.paymentID_inputView != nil {
 			self.paymentID_inputView!.set(isEnabled: false) // TODO: make this able survive form being re-enabled
-			self.paymentID_inputView!.textView.text = self.parameters.sentWith_paymentID
+			self.paymentID_inputView!.textView.text = self.parameters.sentWith_paymentID ?? self.parameters.integratedAddressPIDForDisplay_orNil
 		}
 		//
-		// TODO
-//		var detected_iconAndMessageView: UICommonComponents.DetectedIconAndMessageView?
+		let wantsDetectedIndicator = self.parameters.isXMRAddressIntegrated // either integrated
+			|| (self.isEnteredAddress_OA && self._overridable_wants_paymentID_fieldAccessoryMessageLabel) // or OA and we are going to show the field
+		if wantsDetectedIndicator {
+			let view = UICommonComponents.DetectedIconAndMessageView()
+			self.scrollView.addSubview(view)
+			self.detected_iconAndMessageView = view
+		}
 	}
 	override func setup_navigation()
 	{
@@ -87,7 +93,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	//
 	// Accessors - Overrides
 	override var _overridable_wants_paymentIDField: Bool {
-		return self.parameters.sentWith_paymentID != nil // if we have a pid, show; else just hide
+		return self.parameters.sentWith_paymentID != nil || self.parameters.integratedAddressPIDForDisplay_orNil != nil // if we have a pid, show; else just hide
 	}
 	override var _overridable_wants_paymentID_fieldAccessoryMessageLabel: Bool {
 		return false // regardless
@@ -106,6 +112,10 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	}
 	override var _overridable_wantsInputPermanentlyDisabled_paymentID: Bool {
 		return true
+	}
+	override var sanitizedInputValue__paymentID: MoneroPaymentID? {
+		// causing this to ignore field input and use values directly to avoid integrated addr pid submission
+		return self.parameters.sentWith_paymentID // and not the integrated addr pid which is only for display		
 	}
 	override var _overridable_bottomMostView: UIView { // support layout this out while preserving scroll size etc
 		return self.detected_iconAndMessageView ?? super._overridable_bottomMostView
@@ -135,5 +145,29 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 			yOffset: top_yOffset
 		)
 	}
-	
+	override func _overridable_didLayOutFormElementsButHasYetToSizeScrollableContent()
+	{
+		super._overridable_didLayOutFormElementsButHasYetToSizeScrollableContent() // not that it does anything
+		//
+		// this is our chance to insert the layout for any views we want to add... such as the detected label
+		if self.detected_iconAndMessageView != nil {
+			let mostPreviouslyVisibleView: UIView
+			do {
+				if self.paymentID_inputView != nil {
+					mostPreviouslyVisibleView = self.paymentID_inputView!
+				} else {
+					mostPreviouslyVisibleView = self.address_inputView!
+				}
+			}
+			let formFieldsCustomInsets = self.new__formFieldsCustomInsets
+			let label_x = CGFloat.form_label_margin_x + formFieldsCustomInsets.left
+			let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
+			self.detected_iconAndMessageView!.frame = CGRect(
+				x: label_x,
+				y: mostPreviouslyVisibleView.frame.origin.y + mostPreviouslyVisibleView.frame.size.height + (7 - UICommonComponents.FormInputCells.imagePadding_y),
+				width: fullWidth_label_w,
+				height: self.detected_iconAndMessageView!.frame.size.height
+			).integral
+		}
+	}
 }

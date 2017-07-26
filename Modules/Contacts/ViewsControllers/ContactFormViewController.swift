@@ -498,9 +498,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				height: self.deleteButton!.frame.size.height
 			)
 		}
-
-		// TODO: if applicable set up inset fields for add contact from send funds tab
-
+		//
+		self._overridable_didLayOutFormElementsButHasYetToSizeScrollableContent()
+		//
 		let bottomMostView = self._overridable_bottomMostView // to support overrides
 		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
@@ -548,5 +548,11 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	func deleteButton_tapped()
 	{
 		assert(false, "Override and implement")
+	}
+	//
+	// Delegation - Internal - Overridable
+	func _overridable_didLayOutFormElementsButHasYetToSizeScrollableContent()
+	{
+		
 	}
 }

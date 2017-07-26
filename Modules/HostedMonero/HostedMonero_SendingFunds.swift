@@ -131,10 +131,11 @@ extension HostedMoneroAPIClient
 			if decodedAddressComponents.intPaymentId != nil {
 				final__payment_id = decodedAddressComponents.intPaymentId
 				final__pid_encrypt = true // we do want to encrypt if using an integrated address
-			}
-			if MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(final__payment_id) == false { // Validation
-				__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
-				return
+			} else {
+				if MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(final__payment_id) == false { // Validation
+					__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
+					return
+				}
 			}
 			_proceedTo_getUnspentOutsUsableForMixin()
 		}
@@ -329,7 +330,7 @@ extension HostedMoneroAPIClient
 					passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
 					usingOuts: usingOuts,
 					mix_outs: mix_outs,
-					realDestViewKey: nil
+					realDestViewKey: realDestViewKey
 				)
 			}
 			if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
@@ -360,6 +361,7 @@ extension HostedMoneroAPIClient
 			realDestViewKey: MoneroKey?
 		)
 		{
+			assert(final__pid_encrypt == false || realDestViewKey != nil)
 			mymoneroCore.CreateTransaction(
 				wallet__public_keys: wallet__public_keys,
 				wallet__private_keys: wallet__private_keys,

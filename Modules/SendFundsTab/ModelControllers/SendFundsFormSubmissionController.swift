@@ -36,7 +36,8 @@ extension SendFundsForm
 			var preSuccess_passedValidation_willBeginSending: (Void) -> Void
 			var success_fn: (
 				_ mockedTransaction: MoneroHistoricalTransactionRecord,
-				_ isXMRAddressIntegrated: Bool
+				_ isXMRAddressIntegrated: Bool,
+				_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 			) -> Void
 		}
 		var parameters: Parameters
@@ -144,7 +145,8 @@ extension SendFundsForm
 						self._proceedTo_generateSendTransaction(
 							withTargetAddress: xmrAddress_toDecode, // for integrated addrs, we don't want to extract the payment id and then use the integrated addr as well (TODO: unless we use fluffy's patch?)
 							payment_id: nil,
-							isXMRAddressIntegrated: true
+							isXMRAddressIntegrated: true,
+							integratedAddressPIDForDisplay_orNil: decodedAddressComponents!.intPaymentId
 						)
 						return
 					}
@@ -159,7 +161,8 @@ extension SendFundsForm
 					self._proceedTo_generateSendTransaction(
 						withTargetAddress: xmrAddress_toDecode, // therefore, non-integrated normal XMR address
 						payment_id: paymentID_toUseOrToNilIfIntegrated, // may still be nil
-						isXMRAddressIntegrated: false
+						isXMRAddressIntegrated: false,
+						integratedAddressPIDForDisplay_orNil: nil
 					)
 				}
 			)
@@ -167,7 +170,8 @@ extension SendFundsForm
 		func _proceedTo_generateSendTransaction(
 			withTargetAddress target_address: MoneroAddress,
 			payment_id: MoneroPaymentID?,
-			isXMRAddressIntegrated: Bool
+			isXMRAddressIntegrated: Bool,
+			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 		)
 		{
 			self.parameters.preSuccess_passedValidation_willBeginSending()
@@ -182,6 +186,7 @@ extension SendFundsForm
 					self._didSend(
 						sentTo_address: target_address,
 						isXMRAddressIntegrated: isXMRAddressIntegrated,
+						integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
 						sentWith_paymentID: payment_id,
 						transactionHash: transactionHash,
 						sentAmount: sentAmount
@@ -198,6 +203,7 @@ extension SendFundsForm
 		func _didSend(
 			sentTo_address: MoneroAddress,
 			isXMRAddressIntegrated: Bool,
+			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?,
 			sentWith_paymentID: MoneroPaymentID?,
 			transactionHash: MoneroTransactionHash,
 			sentAmount: MoneroAmount
@@ -233,7 +239,8 @@ extension SendFundsForm
 			}
 			self.parameters.success_fn(
 				mockedTransaction,
-				isXMRAddressIntegrated
+				isXMRAddressIntegrated,
+				integratedAddressPIDForDisplay_orNil
 			)
 		}
 	}

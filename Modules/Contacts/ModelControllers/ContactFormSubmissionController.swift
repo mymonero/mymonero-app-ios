@@ -144,8 +144,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				
 			}
 			// else, IS integrated address
-			let paymentID = integratedAddress_paymentId // use this one instead
-			self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
+			let paymentID: MoneroPaymentID? = nil /*integratedAddress_paymentId do not use this*/
+			self.parameters.feedBackOverridingPaymentIDValue_fn(integratedAddress_paymentId) // display this
 			self.__proceedTo_persistContact(
 				withPaymentID: paymentID,
 				cached_OAResolved_XMR_address: nil
@@ -202,10 +202,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 	)
 	{
 		// final validation of paymentID…
-		let paymentID_exists = self.parameters.paymentID != nil && self.parameters.paymentID! != ""
-		let paymentID_existsAndIsNotValid = paymentID_exists && MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(
-			self.parameters.paymentID!
-			) == false
+		let paymentID_exists = paymentID_toSave != nil && paymentID_toSave != ""
+		let paymentID_existsAndIsNotValid = paymentID_exists && MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(paymentID_toSave!) == false
 		if paymentID_existsAndIsNotValid {
 			self.parameters.preInputValidation_terminal_validationMessage_fn(
 				NSLocalizedString("Please enter a valid payment ID.", comment: "")

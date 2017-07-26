@@ -491,7 +491,11 @@ extension SendFundsForm
 					)
 				},
 				success_fn:
-				{ [unowned self] (mockedTransaction, isXMRAddressIntegrated) in
+				{ [unowned self] (
+					mockedTransaction,
+					isXMRAddressIntegrated,
+					integratedAddressPIDForDisplay_orNil
+				) in
 					self.formSubmissionController = nil // must free as this is a terminal callback
 					// will re-enable form shortly (after presentation)
 					//
@@ -514,6 +518,7 @@ extension SendFundsForm
 									let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
 										enteredAddressValue: enteredAddressValue!, // ! b/c selected contact was nil
 										isXMRAddressIntegrated: isXMRAddressIntegrated,
+										integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
 										resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
 										sentWith_paymentID: mockedTransaction.paymentId
 									)
