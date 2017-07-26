@@ -12,7 +12,7 @@ struct SendFundsForm {}
 //
 extension SendFundsForm
 {
-	class ViewController: UICommonComponents.FormViewController
+	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant
 	{
 		//
 		// Static - Shared singleton
@@ -265,6 +265,11 @@ extension SendFundsForm
 				target: self,
 				action: #selector(tapped_rightBarButtonItem)
 			)
+		}
+		override func startObserving()
+		{
+			super.startObserving()
+			PasswordController.shared.addRegistrantForDeleteEverything(self)
 		}
 		//
 		// Accessors - Overrides
@@ -754,6 +759,17 @@ extension SendFundsForm
 		{
 			self.set_addPaymentID_buttonView(isHidden: true)
 			self.set_manualPaymentIDField(isHidden: false)
+		}
+		//
+		// Protocol - DeleteEverythingRegistrant
+		func passwordController_DeleteEverything() -> String?
+		{
+			DispatchQueue.main.async
+			{ [unowned self] in
+				self._clearForm()
+			}
+			//
+			return nil // no error
 		}
 	}
 }

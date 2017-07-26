@@ -9,6 +9,7 @@
 import Foundation
 import RNCryptor
 //
+// TODO: namespace within Passwords or 
 protocol DeleteEverythingRegistrant
 {
 	func passwordController_DeleteEverything() -> String? // return err_str:String if error. at time of writing, this was able to be kept synchronous.
