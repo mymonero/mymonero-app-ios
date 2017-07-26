@@ -28,13 +28,13 @@ extension UICommonComponents
 		}
 		func setup()
 		{
+			self.setup_scrollView() // must be before setup_views b/c a subclasser may put self.scrollView.addSubview prior to super.setup_views()
 			self.setup_views() // must be before _navigation b/c that may rely on _views
 			self.setup_navigation()
 			self.startObserving()
 		}
 		func setup_views()
 		{ // override but call on super
-			self.setup_scrollView()
 			if self.new_wantsInlineMessageViewForValidationMessages() {
 				self.setup_messageView()
 			}

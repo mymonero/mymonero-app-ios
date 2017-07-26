@@ -216,7 +216,7 @@ extension UICommonComponents
 		// Constants
 		static let spaceBetweenGraphicAndLabel: CGFloat = 7
 		//
-		static let marginAboveActivityIndicatorBelowFormInput: CGFloat = 4
+		static let marginAboveActivityIndicatorBelowFormInput: CGFloat = 6
 		//
 		// Properties
 		var activityIndicator = GraphicActivityIndicatorView()

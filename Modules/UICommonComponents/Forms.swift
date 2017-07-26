@@ -20,9 +20,16 @@ extension UICommonComponents
 		// Properties - Cached
 		//
 		// Properties - Derived
-		var new__textField_w: CGFloat { return self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x }
+		var new__formFieldsCustomInsets: UIEdgeInsets {
+			return UIEdgeInsetsMake(0, 0, 0, 0)
+		}
+		var new__textField_w: CGFloat {
+			let fieldsInsets = self.new__formFieldsCustomInsets
+			return self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
+		}
 		var new__fieldLabel_w: CGFloat {
-			return self.scrollView.frame.size.width - CGFloat.form_label_margin_x - CGFloat.form_input_margin_x
+			let fieldsInsets = self.new__formFieldsCustomInsets
+			return self.scrollView.frame.size.width - /*intentionally not "2*"!*/CGFloat.form_label_margin_x - CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
 		}
 		//
 		// Lifecycle - Init
@@ -1012,4 +1019,49 @@ extension UICommonComponents.Form
 		}
 	}
 }
-
+//
+extension UICommonComponents.Form
+{
+	class FieldGroupDecorationSectionView: UICommonComponents.Details.SectionView
+	{
+		override func layoutSubviews()
+		{
+			super.layoutSubviews() // in which nothing is actually done
+		}
+		//
+		//
+		func sizeAndLayOutToEncompass(
+			topFieldView: UIView,
+			bottomFieldView: UIView,
+			//
+			withContainingWidth containingWidth: CGFloat,
+			yOffset: CGFloat
+		)
+		{
+			// manual/patch call to custom method:
+			self.layOutSubviews(
+				withContainingWidth: self.frame.size.width,
+				withXOffset: 0,
+				andYOffset: 0
+			) // as used, this will cause the SectionContentContainerView to size itself but have height of 0
+			do { // so adjust height manually
+				var to_frame = self.containerView.frame
+				do {
+					let unpadded_fieldsHeight = (bottomFieldView.frame.origin.y + bottomFieldView.frame.size.height) - topFieldView.frame.origin.y
+					let padded_fieldsHeight = unpadded_fieldsHeight + 3*UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // TODO: inexact - improve
+					//
+					to_frame.size.height = padded_fieldsHeight
+					//
+					to_frame = to_frame.integral
+				}
+				self.containerView.frame = to_frame
+			}
+			self.frame = CGRect(
+				x: 0,
+				y: yOffset,
+				width: containingWidth,
+				height: self.containerView.frame.origin.y + self.containerView.frame.size.height
+			)
+		}
+	}
+}

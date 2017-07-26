@@ -450,7 +450,6 @@ final class HostedMoneroAPIClient
 	{
 		#if DEBUG
 			#if MOCK_SUCCESSOFTXSUBMISSION
-				// MOCK SUCCESS FOR DEBUG
 				DDLog.Warn("HostedMonero", "Merely returning mocked success response instead of actually submitting transaction to the server.")
 				self._shared_onMain_callBackFromRequest(nil, nil, fn)
 				return nil

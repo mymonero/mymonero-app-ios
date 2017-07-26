@@ -22,7 +22,7 @@ class ContactsListViewController: ListViewController
 		super.setup_tableView()
 		self.tableView.backgroundColor = .contentBackgroundColor
 		self.tableView.separatorStyle = .none // on cell
-		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 4, 0)
+		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 16, 0)
 	}
 	override func configure_navigation_barButtonItems()
 	{

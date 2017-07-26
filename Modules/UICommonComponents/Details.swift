@@ -78,7 +78,25 @@ extension UICommonComponents
 			{
 				self.containerView.add(fieldView: fieldView)
 			}
-			func sizeToFitAndLayOutSubviews(
+			func layOut(
+				withContainingWidth containingWidth: CGFloat,
+				withXOffset xOffset: CGFloat,
+				andYOffset yOffset: CGFloat
+			)
+			{
+				self.layOutSubviews(
+					withContainingWidth: containingWidth,
+					withXOffset: xOffset,
+					andYOffset: yOffset
+				)
+				self.frame = CGRect(
+					x: xOffset,
+					y: yOffset,
+					width: containingWidth,
+					height: self.containerView.frame.origin.y + self.containerView.frame.size.height
+				)
+			}
+			func layOutSubviews(
 				withContainingWidth containingWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
@@ -95,17 +113,11 @@ extension UICommonComponents
 					contentContainerView_yOffset += view.frame.origin.y + view.frame.size.height + SectionLabel.marginBelowLabelAboveSectionContentContainerView
 				}
 				let sectionContentsContainingWidth = containingWidth - xOffset
-				self.containerView.sizeToFitAndLayOutSubviews(
+				let containerView_frame = self.containerView.sizeAndLayOutFieldViewsForDisplay_andReturnMeasuredSelfFrame(
 					withContainingWidth: sectionContentsContainingWidth,
 					andYOffset: contentContainerView_yOffset
 				)
-				//
-				self.frame = CGRect(
-					x: xOffset,
-					y: yOffset,
-					width: containingWidth,
-					height: self.containerView.frame.origin.y + self.containerView.frame.size.height
-				)
+				self.containerView.frame = containerView_frame
 			}
 		}
 		class SectionLabel: UILabel
@@ -202,18 +214,19 @@ extension UICommonComponents
 				}
 			}
 			//
-			func sizeToFitAndLayOutSubviews(
+			// - Layout
+			func sizeAndLayOutFieldViewsForDisplay_andReturnMeasuredSelfFrame(
 				withContainingWidth containingWidth: CGFloat,
 				andYOffset yOffset: CGFloat
-			)
+			) -> CGRect
 			{
 				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 					withContainingWidth: containingWidth,
 					andYOffset: yOffset,
 					givenSpecificFieldViews: self.fieldViews,
-					alsoLayOutSharedSeparatorViewsForDisplay: true // because sizeToFitAndLayOutSubviews() is for immediate display
+					alsoLayOutSharedSeparatorViewsForDisplay: true // because layOut() is for immediate display
 				)
-				self.frame = selfFrame
+				return selfFrame
 			}
 			func sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 				withContainingWidth containingWidth: CGFloat,
@@ -248,7 +261,7 @@ extension UICommonComponents
 					let contentInsets = fieldView.contentInsets
 					//
 					// fieldViews are actually sized here - it might be nicer if we could just measure them instead
-					fieldView.sizeToFitAndLayOutSubviews(
+					fieldView.layOut(
 						withContainingWidth: self_width - contentInsets.left - contentInsets.right,
 						withXOffset: contentInsets.left,
 						andYOffset: currentField_yOffset + contentInsets.top
@@ -308,7 +321,7 @@ extension UICommonComponents
 			{
 			}
 			//
-			func sizeToFitAndLayOutSubviews(
+			func layOut(
 				withContainingWidth containingWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
@@ -442,7 +455,7 @@ extension UICommonComponents
 			}
 			//
 			// Imperatives - Layout - Overrides
-			override func sizeToFitAndLayOutSubviews(
+			override func layOut(
 				withContainingWidth containingWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
@@ -557,7 +570,7 @@ extension UICommonComponents
 			}
 			//
 			// Imperatives - Layout - Overrides
-			func sizeToFitAndLayOutSubviews(withContainingWidth containingWidth: CGFloat)
+			func layOut(withContainingWidth containingWidth: CGFloat)
 			{
 				let content_x: CGFloat = 0 // super will have xOffset so content can be at 0
 				let content_rightMargin: CGFloat = 0
@@ -637,13 +650,13 @@ extension UICommonComponents
 			}
 			//
 			// Imperatives - Layout - Overrides
-			override func sizeToFitAndLayOutSubviews(
+			override func layOut(
 				withContainingWidth containingWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
 			)
 			{
-				self.contentView.sizeToFitAndLayOutSubviews(withContainingWidth: containingWidth) // this will set its bounds
+				self.contentView.layOut(withContainingWidth: containingWidth) // this will set its bounds
 				//
 				self.frame = CGRect(
 					x: xOffset,

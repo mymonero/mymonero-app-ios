@@ -47,6 +47,9 @@ class ListViewController: UITableViewController
 	func setup_tableView()
 	{
 		self.tableView.delegate = self
+		self.tableView.backgroundColor = .contentBackgroundColor
+		self.tableView.indicatorStyle = .white // TODO: configure via theme controller
+		
 		self.configure_emptyStateView()
 	}
 	func startObserving()

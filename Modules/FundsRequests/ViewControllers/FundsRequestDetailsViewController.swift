@@ -38,7 +38,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	override func setup_views()
 	{
 		super.setup_views()
-		self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
+		self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 14, 0)
 		do {
 			let sectionView = self.sectionView_instanceCell
 			do {
@@ -171,19 +171,19 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		super.viewDidLayoutSubviews()
 		//
-		self.sectionView_instanceCell.sizeToFitAndLayOutSubviews(
+		self.sectionView_instanceCell.layOut(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
 			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
 		//
-		self.sectionView_link.sizeToFitAndLayOutSubviews(
+		self.sectionView_link.layOut(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
 			andYOffset: self.sectionView_instanceCell.frame.origin.y + self.sectionView_instanceCell.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
 		)
 		//
-		self.sectionView_message.sizeToFitAndLayOutSubviews(
+		self.sectionView_message.layOut(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
 			andYOffset: self.sectionView_link.frame.origin.y + self.sectionView_link.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
@@ -314,7 +314,7 @@ extension UICommonComponents.Details
 		}
 		//
 		// Imperatives - Layout - Overrides
-		override func sizeToFitAndLayOutSubviews(
+		override func layOut(
 			withContainingWidth containingWidth: CGFloat,
 			withXOffset xOffset: CGFloat,
 			andYOffset yOffset: CGFloat

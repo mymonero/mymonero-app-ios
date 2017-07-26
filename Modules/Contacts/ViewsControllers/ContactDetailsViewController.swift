@@ -40,7 +40,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	override func setup_views()
 	{
 		super.setup_views()
-		self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 14, 0)
+		self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 14, 0)
 		do {
 			let sectionView = self.sectionView
 			do {
@@ -144,7 +144,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
-		self.sectionView.sizeToFitAndLayOutSubviews(
+		self.sectionView.layOut(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
 			andYOffset: self.yOffsetForViewsBelowValidationMessageView

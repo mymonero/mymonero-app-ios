@@ -6,7 +6,7 @@
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
 
-import Foundation
+import UIKit
 //
 class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormViewController
 {
@@ -23,6 +23,12 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	// Parameters - Initial
 	var parameters: InitializationParameters
 	var isEnteredAddress_OA: Bool
+	//
+	var detected_iconAndMessageView: UICommonComponents.DetectedIconAndMessageView?
+	let fieldGroupDecorationSectionView = UICommonComponents.Form.FieldGroupDecorationSectionView(
+		sectionHeaderTitle: NSLocalizedString("SAVE THIS ADDRESS AS A CONTACT?", comment: "")
+		// Note: This 'decoration' view is admittedly fairly lame. Better solution would be to enhance the ContactForm to support placing fields inside of a SectionView in the same manner as Details.FieldViews
+	)
 	//
 	// Setup
 	init(parameters: InitializationParameters)
@@ -47,6 +53,10 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	}
 	override func setup_views()
 	{
+		do { // underneath other views
+			let view = self.fieldGroupDecorationSectionView
+			self.scrollView.addSubview(view)
+		}
 		super.setup_views()
 		self.set(
 			validationMessage: NSLocalizedString("Your Monero is on its way.", comment: ""),
@@ -65,6 +75,9 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 			self.paymentID_inputView!.set(isEnabled: false) // TODO: make this able survive form being re-enabled
 			self.paymentID_inputView!.textView.text = self.parameters.sentWith_paymentID
 		}
+		//
+		// TODO
+//		var detected_iconAndMessageView: UICommonComponents.DetectedIconAndMessageView?
 	}
 	override func setup_navigation()
 	{
@@ -94,5 +107,33 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	override var _overridable_wantsInputPermanentlyDisabled_paymentID: Bool {
 		return true
 	}
+	override var _overridable_bottomMostView: UIView { // support layout this out while preserving scroll size etc
+		return self.detected_iconAndMessageView ?? super._overridable_bottomMostView
+	}
+	//
+	override var new__formFieldsCustomInsets: UIEdgeInsets {
+		return UIEdgeInsetsMake(
+			UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView/*approx*/,
+			16,
+			0,
+			16
+		)
+	}
+	//
+	// Delegation - Overrides - Layout
+	override func viewDidLayoutSubviews()
+	{
+		super.viewDidLayoutSubviews()
+		//
+		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
+		let bottomFieldView = self.detected_iconAndMessageView ?? /* no pid accessory label */ self.paymentID_inputView ?? self.address_inputView
+		self.fieldGroupDecorationSectionView.sizeAndLayOutToEncompass(
+			topFieldView: self.name_label,
+			bottomFieldView: bottomFieldView!,
+			//
+			withContainingWidth: self.view.frame.size.width,
+			yOffset: top_yOffset
+		)
+	}
+	
 }
-

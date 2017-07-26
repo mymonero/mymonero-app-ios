@@ -232,6 +232,10 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var _overridable_wants_paymentIDField: Bool { return true }
 	var _overridable_wants_paymentID_fieldAccessoryMessageLabel: Bool { return true }
 	//
+	var _overridable_bottomMostView: UIView {
+		return self.deleteButton ?? self.paymentID_fieldAccessoryMessageLabel ?? self.paymentID_inputView ?? self.address_inputView
+	}
+	//
 	var new_initial_value_name: String? { return nil }
 	var new_initial_value_emoji: Emoji.EmojiCharacter {
 		let inUseEmojiCharacters = ContactsListController.shared.givenBooted_currentlyInUseEmojiCharacters()
@@ -381,9 +385,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
-		let textField_w = self.new__textField_w
-		let fullWidth_label_w = self.new__fieldLabel_w
+		let formFieldsCustomInsets = self.new__formFieldsCustomInsets
+		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView + formFieldsCustomInsets.top
+		//
+		let label_x = CGFloat.form_label_margin_x + formFieldsCustomInsets.left
+		let input_x = CGFloat.form_input_margin_x + formFieldsCustomInsets.left
+		let textField_w = self.new__textField_w // already has customInsets subtracted
+		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//
 		let visual__nameField_marginRight: CGFloat = 24
 		let nameField_marginRight = visual__nameField_marginRight - UICommonComponents.FormInputCells.imagePadding_x - UICommonComponents.PushButtonCells.imagePaddingForShadow_h
@@ -391,13 +399,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		do {
 			let visual__nameField_w = textField_w - (nameField_marginRight + self.emoji_inputView.frame.size.width)
 			self.name_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: ceil(top_yOffset),
 				width: visual__nameField_w,
 				height: self.name_label.frame.size.height
 			).integral
 			self.name_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: visual__nameField_w,
 				height: self.name_inputView.frame.size.height
@@ -421,13 +429,13 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			self.address_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.name_inputView.frame.origin.y + self.name_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.address_label.frame.size.height
 			).integral
 			self.address_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.address_label.frame.origin.y + self.address_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.address_inputView.frame.size.height
@@ -435,7 +443,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 		if self.resolving_activityIndicator.isHidden == false {
 			self.resolving_activityIndicator.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
 				width: fullWidth_label_w,
 				height: self.resolving_activityIndicator.new_height
@@ -449,20 +457,20 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			: self.resolving_activityIndicator.frame.origin.y + self.resolving_activityIndicator.frame.size.height
 			//
 			self.paymentID_label!.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: addressFieldset_bottomEdge + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.paymentID_label!.frame.size.height
 			).integral
 			self.paymentID_inputView!.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.paymentID_label!.frame.origin.y + self.paymentID_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.paymentID_inputView!.frame.size.height
 			).integral
 			if self.paymentID_fieldAccessoryMessageLabel != nil {
 				self.paymentID_fieldAccessoryMessageLabel!.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.paymentID_inputView!.frame.origin.y + self.paymentID_inputView!.frame.size.height + 7,
 					width: fullWidth_label_w,
 					height: 0
@@ -477,14 +485,14 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			assert(self.deleteButton_separatorView != nil)
 			let justPreviousView = (self.paymentID_fieldAccessoryMessageLabel ?? self.paymentID_inputView ?? self.address_inputView)!
 			self.deleteButton_separatorView!.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 				width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
 				height: 1/UIScreen.main.scale
 			)
 			//
 			self.deleteButton!.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 				width: self.deleteButton!.frame.size.width,
 				height: self.deleteButton!.frame.size.height
@@ -492,12 +500,11 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 
 		// TODO: if applicable set up inset fields for add contact from send funds tab
-		
-		
-		let bottomMostView = self.paymentID_fieldAccessoryMessageLabel ?? self.deleteButton ?? self.paymentID_inputView ?? self.address_inputView
+
+		let bottomMostView = self._overridable_bottomMostView // to support overrides
 		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
-			withBottomView: bottomMostView!,
+			withBottomView: bottomMostView,
 			bottomPadding: bottomPadding
 		)
 	}
