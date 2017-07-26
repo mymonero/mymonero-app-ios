@@ -64,8 +64,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 			wantsXButton: true // could also be false
 		)
 		do {
-			self.address_inputView.set(isEnabled: false) // TODO: make this able survive form being re-enabled
-			//
+			self.address_inputView.set(isEnabled: false)			//
 			var value = self.parameters.enteredAddressValue
 			if self.isEnteredAddress_OA {
 				value = value.lowercased() // jic
@@ -73,7 +72,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 			self.address_inputView.textView.text = value
 		}
 		if self.paymentID_inputView != nil {
-			self.paymentID_inputView!.set(isEnabled: false) // TODO: make this able survive form being re-enabled
+			self.paymentID_inputView!.set(isEnabled: false)
 			self.paymentID_inputView!.textView.text = self.parameters.sentWith_paymentID ?? self.parameters.integratedAddressPIDForDisplay_orNil
 		}
 		//

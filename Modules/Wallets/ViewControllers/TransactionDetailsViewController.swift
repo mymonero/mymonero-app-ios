@@ -64,7 +64,6 @@ extension TransactionDetails
 			do {
 				let sectionView = self.sectionView_details
 				do {
-					// TODO ShortStringFieldView
 					let view = UICommonComponents.Details.ShortStringFieldView(
 						labelVariant: self.fieldLabels_variant,
 						title: NSLocalizedString("Date", comment: ""),

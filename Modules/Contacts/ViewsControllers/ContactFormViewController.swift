@@ -96,7 +96,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.address_label = view
 			self.scrollView.addSubview(view)
 		}
-		do { // TODO: config as immutable by overridable flag
+		do {
 			let view = UICommonComponents.FormTextViewContainerView(
 				placeholder: NSLocalizedString("Enter normal, integrated, or OpenAlias address", comment: "")
 			)
@@ -306,7 +306,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.paymentID_inputView?.set(isEnabled: true)
 		}
 	}
-	var formSubmissionController: ContactFormSubmissionController? // TODO: maybe standardize into FormViewController
+	var formSubmissionController: ContactFormSubmissionController?
 	override func _tryToSubmitForm()
 	{
 		assert(self.sanitizedInputValue__name != "")

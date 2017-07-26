@@ -20,8 +20,6 @@ class EditContactFormViewController: ContactFormViewController
 		fatalError("init(coder:) has not been implemented")
 	}
 	//
-	// TODO: add delete button
-	//
 	override func setup_navigation()
 	{
 		super.setup_navigation()
