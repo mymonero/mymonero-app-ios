@@ -395,7 +395,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			atEdge: .top,
 			finished_fn: {}
 		)
-//		self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
 	}
 	public func reconfigureFormAtRuntime_havingElsewhereSelected(requestFromContact contact: Contact)
 	{

@@ -24,6 +24,7 @@ extension SendFundsForm
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
+		var feeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
 		//
 		var sendTo_label: UICommonComponents.Form.FieldLabel!
 		var sendTo_inputView: UICommonComponents.Form.ContactAndAddressPickerView!
@@ -72,6 +73,15 @@ extension SendFundsForm
 				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				inputField.returnKeyType = .next
 				self.amount_fieldset = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.FormFieldAccessoryMessageLabel(
+					text: nil,
+					displayMode: .prominent // slightly brighter here per design; considered merging
+				)
+				self.feeEstimate_label = view
+				self.configure_feeEstimate_label()
 				self.scrollView.addSubview(view)
 			}
 			//
@@ -337,7 +347,7 @@ extension SendFundsForm
 			return nil
 		}
 		//
-		// Imperatives - Field visibility/configuration
+		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
 		{
 			self.manualPaymentID_label.isHidden = isHidden
@@ -361,6 +371,16 @@ extension SendFundsForm
 			self.view.setNeedsLayout()
 		}
 		//
+		// Imperatives - Configuration - Fee estimate label
+		func configure_feeEstimate_label()
+		{
+			let estimatedFee_formattedString: String = "0.028" // constant for now due to median blocksize difference in fee est algo plus fact that MyMonero fee turned off for now
+			self.feeEstimate_label.text = String(
+				format: NSLocalizedString("+ %@ EST. FEE", comment: ""),
+				estimatedFee_formattedString
+			)
+		}
+		//
 		// Imperatives - Contact picker, contact picking
 		func scrollToVisible_sendTo()
 		{
@@ -375,7 +395,6 @@ extension SendFundsForm
 				atEdge: .top,
 				finished_fn: {}
 			)
-//			self.scrollView.scrollRectToVisible(toBeVisible_frame__absolute, animated: true)
 		}
 		public func reconfigureFormAtRuntime_havingElsewhereSelected(sendToContact contact: Contact)
 		{
@@ -614,11 +633,17 @@ extension SendFundsForm
 					width: self.amount_fieldset.frame.size.width,
 					height: self.amount_fieldset.frame.size.height
 				).integral
+				self.feeEstimate_label.frame = CGRect(
+					x: CGFloat.form_label_margin_x,
+					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
+					width: fullWidth_label_w,
+					height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+				).integral
 			}
 			do {
 				self.sendTo_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
-					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
+					y: self.feeEstimate_label.frame.origin.y + self.feeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 					width: fullWidth_label_w,
 					height: self.sendTo_label.frame.size.height
 				).integral

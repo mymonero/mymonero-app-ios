@@ -217,7 +217,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		do {
 			self.fieldAccessoryMessageLabel.frame = CGRect(
 				x: CGFloat.form_label_margin_x,
-				y: self.password_inputView.frame.origin.y + self.password_inputView.frame.size.height + 7,
+				y: self.password_inputView.frame.origin.y + self.password_inputView.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 				width: textField_w,
 				height: 0
 			).integral

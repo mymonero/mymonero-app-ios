@@ -828,8 +828,24 @@ extension UICommonComponents
 	//
 	class FormFieldAccessoryMessageLabel: UILabel
 	{
-		init(text: String?)
+		static let heightIfFixed: CGFloat = 13
+		//
+		static let visual_marginAbove: CGFloat = 8
+		static let marginAboveLabelBelowTextInputView: CGFloat = FormFieldAccessoryMessageLabel.visual_marginAbove - FormInputCells.imagePadding_y
+		//
+		enum DisplayMode
 		{
+			case normal
+			case prominent
+		}
+		var displayMode: DisplayMode!
+		convenience init(text: String?)
+		{
+			self.init(text: text, displayMode: .normal)
+		}
+		init(text: String?, displayMode: DisplayMode)
+		{
+			self.displayMode = displayMode
 			super.init(frame: .zero)
 			self.setup()
 			if text != nil {
@@ -842,7 +858,9 @@ extension UICommonComponents
 		func setup()
 		{
 			self.font = UIFont.smallRegularMonospace
-			self.textColor = UIColor(rgb: 0x8D8B8D)
+			self.textColor = UIColor(
+				rgb: self.displayMode == .normal ? 0x8D8B8D : 0x9E9C9E
+			)
 			self.numberOfLines = 0
 		}
 		//

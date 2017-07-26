@@ -471,7 +471,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			if self.paymentID_fieldAccessoryMessageLabel != nil {
 				self.paymentID_fieldAccessoryMessageLabel!.frame = CGRect(
 					x: label_x,
-					y: self.paymentID_inputView!.frame.origin.y + self.paymentID_inputView!.frame.size.height + 7,
+					y: self.paymentID_inputView!.frame.origin.y + self.paymentID_inputView!.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 					width: fullWidth_label_w,
 					height: 0
 				).integral
