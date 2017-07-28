@@ -108,6 +108,7 @@ class FundsRequest: PersistableObject
 		self.from_fullname = from_fullname
 		self.to_walletSwatchColor = to_walletSwatchColor
 		self.to_address = to_address
+		self.payment_id = payment_id
 		self.amount = amount
 		self.message = message
 		self.description = description

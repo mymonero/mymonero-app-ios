@@ -1012,12 +1012,13 @@ extension SendFundsForm
 				self.hideAndClear_manualPaymentIDField()
 				if payment_id_orNil != nil { // but display it as a 'detected' pid which we can pick up on submit
 					self.set_addPaymentID_buttonView(isHidden: true) // hide
-					self.sendTo_inputView._display(resolved_paymentID: payment_id_orNil!) // NOTE: kind of bad to use private methods like this - TODO: establish a proper interface for doing this!
+					self.sendTo_inputView._display(resolved_paymentID: payment_id_orNil!) // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
 				} else {
-					self.sendTo_inputView._hide_resolved_paymentID() // jic // NOTE: kind of bad to use private methods like this - TODO: establish a proper interface for doing this!
+					self.sendTo_inputView._hide_resolved_paymentID() // jic // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
 					self.set_addPaymentID_buttonView(isHidden: false) // show
 				}
 			}
+			self.set_isFormSubmittable_needsUpdate() // now that we've updated values
 		}
 		//
 		// Protocol - DeleteEverythingRegistrant
