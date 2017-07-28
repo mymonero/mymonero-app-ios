@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import ImageIO
 //
 struct SendFundsForm {}
 //
 extension SendFundsForm
 {
-	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant
+	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant, UIImagePickerControllerDelegate, UINavigationControllerDelegate
 	{
 		//
 		// Static - Shared singleton
@@ -35,6 +36,11 @@ extension SendFundsForm
 		var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
 		var manualPaymentID_inputView: UICommonComponents.FormInputField!
 		//
+		var useCamera_actionButtonView: UICommonComponents.ActionButton!
+		var chooseFile_actionButtonView: UICommonComponents.ActionButton!
+		//
+		var presented_imagePickerController: UIImagePickerController?
+		//
 		// Lifecycle - Init
 		override init()
 		{
@@ -46,6 +52,11 @@ extension SendFundsForm
 		override func setup_views()
 		{
 			super.setup_views()
+			do {
+				var contentInset = self.scrollView.contentInset
+				contentInset.bottom = UICommonComponents.ActionButton.wholeButtonsContainerHeight
+				self.scrollView.contentInset = contentInset
+			}
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("FROM", comment: "")
@@ -255,6 +266,23 @@ extension SendFundsForm
 				self.manualPaymentID_inputView = view
 				self.scrollView.addSubview(view)
 			}
+			//
+			do {
+				let iconImage = UIImage(named: "actionButton_iconImage__useCamera")!
+				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
+				view.addTarget(self, action: #selector(useCamera_tapped), for: .touchUpInside)
+				view.setTitle(NSLocalizedString("Use Camera", comment: ""), for: .normal)
+				self.useCamera_actionButtonView = view
+				self.view.addSubview(view) // not self.scrollView
+			}
+			do {
+				let iconImage = UIImage(named: "actionButton_iconImage__chooseFile")!
+				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
+				view.addTarget(self, action: #selector(chooseFile_tapped), for: .touchUpInside)
+				view.setTitle(NSLocalizedString("Choose file", comment: ""), for: .normal)
+				self.chooseFile_actionButtonView = view
+				self.view.addSubview(view) // not self.scrollView
+			}
 		}
 		override func setup_navigation()
 		{
@@ -271,6 +299,24 @@ extension SendFundsForm
 			super.startObserving()
 			PasswordController.shared.addRegistrantForDeleteEverything(self)
 		}
+		//
+		override func tearDown()
+		{
+			super.tearDown()
+			self._tearDownAnyImagePickerController(animated: false)
+		}
+		func _tearDownAnyImagePickerController(animated: Bool)
+		{
+			if let imagePickerController = self.presented_imagePickerController {
+				if self.navigationController?.presentedViewController == imagePickerController {
+					imagePickerController.dismiss(animated: animated, completion: nil)
+				} else {
+					DDLog.Warn("SendFundsTab", "Asked to teardown image picker while it was non-nil but not presented.")
+				}
+				self.presented_imagePickerController = nil
+			}
+		}
+		//
 		//
 		// Accessors - Overrides
 		override func new_isFormSubmittable() -> Bool
@@ -423,8 +469,9 @@ extension SendFundsForm
 			}
 			self.manualPaymentID_inputView.isEnabled = false
 			self.addPaymentID_buttonView.isEnabled = false
-			
-			// TODO: disable action buttons too
+			//
+			self.useCamera_actionButtonView.isEnabled = false
+			self.chooseFile_actionButtonView.isEnabled = false
 		}
 		override func reEnableForm()
 		{
@@ -441,7 +488,9 @@ extension SendFundsForm
 			}
 			self.manualPaymentID_inputView.isEnabled = true
 			self.addPaymentID_buttonView.isEnabled = true
-			// TODO: enable action buttons too
+			//
+			self.useCamera_actionButtonView.isEnabled = true
+			self.chooseFile_actionButtonView.isEnabled = true
 		}
 		var formSubmissionController: SendFundsForm.SubmissionController?
 		override func _tryToSubmitForm()
@@ -703,6 +752,11 @@ extension SendFundsForm
 				withBottomView: bottomMostView,
 				bottomPadding: bottomPadding
 			)
+			//
+			// non-scrolling:
+			let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin
+			self.useCamera_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
+			self.chooseFile_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
 		}
 		override func viewDidAppear(_ animated: Bool)
 		{
@@ -761,12 +815,220 @@ extension SendFundsForm
 			self.set_manualPaymentIDField(isHidden: false)
 		}
 		//
+		func useCamera_tapped()
+		{
+			// see https://www.appcoda.com/qr-code-reader-swift/
+			assert(false, "TODO")
+		}
+		func chooseFile_tapped()
+		{
+			guard UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) else {
+				let alertController = UIAlertController(
+					title: NSLocalizedString("Saved Photos Album not available", comment: ""),
+					message: NSLocalizedString(
+						"Please ensure you have allowed MyMonero to access your Photos.",
+						comment: ""
+					),
+					preferredStyle: .alert
+				)
+				alertController.addAction(
+					UIAlertAction(
+						title: NSLocalizedString("OK", comment: ""),
+						style: .default
+						)
+					{ (result: UIAlertAction) -> Void in
+					}
+				)
+				self.navigationController!.present(alertController, animated: true, completion: nil)
+				return
+			}
+			let pickerController = UIImagePickerController()
+			pickerController.allowsEditing = false
+			pickerController.delegate = self
+			self.presented_imagePickerController = pickerController
+			self.navigationController!.present(pickerController, animated: true, completion: nil)
+		}
+		//
+		// Delegation - UIImagePickerControllerDelegate
+		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
+		{
+			let picked_originalImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+			self._didPick(possibleQRCodeImage: picked_originalImage)
+			self._tearDownAnyImagePickerController(animated: true)
+		}
+		func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
+		{
+			self._tearDownAnyImagePickerController(animated: true)
+		}
+		//
+		// Delegation - QR code and URL picking
+		func _didPick(possibleQRCodeImage image: UIImage)
+		{
+			if self.isFormEnabled == false {
+				DDLog.Warn("SendFundsTab", "Disallowing QR code pick while form disabled")
+				return
+			}
+			self.clearValidationMessage() // in case there was a parsing err etc displaying
+			self._clearForm() // may as well
+			//
+			// now decode qr …
+			let ciImage = CIImage(cgImage: image.cgImage!)
+			var options: [String: Any] = [:]
+			do {
+				options[CIDetectorAccuracy] = CIDetectorAccuracyHigh
+				do {
+					let properties = ciImage.properties
+					let raw_orientation = properties[kCGImagePropertyOrientation as String]
+					let final_orientation = raw_orientation ?? 1 /* "If not present, a value of 1 is assumed." */
+					//
+					options[CIDetectorImageOrientation] = final_orientation
+				}
+			}
+			let context = CIContext()
+			let detector = CIDetector(
+				ofType: CIDetectorTypeQRCode,
+				context: context,
+				options: options
+			)!
+			let features = detector.features(in: ciImage, options: options)
+			if features.count == 0 {
+				self.set(
+					validationMessage: NSLocalizedString("Unable to find QR code data in image", comment: ""),
+					wantsXButton: true
+				)
+				return
+			}
+			if features.count > 2 {
+				self.set(
+					validationMessage: NSLocalizedString("Unexpectedly found multiple QR features in image. This may be a bug.", comment: ""),
+					wantsXButton: true
+				)
+			}
+			let feature = features.first! as! CIQRCodeFeature
+			let messageString = feature.messageString
+			if messageString == nil || messageString == "" {
+				self.set(
+					validationMessage: NSLocalizedString("Unable to find message string in image's QR code.", comment: ""),
+					wantsXButton: true
+				)
+				return
+			}
+			self.__shared_didPick(requestURIStringForAutofill: messageString!)
+		}
+		func __shared_didPick(requestURIStringForAutofill requestURIString: String)
+		{
+			self.clearValidationMessage() // in case there was a parsing err etc displaying
+			self._clearForm()
+			//
+			self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
+			//
+			let (err_str, optl_requestPayload) = MyMoneroCoreUtils.New_ParsedRequest_FromURIString(requestURIString)
+			if err_str != nil {
+				self.set(
+					validationMessage: NSLocalizedString(
+						"Unable to use the result of decoding that QR code: \(err_str!)",
+						comment: ""
+					),
+					wantsXButton: true
+				)
+				return
+			}
+			let requestPayload = optl_requestPayload!
+			if let amountString = requestPayload.amount, amountString != "" {
+				self.amount_fieldset.inputField.text = amountString
+			}
+			do {
+				let target_address = requestPayload.address
+				assert(target_address != "") // b/c it should have been caught as a validation err on New_ParsedRequest_FromURIString
+				let payment_id_orNil = requestPayload.paymentID
+				var foundContact: Contact?
+				do {
+					let records = ContactsListController.shared.records
+					for (_, record) in records.enumerated() {
+						let contact = record as! Contact
+						if contact.address == target_address || contact.cached_OAResolved_XMR_address == target_address {
+							// so this request's address corresponds with this contact…
+							// how does the payment id match up?
+							/*
+							* Commented until we figure out this payment ID situation.
+							* The problem is that the person who uses this request to send
+							* funds (i.e. the user here) may have the target of the request
+							* in their Address Book (the req creator) but the request recipient
+							* would have in their address book a /different/ payment_id for the target
+							* than the payment_id in the contact used by the creator to generate
+							* this request.
+							
+							* One proposed solution is to give contacts a "ReceiveFrom-With" and "SendTo-With"
+							* payment_id. Then when a receiver loads a request (which would have a payment_id of
+							* the creator's receiver contact's version of "ReceiveFrom-With"), we find the contact
+							* (by address/cachedaddr) and if it doesn't yet have a "SendTo-With" payment_id,
+							* we show it as 'detected', and set its value to that of ReceiveFrom-With from the request
+							* if they hit send. This way users won't have to send each other their pids.
+							
+							* Currently, this is made to work below by not looking at the contact itself for payment
+							* ID match, but just using the payment ID on the request itself, if any.
+							
+							if (payment_id_orNull) { // request has pid
+							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
+							if (contact.payment_id !== payment_id_orNull) {
+							console.log("contact has same address as request but different payment id!")
+							continue // TODO (?) keep this continue? or allow and somehow use the pid from the request?
+							} else {
+							// contact has same pid as request pid
+							console.log("contact has same pid as request pid")
+							}
+							} else { // contact has no pid
+							console.log("request pid exists but contact has no request pid")
+							}
+							} else { // request has no pid
+							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
+							console.log("contact has pid but request has no pid")
+							} else { // contact has no pid
+							console.log("neither request nor contact have pid")
+							// this is fine - we can use this contact
+							}
+							}
+							*/
+							foundContact = contact
+							break
+						}
+					}
+					if foundContact != nil {
+						self.sendTo_inputView.pick(
+							contact: foundContact!,
+							skipOAResolve: true, // special case
+							useContactPaymentID: false // but we're not going to show the PID stored on the contact!
+						)
+					} else { // we have an addr but no contact
+						if let _ = self.sendTo_inputView.selectedContact {
+							self.sendTo_inputView.unpickSelectedContact_andRedisplayInputField(
+								skipFocusingInputField: true // do NOT focus input
+							)
+						}
+						self.sendTo_inputView.inputField.text = target_address
+					}
+				}
+				// and no matter what, display payment id from request, if present
+				self.hideAndClear_manualPaymentIDField()
+				if payment_id_orNil != nil { // but display it as a 'detected' pid which we can pick up on submit
+					self.set_addPaymentID_buttonView(isHidden: true) // hide
+					self.sendTo_inputView._display(resolved_paymentID: payment_id_orNil!) // NOTE: kind of bad to use private methods like this - TODO: establish a proper interface for doing this!
+				} else {
+					self.sendTo_inputView._hide_resolved_paymentID() // jic // NOTE: kind of bad to use private methods like this - TODO: establish a proper interface for doing this!
+					self.set_addPaymentID_buttonView(isHidden: false) // show
+				}
+			}
+		}
+		//
 		// Protocol - DeleteEverythingRegistrant
 		func passwordController_DeleteEverything() -> String?
 		{
 			DispatchQueue.main.async
 			{ [unowned self] in
 				self._clearForm()
+				self._tearDownAnyImagePickerController(animated: false)
+				//
+				// should already have popped to root thanks to root tab bar vc
 			}
 			//
 			return nil // no error

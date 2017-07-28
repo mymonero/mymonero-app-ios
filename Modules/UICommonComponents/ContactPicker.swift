@@ -277,6 +277,18 @@ extension UICommonComponents.Form
 		//
 		var oaResolverRequestMaker: OpenAliasResolverRequestMaker?
 		func pick(contact: Contact)
+		{
+			self.pick(
+				contact: contact,
+				skipOAResolve: false,
+				useContactPaymentID: true
+			)
+		}
+		func pick(
+			contact: Contact,
+			skipOAResolve: Bool = false,
+			useContactPaymentID: Bool = true
+		)
 		{ // This function must also be able to handle being called while a contact is already selected
 			//
 			if self.selectedContact != nil {
@@ -296,52 +308,62 @@ extension UICommonComponents.Form
 			//
 			self.selectedContact = contact
 			self._display(pickedContact: contact)
-			//
-			self.set(resolvingIndicatorIsVisible: doesNeedToResolve)
+			//			
+			self.set(resolvingIndicatorIsVisible: !skipOAResolve && doesNeedToResolve)
 			if doesNeedToResolve {
-				let parameters = ContactPickerOpenAliasResolverRequestMaker.Parameters(
-					address: contact.address,
-					oaResolve__preSuccess_terminal_validationMessage_fn:
-					{ [unowned self] (localizedString) in
-						self.set(resolvingIndicatorIsVisible: false)
-						self.oaResolverRequestMaker = nil // must free, and before call-back
-						do {
-							if self.displayMode == .paymentIds_andResolvedAddrs {
-								self._hide_resolved_XMRAddress()
-								self._hide_resolved_paymentID()
-							}
-						}
-						if let fn = self.oaResolve__preSuccess_terminal_validationMessage_fn {
-							fn(localizedString)
-						}
-					},
-					oaResolve__success_fn:
-					{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
-						self.set(resolvingIndicatorIsVisible: false)
-						self.oaResolverRequestMaker = nil // must free, and before call-back
-						do {
-							if self.displayMode == .paymentIds_andResolvedAddrs {
-								self._display(resolved_XMRAddress: resolved_xmr_address)
-								if payment_id != nil && payment_id != "" {
-									self._display(resolved_paymentID: payment_id!)
-								} else {
+				if skipOAResolve != true {
+					let parameters = ContactPickerOpenAliasResolverRequestMaker.Parameters(
+						address: contact.address,
+						oaResolve__preSuccess_terminal_validationMessage_fn:
+						{ [unowned self] (localizedString) in
+							self.set(resolvingIndicatorIsVisible: false)
+							self.oaResolverRequestMaker = nil // must free, and before call-back
+							do {
+								if self.displayMode == .paymentIds_andResolvedAddrs {
+									self._hide_resolved_XMRAddress()
 									self._hide_resolved_paymentID()
 								}
 							}
+							if let fn = self.oaResolve__preSuccess_terminal_validationMessage_fn {
+								fn(localizedString)
+							}
+						},
+						oaResolve__success_fn:
+						{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+							self.set(resolvingIndicatorIsVisible: false)
+							self.oaResolverRequestMaker = nil // must free, and before call-back
+							do {
+								if self.displayMode == .paymentIds_andResolvedAddrs {
+									self._display(resolved_XMRAddress: resolved_xmr_address)
+									if useContactPaymentID {
+										if payment_id != nil && payment_id != "" {
+											self._display(resolved_paymentID: payment_id!)
+										} else {
+											self._hide_resolved_paymentID()
+										}
+									} else {
+										self._hide_resolved_paymentID()
+									}
+								}
+							}
+							if let fn = self.oaResolve__success_fn {
+								fn(resolved_xmr_address, payment_id, tx_description)
+							}
 						}
-						if let fn = self.oaResolve__success_fn {
-							fn(resolved_xmr_address, payment_id, tx_description)
-						}
-					}
-				)
-				let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
-				self.oaResolverRequestMaker = resolver
-				resolver.resolve()
+					)
+					let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
+					self.oaResolverRequestMaker = resolver
+					resolver.resolve()
+				}
 			} else {
 				if self.displayMode == .paymentIds_andResolvedAddrs {
 					self._hide_resolved_XMRAddress()
-					if contact.payment_id != nil && contact.payment_id != "" {
-						self._display(resolved_paymentID: contact.payment_id!)
+					if useContactPaymentID {
+						if contact.payment_id != nil && contact.payment_id != "" {
+							self._display(resolved_paymentID: contact.payment_id!)
+						} else {
+							self._hide_resolved_paymentID()
+						}
 					} else {
 						self._hide_resolved_paymentID()
 					}
@@ -385,6 +407,13 @@ extension UICommonComponents.Form
 			}
 		}
 		//
+		// Imperatives - Resolving - Interface
+		func cancelAny_oaResolverRequestMaker()
+		{
+			self.set(resolvingIndicatorIsVisible: false)
+			self.oaResolverRequestMaker = nil
+		}
+		//
 		// Imperatives - Resolving indicator
 		func set(resolvingIndicatorIsVisible: Bool)
 		{
@@ -409,6 +438,7 @@ extension UICommonComponents.Form
 		{
 			self.resolvedXMRAddr_label!.isHidden = true
 			self.resolvedXMRAddr_inputView!.isHidden = true
+			self.resolvedXMRAddr_inputView!.textView.inputView = nil
 			if self.resolvedPaymentID_inputView!.isHidden == true {
 				self.detected_iconAndMessageView!.isHidden = true
 			}
@@ -426,6 +456,7 @@ extension UICommonComponents.Form
 		{
 			self.resolvedPaymentID_label!.isHidden = true
 			self.resolvedPaymentID_inputView!.isHidden = true
+			self.resolvedPaymentID_inputView!.textView.inputView = nil
 			if self.resolvedXMRAddr_inputView!.isHidden == true {
 				self.detected_iconAndMessageView!.isHidden = true
 			}

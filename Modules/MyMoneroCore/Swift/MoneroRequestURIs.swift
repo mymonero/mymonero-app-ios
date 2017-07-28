@@ -74,7 +74,7 @@ extension MyMoneroCoreUtils
 		}
 		var target_address: MoneroAddress // var, as we have to finalize it
 		// if the URL has '://' in it instead of ':', path may be empty, but host will contain the address instead
-		if urlComponents.host != nil {
+		if urlComponents.host != nil && urlComponents.host != "" {
 			target_address = urlComponents.host!
 		} else if urlComponents.path != "" {
 			target_address = urlComponents.path
