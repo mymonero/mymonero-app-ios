@@ -35,6 +35,7 @@ class ThemeController
 	{
 		self.configureAppearance_navigationBar()
 		self.configureAppearance_PKHUD()
+		self.configureAppearance_keyboard()
 	}
 	func configureAppearance_navigationBar()
 	{
@@ -53,6 +54,11 @@ class ThemeController
 	{
 		PKHUD.sharedHUD.dimsBackground = false // debatable
 		PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled = false // ofc
+	}
+	func configureAppearance_keyboard()
+	{
+//		UITextView.appearance().keyboardAppearance = .dark // TODO: why does this produce an exception?; doing it per-UITextView instead
+		UITextField.appearance().keyboardAppearance = .dark
 	}
 	//
 	// Imperatives - Convenience

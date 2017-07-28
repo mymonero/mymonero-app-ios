@@ -599,6 +599,7 @@ extension UICommonComponents
 		func setup()
 		{
 			self.backgroundColor = UIColor.clear
+			self.keyboardAppearance = .dark // TODO: configure based on ThemeController
 			self.configureTextFontAndColor()
 			self.textContainerInset = UIEdgeInsetsMake(6, 4, 0, 4)
 			//
