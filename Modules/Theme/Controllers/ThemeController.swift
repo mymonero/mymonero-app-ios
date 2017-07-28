@@ -113,6 +113,11 @@ extension UIColor
 	{
 		return UIColor.white
 	}
+	//
+	//
+	static var systemStandard_navigationBar_tintColor: UIColor {
+		return UIColor.normalNavigationBarTitleColor
+	}
 }
 //
 extension UIFont
