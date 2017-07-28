@@ -53,11 +53,6 @@ extension SendFundsForm
 		{
 			super.setup_views()
 			do {
-				var contentInset = self.scrollView.contentInset
-				contentInset.bottom = UICommonComponents.ActionButton.wholeButtonsContainerHeight
-				self.scrollView.contentInset = contentInset
-			}
-			do {
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("FROM", comment: "")
 				)
@@ -339,6 +334,13 @@ extension SendFundsForm
 				return false
 			}
 			return true
+		}
+		override func new_contentInset() -> UIEdgeInsets
+		{
+			var inset = super.new_contentInset()
+			inset.bottom += UICommonComponents.ActionButton.wholeButtonsContainerHeight
+			
+			return inset
 		}
 		//
 		// Accessors - Overrides

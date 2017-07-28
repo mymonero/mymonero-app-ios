@@ -43,6 +43,7 @@ extension UICommonComponents
 			super.setup_scrollView()
 			do {
 				self.scrollView.indicatorStyle = .white
+				self.configure_scrollView_contentInset()
 			}
 			do {
 				let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
@@ -112,11 +113,17 @@ extension UICommonComponents
 			assert(false, "Override and implement this method")
 			return nil
 		}
+		var _new_heightForKeyboardInContentInsetsBottom: CGFloat {
+			return self.keyboardIsShowing == true ? self.keyboardHeight! : 0
+		}
 		func new_contentInset() -> UIEdgeInsets
-		{
-			let bottom: CGFloat = self.keyboardIsShowing == true ? self.keyboardHeight! : 0
-			//
-			return UIEdgeInsetsMake(0, 0, bottom, 0)
+		{ // overridable
+			return UIEdgeInsetsMake(
+				0,
+				0,
+				self._new_heightForKeyboardInContentInsetsBottom,
+				0
+			)
 		}
 		//
 		// Runtime - Imperatives - Scrolling
@@ -216,6 +223,12 @@ extension UICommonComponents
 		func _tryToSubmitForm()
 		{
 			assert(false, "Override and implement \(#function)")
+		}
+		//
+		// Imperatives - Configuration - Scroll view
+		func configure_scrollView_contentInset()
+		{
+			self.scrollView.contentInset = self.new_contentInset()
 		}
 		//
 		var isFormEnabled = true
@@ -351,7 +364,7 @@ extension UICommonComponents
 			self.keyboardIsShowing = true
 			self.keyboardHeight = keyboard_size.height
 			// configuration
-			self.scrollView.contentInset = self.new_contentInset()
+			self.configure_scrollView_contentInset()
 		}
 		func keyboardWillHide(notification: Notification)
 		{
@@ -362,7 +375,7 @@ extension UICommonComponents
 			self.keyboardIsShowing = false
 			self.keyboardHeight = nil
 			// configuration
-			self.scrollView.contentInset = self.new_contentInset()
+			self.configure_scrollView_contentInset()
 		}
 		//
 		// Delegation - Gestures - Tap
