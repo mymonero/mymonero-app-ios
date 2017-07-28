@@ -40,6 +40,7 @@ extension SendFundsForm
 		var chooseFile_actionButtonView: UICommonComponents.ActionButton!
 		//
 		var presented_imagePickerController: UIImagePickerController?
+		var presented_cameraViewController: QRCodeScanningCameraViewController?
 		//
 		// Lifecycle - Init
 		override init()
@@ -299,16 +300,29 @@ extension SendFundsForm
 		{
 			super.tearDown()
 			self._tearDownAnyImagePickerController(animated: false)
+			self._tearDownAnyQRScanningCameraViewController(animated: false)
 		}
 		func _tearDownAnyImagePickerController(animated: Bool)
 		{
-			if let imagePickerController = self.presented_imagePickerController {
-				if self.navigationController?.presentedViewController == imagePickerController {
-					imagePickerController.dismiss(animated: animated, completion: nil)
+			if let viewController = self.presented_imagePickerController {
+				if self.navigationController?.presentedViewController == viewController {
+					viewController.dismiss(animated: animated, completion: nil)
 				} else {
 					DDLog.Warn("SendFundsTab", "Asked to teardown image picker while it was non-nil but not presented.")
 				}
 				self.presented_imagePickerController = nil
+			}
+		}
+		func _tearDownAnyQRScanningCameraViewController(animated: Bool)
+		{
+			if let viewController = self.presented_cameraViewController {
+				let actualPresentedViewController = viewController.navigationController!
+				if self.navigationController?.presentedViewController == actualPresentedViewController {
+					actualPresentedViewController.dismiss(animated: animated, completion: nil)
+				} else {
+					DDLog.Warn("SendFundsTab", "Asked to teardown QR scanning camera vc while it was non-nil but not presented.")
+				}
+				self.presented_cameraViewController = nil
 			}
 		}
 		//
@@ -819,8 +833,48 @@ extension SendFundsForm
 		//
 		func useCamera_tapped()
 		{
-			// see https://www.appcoda.com/qr-code-reader-swift/
-			assert(false, "TODO")
+			let viewController = QRCodeScanningCameraViewController()
+			if let error = viewController.didFatalErrorOnInit {
+				let alertController = UIAlertController(
+					title: error.localizedDescription,
+					message: error.userInfo["NSLocalizedRecoverySuggestion"] as? String ?? NSLocalizedString("Please ensure MyMonero can access your device camera via iOS Settings > Privacy.", comment: ""),
+					preferredStyle: .alert
+				)
+				alertController.addAction(
+					UIAlertAction(
+						title: NSLocalizedString("OK", comment: ""),
+						style: .default
+						)
+					{ (result: UIAlertAction) -> Void in
+					}
+				)
+				self.navigationController!.present(alertController, animated: true, completion: nil)
+				//
+				return // effectively discarding viewController
+			}
+			viewController.didCancel_fn =
+			{ [unowned self] in
+				self._tearDownAnyQRScanningCameraViewController(animated: true)
+			}
+			var hasOnceUsedScannedString = false // prevent redundant submits
+			viewController.didLocateQRCodeMessageString_fn =
+			{ [unowned self] (scannedMessageString) in
+				if hasOnceUsedScannedString == false {
+					hasOnceUsedScannedString = true
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) // delay here merely for visual effect
+					{ [unowned self] in
+						self._tearDownAnyQRScanningCameraViewController(animated: true)
+						self.__shared_didPick(requestURIStringForAutofill: scannedMessageString) // possibly wait til completion?
+					}					
+				}
+			}
+			self.presented_cameraViewController = viewController
+			let navigationController = UINavigationController(rootViewController: viewController)
+			self.navigationController!.present(
+				navigationController,
+				animated: true,
+				completion: nil
+			)
 		}
 		func chooseFile_tapped()
 		{
@@ -845,6 +899,7 @@ extension SendFundsForm
 				return
 			}
 			let pickerController = UIImagePickerController()
+			pickerController.view.backgroundColor = .contentBackgroundColor // prevent weird flashing on transitions
 			pickerController.navigationBar.tintColor = UIColor.systemStandard_navigationBar_tintColor // make it look at least slightly passable… would be nice if font size of btns could be reduced (next to such a small nav title font)… TODO: pimp out nav bar btns, including 'back', ala PushButton
 			pickerController.allowsEditing = false
 			pickerController.delegate = self

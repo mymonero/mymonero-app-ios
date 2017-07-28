@@ -29,6 +29,8 @@
 		9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */; };
 		9F22B7A81F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */; };
 		9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B7A91F01BAD20036B02F /* CopyButton.swift */; };
+		9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2A21DD1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift */; };
+		9F2A21E01F2BD48B005117DB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2A21DF1F2BD48B005117DB /* AVFoundation.framework */; };
 		9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */; };
 		9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */; };
 		9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */; };
@@ -240,6 +242,8 @@
 		9F22B7A71F006E4B0036B02F /* mnemonicDisplayView_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicDisplayView_bg_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B7A91F01BAD20036B02F /* CopyButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
 		9F24AE191EBA7D3A00841BCB /* MyMonero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyMonero.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F2A21DD1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeScanningCameraViewController.swift; sourceTree = "<group>"; };
+		9F2A21DF1F2BD48B005117DB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		9F2BFE5F1EEE2EE1006B2F7D /* WalletsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsListViewCell.swift; sourceTree = "<group>"; };
 		9F2BFE611EEE2EEA006B2F7D /* WalletCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCellContentView.swift; sourceTree = "<group>"; };
 		9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletIcons.swift; sourceTree = "<group>"; };
@@ -436,6 +440,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F2A21E01F2BD48B005117DB /* AVFoundation.framework in Frameworks */,
 				6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -524,6 +529,22 @@
 				9F24AE191EBA7D3A00841BCB /* MyMonero.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9F2A21DB1F2BD442005117DB /* QRCodes */ = {
+			isa = PBXGroup;
+			children = (
+				9F2A21DC1F2BD442005117DB /* ViewControllers */,
+			);
+			path = QRCodes;
+			sourceTree = "<group>";
+		};
+		9F2A21DC1F2BD442005117DB /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F2A21DD1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		9F2BFECB1EF3294D006B2F7D /* Models */ = {
@@ -630,6 +651,7 @@
 				9FC366DC1ECF9F90006CE743 /* Wallets */,
 				9F2BFEED1EF7373E006B2F7D /* WalletWizard */,
 				9F8E2FE11EE978B700F89A1D /* SendFundsTab */,
+				9F2A21DB1F2BD442005117DB /* QRCodes */,
 				9F8E2F881EE8807500F89A1D /* FundsRequests */,
 				9F8E2F861EE8807500F89A1D /* Contacts */,
 				9FAA18AE1F0AEC0C001F1D4D /* OpenAlias */,
@@ -1158,6 +1180,7 @@
 		B1FD17CA08A86496EC2BCADE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9F2A21DF1F2BD48B005117DB /* AVFoundation.framework */,
 				23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */,
 			);
 			name = Frameworks;
@@ -1378,6 +1401,7 @@
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
+				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
 				9F0801441F188A690074B35A /* Homepage.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
