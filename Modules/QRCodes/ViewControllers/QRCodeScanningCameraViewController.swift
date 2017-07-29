@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import AudioToolbox
 
 class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 {
@@ -18,7 +19,9 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	// Properties - Set by self to indicate result of init
 	var didFatalErrorOnInit: NSError? // if non-nil, discard self instance
 	//
-	// Properties - Set by consumer
+	// Properties - Settable by instantiator
+	var shouldVibrateOnFirstScan = false
+	//
 	var didCancel_fn: ((Void) -> Void)?
 	var didLocateQRCodeMessageString_fn: ((String) -> Void)?
 	//
@@ -78,7 +81,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 		do {
 			let view = UIView()
 			self.qrCodeReticleView = view
-			view.layer.borderColor = UIColor.utilityOrConstructiveLinkColor.cgColor
+			view.layer.borderColor = UIColor.green.cgColor // too faint: UIColor.utilityOrConstructiveLinkColor.cgColor
 			view.layer.borderWidth = 2
 			self.view.addSubview(view)
 			self.view.bringSubview(toFront: view)
@@ -144,6 +147,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	}
 	//
 	// Delegation - AVCapture
+	var hasAlreadyOutputMetadataObject = false
 	func captureOutput(
 		_ captureOutput: AVCaptureOutput!,
 		didOutputMetadataObjects metadataObjects: [Any]!,
@@ -162,6 +166,13 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 		do {
 			let barCodeObject = self.videoPreviewLayer.transformedMetadataObject(for: metadataObj)
 			self.qrCodeReticleView.frame = barCodeObject!.bounds
+		}
+		if self.hasAlreadyOutputMetadataObject == false {
+			self.hasAlreadyOutputMetadataObject = true
+			//
+			if self.shouldVibrateOnFirstScan {
+				AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+			}
 		}
 		if let stringValue = metadataObj.stringValue {
 			if let fn = self.didLocateQRCodeMessageString_fn {
