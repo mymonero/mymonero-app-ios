@@ -52,11 +52,14 @@ extension SendFundsForm
 		{
 			let enteredAddressValue_exists = self.parameters.enteredAddressValue != "" && self.parameters.enteredAddressValue != nil // it will be valid if it exists
 			let hasPickedAContact = self.parameters.selectedContact != nil
-			let notPickedContactBut_enteredAddressValue = !hasPickedAContact && enteredAddressValue_exists ? true : false
+//			let notPickedContactBut_enteredAddressValue = !hasPickedAContact && enteredAddressValue_exists ? true : false
 			//
 			let resolvedAddress_exists = self.parameters.resolvedAddress != "" && self.parameters.resolvedAddress != nil // NOTE: it might be hidden, though!
 			//
 			let resolvedPaymentID_exists = self.parameters.resolvedPaymentID != "" // NOTE: it might be hidden, though!
+			if self.parameters.resolvedPaymentID_fieldIsVisible {
+				assert(resolvedPaymentID_exists)
+			}
 			let manuallyEnteredPaymentID_exists = self.parameters.manuallyEnteredPaymentID != nil && self.parameters.manuallyEnteredPaymentID != ""
 			let canUseManualPaymentID =
 				manuallyEnteredPaymentID_exists

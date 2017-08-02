@@ -294,6 +294,8 @@ extension SendFundsForm
 		{
 			super.startObserving()
 			PasswordController.shared.addRegistrantForDeleteEverything(self)
+			//
+			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_receivedMoneroURL(_:)), name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
 		}
 		//
 		override func tearDown()
@@ -325,7 +327,6 @@ extension SendFundsForm
 				self.presented_cameraViewController = nil
 			}
 		}
-		//
 		//
 		// Accessors - Overrides
 		override func new_isFormSubmittable() -> Bool
@@ -413,6 +414,32 @@ extension SendFundsForm
 			// TODO:
 			return nil
 		}
+		//
+		var isAllowedToPerformDropOrURLOpeningOps: Bool
+		{
+			if PasswordController.shared.hasUserEnteredValidPasswordYet == false {
+				return false
+			}
+			if PasswordController.shared.isUserChangingPassword {
+				return false
+			}
+			if WalletsListController.shared.records.count == 0 {
+				return false
+			}
+			if self.isFormEnabled == false {
+				return false
+			}
+			if self.navigationController!.presentedViewController != nil {
+				// not going to return false here - it should be auto-dismissed and probably are still transitioning
+				DDLog.Warn("SendFunds", "Presented view controller exists but it should be in the process of getting dismissed")
+			}
+			if self.navigationController!.viewControllers.count != 1 { // we ought never to see this case, because we auto-pop to root (self)
+				// not going to return false here - they will be auto-dismissed and probably are still transitioning
+				DDLog.Warn("SendFunds", "Pushed view controller(s) exist(s) but should be in the process of getting popped")
+			}
+			return true
+		}
+
 		//
 		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
@@ -1091,6 +1118,24 @@ extension SendFundsForm
 			}
 			//
 			return nil // no error
+		}
+		//
+		// Delegation
+		func URLOpening_receivedMoneroURL(_ notification: Notification)
+		{
+			let userInfo = notification.userInfo!
+			let url = userInfo[URLOpening.NotificationUserInfoKeys.url.key] as! URL
+			//
+			do { // dismissing these b/c of checks in __shared_isAllowedToPerformDropOrURLOpeningOps
+				self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // if any
+				self.navigationController?.popToRootViewController(animated: false) // if any
+			}
+			//
+			if self.isAllowedToPerformDropOrURLOpeningOps == false {
+				DDLog.Warn("SendFunds", "Not allowed to perform URL opening ops yet.")
+				return
+			}
+			self.__shared_didPick(requestURIStringForAutofill: url.absoluteString)
 		}
 	}
 }

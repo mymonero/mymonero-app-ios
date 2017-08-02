@@ -27,10 +27,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			windowController: self.windowController
 		)
 		self.windowController.makeKeyAndVisible()
+//		do { // apparently we don't need to do this… given new application:open:
+//			if launchOptions != nil {
+//				if let launchOptions_url = launchOptions![UIApplicationLaunchOptionsKey.url] as? URL {
+//					let _ = URLOpening.appReceived(url: launchOptions_url)
+//				}
+//			}
+//		}
 		//
 		return true
 	}
-
+	func application(
+		_ application: UIApplication,
+		open url: URL,
+		sourceApplication: String?,
+		annotation: Any
+	) -> Bool
+	{
+		return URLOpening.appReceived(url: url)
+	}
 	func applicationWillResignActive(_ application: UIApplication) {
 		// Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
 		// Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.

@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s camera to scan physical Monero Payment Request QR codes.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -22,10 +18,27 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.mymonero.mymoneromobile</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>monero</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>The MyMonero app uses your device&apos;s camera to scan physical Monero Payment Request QR codes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Native-Bold.otf</string>
@@ -44,12 +57,14 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

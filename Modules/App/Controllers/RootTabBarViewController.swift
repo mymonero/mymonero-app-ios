@@ -64,9 +64,6 @@ class RootTabBarViewController: UITabBarController
 				__passwordController_didBoot()
 			}
 		}
-
-		//
-		self.startObserving()
 	}
 	func startObserving()
 	{
@@ -106,29 +103,9 @@ class RootTabBarViewController: UITabBarController
 //				}
 //			)
 //		}
-		DDLog.Todo("App", "observe url opening controller in root tab bar view controller")
-//		{ // urlOpeningController
-//			let controller = URLOpeningController.shared
-//			controller.on(
-//				controller.EventName_ReceivedURLToOpen_FundsRequest(),
-//				function(url)
-//				{
-//					if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
-//						console.log("User hasn't entered valid pw yet")
-//						return false
-//					}
-//					if (self.context.passwordController.IsUserChangingPassword() === true) {
-//						console.log("User is changing pw.")
-//						return false
-//					}
-//					if (!self.context.walletsListController.records || self.context.walletsListController.records.length == 0) {
-//						console.log("No wallets.")
-//						return false
-//					}
-//					self.selectTab_sendFunds()
-//				}
-//			)
-//		}
+		do { // urlOpeningController
+			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_receivedMoneroURL(_:)), name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
+		}
 	}
 	//
 	// Runtime - Imperatives
@@ -253,5 +230,21 @@ class RootTabBarViewController: UITabBarController
 	@objc func WalletsListController_listUpdated()
 	{ // if there are 0 wallets we don't want certain buttons to be enabled
 		self.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
+	}
+	func URLOpening_receivedMoneroURL(_ notification: Notification)
+	{
+		if PasswordController.shared.hasUserEnteredValidPasswordYet == false {
+			DDLog.Info("RootTabBar", "User hasn't entered valid pw yet - ignoring URL")
+			return
+		}
+		if PasswordController.shared.isUserChangingPassword {
+			DDLog.Info("RootTabBar", "User is changing pw - ignoring URL")
+			return
+		}
+		if WalletsListController.shared.records.count == 0 {
+			DDLog.Info("RootTabBar", "No wallet - ignoring URL")
+			return
+		}
+		self.selectTab_sendFunds()
 	}
 }
