@@ -49,6 +49,10 @@ class SettingsController: DeleteEverythingRegistrant
 	//
 	// Properties - Runtime - Transient
 	var hasBooted = false
+	var instanceUUID = UUID()
+	func identifier() -> String { // satisfy DeleteEverythingRegistrant for isEqual
+		return self.instanceUUID.uuidString
+	}
 	//
 	// Properties - Runtime - Persisted
 	var _id: DocumentPersister.DocumentId?
@@ -64,6 +68,7 @@ class SettingsController: DeleteEverythingRegistrant
 	func setup()
 	{
 		PasswordController.shared.addRegistrantForDeleteEverything(self)
+		//
 		let (err_str, documentJSONs) = DocumentPersister.shared.AllDocuments(inCollectionNamed: self.collectionName)
 		if err_str != nil {
 			assert(false, "Error: \(err_str!.debugDescription)")
@@ -97,8 +102,21 @@ class SettingsController: DeleteEverythingRegistrant
 		self.hasBooted = true
 	}
 	//
+	// Lifecycle - Teardown
+	deinit
+	{
+		self.teardown()
+	}
+	func teardown()
+	{
+		self.stopObserving()
+	}
+	func stopObserving()
+	{
+		PasswordController.shared.removeRegistrantForDeleteEverything(self)
+	}
+	//
 	// Imperatives - Setting values
-	
 	func set(valuesByDictKey: [DictKey: Any]) -> String? // err_str
 	{
 		// configure

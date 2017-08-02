@@ -19,7 +19,13 @@ extension SendFundsForm
 		// Static - Shared singleton
 		static let shared = SendFundsForm.ViewController()
 		//
-		// Properties
+		// Properties/Protocols - DeleteEverythingRegistrant
+		var instanceUUID = UUID()
+		func identifier() -> String { // satisfy DeleteEverythingRegistrant for isEqual
+			return self.instanceUUID.uuidString
+		}
+		//
+		// Properties - Initial - Runtime
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
 		//
@@ -296,6 +302,12 @@ extension SendFundsForm
 			PasswordController.shared.addRegistrantForDeleteEverything(self)
 			//
 			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_receivedMoneroURL(_:)), name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_:)),
+				name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, // observe 'did' so we're guaranteed to already be on right tab
+				object: nil
+			)
 		}
 		//
 		override func tearDown()
@@ -303,6 +315,14 @@ extension SendFundsForm
 			super.tearDown()
 			self._tearDownAnyImagePickerController(animated: false)
 			self._tearDownAnyQRScanningCameraViewController(animated: false)
+		}
+		override func stopObserving()
+		{
+			super.stopObserving()
+			PasswordController.shared.removeRegistrantForDeleteEverything(self)
+			//
+			NotificationCenter.default.removeObserver(self, name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
+			NotificationCenter.default.removeObserver(self, name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, object: nil)
 		}
 		func _tearDownAnyImagePickerController(animated: Bool)
 		{
@@ -689,8 +709,8 @@ extension SendFundsForm
 			let fundsRequestsTabNavigationController = rootViewController.tabBarViewController.fundsRequestsTabViewController
 			fundsRequestsTabNavigationController.pushViewController(viewController, animated: false) // NOT animated
 			DispatchQueue.main.async // on next tick to make sure push view finished
-				{ [unowned self] in
-					self.navigationController!.dismiss(animated: true, completion: nil)
+			{ [unowned self] in
+				self.navigationController!.dismiss(animated: true, completion: nil)
 			}
 		}
 		//
@@ -1120,7 +1140,7 @@ extension SendFundsForm
 			return nil // no error
 		}
 		//
-		// Delegation
+		// Delegation - Notifications
 		func URLOpening_receivedMoneroURL(_ notification: Notification)
 		{
 			let userInfo = notification.userInfo!
@@ -1136,6 +1156,22 @@ extension SendFundsForm
 				return
 			}
 			self.__shared_didPick(requestURIStringForAutofill: url.absoluteString)
+		}
+		//
+		func WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_ notification: Notification)
+		{
+			self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // whether we should force-dismiss these (create new contact) is debatable…
+			self.navigationController?.popToRootViewController(animated: false) // now pop pushed stack views - essential for the case they're viewing a transaction
+			//
+			if self.isFormEnabled == false {
+				DDLog.Warn("SendFunds", "Triggered send funds from contact while submit btn disabled. Beep.")
+				// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+				// TODO: mayyybe alert tx in progress
+				return
+			}
+			self._clearForm() // figure that since this method is called when user is trying to initiate a new request we should clear the form
+			let contact = notification.userInfo![WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
+			self.sendTo_inputView.pick(contact: contact) // simulate user picking the contact
 		}
 	}
 }

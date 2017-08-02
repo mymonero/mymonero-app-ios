@@ -50,5 +50,19 @@ class RootViewController: UIViewController
 		self.addChildViewController(tabBarViewController)
 		self.view.addSubview(self.tabBarViewController.view)
 	}
+	//
+	// Lifecycle - Teardown
+	deinit
+	{
+		self.teardown()
+	}
+	func teardown()
+	{
+		self.stopObserving()
+	}
+	func stopObserving()
+	{
+		// TODO: technically, good idea to remove all notification observations
+	}	
 }
 

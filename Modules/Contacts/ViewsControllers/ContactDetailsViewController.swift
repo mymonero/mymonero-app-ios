@@ -182,10 +182,10 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	// Delegation - Interactions - Action buttons
 	func send_tapped()
 	{
-		assert(false, "TODO")
+		WalletAppContactActionsCoordinator.Trigger_sendFunds(toContact: self.contact)
 	}
 	func request_tapped()
 	{
-		assert(false, "TODO")
+		WalletAppContactActionsCoordinator.Trigger_requestFunds(fromContact: self.contact)
 	}
 }

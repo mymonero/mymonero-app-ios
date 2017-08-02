@@ -13,6 +13,13 @@ import RNCryptor
 protocol DeleteEverythingRegistrant
 {
 	func passwordController_DeleteEverything() -> String? // return err_str:String if error. at time of writing, this was able to be kept synchronous.
+	//
+	// To support isEqual
+	func identifier() -> String
+}
+func isEqual(_ l: DeleteEverythingRegistrant, _ r: DeleteEverythingRegistrant) -> Bool
+{
+	return l.identifier() == r.identifier()
 }
 protocol PasswordEntryDelegate
 {
@@ -762,6 +769,24 @@ final class PasswordController
 	{
 		DDLog.Info("Passwords", "Adding registrant for 'DeleteEverything': \(registrant)")
 		self.deleteEverythingRegistrants.append(registrant)
+	}
+	func removeRegistrantForDeleteEverything(
+		_ registrant: DeleteEverythingRegistrant
+		) -> Void
+	{
+		var index: Int?
+		for (this_index, this_registrant) in self.deleteEverythingRegistrants.enumerated() {
+			if isEqual(registrant, this_registrant) {
+				index = this_index
+				break
+			}
+		}
+		if index == nil {
+			assert(false, "registrant is not registered")
+			return
+		}
+		DDLog.Info("Passwords", "Removing registrant for 'DeleteEverything': \(registrant)")
+		self.deleteEverythingRegistrants.remove(at: index!)
 	}
 	func initiateDeleteEverything()
 	{ // this is used as a central initiation/sync point for delete everything like user idle

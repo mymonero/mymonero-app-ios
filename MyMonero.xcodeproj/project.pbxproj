@@ -92,6 +92,7 @@
 		9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */; };
 		9F453FAD1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */; };
 		9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */; };
+		9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */; };
 		9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D501F10549E0017A20E /* ContactPicker.swift */; };
 		9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */; };
 		9F740D571F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */; };
@@ -309,6 +310,7 @@
 		9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsTabNavigationViewController.swift; sourceTree = "<group>"; };
 		9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromSendFundsTabFormViewController.swift; sourceTree = "<group>"; };
 		9F4668801EC664CC0075F9CD /* MoneroPaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroPaymentIDs.swift; sourceTree = "<group>"; };
+		9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAppContactActionsCoordinator.swift; sourceTree = "<group>"; };
 		9F740D501F10549E0017A20E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Hierarchy.swift"; sourceTree = "<group>"; };
 		9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromOtherTabFormViewController.swift; sourceTree = "<group>"; };
@@ -1016,6 +1018,7 @@
 			children = (
 				9FA734121F05AFAB00C674D6 /* ContactsListController.swift */,
 				9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */,
+				9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */,
 			);
 			path = ModelControllers;
 			sourceTree = "<group>";
@@ -1438,6 +1441,7 @@
 				9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */,
 				9F453FA91F267A65004590DC /* SendFundsFormSubmissionController.swift in Sources */,
 				9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */,
+				9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */,
 				9F2BFECD1EF33015006B2F7D /* Contact.swift in Sources */,
 				9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */,
 				9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */,

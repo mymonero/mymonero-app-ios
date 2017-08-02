@@ -85,27 +85,27 @@ class RootTabBarViewController: UITabBarController
 		do { // walletsListController
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletsListController_listUpdated), name: WalletsListController.Notifications_List.updated.notificationName, object: WalletsListController.shared)
 		}
-		DDLog.Todo("App", "observe wallet app coordinator in root tab bar vc")
-//		{ // walletAppCoordinator
-//			let poster = WalletAppCoordinator.shared
-//			emitter.on(
-//				emitter.EventName_willTrigger_sendFundsToContact(),
-//				function()
-//					{
-//						self.selectTab_sendFunds()
-//				}
-//			)
-//			emitter.on(
-//				emitter.EventName_willTrigger_requestFundsFromContact(),
-//				function()
-//					{
-//						self.selectTab_requestFunds()
-//				}
-//			)
-//		}
+		do { // walletAppContactActionsCoordinator
+			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_sendFundsToContact.notificationName, object: nil)
+			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_requestFundsFromContact.notificationName, object: nil)
+		}
 		do { // urlOpeningController
 			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_receivedMoneroURL(_:)), name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
 		}
+	}
+	//
+	// Lifecycle - Teardown
+	deinit
+	{
+		self.teardown()
+	}
+	func teardown()
+	{
+		self.stopObserving()
+	}
+	func stopObserving()
+	{
+		// TODO: technically, good idea to remove all notification observations
 	}
 	//
 	// Runtime - Imperatives
@@ -246,5 +246,13 @@ class RootTabBarViewController: UITabBarController
 			return
 		}
 		self.selectTab_sendFunds()
+	}
+	func WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact()
+	{
+		self.selectTab_sendFunds()
+	}
+	func WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact()
+	{
+		self.selectTab_fundsRequests()
 	}
 }

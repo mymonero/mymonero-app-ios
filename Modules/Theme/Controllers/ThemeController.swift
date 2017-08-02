@@ -57,8 +57,7 @@ class ThemeController
 	}
 	func configureAppearance_keyboard()
 	{
-//		UITextView.appearance().keyboardAppearance = .dark // TODO: why does this produce an exception?; doing it per-UITextView instead
-		UITextField.appearance().keyboardAppearance = .dark
+		// this is configured on a per-component basis to avoid stepping on the background color theming of the picker presented as the .inputView of the WalletPicker inputField   
 	}
 	//
 	// Imperatives - Convenience

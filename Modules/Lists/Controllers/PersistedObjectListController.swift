@@ -37,13 +37,17 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		case record = "record"
 	}
 	//
-	// inputs
+	// Properties - Initializing inputs and constants
 	var listedObjectType: PersistableObject.Type!
 	var documentCollectionName: DocumentPersister.CollectionName!
+	var instanceUUID = UUID()
+	func identifier() -> String { // satisfy DeleteEverythingRegistrant for isEqual
+		return self.instanceUUID.uuidString
+	}
 	var passwordController = PasswordController.shared
 	//
 	var records = [PersistableObject]()
-	// runtime
+	// Properties - Runtime
 	var hasBooted = false // can be set from true back to false
 	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
 	//
@@ -206,6 +210,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	func _stopObserving_passwordController()
 	{
+		self.passwordController.removeRegistrantForDeleteEverything(self)
+		//
 		NotificationCenter.default.removeObserver(
 			self,
 			name: PasswordController.NotificationNames.changedPassword.notificationName,

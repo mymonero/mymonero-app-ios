@@ -11,7 +11,7 @@ import UIKit
 class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 {
 	//
-	// Properties
+	// Properties - Set-up
 	var toWallet_label: UICommonComponents.Form.FieldLabel!
 	var toWallet_inputView: UICommonComponents.WalletPickerButtonView!
 	//
@@ -37,9 +37,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var manualPaymentID_inputView: UICommonComponents.FormInputField!
 	//
 	// Lifecycle - Init
-	override init()
+	required init(contact: Contact?)
 	{
 		super.init()
+		// ^ this will call setup (synchronously)
+		if contact != nil {
+			self.requestFrom_inputView.pick(contact: contact!)
+		}
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")

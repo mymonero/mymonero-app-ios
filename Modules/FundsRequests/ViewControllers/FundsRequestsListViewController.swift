@@ -24,9 +24,20 @@ class FundsRequestsListViewController: ListViewController
 		self.tableView.separatorStyle = .none
 		self.tableView.contentInset = UIEdgeInsetsMake(17, 0, 16, 0)
 	}
+	override func startObserving()
+	{
+		super.startObserving()
+		NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_didTrigger_requestFundsFromContact(_:)), name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_requestFundsFromContact.notificationName, object: nil)
+	}
 	override func configure_navigation_barButtonItems()
 	{
 		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(type: .add, target: self, action: #selector(addButton_tapped))
+	}
+	//
+	override func stopObserving()
+	{
+		super.stopObserving()
+		NotificationCenter.default.removeObserver(self, name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_requestFundsFromContact.notificationName, object: nil)
 	}
 	//
 	// Accessors - Required overrides
@@ -37,6 +48,32 @@ class FundsRequestsListViewController: ListViewController
 	override func new_emptyStateView() -> UIView?
 	{
 		return FundsRequestListEmptyView()
+	}
+	//
+	// Imperatives - Modals
+	func presentOrConfigureExistingCreateRequestFormView(withContact contact: Contact?)
+	{
+		if let presentedViewController = self.navigationController!.presentedViewController {
+			guard let presented_addFundsRequestFormViewController = presentedViewController as? AddFundsRequestFormViewController else {
+				DDLog.Warn("FundsRequests", "Presented view is not a AddFundsRequestFormViewController. Bailing")
+				return
+			}
+			if contact == nil {
+				assert(
+					false,
+					"expected contact to always be non-nil when being asked to reconfigure already presented Form"
+				)
+				return
+			}
+			presented_addFundsRequestFormViewController.reconfigureFormAtRuntime_havingElsewhereSelected(
+				requestFromContact: contact!
+			)
+			return
+		}
+		let viewController = AddFundsRequestFormViewController(contact: contact) // which might be nil
+		let modalViewController = UINavigationController(rootViewController: viewController)
+		self.navigationController!.present(modalViewController, animated: true, completion: nil)
+
 	}
 	//
 	// Delegation - Table
@@ -56,8 +93,6 @@ class FundsRequestsListViewController: ListViewController
 		cell!.configure(withObject: object, cellPosition: cellPosition)
 		//
 		return cell!
-
-		
 	}
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
@@ -80,8 +115,17 @@ class FundsRequestsListViewController: ListViewController
 	// Delegation - Interactions
 	func addButton_tapped()
 	{
-		let viewController = AddFundsRequestFormViewController()
-		let modalViewController = UINavigationController(rootViewController: viewController)
-		self.navigationController!.present(modalViewController, animated: true, completion: nil)
+		self.presentOrConfigureExistingCreateRequestFormView(withContact: nil)
+	}
+	//
+	// Delegation - Notifications
+	func WalletAppContactActionsCoordinator_didTrigger_requestFundsFromContact(_ notification: Notification)
+	{
+		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request…
+		// but do not dismiss modals - reconfigure instead
+		let userInfo = notification.userInfo!
+		let contact = userInfo[WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
+		self.presentOrConfigureExistingCreateRequestFormView(withContact: contact)
+
 	}
 }

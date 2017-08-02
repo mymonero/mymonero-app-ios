@@ -81,9 +81,7 @@ extension WalletDetails
 		override func startObserving()
 		{
 			super.startObserving()
-			
-			// TODO: all observations -> reconfig/reload cells
-			
+			//
 			NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.wallet)
 			NotificationCenter.default.addObserver(
 				self,

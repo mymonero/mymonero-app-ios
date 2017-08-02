@@ -709,6 +709,7 @@ extension UICommonComponents
 		func setup()
 		{
 			self.font = UIFont.middlingLightMonospace
+			self.keyboardAppearance = .dark // TODO: configure based on ThemeController
 			if self.init_placeholder != nil {
 				self.set(placeholder: self.init_placeholder!)
 			}
