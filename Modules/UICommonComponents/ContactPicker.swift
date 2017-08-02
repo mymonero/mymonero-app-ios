@@ -362,7 +362,26 @@ extension UICommonComponents.Form
 						if contact.payment_id != nil && contact.payment_id != "" {
 							self._display(resolved_paymentID: contact.payment_id!)
 						} else {
-							self._hide_resolved_paymentID()
+							// TODO: check if this is an integrated address. if it is, decode it, and display resolved
+							self._hide_resolved_paymentID() // just in case - and so we don't have to make sure to hide it later
+							// TODO: assert we think this is a monero addr first?
+							MyMoneroCore.shared.DecodeAddress(contact.address)
+							{ [unowned self] (err_str, decodedAddressComponents) in
+								if let _ = err_str {
+									DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode CONTACT's non-OA address as a Monero address!")
+									assert(false) // We're never expecting this here
+									// TODO: implement something like this: (but named discretely obvs)
+//									if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+//										fn()
+//									}
+									return // just return silently
+								}
+								let integratedAddress_paymentId = decodedAddressComponents!.intPaymentId
+								let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
+								if isIntegratedAddress {
+									self._display(resolved_paymentID: integratedAddress_paymentId!) // just for display - Send is smart enough to ignore/nil
+								}
+							}
 						}
 					} else {
 						self._hide_resolved_paymentID()
