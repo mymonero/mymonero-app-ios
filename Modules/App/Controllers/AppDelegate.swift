@@ -53,9 +53,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	{
 		return URLOpening.appReceived(url: url)
 	}
-	func applicationWillResignActive(_ application: UIApplication) {
-		// Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-		// Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+	func applicationWillResignActive(_ application: UIApplication)
+	{
+		PasswordController.shared.lockDownAppAndRequirePassword() // goal is to lock down app before OS takes app screenshot for multitasker - and applicationDidEnterBackground appears to be too late to capture full presentation of modal - probably due to two ".async{}" calls in PasswordEntryNavigationViewController.present(animated:)
 	}
 
 	func applicationDidEnterBackground(_ application: UIApplication) {
