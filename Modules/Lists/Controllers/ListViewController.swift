@@ -80,6 +80,7 @@ class ListViewController: UITableViewController
 	func new_navigationTitle() -> String
 	{
 		assert(false, "required")
+		return ""
 	}
 	//
 	// Accessors - Overridable - Optional
@@ -117,10 +118,12 @@ class ListViewController: UITableViewController
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
 	{
 		assert(false, "required")
+		return UITableViewCell()
 	}
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
 		assert(false, "required")
+		return 0
 	}
 	override func numberOfSections(in tableView: UITableView) -> Int
 	{
