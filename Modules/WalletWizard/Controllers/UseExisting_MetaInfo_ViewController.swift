@@ -360,11 +360,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			return
 		}
 		do {
-			DDLog.Todo("WalletWizard", "disable user idle, screen dim")
-//			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
-//			if (self.context.Cordova_isMobile === true) {
-//				window.plugins.insomnia.keepAwake() // disable screen dim/off
-//			}
+			UserIdle.shared.temporarilyDisable_userIdle()
+			ScreenSleep.temporarilyDisable_screenSleep()
 			self.set(isFormSubmitting: true) // will update 'Next' btn
 			self.disableForm()
 			self.clearValidationMessage()
@@ -373,11 +370,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		func ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
 		{ // factored because we would like to call this on successful submission too!
-			DDLog.Todo("WalletWizard", "re-enable user idle, screen dim")
-//			self.context.userIdleInWindowController.ReEnable_userIdle()
-//			if (self.context.Cordova_isMobile === true) {
-//				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
-//			}
+			UserIdle.shared.reEnable_userIdle()
+			ScreenSleep.reEnable_screenSleep()
 		}
 		func ___reEnableFormFromSubmissionDisable()
 		{

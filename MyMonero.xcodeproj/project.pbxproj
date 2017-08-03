@@ -96,6 +96,7 @@
 		9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B81F329D8400CD59E1 /* UserIdle.swift */; };
 		9F7298BB1F329EB900CD59E1 /* MMApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298BA1F329EB900CD59E1 /* MMApplication.swift */; };
 		9F7298BD1F329EE800CD59E1 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298BC1F329EE800CD59E1 /* main.swift */; };
+		9F7298BF1F33C0EE00CD59E1 /* ScreenSleep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298BE1F33C0EE00CD59E1 /* ScreenSleep.swift */; };
 		9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D501F10549E0017A20E /* ContactPicker.swift */; };
 		9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */; };
 		9F740D571F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */; };
@@ -317,6 +318,7 @@
 		9F7298B81F329D8400CD59E1 /* UserIdle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserIdle.swift; sourceTree = "<group>"; };
 		9F7298BA1F329EB900CD59E1 /* MMApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MMApplication.swift; sourceTree = "<group>"; };
 		9F7298BC1F329EE800CD59E1 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		9F7298BE1F33C0EE00CD59E1 /* ScreenSleep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSleep.swift; sourceTree = "<group>"; };
 		9F740D501F10549E0017A20E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		9F740D521F12CC330017A20E /* UIView+Hierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Hierarchy.swift"; sourceTree = "<group>"; };
 		9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromOtherTabFormViewController.swift; sourceTree = "<group>"; };
@@ -711,6 +713,7 @@
 				9F0801431F188A690074B35A /* Homepage.swift */,
 				9F8673891F2C396C00F89EAB /* URLOpening.swift */,
 				9F7298B81F329D8400CD59E1 /* UserIdle.swift */,
+				9F7298BE1F33C0EE00CD59E1 /* ScreenSleep.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1465,6 +1468,7 @@
 				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
+				9F7298BF1F33C0EE00CD59E1 /* ScreenSleep.swift in Sources */,
 				9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */,
 				9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */,
 				9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */,

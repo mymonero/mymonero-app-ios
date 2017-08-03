@@ -7,6 +7,7 @@
 //
 //
 import Foundation
+import UIKit // for UIApplication idle timer
 //
 class Wallet: PersistableObject
 {
@@ -735,14 +736,16 @@ class Wallet: PersistableObject
 		func __lock()
 		{
 			self.isSendingFunds = true
-			// TODO:
-			// 1. userIdleInWindowController.TemporarilyDisable_userIdle
-			// 2. disable screen dim
+			//
+			UserIdle.shared.temporarilyDisable_userIdle()
+			ScreenSleep.temporarilyDisable_screenSleep()
 		}
 		func __unlock()
 		{
 			self.isSendingFunds = false
-			// TODO: re-enable user idle and screen dim
+			//
+			UserIdle.shared.reEnable_userIdle()
+			ScreenSleep.reEnable_screenSleep()
 		}
 		__lock()
 		let _/*TODO requestHandle*/ = HostedMoneroAPIClient.SendFunds(
