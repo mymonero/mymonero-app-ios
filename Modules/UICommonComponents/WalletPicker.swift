@@ -62,6 +62,7 @@ extension UICommonComponents
 									self.picker_inputField.resignFirstResponder()
 								}
 								self.contentView.prepareForReuse()
+								self.contentView.clearFields()
 								return
 							}
 						} else {

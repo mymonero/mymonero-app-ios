@@ -23,8 +23,7 @@ class PersistableObject: Equatable
 		case willBeDeleted = "PersistableObject_NotificationNames_willBeDeleted"
 		case wasDeleted = "PersistableObject_NotificationNames_wasDeleted"
 		//
-		var notificationName: NSNotification.Name
-		{
+		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
 	}

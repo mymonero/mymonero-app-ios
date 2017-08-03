@@ -154,6 +154,12 @@ class WalletCellContentView: UIView
 	{
 		self.iconView.configure(withSwatchColor: self.object!.swatchColor)
 	}
+	func clearFields()
+	{
+		self.iconView.configure(withSwatchColor: .blue)
+		self.titleLabel.text = ""
+		self.subtitleLabel.text = ""
+	}
 	//
 	func startObserving_object()
 	{

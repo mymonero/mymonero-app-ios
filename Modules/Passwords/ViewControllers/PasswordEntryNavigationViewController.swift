@@ -24,8 +24,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 		case willDismissView = "PasswordEntryNavigationViewController_NotificationNames_willDismissView"
 		case didDismissView = "PasswordEntryNavigationViewController_NotificationNames_didDismissView"
 		//
-		var notificationName: NSNotification.Name
-		{
+		var notificationName: NSNotification.Name {
 			return NSNotification.Name(rawValue: self.rawValue)
 		}
 	}
@@ -117,6 +116,10 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 			queue: OperationQueue.main,
 			using:
 			{ [unowned self] (notification) in
+				if self.presentingViewController == nil {
+					DDLog.Warn("Passwords", "Notification that .willDeconstructBootedStateAndClearPassword was received while not presented.")
+					return
+				}
 				let userInfo = notification.userInfo!
 				let isForADeleteEverything = userInfo[PasswordController.Notification_UserInfo_Keys.isForADeleteEverything.rawValue] as! Bool
 				let isAnimated = isForADeleteEverything == true
@@ -139,7 +142,8 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	}
 	//
 	// Lifecycle - Teardown
-	deinit {
+	deinit
+	{
 		self.stopObserving_passwordController()
 	}
 	func stopObserving_passwordController()

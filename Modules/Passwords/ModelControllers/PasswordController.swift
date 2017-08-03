@@ -155,23 +155,7 @@ final class PasswordController
 	}
 	func startObserving_userIdle()
 	{
-		// TODO:
-//		controller.on(
-//			controller.EventName_userDidBecomeIdle(),
-//			
-//				{
-//					if (self.hasUserSavedAPassword !== true) {
-//						// nothing to do here because the app is not unlocked and/or has no data which would be locked
-//						DDLog.Info("Passwords", "User became idle but no password has ever been entered/no saved data should exist.")
-//						return
-//					} else if (self.HasUserEnteredValidPasswordYet() !== true) {
-//						// user has saved data but hasn't unlocked the app yet
-//						DDLog.Info("Passwords", "User became idle and saved data/pw exists, but user hasn't unlocked app yet.")
-//						return
-//					}
-//					self._didBecomeIdleAfterHavingPreviouslyEnteredPassword()
-//			}
-//		)
+		NotificationCenter.default.addObserver(self, selector: #selector(UserIdle_userDidBecomeIdle), name: UserIdle.NotificationNames.userDidBecomeIdle.notificationName, object: nil)
 	}
 	func initializeRuntimeAndBoot()
 	{
@@ -887,8 +871,11 @@ final class PasswordController
 						return
 					}
 					do { // trigger deconstruction of booted state and require password
-						self.hasBooted = false
-						self.password = nil
+						self.password = nil // clear pw in memory
+						self.hasBooted = false // require this pw controller to boot
+						self.hasUserSavedAPassword = false
+						self._id = nil
+						self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
 					}
 					do { // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
 						NotificationCenter.default.post(
@@ -896,6 +883,9 @@ final class PasswordController
 							object: self
 						)
 					}
+					//
+					self.initializeRuntimeAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
+					//
 					fn(nil)
 				}
 			)
@@ -907,6 +897,21 @@ final class PasswordController
 	{
 		self.password = password
 		self.hasUserSavedAPassword = true // we can now flip this to true
+	}
+	//
+	// Delegation - Notifications
+	@objc func UserIdle_userDidBecomeIdle()
+	{
+		if self.hasUserSavedAPassword == false {
+			// nothing to do here because the app is not unlocked and/or has no data which would be locked
+			DDLog.Info("Passwords", "User became idle but no password has ever been entered/no saved data should exist.")
+			return
+		} else if self.hasUserEnteredValidPasswordYet == false {
+			// user has saved data but hasn't unlocked the app yet
+			DDLog.Info("Passwords", "User became idle and saved data/pw exists, but user hasn't unlocked app yet.")
+			return
+		}
+		self._didBecomeIdleAfterHavingPreviouslyEnteredPassword()
 	}
 	//
 	// Delegation - User having become idle -> teardown booted state and require pw

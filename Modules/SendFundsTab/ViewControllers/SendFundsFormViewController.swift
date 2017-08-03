@@ -308,6 +308,19 @@ extension SendFundsForm
 				name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, // observe 'did' so we're guaranteed to already be on right tab
 				object: nil
 			)
+			
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(PasswordController_willDeconstructBootedStateAndClearPassword),
+				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+				object: PasswordController.shared
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(PasswordController_didDeconstructBootedStateAndClearPassword),
+				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+				object: PasswordController.shared
+			)
 		}
 		//
 		override func tearDown()
@@ -323,6 +336,17 @@ extension SendFundsForm
 			//
 			NotificationCenter.default.removeObserver(self, name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
 			NotificationCenter.default.removeObserver(self, name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, object: nil)
+			//
+			NotificationCenter.default.removeObserver(
+				self,
+				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+				object: PasswordController.shared
+			)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+				object: PasswordController.shared
+			)
 		}
 		func _tearDownAnyImagePickerController(animated: Bool)
 		{
@@ -1141,6 +1165,21 @@ extension SendFundsForm
 		}
 		//
 		// Delegation - Notifications
+		@objc
+		func PasswordController_willDeconstructBootedStateAndClearPassword()
+		{
+			DispatchQueue.main.async
+			{ [unowned self] in
+				self._clearForm()
+				self._tearDownAnyImagePickerController(animated: false)
+				//
+				// should already have popped to root thanks to root tab bar vc
+			}
+		}
+		@objc
+		func PasswordController_didDeconstructBootedStateAndClearPassword()
+		{
+		}
 		func URLOpening_receivedMoneroURL(_ notification: Notification)
 		{
 			let userInfo = notification.userInfo!

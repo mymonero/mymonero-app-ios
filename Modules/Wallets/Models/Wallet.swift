@@ -144,8 +144,7 @@ class Wallet: PersistableObject
 		case heightsUpdated		 = "Wallet_NotificationNames_heightsUpdated"
 		case transactionsChanged = "Wallet_NotificationNames_transactionsChanged"
 		//
-		var notificationName: NSNotification.Name
-		{
+		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
 	}

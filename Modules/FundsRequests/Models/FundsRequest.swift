@@ -15,8 +15,7 @@ class FundsRequest: PersistableObject
 	enum NotificationNames: String
 	{
 		case infoUpdated		= "FundsRequest_NotificationNames_infoUpdated"
-		var notificationName: NSNotification.Name
-		{
+		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
 	}

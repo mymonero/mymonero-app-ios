@@ -9,13 +9,20 @@
 import UIKit
 import WebKit
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+//@UIApplicationMain // intentionally commented - see main.swift
 
+class AppDelegate: UIResponder, UIApplicationDelegate
+{
+	//
+	// Properties
 	var window: UIWindow?
 	var windowController: WindowController!
 	var appRuntimeController: AppRuntimeController!
-	
+	//
+	// Overrides - Imperatives
+
+	//
+	// Delegation - UIApplicationDelegate
 	func application(
 		_ application: UIApplication,
 		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?

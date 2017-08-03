@@ -23,6 +23,7 @@ struct URLOpening
 	enum NotificationUserInfoKeys: String
 	{
 		case url = "URLOpening.NotificationUserInfoKeys.url"
+		//
 		var key: String {
 			return self.rawValue
 		}

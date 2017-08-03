@@ -27,14 +27,6 @@ class RootViewController: UIViewController
 		//
 		self.setup_views()
 	}
-	@objc func PasswordEntryNavigationViewController_willDismissView()
-	{
-		self.tabBarViewController.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
-	}
-	@objc func PasswordEntryNavigationViewController_willPresentInView()
-	{
-		self.tabBarViewController.disableTabBarItems()
-	}
 	func setup_views()
 	{
 		self.view.backgroundColor = UIColor.contentBackgroundColor
@@ -63,6 +55,16 @@ class RootViewController: UIViewController
 	func stopObserving()
 	{
 		// TODO: technically, good idea to remove all notification observations
-	}	
+	}
+	//
+	// Delegation - Notifications
+	@objc func PasswordEntryNavigationViewController_willDismissView()
+	{
+		self.tabBarViewController.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
+	}
+	@objc func PasswordEntryNavigationViewController_willPresentInView()
+	{
+		self.tabBarViewController.disableTabBarItems()
+	}
 }
 

@@ -13,6 +13,7 @@ class Contact: PersistableObject
 	enum NotificationNames: String
 	{
 		case infoUpdated		= "Contact_NotificationNames_infoUpdated"
+		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
