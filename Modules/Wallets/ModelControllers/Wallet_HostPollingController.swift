@@ -10,7 +10,7 @@ import Foundation
 //
 class Wallet_HostPollingController
 {
-	var wallet: Wallet!
+	weak var wallet: Wallet!
 	var timer: Timer!
 	//
 	var requestHandleFor_addressInfo: HostedMoneroAPIClient.RequestHandle?
