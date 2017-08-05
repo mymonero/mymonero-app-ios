@@ -17,7 +17,7 @@ extension ImportTransactionsModal
 		//
 		// Properties
 		// - Initializing
-		var wallet: Wallet
+		var wallet: Wallet // leaving this as a strong ref b/c self should be torn down  
 		//
 		// - Views
 		var informationalLabel: UICommonComponents.FormAccessoryMessageLabel!

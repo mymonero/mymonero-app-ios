@@ -31,7 +31,7 @@ extension WalletDetails
 		//
 		// Properties - Settable via init
 		var mode: Mode
-		var wallet: Wallet
+		var wallet: Wallet // self SHOULD be torn down on a table .reloadData() so we can keep this as strong
 		var contentView: UIView!
 		init(mode: Mode, wallet: Wallet)
 		{

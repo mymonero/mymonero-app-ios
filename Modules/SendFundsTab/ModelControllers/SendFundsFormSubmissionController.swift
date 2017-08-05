@@ -16,7 +16,7 @@ extension SendFundsForm
 		{
 			//
 			// Input values:
-			var fromWallet: Wallet
+			var fromWallet: Wallet! // must we make this weak? effects?
 			var amount_submittableDouble: Double
 			//
 			let selectedContact: Contact?
@@ -233,11 +233,17 @@ extension SendFundsForm
 				cached__lockedReason: nil,
 				isJustSentTransientTransactionRecord: true
 			)
+			if self.parameters.fromWallet == nil {
+				assert(false, "FYI: wallet freed before end of SendFunds")
+				return
+			}
 			do { // and fire off a request to have the wallet get the latest (real) tx records
 				let wallet = self.parameters.fromWallet
 				DispatchQueue.main.async
 				{
-					wallet.hostPollingController!._fetch_addressTransactions() // TODO: maybe fix up the API for this
+					if wallet != nil {
+						wallet!.hostPollingController!._fetch_addressTransactions() // TODO: maybe fix up the API for this
+					}
 				}
 			}
 			self.parameters.success_fn(

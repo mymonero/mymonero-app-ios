@@ -88,13 +88,14 @@ class FundsRequestsCellContentView: UIView
 	func stopObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
 		//
 	// Accessors
 	//
 	// Imperatives - Configuration
-	var object: FundsRequest?
+	weak var object: FundsRequest? // prevent self from preventing object from being freed so we still get .willBeDeinitialized
 	func configure(withObject object: FundsRequest)
 	{
 		if self.object != nil {
@@ -119,6 +120,7 @@ class FundsRequestsCellContentView: UIView
 	func startObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeinitialized), name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
 	}
 	//
@@ -181,6 +183,10 @@ class FundsRequestsCellContentView: UIView
 	// Delegation
 	func _willBeDeleted()
 	{
-		self.tearDown_object() // release
+		self.tearDown_object() // stopObserving/release
+	}
+	func _willBeDeinitialized()
+	{
+		self.tearDown_object() // stopObserving/release
 	}
 }

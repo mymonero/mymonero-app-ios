@@ -131,9 +131,6 @@ class ListViewController: UITableViewController
 	}
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
 	{
-		if self.listController.hasBooted != true {
-			return 0
-		}
 		return self.listController.records.count
 	}
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)

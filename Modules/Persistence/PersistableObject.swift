@@ -20,7 +20,9 @@ class PersistableObject: Equatable
 	//
 	enum NotificationNames: String
 	{
-		case willBeDeleted = "PersistableObject_NotificationNames_willBeDeleted"
+		case willBeDeinitialized = "PersistableObject_NotificationNames_willBeDeinitialized" // this is necessary since views like UITableView and UIPickerView won't necessarily call .prepareForReuse() on an unused cell (e.g. after logged-in-runtime teardown), leaving PersistableObject instances hanging around
+		//
+		case willBeDeleted = "PersistableObject_NotificationNames_willBeDeleted" // this (or 'was') may end up being redundant with new .willBeDeinitialized
 		case wasDeleted = "PersistableObject_NotificationNames_wasDeleted"
 		//
 		var notificationName: NSNotification.Name {
@@ -74,7 +76,12 @@ class PersistableObject: Equatable
 	// Lifecycle - Deinit
 	deinit
 	{
+		self.teardown()
+	}
+	func teardown()
+	{
 		DDLog.TearingDown("Persistence", "Tearing down a \(self).")
+		NotificationCenter.default.post(name: NotificationNames.willBeDeinitialized.notificationName, object: self)
 	}
 	//
 	// Accessors - Persistence state
@@ -95,6 +102,13 @@ class PersistableObject: Equatable
 	func _saveToDisk_insert() -> String? // -> err_str?
 	{
 		assert(self._id == nil, "non-nil _id in \(#function)")
+		guard let _ = PasswordController.shared.password else {
+			DDLog.Warn(
+				"Persistence.PersistableObject",
+				"Asked to insert new when no password exists. Probably ok if currently tearing down logged-in runtime. Ensure self is not being prevented from being freed."
+			)
+			return nil // just bail
+		}
 		// only generate _id here after checking shouldInsertNotUpdate since that relies on _id
 		self._id = DocumentPersister.new_DocumentId() // generating a new UUID
 		// and since we know this is an insertion, let's any other initial centralizable data
@@ -122,6 +136,13 @@ class PersistableObject: Equatable
 	func _saveToDisk_update() -> String?
 	{
 		assert(self._id != nil, "nil _id in \(#function)")
+		guard let _ = PasswordController.shared.password else {
+			DDLog.Warn(
+				"Persistence.PersistableObject",
+				"Asked to save update when no password exists. Probably ok if currently tearing down logged-in runtime. Ensure self is not being prevented from being freed."
+			)
+			return nil // just bail
+		}
 		do {
 			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
 			let err_str = DocumentPersister.shared.Write(
@@ -144,6 +165,13 @@ class PersistableObject: Equatable
 	//
 	func delete() -> String? // err_str
 	{
+		guard let _ = PasswordController.shared.password else {
+			DDLog.Warn(
+				"Persistence.PersistableObject",
+				"Asked to delete when no password exists. Unexpected."
+			)
+			return nil // just bail
+		}
 		assert(self._id != nil)
 		NotificationCenter.default.post(
 			name: NotificationNames.willBeDeleted.notificationName,

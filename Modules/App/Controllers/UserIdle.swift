@@ -121,8 +121,8 @@ class UserIdle: NSObject
 			{ [unowned self] timer in
 				self._numberOfSecondsSinceLastUserInteraction += 1.0 // count the second
 				//
-				let appTimeoutAfterS = SettingsController.shared.appTimeoutAfterS_orNeg1ForDisabled ?? 20.0 // use default on no pw entered / no settings info yet
-				if appTimeoutAfterS == -1 { // then idle timer is specifically disabled
+				let appTimeoutAfterS = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? 20.0 // use default on no pw entered / no settings info yet
+				if appTimeoutAfterS == SettingsController.appTimeoutAfterS_neverValue { // then idle timer is specifically disabled
 					return // do nothing
 				}
 				//

@@ -11,7 +11,6 @@ import UIKit
 class RootViewController: UIViewController
 {
 	var tabBarViewController: RootTabBarViewController!
-	var passwordEntryNavigationViewController: PasswordEntryNavigationViewController!
 	//
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
 	{
@@ -31,8 +30,8 @@ class RootViewController: UIViewController
 	{
 		self.view.backgroundColor = UIColor.contentBackgroundColor
 		//
-		// this passwordEntryNavigationViewController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
-		self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController()
+//		// the shared PasswordEntryPresentationController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
+		let _ = PasswordEntryPresentationController.shared
 		do { // start observing (usually is split out, but should be fine here esp since we don't need to stop observing)
 			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willDismissView), name: PasswordEntryNavigationViewController.NotificationNames.willDismissView.notificationName, object: nil)
 			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willPresentInView), name: PasswordEntryNavigationViewController.NotificationNames.willPresentInView.notificationName, object: nil)

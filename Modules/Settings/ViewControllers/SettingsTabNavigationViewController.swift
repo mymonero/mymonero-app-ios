@@ -10,6 +10,10 @@ import UIKit
 
 class SettingsTabNavigationViewController: UINavigationController
 {
+	//
+	// Properties
+	//
+	// Lifecycle - Init
 	init()
 	{
 		super.init(nibName: nil, bundle: nil)
@@ -26,5 +30,7 @@ class SettingsTabNavigationViewController: UINavigationController
 			image: UIImage(named: "icon_tabBar_settings")!.withRenderingMode(.alwaysOriginal),
 			selectedImage: UIImage(named: "icon_tabBar_settings__active")!.withRenderingMode(.alwaysOriginal)
 		)
+		//
+		self.viewControllers = [ SettingsFormViewController.shared ]
 	}
 }

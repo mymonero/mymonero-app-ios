@@ -55,16 +55,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	}
 	func applicationWillResignActive(_ application: UIApplication)
 	{
-		PasswordController.shared.lockDownAppAndRequirePassword() // goal is to lock down app before OS takes app screenshot for multitasker - and applicationDidEnterBackground appears to be too late to capture full presentation of modal - probably due to two ".async{}" calls in PasswordEntryNavigationViewController.present(animated:)
+		// goal is to lock down app before OS takes app screenshot for multitasker but we cannot use this method to do so b/c it gets called for a variety of temporary interruptions, such as asking for photos permissions
 	}
-
-	func applicationDidEnterBackground(_ application: UIApplication) {
-		// Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-		// If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+	func applicationDidEnterBackground(_ application: UIApplication)
+	{
+		PasswordController.shared.lockDownAppAndRequirePassword() // goal is to lock down app before OS takes app screenshot for multitasker
 	}
-
-	func applicationWillEnterForeground(_ application: UIApplication) {
-		// Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+	func applicationWillEnterForeground(_ application: UIApplication)
+	{
 	}
 
 	func applicationDidBecomeActive(_ application: UIApplication) {

@@ -167,9 +167,12 @@ extension UIFont
 	{
 		return UIFont(name: self.boldMonospaceFontName, size: 13)!
 	}
-	
 	//
 	// Sans Serif - (systemFont should be "San Francisco")
+	static var smallRegularSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightRegular)
+	}
 	static var smallSemiboldSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightSemibold)

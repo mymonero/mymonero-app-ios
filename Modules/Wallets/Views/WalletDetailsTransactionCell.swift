@@ -213,13 +213,13 @@ extension WalletDetails
 			func stopObserving_object()
 			{
 				assert(self.object != nil)
-//				NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
+				NotificationCenter.default.removeObserver(self, name: MoneroHistoricalTransactionRecord.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 			}
 			//
 			// Accessors
 			//
 			// Imperatives - Configuration
-			var object: MoneroHistoricalTransactionRecord?
+			weak var object: MoneroHistoricalTransactionRecord? // weak to prevent self from preventing .willBeDeinitialized from being received
 			func configure(withObject object: MoneroHistoricalTransactionRecord)
 			{
 				if self.object != nil {
@@ -250,7 +250,7 @@ extension WalletDetails
 			func startObserving_object()
 			{
 				assert(self.object != nil)
-//				NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
+				NotificationCenter.default.addObserver(self, selector: #selector(willBeDeinitialized), name: MoneroHistoricalTransactionRecord.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 			}
 			//
 			// Imperatives - Overrides
@@ -285,6 +285,12 @@ extension WalletDetails
 					width: labels_width,
 					height: 15
 				).integral
+			}
+			//
+			// Delegation - Notifications
+			func willBeDeinitialized()
+			{
+				self.tearDown_object() // stop observing/free
 			}
 		}
 	}

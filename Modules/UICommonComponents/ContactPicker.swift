@@ -32,7 +32,7 @@ extension UICommonComponents.Form
 		var inputMode: InputMode
 		var displayMode: AccessoryInfoDisplayMode
 		//
-		var selectedContact: Contact?
+		var selectedContact: Contact? // strong should be ok here b/c we unpick the selectedContact when contacts reloads on logged-in runtime teardown
 		//
 		var inputField = UICommonComponents.FormInputField(
 			placeholder: NSLocalizedString("Enter contact name", comment: "")
@@ -420,7 +420,7 @@ extension UICommonComponents.Form
 			self.inputField.isHidden = false
 			if skipFocusingInputField != true {
 				DispatchQueue.main.async
-				{ // to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
+				{ [unowned self] in// to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
 					self.inputField.becomeFirstResponder()
 				}
 			}
@@ -996,7 +996,7 @@ extension UICommonComponents.Form
 		static let xButton_side = SelectedContactPillView.visual__h
 		//
 		// Properties
-		var contact: Contact?
+		weak var contact: Contact? // in order to prevent deinit from occurring while property still set
 		var xButton_tapped_fn: ((Void) -> Void)!
 		//
 		let backgroundImageView = UIImageView(image: UICommonComponents.PushButtonCells.Variant.utility.stretchableImage)
@@ -1061,12 +1061,19 @@ extension UICommonComponents.Form
 		}
 		func teardown_object()
 		{
-			self.stopObserving_contact()
-			self.contact = nil
+			if self.contact != nil { // must check as we may call this redundantly to cover all cases
+				self.stopObserving_contact()
+				self.contact = nil
+			}
 		}
 		func stopObserving_contact()
 		{
 			let contact = self.contact!
+			NotificationCenter.default.removeObserver(
+				self,
+				name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName,
+				object: contact
+			)
 			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: contact)
 			NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: contact)
 		}
@@ -1087,6 +1094,12 @@ extension UICommonComponents.Form
 		func startObserving_contact()
 		{
 			let contact = self.contact!
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(willBeDeinitialized),
+				name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName,
+				object: contact
+			)
 			NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: contact)
 			NotificationCenter.default.addObserver(self, selector: #selector(infoUpdated), name: Contact.NotificationNames.infoUpdated.notificationName, object: contact)
 		}
@@ -1174,6 +1187,10 @@ extension UICommonComponents.Form
 		func willBeDeleted()
 		{
 			self.xButton.sendActions(for: .touchUpInside) // simulate tap to unpick deleted contact - will clear
+		}
+		func willBeDeinitialized()
+		{
+			self.xButton.sendActions(for: .touchUpInside) // simulate tap to unpick freed contact - will clear
 		}
 		func infoUpdated()
 		{

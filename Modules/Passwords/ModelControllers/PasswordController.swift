@@ -9,18 +9,34 @@
 import Foundation
 import RNCryptor
 //
-// TODO: namespace within Passwords or 
-protocol DeleteEverythingRegistrant
+// TODO: namespace within Passwords
+protocol DeleteEverythingRegistrant: class
 {
 	func passwordController_DeleteEverything() -> String? // return err_str:String if error. at time of writing, this was able to be kept synchronous.
 	//
 	// To support isEqual
 	func identifier() -> String
 }
+struct WeakRefTo_DeleteEverythingRegistrant
+{
+	weak var value: DeleteEverythingRegistrant?
+}
 func isEqual(_ l: DeleteEverythingRegistrant, _ r: DeleteEverythingRegistrant) -> Bool
 {
 	return l.identifier() == r.identifier()
 }
+func isEqual(
+	_ l: WeakRefTo_DeleteEverythingRegistrant,
+	_ r: WeakRefTo_DeleteEverythingRegistrant
+) -> Bool
+{
+	if l.value == nil && r.value == nil {
+		return true
+	}
+	return l.value?.identifier() == r.value?.identifier()
+}
+//
+//
 protocol PasswordEntryDelegate
 {
 	func getUserToEnterExistingPassword(
@@ -746,21 +762,26 @@ final class PasswordController
 	//
 	// Runtime - Imperatives - Delete everything
 	//
-	var deleteEverythingRegistrants: [DeleteEverythingRegistrant] = []
+	var weakRefsTo_deleteEverythingRegistrants: [WeakRefTo_DeleteEverythingRegistrant] = []
 	func addRegistrantForDeleteEverything(
 		_ registrant: DeleteEverythingRegistrant
 	) -> Void
 	{
 		DDLog.Info("Passwords", "Adding registrant for 'DeleteEverything': \(registrant)")
-		self.deleteEverythingRegistrants.append(registrant)
+		self.weakRefsTo_deleteEverythingRegistrants.append(
+			WeakRefTo_DeleteEverythingRegistrant(value: registrant)
+		)
 	}
 	func removeRegistrantForDeleteEverything(
 		_ registrant: DeleteEverythingRegistrant
 		) -> Void
 	{
 		var index: Int?
-		for (this_index, this_registrant) in self.deleteEverythingRegistrants.enumerated() {
-			if isEqual(registrant, this_registrant) {
+		for (this_index, this_weakRefTo_registrant) in self.weakRefsTo_deleteEverythingRegistrants.enumerated() {
+			if this_weakRefTo_registrant.value == nil {
+				continue // skip - has dealloced somewhere
+			}
+			if isEqual(registrant, this_weakRefTo_registrant.value!) {
 				index = this_index
 				break
 			}
@@ -770,7 +791,7 @@ final class PasswordController
 			return
 		}
 		DDLog.Info("Passwords", "Removing registrant for 'DeleteEverything': \(registrant)")
-		self.deleteEverythingRegistrants.remove(at: index!)
+		self.weakRefsTo_deleteEverythingRegistrants.remove(at: index!)
 	}
 	func initiateDeleteEverything()
 	{ // this is used as a central initiation/sync point for delete everything like user idle
@@ -800,7 +821,10 @@ final class PasswordController
 				}
 				DDLog.Deleting("Passwords", "Deleted password record.")
 				// now have others delete everything else
-				for (_, registrant) in self.deleteEverythingRegistrants.enumerated() {
+				for (_, weakRefTo_registrant) in self.weakRefsTo_deleteEverythingRegistrants.enumerated() {
+					guard let registrant = weakRefTo_registrant.value else {
+						continue // skip ; has dealloced somehow
+					}
 					let registrant__err_str = registrant.passwordController_DeleteEverything()
 					if registrant__err_str != nil {
 						cb(err_str)
@@ -854,7 +878,7 @@ final class PasswordController
 		let hasFiredWill_fn = optl__hasFiredWill_fn ?? { (cb) in cb(nil) }
 		let fn = optl__fn ?? { (err_str) in }
 		//
-		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
+		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
 		do { // indicate to consumers they should tear down and await the "did" event to re-request
 			NotificationCenter.default.post(
 				name: NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
@@ -862,34 +886,31 @@ final class PasswordController
 				userInfo: [ Notification_UserInfo_Keys.isForADeleteEverything.rawValue: isForADeleteEverything ]
 			)
 		}
-		DispatchQueue.main.async
-		{ [unowned self] in // on next "tick"
-			hasFiredWill_fn(
-				{ err_str in
-					if err_str != nil {
-						fn(err_str)
-						return
-					}
-					do { // trigger deconstruction of booted state and require password
-						self.password = nil // clear pw in memory
-						self.hasBooted = false // require this pw controller to boot
-						self.hasUserSavedAPassword = false
-						self._id = nil
-						self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
-					}
-					do { // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
-						NotificationCenter.default.post(
-							name: NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
-							object: self
-						)
-					}
-					//
-					self.initializeRuntimeAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
-					//
-					fn(nil)
+		hasFiredWill_fn(
+			{ err_str in
+				if err_str != nil {
+					fn(err_str)
+					return
 				}
-			)
-		}
+				do { // trigger deconstruction of booted state and require password
+					self.password = nil // clear pw in memory
+					self.hasBooted = false // require this pw controller to boot
+					self.hasUserSavedAPassword = false
+					self._id = nil
+					self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
+				}
+				do { // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
+					NotificationCenter.default.post(
+						name: NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+						object: self
+					)
+				}
+				//
+				self.initializeRuntimeAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
+				//
+				fn(nil)
+			}
+		)
 	}
 	//
 	// Delegation - Password

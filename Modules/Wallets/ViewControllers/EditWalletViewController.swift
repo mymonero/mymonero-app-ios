@@ -16,7 +16,7 @@ extension EditWallet
 	{
 		//
 		// Properties
-		var wallet: Wallet
+		var wallet: Wallet // think it should be fine if it's a strong reference since self will be torn down 
 		//
 		// Lifecycle - Init
 		required init(wallet: Wallet)

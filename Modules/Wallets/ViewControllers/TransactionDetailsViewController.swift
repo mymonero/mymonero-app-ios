@@ -31,7 +31,7 @@ extension TransactionDetails
 		//
 		// Properties
 		var transaction: MoneroHistoricalTransactionRecord
-		var wallet: Wallet
+		var wallet: Wallet! // strong ok since self will be torn down
 		//
 		var sectionView_details = UICommonComponents.Details.SectionView(
 			sectionHeaderTitle: NSLocalizedString("DETAILS", comment: "")

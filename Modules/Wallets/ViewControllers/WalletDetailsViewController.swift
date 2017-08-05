@@ -20,7 +20,7 @@ extension WalletDetails
 		static let margin_h: CGFloat = 16
 		//
 		// Properties
-		var wallet: Wallet
+		var wallet: Wallet // keeping this strong b/c self will be torn down; similarly, ∴, no need to observe .willBeDeinitialized
 		var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
 		var transactionsSectionHeaderView: WalletDetails.TransactionsSectionHeaderView?
 		//

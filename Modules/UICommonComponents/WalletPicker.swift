@@ -20,7 +20,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var tapped_fn: ((Void) -> Void)?
-		var selectedWallet: Wallet?
+		var selectedWallet: Wallet? // weak might be a good idea but strong should be ok here b/c we unpick the selectedWallet when wallets reloads on logged-in runtime teardown
 		var pickerView: WalletPickerView!
 		var picker_inputField: UITextField!
 		var contentView = WalletCellContentView(sizeClass: .medium32)
@@ -276,7 +276,7 @@ extension UICommonComponents
 		// Delegation - Notifications
 		func PersistedObjectListController_Notifications_List_updated()
 		{
-			self.reloadComponent(0)
+			self.reloadAllComponents()
 			if let fn = self.reloaded_fn {
 				fn()
 			}

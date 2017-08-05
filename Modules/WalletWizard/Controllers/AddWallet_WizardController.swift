@@ -188,7 +188,7 @@ class AddWallet_WizardController
 	var walletCreation_metaInfo_walletLabel: String?
 	var walletCreation_metaInfo_color: Wallet.SwatchColor?
 	//
-	var walletCreation_walletInstance: Wallet?
+	var walletCreation_walletInstance: Wallet? // strong reference for ownership
 	func setMetaInfoAndProceedToNextStep(
 		walletLabel: String,
 		color: Wallet.SwatchColor

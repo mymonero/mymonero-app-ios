@@ -55,15 +55,11 @@ class WalletsListViewCell: UITableViewCell
 	override func prepareForReuse()
 	{
 		self.cellContentView.prepareForReuse()
-		self.object = nil
 	}
 	//
 	// Imperatives - Configuration
-	var object: Wallet?
 	func configure(withObject object: Wallet)
 	{
-		assert(self.object == nil)
-		self.object = object
 		self.cellContentView.configure(withObject: object)
 	}
 	//

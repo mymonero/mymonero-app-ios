@@ -133,7 +133,6 @@ class Wallet: PersistableObject
 					return false
 				}
 		}
-
 	}
 	enum NotificationNames: String
 	{
@@ -219,7 +218,6 @@ class Wallet: PersistableObject
 	var dateThatLast_fetchedAccountInfo: Date?
 	var dateThatLast_fetchedAccountTransactions: Date?
 	//
-	//
 	// Properties - Boolean State
 	// persisted
 	var isLoggedIn = false
@@ -231,14 +229,10 @@ class Wallet: PersistableObject
 	var wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed: Bool?
 	var isSendingFunds = false
 	//
-	//
 	// Properties - Objects
-	//
-	var hostPollingController: Wallet_HostPollingController?
-	//
+	var hostPollingController: Wallet_HostPollingController? // strong
 	//
 	// 'Protocols' - Persistable Object
-	//
 	override func new_dictRepresentation() -> [String: Any]
 	{
 		var dict = super.new_dictRepresentation() // since it constructs the base object for us
@@ -410,6 +404,12 @@ class Wallet: PersistableObject
 		if ifGeneratingNewWallet_walletDescription != nil {
 			self.generatedOnInit_walletDescription = ifGeneratingNewWallet_walletDescription
 		}
+	}
+	//
+	// Lifecycle - Deinit
+	override func teardown()
+	{
+		super.teardown()
 	}
 	//
 	//
@@ -602,8 +602,12 @@ class Wallet: PersistableObject
 			DDLog.Done("Wallets", "Successfully booted \(self)")
 			self.isBooted = true
 			fn(nil)
-			DispatchQueue.main.async {
-				self._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
+			DispatchQueue.main.async
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
 			}
 		}
 		if self.account_seed == nil || self.account_seed!.characters.count < 1 {
@@ -618,12 +622,15 @@ class Wallet: PersistableObject
 			self.account_seed!,
 			self.mnemonic_wordsetName!
 		)
-		{ [unowned self] (err_str, seedAsMnemonic) in
-			if let err_str = err_str {
-				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
+		{ [weak self] (err_str, seedAsMnemonic) in
+			guard let thisSelf = self else {
 				return
 			}
-			self.mnemonicString = seedAsMnemonic!
+			if let err_str = err_str {
+				thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
+				return
+			}
+			thisSelf.mnemonicString = seedAsMnemonic!
 			__proceed_havingActuallyBooted()
 		}
 	}
@@ -701,7 +708,7 @@ class Wallet: PersistableObject
 			return err_str
 		}
 		DispatchQueue.main.async
-		{
+		{ [unowned self] in
 			if isChanging__walletLabel {
 				NotificationCenter.default.post(name: NotificationNames.labelChanged.notificationName, object: self)
 			}

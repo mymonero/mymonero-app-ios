@@ -14,7 +14,7 @@ extension EditWallet
 	{
 		struct Parameters
 		{
-			var walletInstance: Wallet
+			var walletInstance: Wallet // think it's ok if this is strong since self ought to be torn down by the owner-viewController
 			//
 			var walletLabel: String
 			var swatchColor: Wallet.SwatchColor

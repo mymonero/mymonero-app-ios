@@ -80,8 +80,20 @@ struct MoneroVerifiedComponentsForLogIn
 }
 typealias MoneroMnemonicWordsetName = MNWords.WordsetName
 //
-struct MoneroHistoricalTransactionRecord: Equatable
+class MoneroHistoricalTransactionRecord: Equatable
 {
+	//
+	// Constants
+	enum NotificationNames: String
+	{
+		case willBeDeinitialized = "MoneroHistoricalTransactionRecord.willBeDeinitialized"
+		//
+		var notificationName: NSNotification.Name {
+			return NSNotification.Name(self.rawValue)
+		}
+	}
+	//
+	// Properties
 	let amount: MoneroAmount
 	let totalSent: MoneroAmount
 	let totalReceived: MoneroAmount
@@ -96,9 +108,63 @@ struct MoneroHistoricalTransactionRecord: Equatable
 	let unlock_time: Double
 	let height: Int
 	//
+	// Transient values
 	let cached__isConfirmed: Bool
 	let cached__isUnlocked: Bool
 	let cached__lockedReason: String? // only calculated if isUnlocked=true
+	let isJustSentTransientTransactionRecord: Bool
+	//
+	// Lifecycle - Init
+	required init(
+		amount: MoneroAmount,
+		totalSent: MoneroAmount,
+		totalReceived: MoneroAmount,
+		approxFloatAmount: Double,
+		spent_outputs: [MoneroSpentOutputDescription]?,
+		timestamp: Date,
+		hash: MoneroTransactionHash,
+		paymentId: MoneroPaymentID?,
+		mixin: Int,
+		//
+		mempool: Bool,
+		unlock_time: Double,
+		height: Int,
+		//
+		cached__isConfirmed: Bool,
+		cached__isUnlocked: Bool,
+		cached__lockedReason: String?,
+		isJustSentTransientTransactionRecord: Bool
+	)
+	{
+		self.amount = amount
+		self.totalSent = totalSent
+		self.totalReceived = totalReceived
+		self.approxFloatAmount = approxFloatAmount
+		self.spent_outputs = spent_outputs
+		self.timestamp = timestamp
+		self.hash = hash
+		self.paymentId = paymentId
+		self.mixin = mixin
+		//
+		self.mempool = mempool
+		self.unlock_time = unlock_time
+		self.height = height
+		//
+		self.cached__isConfirmed = cached__isConfirmed
+		self.cached__isUnlocked = cached__isUnlocked
+		self.cached__lockedReason = cached__lockedReason
+		self.isJustSentTransientTransactionRecord = isJustSentTransientTransactionRecord
+	}
+	//
+	// Lifecycle - Deinit
+	deinit
+	{
+		DDLog.TearingDown("MyMoneroCore", "Tearing down a \(self).")
+		//
+		NotificationCenter.default.post(name: NotificationNames.willBeDeinitialized.notificationName, object: self)
+	}
+	//
+	// Static - Accessorys - Transforms
 	static func isConfirmed(givenTransactionHeight height: Int, andWalletBlockchainHeight blockchain_height: Int) -> Bool
 	{
 		return MyMoneroCoreUtils.IsTransactionConfirmed(height, blockchain_height)
@@ -112,7 +178,6 @@ struct MoneroHistoricalTransactionRecord: Equatable
 		return MyMoneroCoreUtils.LockedTransactionReason(unlock_time, blockchain_height)
 	}
 	//
-	var isJustSentTransientTransactionRecord: Bool = false // transient
 	//
 	// Equatable
 	static func ==(

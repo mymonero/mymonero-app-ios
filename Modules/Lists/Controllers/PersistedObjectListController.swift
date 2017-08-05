@@ -179,14 +179,16 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		DDLog.Done("Lists", "\(self) booted.")
 		self.hasBooted = true // all done!
 		self._callAndFlushAllBlocksWaitingForBootToExecute() // after hasBooted=true
-		DispatchQueue.main.async { // on next tick to avoid instantiator missing this
+		DispatchQueue.main.async
+		{ [unowned self] in // on next tick to avoid instantiator missing this
 			NotificationCenter.default.post(name: Notifications_Boot.did.notificationName, object: self)
 		}
 	}
 	func _setup_didFailToBoot(withErrStr err_str: String)
 	{
 		DDLog.Error("Lists", "\(self) failed to boot with err: \(err_str)")
-		DispatchQueue.main.async { // on next tick to avoid instantiator missing this
+		DispatchQueue.main.async
+		{ [unowned self] in // on next tick to avoid instantiator missing this
 			let userInfo: [String: Any] =
 			[
 				Notifications_userInfoKeys.err_str.rawValue: err_str
@@ -247,7 +249,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Internal - Imperatives - Queue entry
 	func _dispatchAsync_listUpdated_records()
 	{
-		DispatchQueue.main.async {
+		DispatchQueue.main.async
+		{ [unowned self] in
 			self._listUpdated_records()
 		}
 	}

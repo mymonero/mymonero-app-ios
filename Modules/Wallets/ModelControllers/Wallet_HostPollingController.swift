@@ -10,7 +10,7 @@ import Foundation
 //
 class Wallet_HostPollingController
 {
-	weak var wallet: Wallet!
+	weak var wallet: Wallet? // prevent retain cycle since wallet owns self
 	var timer: Timer!
 	//
 	var requestHandleFor_addressInfo: HostedMoneroAPIClient.RequestHandle?
@@ -70,7 +70,10 @@ class Wallet_HostPollingController
 			DDLog.Warn("Wallets", "_fetch_addressInfo called but request already exists")
 			return
 		}
-		//
+		guard let wallet = self.wallet else {
+			assert(self.wallet != nil)
+			return
+		}
 		if wallet.isLoggedIn != true {
 			DDLog.Error("Wallets", "Unable to do request while not isLoggedIn")
 			return
@@ -89,11 +92,23 @@ class Wallet_HostPollingController
 			spend_key__public: wallet.public_keys.spend,
 			spend_key__private: wallet.private_keys.spend,
 			{ [unowned self] (err_str, parsedResult) in
+//				if self == nil {
+//					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
+//					return
+//				}
+				if self.requestHandleFor_addressInfo == nil {
+					assert(false, "Already canceled")
+					return
+				}
 				self.requestHandleFor_addressInfo = nil // first/immediately unlock this request fetch
 				if err_str != nil {
 					return // already logged err
 				}
-				self.wallet._HostPollingController_didFetch_addressInfo(parsedResult!)
+				guard let wallet = self.wallet else {
+					DDLog.Warn("Wallets", "Wallet host polling request response returned but wallet already freed.")
+					return
+				}
+				wallet._HostPollingController_didFetch_addressInfo(parsedResult!)
 			}
 		)
 	}
@@ -103,7 +118,10 @@ class Wallet_HostPollingController
 			DDLog.Warn("Wallets", "_fetch_addressInfo called but request already exists")
 			return
 		}
-		//
+		guard let wallet = self.wallet else {
+			assert(self.wallet != nil)
+			return
+		}
 		if wallet.isLoggedIn != true {
 			DDLog.Error("Wallets", "Unable to do request while not isLoggedIn")
 			return
@@ -116,17 +134,29 @@ class Wallet_HostPollingController
 			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
-		self.requestHandleFor_addressInfo = HostedMoneroAPIClient.shared.AddressTransactions(
+		self.requestHandleFor_addressTransactions = HostedMoneroAPIClient.shared.AddressTransactions(
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
 			spend_key__private: wallet.private_keys.spend,
 			{ [unowned self] (err_str, parsedResult) in
+//				if self == nil {
+//					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
+//					return
+//				}
+				if self.requestHandleFor_addressTransactions == nil {
+					assert(false, "Already canceled")
+					return
+				}
 				self.requestHandleFor_addressTransactions = nil // first/immediately unlock this request fetch
 				if err_str != nil {
 					return // already logged err
 				}
-				self.wallet._HostPollingController_didFetch_addressTransactions(parsedResult!)
+				guard let wallet = self.wallet else {
+					DDLog.Warn("Wallets", "Wallet host polling request response returned but wallet already freed.")
+					return
+				}
+				wallet._HostPollingController_didFetch_addressTransactions(parsedResult!)
 			}
 		)
 	}

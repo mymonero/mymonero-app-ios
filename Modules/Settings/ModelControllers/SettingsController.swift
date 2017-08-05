@@ -12,29 +12,31 @@ class SettingsController: DeleteEverythingRegistrant
 {
 	enum NotificationNames_Changed: String
 	{
-		case serverURL = "SettingsController_NotificationNames_Changed_serverURL"
-		case appTimeoutAfterS_orNeg1ForDisabled = "SettingsController_NotificationNames_Changed_appTimeoutAfterS_orNeg1ForDisabled"
+		case specificAPIAddressURLAuthority = "SettingsController_NotificationNames_Changed_specificAPIAddressURLAuthority"
+		case appTimeoutAfterS_nilForDefault_orNeverValue = "SettingsController_NotificationNames_Changed_appTimeoutAfterS_nilForDefault_orNeverValue"
 		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
 	}
 	//
+	static let appTimeoutAfterS_neverValue: TimeInterval = -1
+	//
 	// Constants/Types - Persistence
 	let collectionName = "Settings"
 	enum DictKey: String
 	{
 		case _id = "_id"
-		case serverURL = "serverURL"
-		case appTimeoutAfterS_orNeg1ForDisabled = "appTimeoutAfterS_orNeg1ForDisabled"
+		case specificAPIAddressURLAuthority = "specificAPIAddressURLAuthority"
+		case appTimeoutAfterS_nilForDefault_orNeverValue = "appTimeoutAfterS_nilForDefault_orNeverValue"
 		//
 		var changed_notificationName: NSNotification.Name?
 		{
 			switch self {
-				case .serverURL:
-					return NotificationNames_Changed.serverURL.notificationName
-				case .appTimeoutAfterS_orNeg1ForDisabled:
-					return NotificationNames_Changed.appTimeoutAfterS_orNeg1ForDisabled.notificationName
+				case .specificAPIAddressURLAuthority:
+					return NotificationNames_Changed.specificAPIAddressURLAuthority.notificationName
+				case .appTimeoutAfterS_nilForDefault_orNeverValue:
+					return NotificationNames_Changed.appTimeoutAfterS_nilForDefault_orNeverValue.notificationName
 				case ._id:
 					assert(false)
 					// _id is not to be updated
@@ -45,7 +47,7 @@ class SettingsController: DeleteEverythingRegistrant
 	let setForbidden_DictKeys: [DictKey] = [ ._id ]
 	//
 	// Constants - Default values
-	let default_appTimeoutAfterS_orNeg1ForDisabled: TimeInterval = 30 // s
+	let default_appTimeoutAfterS: TimeInterval = 30 // s
 	//
 	// Properties - Runtime - Transient
 	var hasBooted = false
@@ -56,8 +58,8 @@ class SettingsController: DeleteEverythingRegistrant
 	//
 	// Properties - Runtime - Persisted
 	var _id: DocumentPersister.DocumentId?
-	var serverURL: String?
-	var appTimeoutAfterS_orNeg1ForDisabled: TimeInterval?
+	var specificAPIAddressURLAuthority: String?
+	var appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval?
 	//
 	// Lifecycle - Singleton Init
 	static let shared = SettingsController()
@@ -80,24 +82,28 @@ class SettingsController: DeleteEverythingRegistrant
 			return
 		}
 		if documentJSONs_count == 0 {
-			self._setup_loadState(_id: nil, serverURL: nil, appTimeoutAfterS_orNeg1ForDisabled: default_appTimeoutAfterS_orNeg1ForDisabled)
+			self._setup_loadState(
+				_id: nil,
+				specificAPIAddressURLAuthority: nil,
+				appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS
+			)
 			return
 		}
 		let jsonDict = documentJSONs![0] // TODO: decrypt?
 		let _id = jsonDict[DictKey._id.rawValue] as! DocumentPersister.DocumentId
-		let serverURL = jsonDict[DictKey.serverURL.rawValue] as? String
-		let appTimeoutAfterS_orNeg1ForDisabled = jsonDict[DictKey.appTimeoutAfterS_orNeg1ForDisabled.rawValue] as! TimeInterval
-		self._setup_loadState(_id: _id, serverURL: serverURL, appTimeoutAfterS_orNeg1ForDisabled: appTimeoutAfterS_orNeg1ForDisabled)
+		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
+		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval
+		self._setup_loadState(_id: _id, specificAPIAddressURLAuthority: specificAPIAddressURLAuthority, appTimeoutAfterS_nilForDefault_orNeverValue: appTimeoutAfterS_nilForDefault_orNeverValue)
 	}
 	func _setup_loadState(
 		_id: DocumentPersister.DocumentId?,
-		serverURL: String?,
-		appTimeoutAfterS_orNeg1ForDisabled: TimeInterval
+		specificAPIAddressURLAuthority: String?,
+		appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval
 	)
 	{
 		self._id = _id
-		self.serverURL = serverURL
-		self.appTimeoutAfterS_orNeg1ForDisabled = appTimeoutAfterS_orNeg1ForDisabled
+		self.specificAPIAddressURLAuthority = specificAPIAddressURLAuthority
+		self.appTimeoutAfterS_nilForDefault_orNeverValue = appTimeoutAfterS_nilForDefault_orNeverValue
 		//
 		self.hasBooted = true
 	}
@@ -146,23 +152,23 @@ class SettingsController: DeleteEverythingRegistrant
 			case ._id: // not used - but for exhaustiveness
 				assert(false)
 				break
-			case .appTimeoutAfterS_orNeg1ForDisabled:
-				self.appTimeoutAfterS_orNeg1ForDisabled = value as? TimeInterval // nil means 'use default idle time' and -1 means 'disable idle timer'; luckily TimeInterval can be negative
+			case .appTimeoutAfterS_nilForDefault_orNeverValue:
+				self.appTimeoutAfterS_nilForDefault_orNeverValue = value as? TimeInterval // nil means 'use default idle time' and -1 means 'disable idle timer'; luckily TimeInterval can be negative
 				break
-			case .serverURL:
-				self.serverURL = value as? String
+			case .specificAPIAddressURLAuthority:
+				self.specificAPIAddressURLAuthority = value as? String
 				break
 		}
 	}
 	//
 	// Imperatives - Setters - Convenience - Single-property (for form)
-	func set(serverURL value: String?) -> String? // err_str
+	func set(specificAPIAddressURLAuthority value: String?) -> String? // err_str
 	{
-		return self.set(valuesByDictKey: [ DictKey.serverURL: value as Any ])
+		return self.set(valuesByDictKey: [ DictKey.specificAPIAddressURLAuthority: value as Any ])
 	}
-	func set(appTimeoutAfterS_orNeg1ForDisabled value: TimeInterval?) -> String? // err_str; use nil for 'never', not for resetting to default
+	func set(appTimeoutAfterS_nilForDefault_orNeverValue value: TimeInterval?) -> String? // err_str; use nil for 'never', not for resetting to default
 	{
-		return self.set(valuesByDictKey: [ DictKey.appTimeoutAfterS_orNeg1ForDisabled: value as Any ])
+		return self.set(valuesByDictKey: [ DictKey.appTimeoutAfterS_nilForDefault_orNeverValue: value as Any ])
 	}
 	//
 	// Accessors - Persistence
@@ -174,11 +180,11 @@ class SettingsController: DeleteEverythingRegistrant
 	{
 		var dict: [String: Any] = [:]
 		dict[DictKey._id.rawValue] = self._id
-		if let value = self.serverURL {
-			dict[DictKey.serverURL.rawValue] = value
+		if let value = self.specificAPIAddressURLAuthority {
+			dict[DictKey.specificAPIAddressURLAuthority.rawValue] = value
 		}
-		if let value = self.appTimeoutAfterS_orNeg1ForDisabled {
-			dict[DictKey.appTimeoutAfterS_orNeg1ForDisabled.rawValue] = value
+		if let value = self.appTimeoutAfterS_nilForDefault_orNeverValue {
+			dict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] = value
 		}
 		//
 		// Note: Override this method and add data you would like encrypted – but call on super
@@ -238,8 +244,8 @@ class SettingsController: DeleteEverythingRegistrant
 	{
 		let defaults_valuesByKey: [DictKey: Any] =
 		[
-			.serverURL: "",
-			.appTimeoutAfterS_orNeg1ForDisabled: default_appTimeoutAfterS_orNeg1ForDisabled
+			.specificAPIAddressURLAuthority: "",
+			.appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS
 		]
 		let err_str = self.set(valuesByDictKey: defaults_valuesByKey)
 		//

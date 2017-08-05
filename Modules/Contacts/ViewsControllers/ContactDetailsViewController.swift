@@ -15,7 +15,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	let fieldLabels_variant = UICommonComponents.Details.FieldLabel.Variant.middling
 	//
 	// Properties
-	var contact: Contact
+	var contact: Contact // strong
 	//
 	var sectionView = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
 	//

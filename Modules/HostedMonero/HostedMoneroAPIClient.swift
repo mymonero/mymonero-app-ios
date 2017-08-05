@@ -90,10 +90,20 @@ struct HostedMoneroAPIClient_HostConfig
 //
 final class HostedMoneroAPIClient
 {
+	//
 	// Types
 	typealias RequestHandle = Alamofire.DataRequest
+	//
+	// Static
+	static let apiAddress_scheme = "https"
+	//
 	// Constants
-	let api_hostname = "api.mymonero.com:8443"
+	let mymonero_apiAddress_authority = "api.mymonero.com:8443"
+	//
+	var final_apiAddress_authority: String { // authority means [subdomain.]host.…[:…]
+		return "\(self.mymonero_apiAddress_authority)" // TODO: read from settings
+	}
+	//
 	// Properties
 	var manager: SessionManager!
 	var mymoneroCore = MyMoneroCore.shared
@@ -106,13 +116,15 @@ final class HostedMoneroAPIClient
 	}
 	func setup()
 	{
-		self.setup_manager()
+		self.initializeManagerWithFinalServerAuthority() // TODO: defer this until we have booted Settings
 	}
-	func setup_manager()
+	//
+	// Runtime - Configuration - Manager
+	func initializeManagerWithFinalServerAuthority()
 	{
 		let serverTrustPolicies_byDomain: [String: ServerTrustPolicy] =
 		[
-			api_hostname: .pinCertificates(
+			self.final_apiAddress_authority: .pinCertificates(
 				certificates: ServerTrustPolicy.certificates(),
 				validateCertificateChain: true,
 				validateHost: true
@@ -153,9 +165,13 @@ final class HostedMoneroAPIClient
 		if err_str != nil {
 			DDLog.Error("HostedMonero", "\(err_str!)")
 		}
-		DispatchQueue.main.async
-		{
+		if Thread.isMainThread { // minor 
 			fn(err_str, result)
+		} else {
+			DispatchQueue.main.async
+			{
+				fn(err_str, result)
+			}
 		}
 	}
 	//
@@ -489,7 +505,7 @@ final class HostedMoneroAPIClient
 			"Accept": "application/json",
 			"Content-Type": "application/json",
 		]
-		let url = "https://\(self.api_hostname)/\(endpoint.rawValue)"
+		let url = "\(type(of: self).apiAddress_scheme)://\(self.final_apiAddress_authority)/\(endpoint.rawValue)"
 		DDLog.Net("HostedMonero", "\(url)")
 		var final_parameters = parameters
 		do {

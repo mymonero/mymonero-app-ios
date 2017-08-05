@@ -73,6 +73,7 @@ class WalletCellContentView: UIView
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 
 	}
 	//
@@ -110,7 +111,7 @@ class WalletCellContentView: UIView
 	}
 	//
 	// Imperatives - Configuration
-	var object: Wallet?
+	weak var object: Wallet? // weak to prevent self from preventing .willBeDeinitialized from being received
 	func configure(withObject object: Wallet)
 	{
 		if self.object != nil {
@@ -168,6 +169,7 @@ class WalletCellContentView: UIView
 		NotificationCenter.default.addObserver(self, selector: #selector(_balanceChanged), name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_swatchColorChanged), name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
+		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeinitialized), name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 	}
 	//
 	// Imperatives - Overrides
@@ -212,6 +214,10 @@ class WalletCellContentView: UIView
 	}
 	func _willBeDeleted()
 	{
-		self.tearDown_object() // release
+		self.tearDown_object() // stopObserving/release
+	}
+	func _willBeDeinitialized()
+	{
+		self.tearDown_object() // stopObserving/release
 	}
 }

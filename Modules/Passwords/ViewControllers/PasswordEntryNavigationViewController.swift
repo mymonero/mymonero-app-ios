@@ -5,19 +5,24 @@
 //  Created by Paul Shapiro on 6/3/17.
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
-
+//
 import UIKit
-
-class PasswordEntryNavigationViewController: UINavigationController, PasswordEntryDelegate
+//
+protocol PasswordEntryModalPresentationDelegate
 {
-	enum PasswordEntryTaskMode
-	{
-		case forUnlockingApp_ExistingPasswordGivenType
-		case forFirstEntry_NewPasswordAndType
-		//
-		case forChangingPassword_ExistingPasswordGivenType
-		case forChangingPassword_NewPasswordAndType
-	}
+	func passwordEntryModal_willDismiss(modalViewController: PasswordEntryNavigationViewController)
+	//
+	func passwordEntryModal_formSubmittedWithState(
+		didCancel: Bool,
+		or_password password_orNil: PasswordController.Password?,
+		and_passwordType passwordType_orNil: PasswordController.PasswordType?
+	)
+	
+}
+class PasswordEntryNavigationViewController: UINavigationController
+{
+	//
+	// Constants
 	enum NotificationNames: String
 	{
 		case willPresentInView = "PasswordEntryNavigationViewController_NotificationNames_willPresentInView"
@@ -29,10 +34,13 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 		}
 	}
 	//
-	var taskMode: PasswordEntryTaskMode?
+	// Properties
+	var passwordEntryModalPresentationDelegate: PasswordEntryModalPresentationDelegate
 	//
-	init()
+	// Lifecycle - Init
+	init(passwordEntryModalPresentationDelegate: PasswordEntryModalPresentationDelegate)
 	{
+		self.passwordEntryModalPresentationDelegate = passwordEntryModalPresentationDelegate
 		super.init(nibName: nil, bundle: nil)
 		self.setup()
 	}
@@ -43,142 +51,35 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	func setup()
 	{
 		self.view.backgroundColor = .contentBackgroundColor // so we don't get content flashing through transparency during modal transitions
-		self.startObserving_passwordController()
-	}
-	var passwordController_notificationTokens: [Any]?
-	func startObserving_passwordController()
-	{
-		PasswordController.shared.setPasswordEntryDelegate(to: self)
-		//
-		self.passwordController_notificationTokens = []
-		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.obtainedNewPassword.notificationName,
-			object: PasswordController.shared,
-			queue: OperationQueue.main,
-			using:
-			{ [unowned self] (notification) in
-				self.dismiss(animated: true)
-			}
-		))
-		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.obtainedCorrectExistingPassword.notificationName,
-			object: PasswordController.shared,
-			queue: OperationQueue.main,
-			using:
-			{ [unowned self] (notification) in
-				self.dismiss(animated: true)
-			}
-		))
-		func __validationErrorNotificationReceived(_ notification: Notification)
-		{
-			self.topPasswordEntryScreenViewController.reEnableForm()
-			//
-			let userInfo = notification.userInfo!
-			let err_str = userInfo[PasswordController.Notification_UserInfo_Keys.err_str.rawValue] as! String
-			if err_str != "" {
-				self.topPasswordEntryScreenViewController.setValidationMessage(err_str)
-			} else {
-				self.topPasswordEntryScreenViewController.clearValidationMessage()
-			}
-		}
-		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.erroredWhileSettingNewPassword.notificationName,
-			object: PasswordController.shared,
-			queue: OperationQueue.main,
-			using:
-			{ (notification) in
-				__validationErrorNotificationReceived(notification)
-			}
-		))
-		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.erroredWhileGettingExistingPassword.notificationName,
-			object: PasswordController.shared,
-			queue: OperationQueue.main,
-			using:
-			{ (notification) in
-				__validationErrorNotificationReceived(notification)
-			}
-		))
-		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.errorWhileChangingPassword.notificationName,
-			object: PasswordController.shared,
-			queue: OperationQueue.main,
-			using:
-			{ (notification) in
-				__validationErrorNotificationReceived(notification)
-			}
-		))
-		//
-		// For delete everything and idle
-		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
-			object: PasswordController.shared,
-			queue: OperationQueue.main,
-			using:
-			{ [unowned self] (notification) in
-				if self.presentingViewController == nil {
-					DDLog.Warn("Passwords", "Notification that .willDeconstructBootedStateAndClearPassword was received while not presented.")
-					return
-				}
-				let userInfo = notification.userInfo!
-				let isForADeleteEverything = userInfo[PasswordController.Notification_UserInfo_Keys.isForADeleteEverything.rawValue] as! Bool
-				let isAnimated = isForADeleteEverything == true
-				self.cancel(animated: isAnimated)
-				// ^-- we must:
-				//	 (a) use cancel() to maintain pw controller state (or user idle while changing pw breaks ask-for-pw), and
-				//	 (b) have no animation unless it's for a 'delete everything'
-				// i.e. we will teardown whole password controller and then wait for imminent non-animated re-present of new self (which does not happen in the case of a 'delete everything')
-			}
-		))
-		// 'did' not necessary:
-//		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-//			forName: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
-//			object: PasswordController.shared,
-//			queue: OperationQueue.main,
-//			using:
-//			{ [unowned self] (notification) in
-//			}
-//		)
 	}
 	//
 	// Lifecycle - Teardown
 	deinit
 	{
-		self.stopObserving_passwordController()
-	}
-	func stopObserving_passwordController()
-	{
-		PasswordController.shared.clearPasswordEntryDelegate(from: self)
-		//
-		guard let passwordController_notificationTokens = self.passwordController_notificationTokens else {
-			assert(false, "nil self.passwordController_notificationTokens")
-			return
-		}
-		for (_, token) in passwordController_notificationTokens.enumerated() {
-			NotificationCenter.default.removeObserver(token)
-		}
-		self.passwordController_notificationTokens = nil // not strictly necessary for a deinit call
 	}
 	//
 	// Accessors
-	var isPresented: Bool
-	{
-		return self.view.window != nil
+	var isPresented: Bool {
+//		return self.view.window != nil // faulty
+		return self.presentingViewController != nil
 	}
-	var topPasswordEntryScreenViewController: PasswordEntryScreenBaseViewController
-	{ // since self is the navigationController…
+	var topPasswordEntryScreenViewController: PasswordEntryScreenBaseViewController {
+		// since self is the navigationController…
 		return self.topViewController! as! PasswordEntryScreenBaseViewController
 	}
 	//
 	// Imperatives
-	func _configureWithMode(shouldAnimateToNewState: Bool)
+	func _configure(
+		withMode taskMode: PasswordEntryPresentationController.PasswordEntryTaskMode,
+		shouldAnimateToNewState: Bool
+	)
 	{
 		let isForChangingPassword =
-			self.taskMode == .forChangingPassword_ExistingPasswordGivenType
-		 || self.taskMode == .forChangingPassword_NewPasswordAndType
+			taskMode == .forChangingPassword_ExistingPasswordGivenType
+		 || taskMode == .forChangingPassword_NewPasswordAndType
 		// we do not need to call self._clearValidationMessage() here because the ConfigureToBeShown() fns have the same effect
 		do { // transition to screen
-			switch self.taskMode!
+			switch taskMode
 			{
 				case .forUnlockingApp_ExistingPasswordGivenType,
 				     .forChangingPassword_ExistingPasswordGivenType:
@@ -217,22 +118,60 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	}
 	//
 	// Imperatives - Presentation
-	func present(animated: Bool)
+	@objc func present(animated: Bool)
 	{
-		DispatchQueue.main.async
-		{ [unowned self] in // we should wait until next tick b/c the app (and thus window) may not be finished setting up yet
+		if Thread.isMainThread == false {
+			self.perform(
+				#selector(present(animated:)),
+				on: Thread.main,
+				with: animated,
+				waitUntilDone: false // should not need to block a bg thread waiting for this
+			)
+			return
+		}
+		if self.isPresented && self.isBeingDismissed {
+			DDLog.Warn("Passwords", "Asked to present PasswordEntry modal while still presented and being dismissed. Defer until finished.")
+			// Deferring this .present(animated:) until we're doing being dismissed.
+			// TODO: there may be a better (more rigorous) way to do this. isBeingDismissed appears not to get set back to false in extenuating circumstances - the mitigation of which being the reason this class was factored with/into PasswordEntryPresentationController
+			self.perform(
+				#selector(present(animated:)),
+				on: Thread.main,
+				with: animated,
+				waitUntilDone: false // can't wait until done b/c (i think) we'll prevent isBeingDismissed from ever getting set back to false -- we do want to present as soon as possible - we don't want to miss the system screenshotting the app with self presented if the user is backgrounding the app
+			)
+			return
+		}
+		let window = UIApplication.shared.delegate!.window!
+		let rootViewController = window?.rootViewController
+		if window == nil || rootViewController == nil { // being asked to present before app has finished launching; wait til next tick to try again
+			DispatchQueue.main.async
+			{ [unowned self] in
+				// TODO: is there a better way to do this so we get notified /just/ after the rootViewController is set but before the window is made key?
+				self.present(animated: animated)
+				// (this will cause an unterminated loop as written if window/rootViewController are never set up, but that would indicate a code fault anyway)
+			}
+			return
+		}
+		do { // 'will'
 			NotificationCenter.default.post(
 				name: NotificationNames.willPresentInView.notificationName,
 				object: nil
 			)
-			//
-			let parentViewController = UIApplication.shared.delegate!.window!!.rootViewController!
-			let presentIn_viewController = parentViewController.presentedViewController ?? parentViewController
-			DispatchQueue.main.async
-			{ [unowned self] in // on next 'tick' to wait for app to finish launching, if necessary; plus good to be on main
-				presentIn_viewController.present(self, animated: animated, completion: nil)
+		}
+		let parentViewController = rootViewController!
+		var presentIn_viewController: UIViewController
+		do {
+			if let already_presentedViewController = parentViewController.presentedViewController { // must be able to display on top of existing modals
+				if already_presentedViewController.isBeingDismissed == false { // e.g. the About modal when backgrounding the app
+					presentIn_viewController = already_presentedViewController
+				} else {
+					presentIn_viewController = parentViewController
+				}
+			} else {
+				presentIn_viewController = parentViewController
 			}
 		}
+		presentIn_viewController.present(self, animated: animated, completion: nil)
 	}
 	func dismiss(animated: Bool = true) // this method might need to be renamed (more specifically) in the future to avoid conflict with UIKit
 	{
@@ -241,13 +180,7 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 			return
 		}
 		NotificationCenter.default.post(name: NotificationNames.willDismissView.notificationName, object: nil)
-		do { // clear state for next time
-			self.taskMode = nil
-		}
-		do { // clear both callbacks as well since we're no longer going to call back with either of the current values
-			self.enterExistingPassword_cb = nil
-			self.enterNewPasswordAndType_cb = nil
-		}
+		self.passwordEntryModalPresentationDelegate.passwordEntryModal_willDismiss(modalViewController: self)
 		self.dismiss(animated: animated, completion:
 		{
 			NotificationCenter.default.post(name: NotificationNames.didDismissView.notificationName, object: nil)
@@ -290,110 +223,31 @@ class PasswordEntryNavigationViewController: UINavigationController, PasswordEnt
 	func _passwordController_callBack_trampoline(
 		didCancel: Bool,
 		or_password password_orNil: PasswordController.Password?,
-		and_passwordType passwordType_orNil: PasswordController.PasswordType?)
+		and_passwordType passwordType_orNil: PasswordController.PasswordType?
+	)
 	{
 		// NOTE: we can't clear the callbacks here yet even though this is where we use them because
 		// if there's a validation error, and the user wants to try again, there would be no callback through which
 		// to submit the subsequent try… but we will do so in dismiss()
 		//
-		assert(self.taskMode != nil, "nil self.taskMode")
-		switch self.taskMode! {
-			case .forUnlockingApp_ExistingPasswordGivenType,
-			     .forChangingPassword_ExistingPasswordGivenType:
-				guard let enterExistingPassword_cb = self.enterExistingPassword_cb else {
-					assert(false, "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPassword_cb for passwordEntryTaskMode: \(self.taskMode!)")
-					return
-				}
-				enterExistingPassword_cb(
-					didCancel,
-					password_orNil
-				)
-				// we don't want to free/zero the cb here - user may get pw wrong and try again
-				break
-				
-			case .forFirstEntry_NewPasswordAndType,
-			     .forChangingPassword_NewPasswordAndType:
-			
-				guard let enterNewPasswordAndType_cb = self.enterNewPasswordAndType_cb else {
-					assert(false, "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPasswordAndType_cb for passwordEntryTaskMode: \(self.taskMode!)")
-					return
-				}
-				enterNewPasswordAndType_cb(
-					didCancel,
-					password_orNil,
-					passwordType_orNil
-				)
-				// we don't want to free/zero the cb here - might trigger validation err & need to be called again
-				break
-		}
-	}
-
-	//
-	// Protocol - PasswordEntryDelegate
-	var uuidString = UUID().uuidString
-	func identifier() -> String
-	{
-		return self.uuidString
-	}
-	var enterExistingPassword_cb: ((Bool?, PasswordController.Password?) -> Void)?
-	func getUserToEnterExistingPassword(
-		isForChangePassword: Bool,
-		_ enterExistingPassword_cb: @escaping (Bool?, PasswordController.Password?) -> Void
-	)
-	{
-		let shouldAnimateToNewState = isForChangePassword == true
-		do { // check legality
-			if self.taskMode != nil {
-				assert(false, "getUserToEnterExistingPassword called but self.passwordEntryTaskMode not none/nil")
-				return
-			}
-		}
-		do { // we need to hang onto the callback for when the form is submitted
-			self.enterExistingPassword_cb = enterExistingPassword_cb
-		}
-		do { // put view into mode
-			var taskMode: PasswordEntryTaskMode
-			if isForChangePassword {
-				taskMode = .forChangingPassword_ExistingPasswordGivenType
-			} else {
-				taskMode = .forUnlockingApp_ExistingPasswordGivenType
-			}
-			self.taskMode = taskMode
-			//
-			self._configureWithMode(shouldAnimateToNewState: shouldAnimateToNewState)
-		}
-		self.present(animated: shouldAnimateToNewState)
-	}
-	var enterNewPasswordAndType_cb: ((Bool?, PasswordController.Password?, PasswordController.PasswordType?) -> Void)?
-	func getUserToEnterNewPasswordAndType(
-		isForChangePassword: Bool,
-		_ enterNewPasswordAndType_cb: @escaping (Bool?, PasswordController.Password?, PasswordController.PasswordType?) -> Void
+		self.passwordEntryModalPresentationDelegate.passwordEntryModal_formSubmittedWithState(
+			didCancel: didCancel,
+			or_password: password_orNil,
+			and_passwordType: passwordType_orNil
 		)
+	}
+	//
+	// Delegation - Validation error interface
+	func validationErrorNotificationReceived(_ notification: Notification)
 	{
-		let shouldAnimateToNewState = isForChangePassword
-		do { // check legality
-			if self.taskMode != nil {
-				if self.taskMode != .forChangingPassword_ExistingPasswordGivenType {
-					assert(false, "getUserToEnterNewPasswordAndType called but passwordEntry taskMode not none/nil and not .forChangingPassword_ExistingPasswordGivenType")
-					return
-				}
-			}
+		self.topPasswordEntryScreenViewController.reEnableForm()
+		//
+		let userInfo = notification.userInfo!
+		let err_str = userInfo[PasswordController.Notification_UserInfo_Keys.err_str.rawValue] as! String
+		if err_str != "" {
+			self.topPasswordEntryScreenViewController.setValidationMessage(err_str)
+		} else {
+			self.topPasswordEntryScreenViewController.clearValidationMessage()
 		}
-		do { // we need to hang onto the callback for when the form is submitted
-			self.enterNewPasswordAndType_cb = enterNewPasswordAndType_cb
-		}
-		do { // put view into mode
-			var taskMode: PasswordEntryTaskMode!
-			if isForChangePassword == true {
-				taskMode = .forChangingPassword_NewPasswordAndType
-			} else {
-				taskMode = .forFirstEntry_NewPasswordAndType
-			}
-			self.taskMode = taskMode
-			//
-			self._configureWithMode(shouldAnimateToNewState: shouldAnimateToNewState)
-		}
-		self.present(animated: true) // this is for NEW password, so we want this to show with an animation
-		// because it's going to be requested after the user has already initiated activity
 	}
 }

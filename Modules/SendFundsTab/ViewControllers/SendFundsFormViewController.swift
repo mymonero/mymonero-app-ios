@@ -1168,13 +1168,10 @@ extension SendFundsForm
 		@objc
 		func PasswordController_willDeconstructBootedStateAndClearPassword()
 		{
-			DispatchQueue.main.async
-			{ [unowned self] in
-				self._clearForm()
-				self._tearDownAnyImagePickerController(animated: false)
-				//
-				// should already have popped to root thanks to root tab bar vc
-			}
+			self._clearForm()
+			self._tearDownAnyImagePickerController(animated: false)
+			//
+			// should already have popped to root thanks to root tab bar vc
 		}
 		@objc
 		func PasswordController_didDeconstructBootedStateAndClearPassword()
