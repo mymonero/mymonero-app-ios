@@ -84,13 +84,60 @@ extension UICommonComponents
 			let bottomPadding = WalletColorPickerOptionView.cellPadding_side_v
 			return WalletColorPickerOptionView.cellSize_side_v + bottomPadding
 		}
+		func returningNumberOfRows_enumerateOptions(
+			numberOfOptions: Int,
+			inParentWithWidth containerWidth: CGFloat,
+			emittingOptionInformation_fn: ((
+				_ optionIdx: Int,
+				_ optionViewFrame: CGRect
+			) -> Void)?
+		) -> Int // numberOfRows (would be nice to name return value)
+		{
+			var rowIdx = 0
+			var idxInRow = 0
+			let rowHeight = self.rowHeight
+			let cellSize_side_h = WalletColorPickerOptionView.cellSize_side_h
+			let cellSize_side_v = WalletColorPickerOptionView.cellSize_side_v
+			let cellPadding_side_h = WalletColorPickerOptionView.cellPadding_side_h
+			let cellPadding_side_v = WalletColorPickerOptionView.cellPadding_side_v
+			func new_origin() -> (x: CGFloat, y: CGFloat)
+			{
+				let x = CGFloat(idxInRow) * (WalletColorPickerOptionView.cellSize_side_h + cellPadding_side_h)
+				let y = CGFloat(rowIdx) * rowHeight
+				//
+				return (x, y)
+			}
+			for optionIdx in 0..<numberOfOptions {
+				var origin = new_origin()
+				let option_rightEdgeX = origin.x + cellSize_side_h + cellPadding_side_h
+				if option_rightEdgeX > containerWidth {
+					rowIdx += 1
+					idxInRow = 0 // return to origin on next row
+					//
+					origin = new_origin() // re-derive origin
+				}
+				if let fn = emittingOptionInformation_fn {
+					let frame = CGRect(
+						x: origin.x,
+						y: origin.y,
+						width: cellSize_side_h,
+						height: cellSize_side_v
+					)
+					fn(optionIdx, frame)
+				}				//
+				// now tentatively advance to next column on same row (for next iteration calculation of new_origin)
+				idxInRow += 1
+			}
+			//
+			return rowIdx + 1 // idx -> whole number
+		}
 		func numberOfRowsToFit(inParentWithWidth width: CGFloat, numberOfOptions: Int) -> Int
 		{
-			let cellPadding_side_h = WalletColorPickerOptionView.cellPadding_side_h
-			let cellSize_side_h = WalletColorPickerOptionView.cellSize_side_h
-			let totalWidth = cellPadding_side_h + CGFloat(numberOfOptions) * (cellSize_side_h + cellPadding_side_h)
-			let numberOfRows = Int(ceil(totalWidth / width))
-			//
+			let numberOfRows = self.returningNumberOfRows_enumerateOptions(
+				numberOfOptions: numberOfOptions,
+				inParentWithWidth: width,
+				emittingOptionInformation_fn: nil
+			)
 			return numberOfRows
 		}
 		func numberOfRows(inParentWithWidth width: CGFloat) -> Int
@@ -137,42 +184,18 @@ extension UICommonComponents
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
-			// We presume parent has already sized self with heightThatFits(width parentWidth: CGFloat)
+			
+			let numberOfOptions = self.optionViews.count
 			let containerWidth = self.frame.size.width
-			var rowIdx = 0
-			var idxInRow = 0
-			let rowHeight = self.rowHeight
-			let cellSize_side_h = WalletColorPickerOptionView.cellSize_side_h
-			let cellSize_side_v = WalletColorPickerOptionView.cellSize_side_v
-			let cellPadding_side_h = WalletColorPickerOptionView.cellPadding_side_h
-			let cellPadding_side_v = WalletColorPickerOptionView.cellPadding_side_v
-			func new_origin() -> (x: CGFloat, y: CGFloat)
-			{
-				let x = CGFloat(idxInRow) * (WalletColorPickerOptionView.cellSize_side_h + cellPadding_side_h)
-				let y = CGFloat(rowIdx) * rowHeight
-				//
-				return (x, y)
-			}
-			for (_, optionView) in optionViews.enumerated() {
-				var origin = new_origin()
-				let option_rightEdgeX = origin.x + cellSize_side_h + cellPadding_side_h
-				if option_rightEdgeX > containerWidth {
-					rowIdx += 1
-					idxInRow = 0 // return to origin on next row
-					//
-					origin = new_origin() // re-derive origin
+			let _ = self.returningNumberOfRows_enumerateOptions(
+				numberOfOptions: numberOfOptions,
+				inParentWithWidth: containerWidth,
+				emittingOptionInformation_fn:
+				{ (optionIdx, optionViewFrame) in
+					let optionView = self.optionViews[optionIdx]
+					optionView.frame = optionViewFrame
 				}
-				let frame = CGRect(
-					x: origin.x,
-					y: origin.y,
-					width: cellSize_side_h,
-					height: cellSize_side_v
-				)
-				optionView.frame = frame
-				//
-				// now tentatively advance to next column on same row (for next iteration calculation of new_origin)
-				idxInRow += 1
-			}
+			)
 		}
 		//
 		// Delegation

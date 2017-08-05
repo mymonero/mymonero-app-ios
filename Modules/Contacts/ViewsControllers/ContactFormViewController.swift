@@ -488,7 +488,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				x: input_x,
 				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 				width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
-				height: 1/UIScreen.main.scale
+				height: UICommonComponents.Details.FieldSeparatorView.h
 			)
 			//
 			self.deleteButton!.frame = CGRect(

@@ -36,6 +36,9 @@ extension EditWallet
 		var walletColorPicker_label: UICommonComponents.Form.FieldLabel!
 		var walletColorPicker_inputView: UICommonComponents.WalletColorPickerView!
 		//
+		var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView!
+		var deleteButton: UICommonComponents.LinkButtonView!
+		//
 		override func setup_views()
 		{
 			super.setup_views()
@@ -76,6 +79,17 @@ extension EditWallet
 					self.walletColorPicker_inputView = view
 					self.scrollView.addSubview(view)
 				}
+			}
+			do {
+				let view = UICommonComponents.Details.FieldSeparatorView(mode: .contentBackgroundAccent)
+				self.deleteButton_separatorView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "REMOVE WALLET")
+				view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
+				self.deleteButton = view
+				self.scrollView.addSubview(view)
 			}
 		}
 		override func setup_navigation()
@@ -203,7 +217,26 @@ extension EditWallet
 					height: colorPicker_height
 				).integral
 			}
-			self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: topPadding)
+			do {
+				let justPreviousView = self.walletColorPicker_inputView!
+				self.deleteButton_separatorView!.frame = CGRect(
+					x: CGFloat.form_input_margin_x,
+					y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
+					width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
+					height: UICommonComponents.Details.FieldSeparatorView.h
+				)
+				//
+				self.deleteButton!.frame = CGRect(
+					x: CGFloat.form_input_margin_x,
+					y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
+					width: self.deleteButton!.frame.size.width,
+					height: self.deleteButton!.frame.size.height
+				)
+			}
+			self.scrollableContentSizeDidChange(
+				withBottomView: self.deleteButton,
+				bottomPadding: topPadding
+			)
 		}
 		//
 		// Delegation - Interactions
@@ -214,6 +247,43 @@ extension EditWallet
 		func tapped_barButtonItem_save()
 		{
 			self.aFormSubmissionButtonWasPressed()
+		}
+		//
+		func deleteButton_tapped()
+		{
+			let alertController = UIAlertController(
+				title: NSLocalizedString("Remove this wallet?", comment: ""),
+				message: NSLocalizedString(
+					"You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?",
+					comment: ""
+				),
+				preferredStyle: .alert
+			)
+			alertController.addAction(
+				UIAlertAction(
+					title: NSLocalizedString("Remove", comment: ""),
+					style: .destructive
+				)
+				{ (result: UIAlertAction) -> Void in
+					let err_str = WalletsListController.shared.givenBooted_delete(listedObject: self.wallet)
+					if err_str != nil {
+						self.setValidationMessage(err_str!)
+						return
+					}
+					assert(self.navigationController!.presentingViewController != nil)
+					// we always expect self to be presented modally
+					self.navigationController?.dismiss(animated: true, completion: nil)
+				}
+			)
+			alertController.addAction(
+				UIAlertAction(
+					title: NSLocalizedString("Cancel", comment: ""),
+					style: .default
+				)
+				{ (result: UIAlertAction) -> Void in
+				}
+			)
+			self.navigationController!.present(alertController, animated: true, completion: nil)
 		}
 	}
 }

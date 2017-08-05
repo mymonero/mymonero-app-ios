@@ -125,7 +125,7 @@ class FundsRequestsListViewCell: UITableViewCell
 		do {
 			if self.separatorView.isHidden == false {
 				let x = cellContentViewFrame.origin.x + 80
-				let h: CGFloat = 1/UIScreen.main.scale
+				let h: CGFloat = UICommonComponents.Details.FieldSeparatorView.h
 				self.separatorView.frame = CGRect(
 					x: x,
 					y: cellContentViewFrame.origin.y + cellContentViewFrame.size.height - h,
