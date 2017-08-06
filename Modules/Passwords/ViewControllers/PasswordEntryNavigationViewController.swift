@@ -129,16 +129,20 @@ class PasswordEntryNavigationViewController: UINavigationController
 			)
 			return
 		}
-		if self.isPresented && self.isBeingDismissed {
-			DDLog.Warn("Passwords", "Asked to present PasswordEntry modal while still presented and being dismissed. Defer until finished.")
-			// Deferring this .present(animated:) until we're doing being dismissed.
-			// TODO: there may be a better (more rigorous) way to do this. isBeingDismissed appears not to get set back to false in extenuating circumstances - the mitigation of which being the reason this class was factored with/into PasswordEntryPresentationController
-			self.perform(
-				#selector(present(animated:)),
-				on: Thread.main,
-				with: animated,
-				waitUntilDone: false // can't wait until done b/c (i think) we'll prevent isBeingDismissed from ever getting set back to false -- we do want to present as soon as possible - we don't want to miss the system screenshotting the app with self presented if the user is backgrounding the app
-			)
+		if self.isPresented {
+			if self.isBeingDismissed {
+				DDLog.Warn("Passwords", "Asked to present PasswordEntry modal while still presented and being dismissed. Defer until finished.")
+				// Deferring this .present(animated:) until we're doing being dismissed.
+				// TODO: there may be a better (more rigorous) way to do this. isBeingDismissed appears not to get set back to false in extenuating circumstances - the mitigation of which being the reason this class was factored with/into PasswordEntryPresentationController
+				self.perform(
+					#selector(present(animated:)),
+					on: Thread.main,
+					with: animated,
+					waitUntilDone: false // can't wait until done b/c (i think) we'll prevent isBeingDismissed from ever getting set back to false -- we do want to present as soon as possible - we don't want to miss the system screenshotting the app with self presented if the user is backgrounding the app
+				)
+				return
+			}
+			DDLog.Warn("Passwords", "Asked to present PasswordEntry modal while already presented and not being dismissed. Ignoring.")
 			return
 		}
 		let window = UIApplication.shared.delegate!.window!

@@ -15,14 +15,14 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 	static let shared = SettingsFormViewController()
 	//
 	// Properties - Views
+	var changePasswordButton = UICommonComponents.PushButton(pushButtonType: .utility)
 	//
 	var address_label: UICommonComponents.Form.FieldLabel!
 	var address_inputView: UICommonComponents.FormInputField!
 	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 	//
-	// TODO: slider
 	var appTimeoutAfterS_label: UICommonComponents.Form.FieldLabel?
-	var appTimeoutAfterS_inputView: UICommonComponents.FormTextViewContainerView?
+	var appTimeoutAfterS_inputView: UICommonComponents.FormTextViewContainerView? // TODO
 	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
 	//
 	var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView!
@@ -43,15 +43,11 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 	override func setup_views()
 	{
 		super.setup_views()
+		//
 		do {
-			// TODO: app timeout after s slider
-		}
-		do {
-			let view = UICommonComponents.FormFieldAccessoryMessageLabel(
-				text: NSLocalizedString("", comment: "")
-			)
-			self.appTimeoutAfterS_fieldAccessoryMessageLabel = view
-			self.scrollView.addSubview(view)
+			let view = self.changePasswordButton
+			view.addTarget(self, action: #selector(changePasswordButton_tapped), for: .touchUpInside)
+			self.view.addSubview(view)
 		}
 		//
 		do {
@@ -264,6 +260,15 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 		let textField_w = self.new__textField_w // already has customInsets subtracted
 		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//
+		do {
+			self.changePasswordButton.sizeToFit()
+			self.changePasswordButton.frame = CGRect(
+				x: input_x,
+				y: top_yOffset,
+				width: self.changePasswordButton.frame.size.width + 2*10 + 2*UICommonComponents.FormInputCells.imagePadding_x,
+				height: 26 + 2*UICommonComponents.FormInputCells.imagePadding_y
+			).integral
+		}
 //		do {
 //			self.address_label.frame = CGRect(
 //				x: label_x,
@@ -286,14 +291,14 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 //				height: self.resolving_activityIndicator.new_height
 //				).integral
 //		}
-		let addressFieldset_bottomEdge = top_yOffset// <- TEMPORARY 
+		let addressFieldset_bottomEdge = self.changePasswordButton.frame.origin.y + self.changePasswordButton.frame.size.height // <- TEMPORARY
 		// self.resolving_activityIndicator.isHidden ?
 		// self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height
 		//  : self.resolving_activityIndicator.frame.origin.y + self.resolving_activityIndicator.frame.size.height
 		
 		self.appTimeoutAfterS_label!.frame = CGRect(
 			x: label_x,
-			y: addressFieldset_bottomEdge + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+			y: addressFieldset_bottomEdge + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16,
 			width: fullWidth_label_w,
 			height: self.appTimeoutAfterS_label!.frame.size.height
 			).integral
@@ -312,11 +317,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 			).integral
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.sizeToFit()
 		}
-
-		
-		
-		
-		
 		do {
 			assert(self.appTimeoutAfterS_fieldAccessoryMessageLabel != nil)
 			let justPreviousView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
@@ -354,8 +354,10 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 		//
 		// TODO: This configuration is not the optimal place to do this - change to upon a notification from PasswordController
 		do { // config change pw btn text
-			// TODO: change pw button:
-//				self.changePasswordButtonView.title = "Change \(PasswordController.shared.passwordType.capitalized_humanReadableString)"
+			self.changePasswordButton.setTitle(
+				NSLocalizedString("Change \(PasswordController.shared.passwordType.capitalized_humanReadableString)", comment: ""),
+				for: .normal
+			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.text = String(
 				format: NSLocalizedString(
 					"Amount of time before your %@ is required again",
@@ -363,8 +365,8 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 				),
 				PasswordController.shared.passwordType.humanReadableString
 			)
+			self.view.setNeedsLayout()
 		}
-
 	}
 	//
 	// Delegation - UITextView
@@ -392,6 +394,10 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 	//
+	func changePasswordButton_tapped()
+	{
+		PasswordController.shared.initiateChangePassword()
+	}
 	func deleteButton_tapped()
 	{
 		let alertController = UIAlertController(
