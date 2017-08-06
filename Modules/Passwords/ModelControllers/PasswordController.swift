@@ -136,7 +136,22 @@ final class PasswordController
 	var _id: DocumentPersister.DocumentId?
 	var password: Password?
 	var passwordType: PasswordType! // it will default to .password per init
-	var hasUserSavedAPassword: Bool!
+	var hasUserSavedAPassword: Bool { // this obviously has a file I/O hit, which is not optimal; alternatives are use sparingly or cache at appropriate locations
+		let (err_str, ids) = DocumentPersister.shared.IdsOfAllDocuments(inCollectionNamed: self.collectionName)
+		if err_str != nil {
+			DDLog.Error("Passwords", ".hasUserSavedAPassword: \(err_str!)")
+			assert(false)
+			return false
+		}
+		let numberOfIds = ids!.count
+		if numberOfIds > 1 {
+			assert(false, "Illegal: Should be only one document")
+			return false
+		} else if numberOfIds == 0 {
+			return false
+		}
+		return true
+	}
 	var messageAsEncryptedDataForUnlockChallenge_base64String: String?
 	var isAlreadyGettingExistingOrNewPWFromUser: Bool?
 	private var passwordEntryDelegate: PasswordEntryDelegate? // someone in the app must set this by calling setPasswordEntryDelegate(to:)
@@ -191,12 +206,9 @@ final class PasswordController
 			return
 		}
 		func _proceedTo_load(
-			hasUserSavedAPassword: Bool,
 			documentJSON: DocumentPersister.DocumentJSON
 		)
 		{
-			self.hasUserSavedAPassword = hasUserSavedAPassword
-			//
 			self._id = documentJSON[DictKey._id.rawValue] as? DocumentPersister.DocumentId
 			let passwordType_rawValue = documentJSON[DictKey.passwordType.rawValue] as? String ?? PasswordType.password.rawValue
 			self.passwordType = PasswordType(rawValue: passwordType_rawValue)
@@ -221,14 +233,12 @@ final class PasswordController
 				DictKey.passwordType.rawValue: PasswordType.password // default (at least for now)
 			]
 			_proceedTo_load(
-				hasUserSavedAPassword: false,
 				documentJSON: fabricated_documentJSON
 			)
 			return
 		}
 		let documentJSON = documentJSONs![0]
 		_proceedTo_load(
-			hasUserSavedAPassword: true,
 			documentJSON: documentJSON
 		)
 	}
@@ -809,7 +819,6 @@ final class PasswordController
 				// reset state cause we're going all the way back to pre-boot
 				self.hasBooted = false // require this pw controller to boot
 				self.password = nil // this is redundant but is here for clarity
-				self.hasUserSavedAPassword = false
 				self._id = nil
 				self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
 				//
@@ -895,7 +904,6 @@ final class PasswordController
 				do { // trigger deconstruction of booted state and require password
 					self.password = nil // clear pw in memory
 					self.hasBooted = false // require this pw controller to boot
-					self.hasUserSavedAPassword = false
 					self._id = nil
 					self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
 				}
@@ -917,7 +925,6 @@ final class PasswordController
 	func _didObtainPassword(password: Password)
 	{
 		self.password = password
-		self.hasUserSavedAPassword = true // we can now flip this to true
 	}
 	//
 	// Delegation - Notifications

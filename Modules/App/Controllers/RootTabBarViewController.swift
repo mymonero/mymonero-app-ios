@@ -127,34 +127,23 @@ class RootTabBarViewController: UITabBarController
 	{
 		// NOTE: for now, not going to involve a runloop of some kind - just going to configure each time cause it's cheap
 		//
-		// NOTE: unlike the JS app, I (PS) have decided to centralize the implementation of this. it has the trade-off that we don't have to repeat certain logic, and it reduces burden on tabs slightly, and figured it was more or less equivalent in terms of architecture complexity as we have the enumeration of tabs in self anyway
+		// NOTE: unlike the JS app, I (PS) have decided to centralize the implementation of this. it has the trade-off that we don't have to repeat certain logic, and it reduces burden on tabs slightly, and I figured it was more or less equivalent in terms of architecture complexity as we have the enumeration of tabs in self anyway
 		//
-		var shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = false
-		var shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked = false
 		let passwordController = PasswordController.shared
-		if passwordController.hasUserSavedAPassword == false {
-			shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = true // no existing data - do disable
-			shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked = false // no existing data - do NOT disable
-		} else if passwordController.hasUserEnteredValidPasswordYet == false { // has data but not unlocked app
-			shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = true // because the app needs to be unlocked before they can use it
-			shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked = true
-		} else if passwordController.isUserChangingPassword == true { // true, not false
-			shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = true // changing pw - prevent jumping around
-			shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked = true
-		}
-		// if shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked = true, technically, no need to continue… but just to keep this method clean, not adding a condition with a return here
+		let shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = passwordController.isUserChangingPassword || PasswordController.shared.hasUserSavedAPassword == false
+		let shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked = passwordController.isUserChangingPassword // cause it doesn't matter if we have a pw or not
 		//
 		let shouldEnable_tabsWhichRequireAWallet = WalletsListController.shared.hasBooted && WalletsListController.shared.records.count != 0 // if wallets, enable ; hasBooted is mostly just to prevent us having to write more complex logic to check whether or not we should bother checking for records.count yet (i.e. the above conditions about password entry state)
 		//
 		let shouldDisable_nonWalletAndSettingsTabs = shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword
-			|| shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked
+			|| shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked
 			|| shouldEnable_tabsWhichRequireAWallet == false
 		//
-		let shouldDisable_wallets = shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
+		let shouldDisable_wallets = shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
 		let shouldDisable_sendFunds = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_fundsRequests = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_contacts = shouldDisable_nonWalletAndSettingsTabs
-		let shouldDisable_settings = shouldDisable_tabsWhichRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
+		let shouldDisable_settings = shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
 		//
 		self.walletsTabViewController.tabBarItem.isEnabled = !shouldDisable_wallets
 		self.sendFundsTabViewController.tabBarItem.isEnabled = !shouldDisable_sendFunds
