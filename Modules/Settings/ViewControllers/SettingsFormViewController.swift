@@ -21,9 +21,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 	var address_inputView: UICommonComponents.FormInputField!
 	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 	//
-	var appTimeoutAfterS_label: UICommonComponents.Form.FieldLabel?
-	var appTimeoutAfterS_inputView: UICommonComponents.FormTextViewContainerView? // TODO
-	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel?
+	var appTimeoutAfterS_label: UICommonComponents.Form.FieldLabel!
+	var appTimeoutAfterS_inputView: UICommonComponents.FormTextViewContainerView! // TODO
+	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
 	var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView!
 	var deleteButton: UICommonComponents.LinkButtonView!
@@ -366,6 +366,25 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 				PasswordController.shared.passwordType.humanReadableString
 			)
 			self.view.setNeedsLayout()
+		}
+		do {
+			if PasswordController.shared.hasUserSavedAPassword == false {
+				self.changePasswordButton.isEnabled = false // can't change til entered
+				// self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
+				self.appTimeoutAfterS_inputView.set(isEnabled: false)
+				self.deleteButton.isEnabled = false
+			} else if PasswordController.shared.hasUserEnteredValidPasswordYet == false { // has data but not unlocked app - prevent tampering
+				// however, user should never be able to see the settings view in this state
+				self.changePasswordButton.isEnabled = false
+				// self.serverURLInputLayer.disabled = true
+				self.appTimeoutAfterS_inputView.set(isEnabled: false)
+				self.deleteButton.isEnabled = false
+			} else { // has entered PW - unlock
+				self.changePasswordButton.isEnabled = true
+				// self.serverURLInputLayer.disabled = false
+				self.appTimeoutAfterS_inputView.set(isEnabled: true)
+				self.deleteButton.isEnabled = true
+			}
 		}
 	}
 	//
