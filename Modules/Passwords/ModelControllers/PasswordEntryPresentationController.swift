@@ -164,7 +164,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		_ enterExistingPassword_cb: @escaping (Bool?, PasswordController.Password?) -> Void
 	)
 	{
-		let shouldAnimateToNewState = isForChangePassword == true
+		let shouldAnimateToNewState = isForChangePassword == true // TODO: this needs to also be true for the rare case that they have deleted all wallets and other data, have killed and relaunched the app (so they have not entered the pw but have not been asked for it yet), and are adding a wallet back
 		do { // check legality
 			if self.taskMode != nil {
 				assert(false, "getUserToEnterExistingPassword called but self.passwordEntryTaskMode not none/nil")
