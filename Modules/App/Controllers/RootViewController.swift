@@ -63,7 +63,7 @@ class RootViewController: UIViewController
 	}
 	@objc func PasswordEntryNavigationViewController_willPresentInView()
 	{
-		self.tabBarViewController.disableTabBarItems()
+		self.tabBarViewController.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 	}
 }
 

@@ -130,7 +130,7 @@ class RootTabBarViewController: UITabBarController
 		// NOTE: unlike the JS app, I (PS) have decided to centralize the implementation of this. it has the trade-off that we don't have to repeat certain logic, and it reduces burden on tabs slightly, and I figured it was more or less equivalent in terms of architecture complexity as we have the enumeration of tabs in self anyway
 		//
 		let passwordController = PasswordController.shared
-		let shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = passwordController.isUserChangingPassword || PasswordController.shared.hasUserSavedAPassword == false
+		let shouldDisable_tabsWhichRequireUserHavingEverEnteredPassword = passwordController.isUserChangingPassword || passwordController.hasUserSavedAPassword == false
 		let shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked = passwordController.isUserChangingPassword // cause it doesn't matter if we have a pw or not
 		//
 		let shouldEnable_tabsWhichRequireAWallet = WalletsListController.shared.hasBooted && WalletsListController.shared.records.count != 0 // if wallets, enable ; hasBooted is mostly just to prevent us having to write more complex logic to check whether or not we should bother checking for records.count yet (i.e. the above conditions about password entry state)

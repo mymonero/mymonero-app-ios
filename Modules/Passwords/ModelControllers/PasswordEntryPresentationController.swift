@@ -109,9 +109,9 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 						assert(false, "Unexpected: Notification that .willDeconstructBootedStateAndClearPassword was received while presented but being dismissed.")
 						return // we do not need to cancel this b/c it's already being dismissed; user probably backgrounded app just after closing self
 					}
-					let userInfo = notification.userInfo!
-					let isForADeleteEverything = userInfo[PasswordController.Notification_UserInfo_Keys.isForADeleteEverything.rawValue] as! Bool
-					let isAnimated = isForADeleteEverything == true
+//					let userInfo = notification.userInfo!
+//					let isForADeleteEverything = userInfo[PasswordController.Notification_UserInfo_Keys.isForADeleteEverything.rawValue] as! Bool
+					let isAnimated = false // make it not possible for re-enable of Wallet tab bar item appears to race with selecting it
 					self.passwordEntryNavigationViewController!.cancel(animated: isAnimated)
 					// ^-- we must:
 					//	 (a) use cancel() to maintain pw controller state (or user idle while changing pw breaks ask-for-pw), and
