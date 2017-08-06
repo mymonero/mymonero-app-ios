@@ -71,6 +71,7 @@ extension UICommonComponents
 						let picker_selectedWallet = self.pickerView.selectedWallet
 						if picker_selectedWallet == nil {
 							self.contentView.prepareForReuse() // might as well call it even though it will have handled
+							return
 						}
 						let selectedWallet = picker_selectedWallet!
 						if self.selectedWallet == nil || self.selectedWallet! != selectedWallet {
@@ -220,7 +221,12 @@ extension UICommonComponents
 			if selectedIndex == -1 {
 				return nil
 			}
-			return WalletsListController.shared.records[selectedIndex] as? Wallet
+			let records = WalletsListController.shared.records
+			if records.count <= selectedIndex {
+				DDLog.Warn("UICommonComponents", "WalletPicker has non -1 selectedIndex but too few records for the selectedIndex to be correct. Returning nil.")
+				return nil
+			}
+			return records[selectedIndex] as? Wallet
 		}
 		//
 		// Imperatives - Programmatic picking
