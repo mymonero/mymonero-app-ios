@@ -20,7 +20,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	var didFatalErrorOnInit: NSError? // if non-nil, discard self instance
 	//
 	// Properties - Settable by instantiator
-	var shouldVibrateOnFirstScan = false
+	var shouldVibrateOnFirstScan = true // possibly have setting to turn this off
 	//
 	var didCancel_fn: ((Void) -> Void)?
 	var didLocateQRCodeMessageString_fn: ((String) -> Void)?
