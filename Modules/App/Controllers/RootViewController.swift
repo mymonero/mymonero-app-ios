@@ -24,14 +24,19 @@ class RootViewController: UIViewController
 	{
 		super.init(nibName: nil, bundle: nil)
 		//
+		self.setup_presentationSingletons()
 		self.setup_views()
+	}
+	func setup_presentationSingletons()
+	{
+		let _ = PasswordEntryPresentationController.shared // the shared PasswordEntryPresentationController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
+		//
+		let _ = ConnectivityMessagePresentationController.shared // ensure this starts observing
 	}
 	func setup_views()
 	{
 		self.view.backgroundColor = UIColor.contentBackgroundColor
 		//
-//		// the shared PasswordEntryPresentationController must get set up first so it sets the passwordController's pw entry delegate before others cause the pw to be requested
-		let _ = PasswordEntryPresentationController.shared
 		do { // start observing (usually is split out, but should be fine here esp since we don't need to stop observing)
 			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willDismissView), name: PasswordEntryNavigationViewController.NotificationNames.willDismissView.notificationName, object: nil)
 			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willPresentInView), name: PasswordEntryNavigationViewController.NotificationNames.willPresentInView.notificationName, object: nil)

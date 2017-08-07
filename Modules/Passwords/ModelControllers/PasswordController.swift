@@ -777,7 +777,7 @@ final class PasswordController
 		_ registrant: DeleteEverythingRegistrant
 	) -> Void
 	{
-		DDLog.Info("Passwords", "Adding registrant for 'DeleteEverything': \(registrant)")
+//		DDLog.Info("Passwords", "Adding registrant for 'DeleteEverything': \(registrant)")
 		self.weakRefsTo_deleteEverythingRegistrants.append(
 			WeakRefTo_DeleteEverythingRegistrant(value: registrant)
 		)

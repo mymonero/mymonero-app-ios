@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
 		9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */; };
+		9F0022C81F38063F0089400D /* ConnectivityMessagePresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022C51F38063F0089400D /* ConnectivityMessagePresentationController.swift */; };
+		9F0022CB1F383F260089400D /* ConnectivityMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022CA1F383F260089400D /* ConnectivityMessageViewController.swift */; };
 		9F00B8E01EC276C30040F52A /* MoneroOpenAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8D91EC276C30040F52A /* MoneroOpenAlias.swift */; };
 		9F00B8E11EC276C30040F52A /* MoneroRequestURIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DA1EC276C30040F52A /* MoneroRequestURIs.swift */; };
 		9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DB1EC276C30040F52A /* MoneroTransactions.swift */; };
@@ -231,6 +233,8 @@
 		23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyMonero.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
 		9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryPresentationController.swift; sourceTree = "<group>"; };
+		9F0022C51F38063F0089400D /* ConnectivityMessagePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessagePresentationController.swift; sourceTree = "<group>"; };
+		9F0022CA1F383F260089400D /* ConnectivityMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessageViewController.swift; sourceTree = "<group>"; };
 		9F00B8D91EC276C30040F52A /* MoneroOpenAlias.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroOpenAlias.swift; sourceTree = "<group>"; };
 		9F00B8DA1EC276C30040F52A /* MoneroRequestURIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroRequestURIs.swift; sourceTree = "<group>"; };
 		9F00B8DB1EC276C30040F52A /* MoneroTransactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTransactions.swift; sourceTree = "<group>"; };
@@ -479,6 +483,23 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		9F0022C31F38063F0089400D /* ConnectivityMessage */ = {
+			isa = PBXGroup;
+			children = (
+				9F0022C41F38063F0089400D /* Controllers */,
+			);
+			path = ConnectivityMessage;
+			sourceTree = "<group>";
+		};
+		9F0022C41F38063F0089400D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F0022C51F38063F0089400D /* ConnectivityMessagePresentationController.swift */,
+				9F0022CA1F383F260089400D /* ConnectivityMessageViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		9F00B8D81EC276C30040F52A /* Swift */ = {
 			isa = PBXGroup;
 			children = (
@@ -697,6 +718,7 @@
 				9FAA18AE1F0AEC0C001F1D4D /* OpenAlias */,
 				9F8E2F8C1EE8807500F89A1D /* Settings */,
 				9FA7342B1F077C6800C674D6 /* Emoji */,
+				9F0022C31F38063F0089400D /* ConnectivityMessage */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -1494,6 +1516,7 @@
 				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
+				9F0022CB1F383F260089400D /* ConnectivityMessageViewController.swift in Sources */,
 				9F7298BF1F33C0EE00CD59E1 /* ScreenSleep.swift in Sources */,
 				9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */,
 				9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */,
@@ -1528,6 +1551,7 @@
 				9FAA18B01F0AEC22001F1D4D /* OpenAliasResolver.swift in Sources */,
 				9F33E6FD1F200CC000610662 /* TransactionDetailsViewController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
+				9F0022C81F38063F0089400D /* ConnectivityMessagePresentationController.swift in Sources */,
 				9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */,

@@ -7,6 +7,7 @@ target 'MyMonero' do
 	pod 'SwiftDate', '~> 4.0'
 	pod 'Alamofire', '~> 4.4'
 	pod 'RNCryptor', '~> 5.0.1'
+	pod 'ReachabilitySwift', '~> 3.0'
 	pod 'Popover', '~> 1.0.5'
 	pod 'PKHUD', '~> 4.0'
 end
