@@ -7,6 +7,7 @@
 //
 //
 import UIKit
+import PKHUD
 //
 struct CreateWallet_ConfirmMnemonic {}
 //
@@ -179,7 +180,12 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			self.set(isFormSubmitting: true) // will update 'Confirm' btn
 			self.disableForm()
 			self.clearValidationMessage()
-			DDLog.Todo("WalletWizard", "hide next btn/replace it with an activity indicator")
+			HUD.show(
+				.label(
+					NSLocalizedString("Loading…", comment: "")
+				),
+				onView: self.navigationController!.view/*or self.view*/
+			)
 			self.navigationItem.leftBarButtonItem!.isEnabled = false
 		}
 		func ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
@@ -192,7 +198,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
 			//
 			self.navigationItem.leftBarButtonItem!.isEnabled = true
-			DDLog.Todo("WalletWizard", "remove act ind and replace /re display next btn ")
+			HUD.hide(animated: true)
 			self.set(isFormSubmitting: false) // will update 'Next' btn
 			self.reEnableForm()
 		}
