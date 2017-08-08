@@ -25,6 +25,7 @@ extension UICommonComponents
 		var tooltipText: String
 		var tip: PopTip?
 		//
+		var tooltipDirectionFromOrigin: PopTipDirection = .up // settable by instantiator
 		var willPresentTipView_fn: ((Void) -> Void)?
 		//
 		// Lifecycle - Init
@@ -103,15 +104,20 @@ extension UICommonComponents
 				tip.edgeInsets = UIEdgeInsetsMake(2, 2, 2, 2)
 				tip.edgeMargin = 4 // if needed
 				tip.arrowSize = CGSize(width: 15, height: 13)
-				tip.offset = -10 // from arrow to the spawn origin - so that the actual visual offset ends up being 3
+				tip.offset = self.tooltipDirectionFromOrigin == .left || self.tooltipDirectionFromOrigin == .right ? -6 : -10 // from arrow to the spawn origin - so that the actual visual offset ends up being 3
 				//
 				tip.shouldDismissOnTap = false // we'll observe other events - do not want conflict
 			}
 			self.tip = tip
-			let inView = UIApplication.shared.delegate!.window!!.rootViewController!.view!
+			let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController!
+			var inViewController: UIViewController = rootViewController
+			while inViewController.presentedViewController != nil { // 'while' necessary rather than 'if'?
+				inViewController = inViewController.presentedViewController!
+			}
+			let inView = inViewController.view!
 			tip.show(
 				text: self.tooltipText,
-				direction: .up,
+				direction: self.tooltipDirectionFromOrigin,
 				maxWidth: type(of: self).tooltip_maxWidth,
 				in: inView,
 				from: inView.convert(self.frame, from: self.superview)

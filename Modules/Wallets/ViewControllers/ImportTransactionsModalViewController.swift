@@ -21,8 +21,7 @@ extension ImportTransactionsModal
 		//
 		// - Views
 		var informationalLabel: UICommonComponents.FormAccessoryMessageLabel!
-		//
-		// TODO: tooltip
+		var informationalLabel_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
@@ -55,6 +54,22 @@ extension ImportTransactionsModal
 					text: NSLocalizedString("Loading…", comment: "") // for now…
 				)
 				self.informationalLabel = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to import.mymonero.com.",
+						comment: ""
+					)
+				)
+				view.tooltipDirectionFromOrigin = .left // b/c we're at the top of the screen but also so close to the right side - would be nice to be able to go down-left - but since the right edge/space ends up being the limiting factor, we must choose .left instead of .down
+				view.isHidden = true // initially
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.informationalLabel_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -236,13 +251,11 @@ extension ImportTransactionsModal
 							comment: ""
 						),
 						formatted_importFee
-						) + (feeReceiptStatus != nil ? "\n(Status: \(feeReceiptStatus!).)" : "")
+					) + (
+						feeReceiptStatus != nil ? "\n(Status: \(feeReceiptStatus!).)" : ""
+					)
 				)
-				//
-				// TODO
-//				const tooltipText = "Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to import.mymonero.com."
-//				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-//				self.informationalHeaderLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
+				self.informationalLabel_tooltipSpawn_buttonView.isHidden = false // show
 			}
 			do {
 				self.toAddress_inputView.text = payment_address
@@ -266,7 +279,7 @@ extension ImportTransactionsModal
 //				self.walletSelectLabelLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
 			}
 			//
-			self.view.setNeedsLayout()
+			self.view.setNeedsLayout() // important
 		}
 		//
 		// Runtime - Imperatives - Overrides
@@ -363,21 +376,35 @@ extension ImportTransactionsModal
 			let fullWidth_label_w = self.new__fieldLabel_w
 			//
 			do {
-				let w = textField_w
+				let max_w = textField_w
 				self.informationalLabel.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
-					y: ceil(top_yOffset),
-					width: w,
+					x: 0,
+					y: 0,
+					width: max_w,
 					height: 0
 				).integral
-				self.informationalLabel.sizeToFit()
+				self.informationalLabel.sizeToFit() // for centering
+				let w = self.informationalLabel.frame.size.width
 				self.informationalLabel.frame = CGRect(
-					x: self.informationalLabel.frame.origin.x,
-					y: self.informationalLabel.frame.origin.y,
-					width: w, // now return to original width to get centering (as the text run may have been too short to take up the whole h space)
-					height: self.informationalLabel.frame.size.height
+					x: (max_w - w)/2 + CGFloat.form_input_margin_x,
+					y: ceil(top_yOffset),
+					width: w,
+					height: self.informationalLabel.frame.size.height // read height
 				).integral
 			}
+			do {
+				if self.informationalLabel_tooltipSpawn_buttonView.isHidden == false {
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.informationalLabel_tooltipSpawn_buttonView.frame = CGRect(
+						x: self.informationalLabel.frame.origin.x + self.informationalLabel.frame.size.width - 4,
+						y: self.informationalLabel.frame.origin.y - (tooltipSpawn_buttonView_h - self.informationalLabel.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
+			}
+			//
 			do {
 				self.fromWallet_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,

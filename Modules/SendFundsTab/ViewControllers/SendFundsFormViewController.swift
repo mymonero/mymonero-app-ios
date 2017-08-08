@@ -133,6 +133,7 @@ extension SendFundsForm
 						)
 					)
 				)
+				view.tooltipDirectionFromOrigin = .right
 				view.willPresentTipView_fn =
 				{ [unowned self] in
 					self.view.resignCurrentFirstResponder() // if any
