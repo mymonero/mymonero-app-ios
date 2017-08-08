@@ -183,7 +183,7 @@ class AddWallet_WizardController
 		}
 		self.wizard_navigationController.dismiss(animated: true)
 		{ [weak self] in
-			guard let thisSelf = self else {
+			guard let _ = self else {
 				return
 			}
 		}

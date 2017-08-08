@@ -48,7 +48,7 @@ extension WalletDetails
 			switch self.mode {
 			case .scanningIndicator:
 				let view = UICommonComponents.GraphicAndTwoUpLabelsActivityIndicatorView()
-				view.set(labelText: NSLocalizedString("SCANNING…", comment: ""))
+				// we will set the main text in layoutSubviews - oddly enough - b/c that is where we get informed of the superview width
 				view.set(
 					accessoryLabelText: String(
 						format: NSLocalizedString(
@@ -114,6 +114,23 @@ extension WalletDetails
 				width: w,
 				height: view.frame.size.height
 			)
+			//
+			switch self.mode {
+				case .scanningIndicator:
+					let isLargerFormatScreen = self.frame.size.width > 320
+					let text = isLargerFormatScreen
+						? NSLocalizedString("SCANNING BLOCKCHAIN…", comment: "") // ambiguous w/o " BLOCKCHAIN"
+						: NSLocalizedString("SCANNING…", comment: "") // just not enough space
+					if self.indicatorView.label.text != text {
+						self.indicatorView.set(
+							labelText: text
+						)
+					} else {
+						// unlikely but possible
+					}
+				default:
+					break // nothing to do
+			}
 		}
 		//
 		// Delegation - Interactions
