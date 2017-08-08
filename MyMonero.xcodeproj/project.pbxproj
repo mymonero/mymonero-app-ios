@@ -673,8 +673,8 @@
 		9F453FA61F267A65004590DC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */,
 				9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */,
+				9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */,
 				9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */,
 			);
 			path = ViewControllers;

@@ -24,6 +24,7 @@ extension ImportTransactionsModal
 		var informationalLabel_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
+		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
@@ -72,11 +73,28 @@ extension ImportTransactionsModal
 				self.informationalLabel_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
+			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("FROM", comment: "")
 				)
 				self.fromWallet_label = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"For convenience you may send the fee from MyMonero here, or the official CLI or GUI tools, or any other Monero wallet.\n\nPlease be sure to use the exact payment ID below, so the server knows which wallet to import.",
+						comment: ""
+					)
+				)
+				view.tooltipDirectionFromOrigin = .down // too close to top of screen - .right is another option
+				view.isHidden = true // initially
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.fromWallet_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -258,6 +276,9 @@ extension ImportTransactionsModal
 				self.informationalLabel_tooltipSpawn_buttonView.isHidden = false // show
 			}
 			do {
+				self.fromWallet_tooltipSpawn_buttonView.isHidden = false
+			}
+			do {
 				self.toAddress_inputView.text = payment_address
 				self.toAddress_labelAccessory_copyButton.set(text: payment_address)
 				//
@@ -270,13 +291,6 @@ extension ImportTransactionsModal
 				}
 				amountStr = "0" + amountStr
 				self.amount_fieldset.inputField.text = amountStr
-			}
-			do {
-//				// const command = `transfer 3 import.mymonero.com ${import_fee__JSBigInt} ${payment_id}`
-//				const tooltipText = "For convenience you may send the fee from MyMonero here, or the official CLI or GUI tools, or any other Monero wallet.<br/><br/>Please be sure to use the exact payment ID below, so the server knows which wallet to import."
-//				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-//				const layer = view.layer
-//				self.walletSelectLabelLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
 			}
 			//
 			self.view.setNeedsLayout() // important
@@ -412,6 +426,21 @@ extension ImportTransactionsModal
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 				).integral
+				do {
+					self.fromWallet_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__fromWallet_label_frame = self.fromWallet_label.frame
+					final__fromWallet_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.fromWallet_label.frame = final__fromWallet_label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
+						x: self.fromWallet_label.frame.origin.x + self.fromWallet_label.frame.size.width - 4,
+						y: self.fromWallet_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.fromWallet_label.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.fromWallet_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,

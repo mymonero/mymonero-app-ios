@@ -817,7 +817,7 @@ extension SendFundsForm
 					height: 0
 				).integral
 				do {
-					self.feeEstimate_label.sizeToFit() // so we can place the feeEstimate_tooltipSpawn_buttonView next to it
+					self.feeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
 					var final__feeEstimate_label_frame = self.feeEstimate_label.frame
 					final__feeEstimate_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
 					self.feeEstimate_label.frame = final__feeEstimate_label_frame // kinda sucks to set this three times in this method. any alternative?
