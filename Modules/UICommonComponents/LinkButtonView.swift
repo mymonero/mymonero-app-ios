@@ -14,7 +14,9 @@ extension UICommonComponents
 	{
 		//
 		// Constants
-		static let h: CGFloat = 24
+		static var h: CGFloat { // a computed property, so that we can override it
+			return 24
+		}
 		//
 		enum Mode
 		{

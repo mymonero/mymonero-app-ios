@@ -15,9 +15,9 @@ extension UICommonComponents
 	{
 		//
 		// Constants
-		static let w: CGFloat = 30
-		static let fixed_h: CGFloat = 30
-		static let tooltip_maxWidth: CGFloat = 230
+		static let usabilityExpanded_w: CGFloat = 28
+		static let usabilityExpanded_h: CGFloat = 32
+		static let tooltip_maxWidth: CGFloat = 230 - 12 // seems to be asking for the text width instead,  -k
 		//		let maxWidth: CGFloat = 230
 		//		appearance.maxWidth = maxWidth
 		//
@@ -100,6 +100,10 @@ extension UICommonComponents
 				tip.borderColor = UIColor(rgb: 0xFFFFFF)
 				tip.borderWidth = 1/UIScreen.main.scale // single pixel / hairline
 				tip.textAlignment = .left
+				tip.edgeInsets = UIEdgeInsetsMake(2, 2, 2, 2)
+				tip.edgeMargin = 4 // if needed
+				tip.arrowSize = CGSize(width: 15, height: 13)
+				tip.offset = -10 // from arrow to the spawn origin - so that the actual visual offset ends up being 3
 				//
 				tip.shouldDismissOnTap = false // we'll observe other events - do not want conflict
 			}

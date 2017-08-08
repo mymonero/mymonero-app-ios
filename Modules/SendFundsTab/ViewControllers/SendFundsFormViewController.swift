@@ -37,6 +37,7 @@ extension SendFundsForm
 		var sendTo_label: UICommonComponents.Form.FieldLabel!
 		var sendTo_inputView: UICommonComponents.Form.ContactAndAddressPickerView!
 		var isWaitingOnFieldBeginEditingScrollTo_sendTo = false // a bit janky
+		var sendTo_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
 		//
@@ -121,6 +122,22 @@ extension SendFundsForm
 					title: NSLocalizedString("TO", comment: "")
 				)
 				self.sendTo_label = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: String(
+						format: NSLocalizedString(
+							"Please double-check the accuracy of your recipient information as Monero transactions are irreversible.",
+							comment: ""
+						)
+					)
+				)
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.sendTo_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -796,12 +813,16 @@ extension SendFundsForm
 					x: CGFloat.form_label_margin_x,
 					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 					width: fullWidth_label_w,
-					height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					height: 0
 				).integral
 				do {
 					self.feeEstimate_label.sizeToFit() // so we can place the feeEstimate_tooltipSpawn_buttonView next to it
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.w
-					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.h
+					var final__feeEstimate_label_frame = self.feeEstimate_label.frame
+					final__feeEstimate_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.feeEstimate_label.frame = final__feeEstimate_label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
 						x: self.feeEstimate_label.frame.origin.x + self.feeEstimate_label.frame.size.width - 4,
 						y: self.feeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.feeEstimate_label.frame.size.height)/2,
@@ -814,9 +835,19 @@ extension SendFundsForm
 				self.sendTo_label.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
 					y: self.feeEstimate_label.frame.origin.y + self.feeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-					width: fullWidth_label_w,
+					width: 13,
 					height: self.sendTo_label.frame.size.height
 				).integral
+				do {					
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.sendTo_tooltipSpawn_buttonView.frame = CGRect(
+						x: self.sendTo_label.frame.origin.x + self.sendTo_label.frame.size.width - 4,
+						y: self.sendTo_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.sendTo_label.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.sendTo_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.sendTo_label.frame.origin.y + self.sendTo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
