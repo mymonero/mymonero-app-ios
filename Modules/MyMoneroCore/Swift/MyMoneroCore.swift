@@ -159,7 +159,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	// Lifecycle - Deinit
 	deinit
 	{
-		DDLog.TearingDown("MyMoneroCore", "Tearing down a \(self).")
+//		DDLog.TearingDown("MyMoneroCore", "Tearing down a \(self).")
 		//
 		NotificationCenter.default.post(name: NotificationNames.willBeDeinitialized.notificationName, object: self)
 	}

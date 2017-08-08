@@ -89,7 +89,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			}
 		))
 		//
-		// For delete everything and idle
+		// For delete everything, idle, lock-down, etc
 		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
 			forName: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
 			object: PasswordController.shared,

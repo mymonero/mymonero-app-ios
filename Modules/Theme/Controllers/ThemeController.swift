@@ -8,6 +8,7 @@
 
 import UIKit
 import PKHUD
+import AMPopTip
 //
 class ThemeController
 {

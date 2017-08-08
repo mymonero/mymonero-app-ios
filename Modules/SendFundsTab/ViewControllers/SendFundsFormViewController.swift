@@ -32,6 +32,7 @@ extension SendFundsForm
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
 		var feeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
+		var feeEstimate_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var sendTo_label: UICommonComponents.Form.FieldLabel!
 		var sendTo_inputView: UICommonComponents.Form.ContactAndAddressPickerView!
@@ -95,6 +96,23 @@ extension SendFundsForm
 				)
 				self.feeEstimate_label = view
 				self.configure_feeEstimate_label()
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: String(
+						format: NSLocalizedString(
+							"Monero makes transactions with your \"available outputs\", so part of your balance will be briefly locked and then returned as change.\n\nMonero ringsize value set to %d.",
+							comment: ""
+						),
+						FixedMixin()+1
+					)
+				)
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.feeEstimate_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			//
@@ -780,6 +798,17 @@ extension SendFundsForm
 					width: fullWidth_label_w,
 					height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
 				).integral
+				do {
+					self.feeEstimate_label.sizeToFit() // so we can place the feeEstimate_tooltipSpawn_buttonView next to it
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.h
+					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
+						x: self.feeEstimate_label.frame.origin.x + self.feeEstimate_label.frame.size.width - 4,
+						y: self.feeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.feeEstimate_label.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 			}
 			do {
 				self.sendTo_label.frame = CGRect(

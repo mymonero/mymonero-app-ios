@@ -10,6 +10,7 @@ target 'MyMonero' do
 	pod 'ReachabilitySwift', '~> 3.0'
 	pod 'Popover', '~> 1.0.5'
 	pod 'PKHUD', '~> 4.0'
+	pod 'AMPopTip', '~> 2.1.6'
 end
 
 post_install do |installer|
