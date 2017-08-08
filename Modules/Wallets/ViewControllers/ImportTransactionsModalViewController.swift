@@ -408,11 +408,12 @@ extension ImportTransactionsModal
 			}
 			do {
 				if self.informationalLabel_tooltipSpawn_buttonView.isHidden == false {
+					let label = self.informationalLabel!
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.informationalLabel_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.informationalLabel.frame.origin.x + self.informationalLabel.frame.size.width - 4,
-						y: self.informationalLabel.frame.origin.y - (tooltipSpawn_buttonView_h - self.informationalLabel.frame.size.height)/2,
+						x: label.frame.origin.x + label.frame.size.width - 4,
+						y: label.frame.origin.y - (tooltipSpawn_buttonView_h - label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
 					).integral
@@ -427,16 +428,17 @@ extension ImportTransactionsModal
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				do {
-					self.fromWallet_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
-					var final__fromWallet_label_frame = self.fromWallet_label.frame
-					final__fromWallet_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.fromWallet_label.frame = final__fromWallet_label_frame // kinda sucks to set this three times in this method. any alternative?
+					let label = self.fromWallet_label!
+					label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__label_frame = label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
 					//
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.fromWallet_label.frame.origin.x + self.fromWallet_label.frame.size.width - 4,
-						y: self.fromWallet_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.fromWallet_label.frame.size.height)/2,
+						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
 					).integral

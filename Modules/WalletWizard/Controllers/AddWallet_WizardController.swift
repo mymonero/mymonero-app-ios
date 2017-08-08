@@ -70,7 +70,7 @@ class AddWallet_WizardController
 	var wizard_navigationController: UINavigationController!
 	//
 	// Properties - Settable by consumer
-	var didDismiss_fn: ((Void) -> Void)! // just going to assume it exists or else code fault
+	var willDismiss_fn: ((Void) -> Void)?
 	//
 	// Lifecycle - Init
 	init(taskMode: TaskMode)
@@ -178,9 +178,14 @@ class AddWallet_WizardController
 	)
 	{
 		assert((!userCanceled || !didTaskFinish) && (userCanceled || didTaskFinish), "Unrecognized args config")
+		if let fn = self.willDismiss_fn {
+			fn()
+		}
 		self.wizard_navigationController.dismiss(animated: true)
-		{ [unowned self] in
-			self.didDismiss_fn()
+		{ [weak self] in
+			guard let thisSelf = self else {
+				return
+			}
 		}
 	}
 	//

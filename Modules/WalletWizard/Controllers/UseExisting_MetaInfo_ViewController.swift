@@ -42,13 +42,17 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	var loginWith_mode: LoginWith_Mode = .mnemonicSeed // initial state
 	// Properties - Subviews
 	var walletMnemonic_label: UICommonComponents.Form.FieldLabel!
+	var walletMnemonic_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 	var walletMnemonic_inputView: UICommonComponents.FormTextViewContainerView!
 	//
 	var addr_label: UICommonComponents.Form.FieldLabel!
+	var addr_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 	var addr_inputView: UICommonComponents.FormTextViewContainerView!
 	var viewKey_label: UICommonComponents.Form.FieldLabel!
+	var viewKey_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 	var viewKey_inputView: UICommonComponents.FormTextViewContainerView!
 	var spendKey_label: UICommonComponents.Form.FieldLabel!
+	var spendKey_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 	var spendKey_inputView: UICommonComponents.FormTextViewContainerView!
 	//
 	var orUse_label: UICommonComponents.FormFieldAccessoryMessageLabel!
@@ -74,6 +78,21 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				self.scrollView.addSubview(view)
 			}
 			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"This secret mnemonic is never sent to the MyMonero server.",
+						comment: ""
+					)
+				)
+				view.tooltipDirectionFromOrigin = .down // .right would be nice but there's not enough room
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.walletMnemonic_tooltipSpawn_buttonView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
 				let view = UICommonComponents.FormTextViewContainerView(
 					placeholder: NSLocalizedString("From your existing wallet", comment: "")
 				)
@@ -93,6 +112,21 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					sizeToFit: true
 				)
 				self.addr_label = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"Your wallet's public address",
+						comment: ""
+					)
+				)
+				view.tooltipDirectionFromOrigin = .right
+				view.willPresentTipView_fn =
+					{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.addr_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -117,6 +151,20 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				self.scrollView.addSubview(view)
 			}
 			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"This private view key and the wallet address are the only things sent to the MyMonero server.",
+						comment: ""
+					)
+				)
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.viewKey_tooltipSpawn_buttonView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
 				let view = UICommonComponents.FormTextViewContainerView(
 					placeholder: nil
 				)
@@ -135,6 +183,20 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					sizeToFit: true
 				)
 				self.spendKey_label = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"This private spend key is never sent to the MyMonero server.",
+						comment: ""
+					)
+				)
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.spendKey_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -269,14 +331,18 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		switch self.loginWith_mode {
 			case .mnemonicSeed:
 				self.walletMnemonic_label.isHidden = false
+				self.walletMnemonic_tooltipSpawn_buttonView.isHidden = false
 				self.walletMnemonic_inputView.textView.text = ""
 				self.walletMnemonic_inputView.isHidden = false
 				//
 				self.addr_label.isHidden = true
+				self.addr_tooltipSpawn_buttonView.isHidden = true
 				self.addr_inputView.isHidden = true
 				self.viewKey_label.isHidden = true
+				self.viewKey_tooltipSpawn_buttonView.isHidden = true
 				self.viewKey_inputView.isHidden = true
 				self.spendKey_label.isHidden = true
+				self.spendKey_tooltipSpawn_buttonView.isHidden = true
 				self.spendKey_inputView.isHidden = true
 				//
 				if self.hasAppearedBefore == true { // we don't want to do this before having appeared b/c frame will be false when we try to scroll to the input view on focus
@@ -288,18 +354,22 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				break
 			case .addrAndPrivKeys:
 				self.walletMnemonic_label.isHidden = true
+				self.walletMnemonic_tooltipSpawn_buttonView.isHidden = true
 				self.walletMnemonic_inputView.isHidden = true
 				//
 				self.addr_inputView.textView.text = ""
 				self.addr_label.isHidden = false
+				self.addr_tooltipSpawn_buttonView.isHidden = false
 				self.addr_inputView.isHidden = false
 				self.addr_inputView.setNeedsDisplay() // necessary so view calls draw(rect:) with correct frame
 				self.viewKey_inputView.textView.text = ""
 				self.viewKey_label.isHidden = false
+				self.viewKey_tooltipSpawn_buttonView.isHidden = false
 				self.viewKey_inputView.isHidden = false
 				self.viewKey_inputView.setNeedsDisplay() // necessary so view calls draw(rect:) with correct frame
 				self.spendKey_inputView.textView.text = ""
 				self.spendKey_label.isHidden = false
+				self.spendKey_tooltipSpawn_buttonView.isHidden = false
 				self.spendKey_inputView.isHidden = false
 				self.spendKey_inputView.setNeedsDisplay() // necessary so view calls draw(rect:) with correct frame
 				//
@@ -311,7 +381,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		do {
 			self.set_isFormSubmittable_needsUpdate()
-			self.view.setNeedsLayout() // to lay out again
+			self.view.setNeedsLayout() // important; to lay out again
 		}
 	}
 	//
@@ -489,6 +559,22 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					width: textField_w,
 					height: self.walletMnemonic_label.frame.size.height
 				).integral
+				do {
+					let label = self.walletMnemonic_label!
+					label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__label_frame = label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.walletMnemonic_tooltipSpawn_buttonView.frame = CGRect(
+						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.walletMnemonic_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.walletMnemonic_label.frame.origin.y + self.walletMnemonic_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -505,6 +591,22 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					width: textField_w,
 					height: self.addr_label.frame.size.height
 				).integral
+				do {
+					let label = self.addr_label!
+					label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__label_frame = label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.addr_tooltipSpawn_buttonView.frame = CGRect(
+						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.addr_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.addr_label.frame.origin.y + self.addr_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -518,6 +620,22 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					width: textField_w,
 					height: self.viewKey_label.frame.size.height
 				).integral
+				do {
+					let label = self.viewKey_label!
+					label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__label_frame = label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.viewKey_tooltipSpawn_buttonView.frame = CGRect(
+						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.viewKey_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.viewKey_label.frame.origin.y + self.viewKey_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -530,7 +648,23 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					y: self.viewKey_inputView.frame.origin.y + self.viewKey_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: textField_w,
 					height: self.spendKey_label.frame.size.height
-				).integral
+					).integral
+				do {
+					let label = self.spendKey_label!
+					label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__label_frame = label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.spendKey_tooltipSpawn_buttonView.frame = CGRect(
+						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.spendKey_inputView.frame = CGRect(
 					x: CGFloat.form_input_margin_x,
 					y: self.spendKey_label.frame.origin.y + self.spendKey_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,

@@ -104,7 +104,7 @@ extension UICommonComponents
 				tip.edgeInsets = UIEdgeInsetsMake(2, 2, 2, 2)
 				tip.edgeMargin = 4 // if needed
 				tip.arrowSize = CGSize(width: 15, height: 13)
-				tip.offset = self.tooltipDirectionFromOrigin == .left || self.tooltipDirectionFromOrigin == .right ? -6 : -10 // from arrow to the spawn origin - so that the actual visual offset ends up being 3
+				tip.offset = self.tooltipDirectionFromOrigin == .left || self.tooltipDirectionFromOrigin == .right ? -6 : -7 // from arrow to the spawn origin - so that the actual visual offset ends up being 3
 				//
 				tip.shouldDismissOnTap = false // we'll observe other events - do not want conflict
 			}

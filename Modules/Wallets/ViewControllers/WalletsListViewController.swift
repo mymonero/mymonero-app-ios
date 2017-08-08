@@ -66,7 +66,7 @@ class WalletsListViewController: ListViewController
 	{
 		assert(self.current_wizardController == nil)
 		let wizardController = AddWallet_WizardController(taskMode: taskMode)
-		wizardController.didDismiss_fn =
+		wizardController.willDismiss_fn =
 		{ [unowned self] in
 			self.current_wizardController = nil
 		}
