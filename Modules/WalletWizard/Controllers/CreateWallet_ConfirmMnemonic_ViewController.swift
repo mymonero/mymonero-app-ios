@@ -687,7 +687,9 @@ extension CreateWallet_ConfirmMnemonic
 		init(mnemonicWords: [MnemonicWordHandle], selectedWordsView: SelectedWordsView)
 		{
 			self.mnemonicWords = mnemonicWords
-			self.shuffled_mnemonicWords = mnemonicWords.shuffled()
+			self.shuffled_mnemonicWords = mnemonicWords.sorted {
+				$0.word.localizedCaseInsensitiveCompare($1.word) == ComparisonResult.orderedAscending
+			}
 			self.selectedWordsView = selectedWordsView
 			super.init(frame: .zero)
 			self.setup()
