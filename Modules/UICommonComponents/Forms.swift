@@ -142,19 +142,18 @@ extension UICommonComponents
 			_ inputView: UIView
 		)
 		{
-			var estimated__margin_y: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.Form.FieldLabel.fixedHeight + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
+			var estimatedDesiredAdditional__margin_y: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.Form.FieldLabel.fixedHeight + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
 				var this_view = inputView
 				var this_superview = this_view.superview!
 				while this_superview != self.scrollView {
-					estimated__margin_y += this_view.frame.origin.y
+					estimatedDesiredAdditional__margin_y += this_view.frame.origin.y
 					//
 					this_view = this_superview // walk up
 					this_superview = this_view.superview!
 				}
 			}
-			let margin_y = estimated__margin_y
-			let toBeVisible_frame__relative = inputView.frame.insetBy(dx: 0, dy: -margin_y)
+			let toBeVisible_frame__relative = inputView.frame.insetBy(dx: 0, dy: -estimatedDesiredAdditional__margin_y)
 			let toBeVisible_frame__absolute = inputView.superview == scrollView ? toBeVisible_frame__relative : inputView.convert(toBeVisible_frame__relative, to: scrollView)
 			var scrollEdge: Form.InputScrollEdge
 			do {
