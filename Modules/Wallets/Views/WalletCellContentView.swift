@@ -144,7 +144,7 @@ class WalletCellContentView: UIView
 			} else {
 				subtitleLabel_text = "\(self.object!.balance_formattedString) \(self.object!.currency.humanReadableCurrencySymbolString)"
 				if self.object!.hasLockedFunds {
-					subtitleLabel_text = subtitleLabel_text! + " (${wallet.LockedBalance_FormattedString()} 🔒)"
+					subtitleLabel_text = subtitleLabel_text! + " (\(self.object!.lockedBalance_formattedString) 🔒)"
 				}
 			}
 		}
