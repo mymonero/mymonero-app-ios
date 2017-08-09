@@ -55,7 +55,38 @@ struct EmojiUI
 				height: EmojiPickerButtonView.h
 			)
 			//
+			// Start observing:
 			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+			// For delete everything, idle, lock-down, etc
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(willDeconstructBootedStateAndClearPassword),
+				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+				object: PasswordController.shared
+			)
+		}
+		//
+		// Lifecycle - Deinit
+		deinit
+		{
+			self.teardown()
+		}
+		func teardown()
+		{
+			if let popover = self.popover {
+				popover.dismiss()
+			}
+			self.popover = nil
+			self.stopObserving()
+		}
+		func stopObserving()
+		{
+			
+			NotificationCenter.default.removeObserver(
+				self,
+				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+				object: PasswordController.shared
+			)
 		}
 		//
 		// Accessors
@@ -81,8 +112,11 @@ struct EmojiUI
 			{ [unowned self] in // on next tick so as not to conflict with any responder resigns
 				let popover = EmojiPickerPopoverView(
 					dismissHandler:
-					{ [unowned self] in
-						self.popover = nil
+					{ [weak self] in
+						guard let thisSelf = self else {
+							return // already torn down
+						}
+						thisSelf.popover = nil
 					}
 				)
 				self.popover = popover
@@ -93,6 +127,14 @@ struct EmojiUI
 				}
 				let initial_emojiCharacter = self.titleLabel!.text! as Emoji.EmojiCharacter
 				popover.show(fromView: self, selecting_emojiCharacter: initial_emojiCharacter)
+			}
+		}
+		//
+		// Delegation - Notifications
+		func willDeconstructBootedStateAndClearPassword()
+		{ // just in case 
+			if let popover = self.popover {
+				popover.dismiss()
 			}
 		}
 	}
