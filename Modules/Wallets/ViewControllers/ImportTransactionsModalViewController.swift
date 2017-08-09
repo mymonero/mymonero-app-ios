@@ -379,6 +379,12 @@ extension ImportTransactionsModal
 		{
 			self.navigationController!.dismiss(animated: true, completion: nil)
 		}
+		override func viewWillDisappear(_ animated: Bool)
+		{
+			super.viewWillDisappear(animated)
+			self.informationalLabel_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+			self.fromWallet_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+		}
 		//
 		// Delegation - View
 		override func viewDidLayoutSubviews()

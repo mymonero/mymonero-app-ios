@@ -46,8 +46,10 @@ extension UICommonComponents
 		}
 		func startObserving()
 		{
-			// TODO: poptip & app events observation
+			// interactions
 			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+			//
+			// self observing parent view visibility changes requires that the instantiator of self ensure that it calls the parentViewWillDisappear(animated:) method on self
 			//
 			// For delete everything, idle, lock-down, etc
 			NotificationCenter.default.addObserver(
@@ -166,13 +168,18 @@ extension UICommonComponents
 			self._dismiss() // if necessary
 		}
 		//
-		// Delegation - Notifications
-		@objc
-		fileprivate func MMApplication_didSendEvent(_ notification: Notification)
+		@objc fileprivate func MMApplication_didSendEvent(_ notification: Notification)
 		{
-			if self._isPresenting == false { // done presenting - i.e. not same event as spawning tap
-				self._dismiss() // if necessary (will this race with tap on self?)
+			if self._isPresenting == false { // only if done presenting - i.e. only if this is not the same event as the spawning tap
+				self._dismiss() // if necessary
 			}
+		}
+		//
+		// Delegation - Interface for instantiator
+		func parentViewWillDisappear(animated: Bool)
+		{
+			self._dismiss() // if necessary
+			// e.g. if a user has a tooltip open during SendFunds and the 'success' transaction details view is pushed, we want the tooltip to be dismissed. is there a better way to support that than this even though this method will probably result in more code for the instantiator/integrator?
 		}
 	}
 }

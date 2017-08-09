@@ -920,6 +920,12 @@ extension SendFundsForm
 //				}
 			}
 		}
+		override func viewWillDisappear(_ animated: Bool)
+		{
+			super.viewWillDisappear(animated)
+			self.feeEstimate_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+			self.sendTo_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+		}
 		//
 		// Delegation - UITextView
 		func textView(

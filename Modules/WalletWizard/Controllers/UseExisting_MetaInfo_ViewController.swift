@@ -707,6 +707,14 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			}
 		}
 	}
+	override func viewWillDisappear(_ animated: Bool)
+	{
+		super.viewWillDisappear(animated)
+		self.walletMnemonic_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+		self.addr_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+		self.viewKey_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+		self.spendKey_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+	}
 	//
 	// Delegation - UITextView
 	func textView(
