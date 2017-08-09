@@ -221,6 +221,7 @@ extension WalletDetails
 		func toggleInfoDisclosureCell()
 		{ // not a huge fan of all this coupling but at least we can put it in a method
 			let (contentContainerView_toFrame, isHiding) = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate()
+			self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = true // prevent its layoutSubviews from racing with what we are doing here, but primarily b/c it will be redundant
 			do { // now animate the actual cell height
 				self.tableView.beginUpdates() // this opens its own animation context, so it must be outside of the .animate below… but because it must be outside, it seems to mess with the
 				do {
@@ -238,6 +239,7 @@ extension WalletDetails
 				isHiding: isHiding,
 				to__contentContainerView_toFrame: contentContainerView_toFrame
 			)
+			self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = false
 		}
 		//
 		// Imperatives - Import modal
@@ -410,6 +412,32 @@ extension WalletDetails
 		{
 			return nil
 		}
+		func tableView(_ tableView: UITableView, willDisplayHeaderView headerView: UIView, forSection section: Int)
+		{
+			if section == 2 { // transactions
+				assert(headerView == self.transactionsSectionHeaderView)
+				let view = self.transactionsSectionHeaderView!
+				if view.mode == .scanningIndicator {
+					if view.indicatorView.isHidden { // for very first time
+						view.indicatorView.show() // will also start it animating
+					} else if view.indicatorView.activityIndicator.isAnimating == false { // already visible but not animating!
+						view.indicatorView.activityIndicator.startAnimating()
+					}
+				}
+			}
+		}
+		func tableView(_ tableView: UITableView, didEndDisplayingHeaderView headerView: UIView, forSection section: Int)
+		{
+			if section == 2 { // transactions
+				assert(headerView == self.transactionsSectionHeaderView)
+				let view = self.transactionsSectionHeaderView!
+				if view.mode == .scanningIndicator {
+					if view.indicatorView.activityIndicator.isAnimating == true {
+						view.indicatorView.activityIndicator.stopAnimating()
+					}
+				}
+			}
+		}
 		//
 		// Delegation - Notifications
 		func willBeDeleted()
@@ -451,30 +479,39 @@ extension WalletDetails
 				}
 			}
 		}
-		func tableView(_ tableView: UITableView, willDisplayHeaderView headerView: UIView, forSection section: Int)
+		//
+		// Delegation - Device orientation
+		override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator)
 		{
-			if section == 2 { // transactions
-				assert(headerView == self.transactionsSectionHeaderView)
-				let view = self.transactionsSectionHeaderView!
-				if view.mode == .scanningIndicator {
-					if view.indicatorView.isHidden { // for very first time
-						view.indicatorView.show() // will also start it animating
-					} else if view.indicatorView.activityIndicator.isAnimating == false { // already visible but not animating!
-						view.indicatorView.activityIndicator.startAnimating()
+			super.viewWillTransition(to: size, with: coordinator)
+			do { // so that the table view also updates cell heights … because the info disclosing view will have updated itself if it's currently open (reflowing text)
+				
+				// Not a huge fan of reaching through infoDisclosingCellView to contentContainerView… maybe rework
+				let contentContainerView_toFrame = self.infoDisclosingCellView.contentContainerView.sizeAndLayOutSubviews_returningSelfFrame(
+					withContainingWidth: size.width
+				)
+				self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = true // prevent its layoutSubviews from racing with what we are doing here b/c the infoDisclosingCellView.frame.size.width will be different
+				do { // now animate the actual cell height
+					self.tableView.beginUpdates() // this opens its own animation context, so it must be outside of the .animate below… but because it must be outside, it seems to mess with the
+					do {
+						assert(self.infoDisclosing_contentContainerView_toFrame == nil)
+						self.infoDisclosing_contentContainerView_toFrame = contentContainerView_toFrame // used in heightForRowAt during update!
+					}
+					self.infoDisclosingCellView.contentContainerView.frame = contentContainerView_toFrame // must set this ourselves
+					//
+					self.tableView.endUpdates() // regardless of whether it finished
+					do {
+						assert(self.infoDisclosing_contentContainerView_toFrame != nil)
+						self.infoDisclosing_contentContainerView_toFrame = nil // zero
 					}
 				}
-			}
-		}
-		func tableView(_ tableView: UITableView, didEndDisplayingHeaderView headerView: UIView, forSection section: Int)
-		{
-			if section == 2 { // transactions
-				assert(headerView == self.transactionsSectionHeaderView)
-				let view = self.transactionsSectionHeaderView!
-				if view.mode == .scanningIndicator {
-					if view.indicatorView.activityIndicator.isAnimating == true {
-						view.indicatorView.activityIndicator.stopAnimating()
+				DispatchQueue.main.asyncAfter(
+					deadline: .now() + coordinator.transitionDuration, // hopefully this is not too fragile of a way to do this? we want to prevent infoDisclosingCellView from handling the change in width for this orientation change in its layoutSubviews so we must wait until the transition is over (or rather until after self.infoDisclosingCellView has finished having its frame changed owing to this transition)
+					execute:
+					{
+						self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = false
 					}
-				}
+				)
 			}
 		}
 	}

@@ -75,9 +75,15 @@ extension WalletDetails
 			}
 			//
 			// Overrides
+			var isHavingContentContainerFrameManagedExternally = false
 			override func layoutSubviews()
 			{
 				super.layoutSubviews()
+				if self.isHavingContentContainerFrameManagedExternally == false {
+					self.contentContainerView.frame = self.contentContainerView.sizeAndLayOutSubviews_returningSelfFrame()
+				} else {
+//					DDLog.Info("Wallets.Details.InfoDisclosing.Cell", "Skipping self.contentContainerView layout while isHavingContentContainerFrameManagedExternally=true")
+				}
 			}
 			override func _configureUI()
 			{
@@ -134,7 +140,7 @@ extension WalletDetails
 				)
 			}
 		}
-		
+		//
 		class InfoDisclosing_CopyableLongStringFieldView: UICommonComponents.Details.CopyableLongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
@@ -231,7 +237,8 @@ extension WalletDetails
 						self.truncated__fieldView_address
 					]
 				} else {
-					var fieldViews: [UICommonComponents.Details.FieldView] = [
+					var fieldViews: [UICommonComponents.Details.FieldView] =
+					[
 						self.disclosed__fieldView_address,
 						self.disclosed__fieldView_viewKey,
 						self.disclosed__fieldView_spendKey
@@ -267,8 +274,7 @@ extension WalletDetails
 			//
 			// Imperatives - Disclosure
 			// I.
-			func toggleDisclosureAndPrepareToAnimate(
-			) -> (
+			func toggleDisclosureAndPrepareToAnimate() -> (
 				selfFrame: CGRect,
 				isHiding: Bool
 			)
@@ -346,6 +352,31 @@ extension WalletDetails
 			{
 				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 					withContainingWidth: self.superview!.frame.size.width,
+					andYOffset: 0,
+					givenSpecificFieldViews: givenFieldViews,
+					alsoLayOutSharedSeparatorViewsForDisplay: alsoLayOutSharedSeparatorViewsForDisplay
+				)
+				return selfFrame
+			}
+			//
+			func sizeAndLayOutSubviews_returningSelfFrame(
+				withContainingWidth containingWidth: CGFloat
+			) -> CGRect
+			{
+				return self.sizeAndLayOutSubviews_returningSelfFrame(
+					withContainingWidth: containingWidth,
+					givenFieldViews: self.fieldViews,
+					alsoLayOutSharedSeparatorViewsForDisplay: true // because this is being called for immediate display, not for measuring
+				)
+			}
+			func sizeAndLayOutSubviews_returningSelfFrame(
+				withContainingWidth containingWidth: CGFloat,
+				givenFieldViews: [UICommonComponents.Details.FieldView],
+				alsoLayOutSharedSeparatorViewsForDisplay: Bool
+			) -> CGRect
+			{
+				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
+					withContainingWidth: containingWidth,
 					andYOffset: 0,
 					givenSpecificFieldViews: givenFieldViews,
 					alsoLayOutSharedSeparatorViewsForDisplay: alsoLayOutSharedSeparatorViewsForDisplay
