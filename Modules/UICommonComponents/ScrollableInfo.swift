@@ -103,17 +103,15 @@ extension UICommonComponents
 			return 16
 		}
 		var inlineMessageValidationView_bottomMargin: CGFloat {
-			return 16
+			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // just for visual consistency
 		}
 		var yOffsetForViewsBelowValidationMessageView: CGFloat
 		{
 			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
-			let topMargin = self.inlineMessageValidationView_topMargin
 			if self.messageView!.isHidden {
-				return topMargin
+				return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
 			}
-			let bottomMargin = self.inlineMessageValidationView_bottomMargin
-			let y = topMargin + self.messageView!.frame.size.height + bottomMargin
+			let y = self.inlineMessageValidationView_topMargin + self.messageView!.frame.size.height + self.inlineMessageValidationView_bottomMargin
 			//
 			return ceil(y) // b/c having it be .5 doesn't mix well with consumers' usage of .integral
 		}

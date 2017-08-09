@@ -693,7 +693,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			isTopMostInForm: false
 		)
 		//
-		self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: self.inlineMessageValidationView_bottomMargin)
+		let bottomPadding = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // there probably exists something better to reference
+		self.scrollableContentSizeDidChange(withBottomView: self.walletColorPicker_inputView, bottomPadding: bottomPadding)
 	}
 	override func viewDidAppear(_ animated: Bool)
 	{
