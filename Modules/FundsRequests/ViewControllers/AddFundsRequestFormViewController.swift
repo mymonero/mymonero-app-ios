@@ -449,12 +449,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil
 		do {
 			assert(submittableDoubleAmount != nil || amount == nil || amount == "")
-			if submittableDoubleAmount == nil {
-				self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
+			if submittableDoubleAmount == nil && (amount != nil && amount != "") { // something entered but not usable
+				self.setValidationMessage(NSLocalizedString("Please enter a valid amount  Monero.", comment: ""))
 				return
 			}
 		}
-		if submittableDoubleAmount! <= 0 {
+		if submittableDoubleAmount != nil && submittableDoubleAmount! <= 0 {
 			self.setValidationMessage(NSLocalizedString("Please enter an amount greater than zero.", comment: ""))
 			return
 		}
