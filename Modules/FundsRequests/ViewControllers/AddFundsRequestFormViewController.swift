@@ -458,6 +458,14 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.setValidationMessage(NSLocalizedString("Please enter an amount greater than zero.", comment: ""))
 			return
 		}
+		var submittableAmountFinalString: String?
+		if submittableDoubleAmount != nil {
+			if amount!.characters.last == "." {
+				submittableAmountFinalString = amount! + "0"
+			} else {
+				submittableAmountFinalString = amount!
+			}
+		}
 		//
 		let selectedContact = self.requestFrom_inputView.selectedContact
 		let hasPickedAContact = selectedContact != nil
@@ -477,7 +485,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			toWallet_address: toWallet.public_address,
 			optl__fromContact_name: fromContact_name_orNil,
 			paymentID: paymentID,
-			amount: amount,
+			amount: submittableAmountFinalString, // rather than using amount directly
 			optl__memo: memoString,
 			//
 			preSuccess_terminal_validationMessage_fn:

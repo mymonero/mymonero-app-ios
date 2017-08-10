@@ -90,7 +90,7 @@ class RootTabBarViewController: UITabBarController
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_requestFundsFromContact.notificationName, object: nil)
 		}
 		do { // urlOpeningController
-			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_receivedMoneroURL(_:)), name: URLOpening.NotificationNames.receivedMoneroURL.notificationName, object: nil)
+			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_saysTimeToHandleReceivedMoneroURL(_:)), name: URLOpening.NotificationNames.saysTimeToHandleReceivedMoneroURL.notificationName, object: nil)
 		}
 	}
 	//
@@ -220,20 +220,8 @@ class RootTabBarViewController: UITabBarController
 	{ // if there are 0 wallets we don't want certain buttons to be enabled
 		self.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 	}
-	func URLOpening_receivedMoneroURL(_ notification: Notification)
+	func URLOpening_saysTimeToHandleReceivedMoneroURL(_ notification: Notification)
 	{
-		if PasswordController.shared.hasUserEnteredValidPasswordYet == false {
-			DDLog.Info("RootTabBar", "User hasn't entered valid pw yet - ignoring URL")
-			return
-		}
-		if PasswordController.shared.isUserChangingPassword {
-			DDLog.Info("RootTabBar", "User is changing pw - ignoring URL")
-			return
-		}
-		if WalletsListController.shared.records.count == 0 {
-			DDLog.Info("RootTabBar", "No wallet - ignoring URL")
-			return
-		}
 		self.selectTab_sendFunds()
 	}
 	func WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact()

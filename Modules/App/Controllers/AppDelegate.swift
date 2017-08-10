@@ -14,6 +14,16 @@ import WebKit
 class AppDelegate: UIResponder, UIApplicationDelegate
 {
 	//
+	// Constants
+	enum NotificationNames: String
+	{
+		case willLockDownAppOn_didEnterBackground = "AppDelegate.NotificationNames.willLockDownAppOn_didEnterBackground"
+		//
+		var notificationName: NSNotification.Name {
+			return NSNotification.Name(self.rawValue)
+		}
+	}
+	//
 	// Properties
 	var window: UIWindow?
 	var windowController: WindowController!
@@ -51,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 		annotation: Any
 	) -> Bool
 	{
-		return URLOpening.appReceived(url: url)
+		return URLOpening.shared.appReceived(url: url)
 	}
 	func applicationWillResignActive(_ application: UIApplication)
 	{
@@ -59,6 +69,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	}
 	func applicationDidEnterBackground(_ application: UIApplication)
 	{
+		NotificationCenter.default.post(
+			name: NotificationNames.willLockDownAppOn_didEnterBackground.notificationName,
+			object: nil,
+			userInfo: nil
+		)
 		PasswordController.shared.lockDownAppAndRequirePassword() // goal is to lock down app before OS takes app screenshot for multitasker
 	}
 	func applicationWillEnterForeground(_ application: UIApplication)

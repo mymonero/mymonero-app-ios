@@ -20,5 +20,6 @@ class AppRuntimeController
 	func setup()
 	{
 		let _ = UserIdle.shared // just to make sure it gets instantiated!
+		let _ = URLOpening.shared // "
 	}
 }
