@@ -286,6 +286,17 @@ extension UICommonComponents
 		{
 			return self.aField_editingChanged()
 		}
+		func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+		{
+			if text == "\n" { // simulate single-line input
+				let _ = self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
+				return false // never allow \n
+			}
+			if text == "\t" {
+				return false // no need to allow tabs anywhere (yet) afaik
+			}
+			return true
+		}
 		//
 		// Delegation - Internal/Convenience - Field interactions
 		func aField_editingChanged()

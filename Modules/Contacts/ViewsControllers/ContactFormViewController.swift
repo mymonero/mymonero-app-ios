@@ -520,19 +520,6 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		}
 	}
 	//
-	// Delegation - UITextView
-	func textView(
-		_ textView: UITextView,
-		shouldChangeTextIn range: NSRange,
-		replacementText text: String
-		) -> Bool
-	{
-		if text == "\n" { // simulate single-line input
-			return self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
-		}
-		return true
-	}
-	//
 	// Delegation - Interactions
 	func tapped_rightBarButtonItem()
 	{

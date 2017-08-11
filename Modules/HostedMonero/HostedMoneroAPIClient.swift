@@ -473,10 +473,10 @@ final class HostedMoneroAPIClient
 		#endif
 		// TODO: would be nice to find a way around the 'code after return won't be executed' warning
 		let parameters: [String: Any] =
-			[
-				"address": address,
-				"view_key": view_key__private,
-				"tx": serializedSignedTx
+		[
+			"address": address,
+			"view_key": view_key__private,
+			"tx": serializedSignedTx
 		]
 		let endpoint = HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction
 		let requestHandle = self._request(endpoint, parameters)

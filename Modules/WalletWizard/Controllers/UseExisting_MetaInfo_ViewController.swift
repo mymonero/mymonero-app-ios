@@ -715,17 +715,4 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		self.viewKey_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
 		self.spendKey_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
 	}
-	//
-	// Delegation - UITextView
-	func textView(
-		_ textView: UITextView,
-		shouldChangeTextIn range: NSRange,
-		replacementText text: String
-	) -> Bool
-	{
-		if text == "\n" { // simulate single-line input
-			return self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
-		}
-		return true
-	}
 }

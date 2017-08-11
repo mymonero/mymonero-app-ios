@@ -904,25 +904,12 @@ extension SendFundsForm
 			self.sendTo_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
 		}
 		//
-		// Delegation - UITextView
-		func textView(
-			_ textView: UITextView,
-			shouldChangeTextIn range: NSRange,
-			replacementText text: String
-			) -> Bool
-		{
-			if text == "\n" { // simulate single-line input
-				return self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
-			}
-			return true
-		}
-		//
 		// Delegation - AmountInputField UITextField shunt
 		func textField(
 			_ textField: UITextField,
 			shouldChangeCharactersIn range: NSRange,
 			replacementString string: String
-			) -> Bool
+		) -> Bool
 		{
 			if textField == self.amount_fieldset.inputField { // to support filtering characters
 				return self.amount_fieldset.inputField.textField(

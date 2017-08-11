@@ -62,11 +62,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 			let view = UICommonComponents.FormTextViewContainerView(
 				placeholder: "TODO"
 			)
-			view.textView.autocorrectionType = .no
-			view.textView.autocapitalizationType = .none
-			view.textView.spellCheckingType = .no
-			view.textView.returnKeyType = .go
-			view.textView.delegate = self
 			self.appTimeoutAfterS_inputView = view
 			
 			let initialValue = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? SettingsController.shared.default_appTimeoutAfterS
@@ -386,19 +381,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 				self.deleteButton.isEnabled = true
 			}
 		}
-	}
-	//
-	// Delegation - UITextView
-	func textView(
-		_ textView: UITextView,
-		shouldChangeTextIn range: NSRange,
-		replacementText text: String
-		) -> Bool
-	{
-		if text == "\n" { // simulate single-line input
-			return self.aField_shouldReturn(textView, returnKeyType: textView.returnKeyType)
-		}
-		return true
 	}
 	//
 	// Delegation - Interactions
