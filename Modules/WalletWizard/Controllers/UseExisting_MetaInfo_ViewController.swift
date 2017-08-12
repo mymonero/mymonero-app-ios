@@ -71,8 +71,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		do { // .mnemonicSeed
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("SECRET MNEMONIC", comment: ""),
-					sizeToFit: true
+					title: NSLocalizedString("SECRET MNEMONIC", comment: "")
 				)
 				self.walletMnemonic_label = view
 				self.scrollView.addSubview(view)
@@ -108,8 +107,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		do { // .addrAndPrivKeys
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("ADDRESS", comment: ""),
-					sizeToFit: true
+					title: NSLocalizedString("ADDRESS", comment: "")
 				)
 				self.addr_label = view
 				self.scrollView.addSubview(view)
@@ -144,8 +142,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("VIEW KEY", comment: ""),
-					sizeToFit: true
+					title: NSLocalizedString("VIEW KEY", comment: "")
 				)
 				self.viewKey_label = view
 				self.scrollView.addSubview(view)
@@ -179,8 +176,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("SPEND KEY", comment: ""),
-					sizeToFit: true
+					title: NSLocalizedString("SPEND KEY", comment: "")
 				)
 				self.spendKey_label = view
 				self.scrollView.addSubview(view)

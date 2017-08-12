@@ -113,8 +113,7 @@ extension UICommonComponents.Form
 			if self.displayMode == .paymentIds_andResolvedAddrs {
 				do {
 					let view = UICommonComponents.Form.FieldLabel(
-						title: NSLocalizedString("MONERO ADDRESS", comment: ""),
-						sizeToFit: true
+						title: NSLocalizedString("MONERO ADDRESS", comment: "")
 					)
 					view.isHidden = true
 					self.resolvedXMRAddr_label = view
@@ -132,8 +131,7 @@ extension UICommonComponents.Form
 				//
 				do {
 					let view = UICommonComponents.Form.FieldLabel(
-						title: NSLocalizedString("PAYMENT ID", comment: ""),
-						sizeToFit: true
+						title: NSLocalizedString("PAYMENT ID", comment: "")
 					)
 					view.isHidden = true
 					self.resolvedPaymentID_label = view

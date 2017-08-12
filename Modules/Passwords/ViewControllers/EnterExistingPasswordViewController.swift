@@ -31,8 +31,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: PasswordController.shared.passwordType.humanReadableString.uppercased(),
-				sizeToFit: true
+				title: PasswordController.shared.passwordType.humanReadableString.uppercased()
 			)
 			self.password_label = view
 			self.scrollView.addSubview(view)

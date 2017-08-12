@@ -34,8 +34,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("PIN OR PASSWORD", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("PIN OR PASSWORD", comment: "")
 			)
 			self.password_label = view
 			self.scrollView.addSubview(view)
@@ -61,8 +60,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("CONFIRM", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("CONFIRM", comment: "")
 			)
 			self.confirmPassword_label = view
 			self.scrollView.addSubview(view)

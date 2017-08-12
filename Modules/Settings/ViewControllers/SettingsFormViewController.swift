@@ -52,8 +52,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("APP TIMEOUT", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("APP TIMEOUT", comment: "")
 			)
 			self.appTimeoutAfterS_label = view
 			self.scrollView.addSubview(view)
@@ -91,8 +90,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 		//
 //		do {
 //			let view = UICommonComponents.Form.FieldLabel(
-//				title: NSLocalizedString("CUSTOM API ADDRESS", comment: ""),
-//				sizeToFit: false
+//				title: NSLocalizedString("CUSTOM API ADDRESS", comment: "")
 //			)
 //			self.address_label = view
 //			self.scrollView.addSubview(view)

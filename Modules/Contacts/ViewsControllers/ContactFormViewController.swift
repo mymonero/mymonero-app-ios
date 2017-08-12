@@ -46,8 +46,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		super.setup_views()
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("NAME", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("NAME", comment: "")
 			)
 			self.name_label = view
 			self.scrollView.addSubview(view)
@@ -71,8 +70,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("EMOJI", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("EMOJI", comment: "")
 			)
 			self.emoji_label = view
 			self.scrollView.addSubview(view)
@@ -90,8 +88,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("ADDRESS", comment: ""),
-				sizeToFit: true
+				title: NSLocalizedString("ADDRESS", comment: "")
 			)
 			self.address_label = view
 			self.scrollView.addSubview(view)
@@ -120,8 +117,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		if self._overridable_wants_paymentIDField {
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("PAYMENT ID", comment: ""),
-					sizeToFit: true
+					title: NSLocalizedString("PAYMENT ID", comment: "")
 				)
 				self.paymentID_label = view
 				self.scrollView.addSubview(view)

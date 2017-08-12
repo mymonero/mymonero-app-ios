@@ -45,8 +45,7 @@ extension EditWallet
 			do { // wallet label field
 				do {
 					let view = UICommonComponents.Form.FieldLabel(
-						title: NSLocalizedString("WALLET NAME", comment: ""),
-						sizeToFit: true
+						title: NSLocalizedString("WALLET NAME", comment: "")
 					)
 					self.walletLabel_label = view
 					self.scrollView.addSubview(view)
@@ -66,8 +65,7 @@ extension EditWallet
 			do { // wallet color field
 				do {
 					let view = UICommonComponents.Form.FieldLabel(
-						title: NSLocalizedString("COLOR", comment: ""),
-						sizeToFit: true
+						title: NSLocalizedString("COLOR", comment: "")
 					)
 					self.walletColorPicker_label = view
 					self.scrollView.addSubview(view)
