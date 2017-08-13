@@ -7,69 +7,106 @@
 //
 
 import UIKit
-
-protocol DurationSliderDelegate:class {
+//
+// Protocols
+protocol DurationSliderDelegate: class
+{
     func durationUpdated(_ durationInSeconds:Int)
 }
-
+//
+// Principal class
 class DurationSlider: UISlider
 {
-    let durationLabel: UILabel = UILabel()
-    let minLabel: UILabel = UILabel()
-    let maxLabel: UILabel = UILabel()
-    let minLabelText: String = "5s"
-    let maxLabelText: String = "Never"
-
-    var step: Float = 5
+	//
+	// Types
+	typealias SliderSecondsValue = Int
+	enum SteppingCategory: SliderSecondsValue
+	{
+		case subMinute = 5
+		case minutes = 60
+		//
+		var secondsPerStep: SliderSecondsValue {
+			return self.rawValue
+		}
+	}
+	//
+	// Constants
+	static let duration__min: SliderSecondsValue = 5 // I would make the TimeIntervals but they're exclusively treated as whole numbers
+	static let duration__max: SliderSecondsValue = 1500 // aka 'Never'
+	static let duration__never = DurationSlider.duration__max
+	//
+	static let minLabelText = String(format: "%ds", DurationSlider.duration__min)
+	static let maxLabelText = NSLocalizedString("Never", comment: "")
+	//
+	// Properties
+    let durationLabel = UILabel()
+    let minLabel = UILabel()
+    let maxLabel = UILabel()
+	//
+	var steppingCategory: SteppingCategory = .subMinute // initial
+	//
     var dateComponents = DateComponents()
     let formatter = DateComponentsFormatter()
-    
-    //delegate
+    //
+    // Properties - Settable by instantiator
     weak var delegate:DurationSliderDelegate?
-
-    init() {
+	//
+	// Lifecycle - Init
+    init()
+	{
         super.init(frame: .zero)
 		do {
-			self.formatter.unitsStyle = .abbreviated
-			self.formatter.allowedUnits = [.second, .minute]
+			let formatter = self.formatter
+			formatter.unitsStyle = .abbreviated
+			formatter.allowedUnits = [.second, .minute]
 		}
 		self.setup_views()
     }
-    
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-    
-	func setup_views() {
+	func setup_views()
+	{
 		do {
 			self.minimumValue = 5
 			self.maximumValue = 1500
 			self.value = 5
 			self.tintColor = UIColor.orange
 			//
-			self.addTarget(self, action: #selector(self.sliderValueChanged), for: .valueChanged)
+			self.addTarget(self, action: #selector(self.valueChanged), for: .valueChanged)
 		}
-        
 		do {
 			let view = self.durationLabel
 			view.frame = CGRect(x: 0, y: -25, width: 0, height: 25) // must set y and h for sizeToFit() and layoutSubviews()
 			view.textAlignment = NSTextAlignment.center
 			self.addSubview(view)
 			self.configureValueLabel(animateTransitions: true)
-            
-            let leftView = self.minLabel
-            leftView.text = self.minLabelText
-            leftView.font = UIFont.systemFont(ofSize: 10)
-            self.addSubview(leftView)
-            
-            let rightView = self.maxLabel
-            rightView.text = self.maxLabelText
-            rightView.font = UIFont.systemFont(ofSize: 10)
-            self.addSubview(rightView)
+		}
+		do {
+            let view = self.minLabel
+			view.text = type(of: self).minLabelText
+            view.font = UIFont.systemFont(ofSize: 10)
+            self.addSubview(view)
+		}
+		do {
+            let view = self.maxLabel
+			view.text = type(of: self).maxLabelText
+            view.font = UIFont.systemFont(ofSize: 10)
+            self.addSubview(view)
 		}
 	}
-	
-	func configureValueLabel(animateTransitions: Bool) {
+	//
+	// Accessors - Layout
+	var knob_centerX: CGFloat {
+		let trackRect = self.trackRect(forBounds: self.bounds)
+		let thumbRect = self.thumbRect(forBounds: self.bounds, trackRect: trackRect, value: self.value)
+		
+		return thumbRect.origin.x + thumbRect.size.width/2
+	}
+	//
+	// Imperatives - Configuration
+	fileprivate func configureValueLabel(animateTransitions: Bool)
+	{
         if (self.value == 1500) {
             self.durationLabel.text = NSLocalizedString("Never", comment: "")
 		} else {
@@ -77,45 +114,46 @@ class DurationSlider: UISlider
 		}
         self.layout_valueLabel()
     }
-    
-    override func layoutSubviews() {
+	//
+	// Imperatives - Overrides
+    override func layoutSubviews()
+	{
 		super.layoutSubviews()
 		//
 		self.layout_valueLabel()
-        self.layout_minMaxLabel()
+        self.layout_minMaxLabels()
 	}
-    
-    func layout_minMaxLabel() {
+    //
+	// Imperatives - Internal - Layout
+    fileprivate func layout_minMaxLabels()
+	{
         self.minLabel.frame = CGRect(x: -20, y: 0, width: 50, height: self.bounds.height)
         self.maxLabel.frame = CGRect(x: self.bounds.size.width+10, y: 0, width: 50, height: self.bounds.height)
     }
-    
-	func layout_valueLabel() {
-		let trackRect = self.trackRect(forBounds: self.bounds)
-		let thumbRect = self.thumbRect(forBounds: self.bounds, trackRect: trackRect, value: self.value)
-		let knob_centerX = thumbRect.origin.x + thumbRect.size.width/2
-		
-		self.durationLabel.sizeToFit()
-        
+	fileprivate func layout_valueLabel()
+	{
+		self.durationLabel.sizeToFit() // in order to get w/h
         self.durationLabel.frame = CGRect(
-			x: knob_centerX - self.durationLabel.frame.width/2,
+			x: self.knob_centerX - self.durationLabel.frame.width/2,
 			y: self.durationLabel.frame.origin.y,
 			width: self.durationLabel.frame.size.width,
 			height: self.durationLabel.frame.size.height
 		).integral
     }
-    
-    func sliderValueChanged() {
+    //
+	// Delegation - Interactions
+    func valueChanged()
+	{
 		do { // update local state
 			switch (self.value) { // determine stepping category
 				case 1..<120:
-					self.step = 5
+					self.steppingCategory = .subMinute
 				default:
-					self.step = 60
+					self.steppingCategory = .minutes
 			}
 			//
 			// round value to step
-			self.value = round(self.value / step) * step
+			self.value = round(self.value / Float(self.steppingCategory.secondsPerStep)) * Float(self.steppingCategory.secondsPerStep)
 			//
 			// update formatter for UI config
 			self.dateComponents.second = Int(self.value)
@@ -131,7 +169,7 @@ class DurationSlider: UISlider
 				case 1500:
 					wholeNumberOfSeconds = -1
 				default:
-					wholeNumberOfSeconds = (Int)(round(self.value / step) * step)
+					wholeNumberOfSeconds = (Int)(round(self.value / Float(self.steppingCategory.secondsPerStep)) * Float(self.steppingCategory.secondsPerStep))
 			}
 			self.delegate?.durationUpdated(wholeNumberOfSeconds)
 		}
