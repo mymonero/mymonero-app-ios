@@ -5,10 +5,10 @@
 //  Created by Paul Shapiro on 8/3/17.
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
-
+//
 import UIKit
-
-class SettingsFormViewController: UICommonComponents.FormViewController
+//
+class SettingsFormViewController: UICommonComponents.FormViewController, SettingsAppTimeoutAfterSecondsSliderInteractionsDelegate
 {
 	//
 	// Static - Shared
@@ -22,7 +22,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
 	//
 	var appTimeoutAfterS_label: UICommonComponents.Form.FieldLabel!
-	var appTimeoutAfterS_inputView: UICommonComponents.FormTextViewContainerView! // TODO
+	var appTimeoutAfterS_inputView: SettingsAppTimeoutAfterSecondsSliderInputView!
 	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
 	var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView!
@@ -58,14 +58,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormTextViewContainerView(
-				placeholder: "TODO"
-			)
+			let view = SettingsAppTimeoutAfterSecondsSliderInputView()
+			view.slider.interactionsDelegate = self
 			self.appTimeoutAfterS_inputView = view
-			
-			let initialValue = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? SettingsController.shared.default_appTimeoutAfterS
-			view.textView.text = "\(initialValue)"
-			
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -135,6 +130,13 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 			title_orNilForDefault: NSLocalizedString("About", comment: "")
 		)
 		
+	}
+	//
+	// Lifecycle - Teardown
+	override func tearDown()
+	{
+		super.tearDown()
+		self.tearDown_timerToSave_durationUpdated()
 	}
 	//
 	// Accessors - Overrides
@@ -299,7 +301,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 			x: input_x,
 			y: self.appTimeoutAfterS_label!.frame.origin.y + self.appTimeoutAfterS_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 			width: textField_w,
-			height: self.appTimeoutAfterS_inputView!.frame.size.height
+			height: SettingsAppTimeoutAfterSecondsSliderInputView.h
 		).integral
 		if self.appTimeoutAfterS_fieldAccessoryMessageLabel != nil {
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.frame = CGRect(
@@ -425,5 +427,34 @@ class SettingsFormViewController: UICommonComponents.FormViewController
 			}
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)
+	}
+	//
+	// Delegation - Protocols - SettingsAppTimeoutAfterSecondsSliderInteractionsDelegate
+	var _timerToSave_durationUpdated: Timer?
+	func tearDown_timerToSave_durationUpdated()
+	{
+		if self._timerToSave_durationUpdated != nil {
+			self._timerToSave_durationUpdated!.invalidate()
+			self._timerToSave_durationUpdated = nil
+		}
+	}
+	func durationUpdated(_ durationInSeconds: TimeInterval)
+	{
+		// debounce to prevent/optimize spam/unnecessary saves
+		self.tearDown_timerToSave_durationUpdated()
+		self._timerToSave_durationUpdated = Timer.scheduledTimer(
+			withTimeInterval: 0.1,
+			repeats: false,
+			block:
+			{ [unowned self] (timer) in
+				self.tearDown_timerToSave_durationUpdated()
+				let err_str = SettingsController.shared.set(
+					appTimeoutAfterS_nilForDefault_orNeverValue: self.appTimeoutAfterS_inputView.slider.valueAsWholeNumberOfSeconds
+				)
+				if err_str != nil {
+					assert(false, "error while setting app timeout")
+				}
+			}
+		)
 	}
 }
