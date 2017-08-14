@@ -298,9 +298,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			height: self.appTimeoutAfterS_label!.frame.size.height
 			).integral
 		self.appTimeoutAfterS_inputView!.frame = CGRect(
-			x: input_x,
+			x: label_x, // not input_x
 			y: self.appTimeoutAfterS_label!.frame.origin.y + self.appTimeoutAfterS_label!.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-			width: textField_w,
+			width: fullWidth_label_w, // not input_x
 			height: SettingsAppTimeoutAfterSecondsSliderInputView.h
 		).integral
 		if self.appTimeoutAfterS_fieldAccessoryMessageLabel != nil {
@@ -355,7 +355,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.text = String(
 				format: NSLocalizedString(
-					"Amount of time before your %@ is required again",
+					"Amount of idle time before your %@ is required again",
 					comment: ""
 				),
 				PasswordController.shared.passwordType.humanReadableString

@@ -26,7 +26,7 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 	}
 	//
 	// Constants
-	static let h: CGFloat = 100
+	static let h: CGFloat = 60
 	//
 	static let textForValue__never = NSLocalizedString("Never", comment: "")
 	//
@@ -89,11 +89,13 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 			let sliderTrackSidePadding_x: CGFloat = 6
 			let x = self.minLabel.frame.origin.x + self.minLabel.frame.size.width + sliderTrackSidePadding_x
 			let rightEdge_x = self.maxLabel.frame.origin.x - sliderTrackSidePadding_x
+			let y: CGFloat = 22
+			let h = self.bounds.size.height - y
 			let frame = CGRect(
 				x: x,
-				y: 0,
+				y: y,
 				width: rightEdge_x - x,
-				height: self.bounds.size.height
+				height: h
 			)
 			self.slider.frame = frame
 		}
@@ -102,14 +104,16 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 	// Imperatives - Internal - Layout
 	fileprivate func layout_minMaxLabels()
 	{
+		let y: CGFloat = 20 // slightly higher than slider track for visual vertical centering
+		let h = self.bounds.height - y
 		do {
 			let view = self.minLabel!
 			let w = view.frame.size.width
 			view.frame = CGRect(
 				x: 0,
-				y: 0,
+				y: y,
 				width: w,
-				height: self.bounds.height
+				height: h
 			)
 		}
 		do {
@@ -117,9 +121,9 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 			let w = view.frame.size.width
 			view.frame = CGRect(
 				x: self.bounds.size.width - w,
-				y: 0,
+				y: y,
 				width: w,
-				height: self.bounds.height
+				height: h
 			)
 		}
 	}
@@ -184,14 +188,22 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 				assert(to_value >= self.minimumValue && to_value < self.maximumValue)
 				self.value = to_value
 			}
-			self.tintColor = UIColor.orange
+			let trackImage = UIImage(named: "slider_track")!.stretchableImage(withLeftCapWidth: 1, topCapHeight: 1)
+			self.setMaximumTrackImage(trackImage, for: .normal)
+			self.setMaximumTrackImage(trackImage, for: .highlighted)
+			self.setMinimumTrackImage(trackImage, for: .normal)
+			self.setMinimumTrackImage(trackImage, for: .highlighted)
+			let knobImage = UIImage(named: "slider_knob")!
+			let knobImage_highlighted = UIImage(named: "slider_knob_highlighted")!
+			self.setThumbImage(knobImage, for: .normal)
+			self.setThumbImage(knobImage_highlighted, for: .highlighted) // TODO
 			//
 			self.addTarget(self, action: #selector(self.valueChanged), for: .valueChanged)
 		}
 		do {
 			let view = self.durationLabel
 			let h = UICommonComponents.Form.FieldLabel.fixedHeight
-			view.frame = CGRect(x: 0, y: 0, width: 0, height: h) // must set y and h for sizeToFit() and layoutSubviews()
+			view.frame = CGRect(x: 0, y: -8, width: 0, height: h) // must set y and h for sizeToFit() and layoutSubviews()
 			view.textAlignment = NSTextAlignment.center
 			self.addSubview(view)
 			self.configureValueLabel(animateTransitions: true)
@@ -210,10 +222,10 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 	var valueAsWholeNumberOfSeconds: TimeInterval {
 		var wholeNumberOfSeconds: TimeInterval
 		switch self.value {
-		case 1500:
-			wholeNumberOfSeconds = SettingsController.appTimeoutAfterS_neverValue
-		default:
-			wholeNumberOfSeconds = round(TimeInterval(self.value) / self.steppingCategory.secondsPerStep) * self.steppingCategory.secondsPerStep
+			case Float(SettingsAppTimeoutAfterSecondsSlider.duration__max):
+				wholeNumberOfSeconds = SettingsController.appTimeoutAfterS_neverValue
+			default:
+				wholeNumberOfSeconds = round(TimeInterval(self.value) / self.steppingCategory.secondsPerStep) * self.steppingCategory.secondsPerStep
 		}
 		//
 		return wholeNumberOfSeconds
@@ -254,7 +266,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 	{
 		do { // update local state
 			switch (self.value) { // determine stepping category
-				case 1..<120:
+				case 1..<240: // is/was 120 in JS app but it's nice to have an area where sliding is more granular
 					self.steppingCategory = .subMinute
 				default:
 					self.steppingCategory = .minutes
