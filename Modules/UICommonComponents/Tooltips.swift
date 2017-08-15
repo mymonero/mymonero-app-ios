@@ -60,6 +60,12 @@ extension UICommonComponents
 			)
 			//
 			NotificationCenter.default.addObserver(self, selector: #selector(MMApplication_didSendEvent(_:)), name: MMApplication.NotificationNames.didSendEvent.notificationName, object: nil)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(UIApplicationWillChangeStatusBarFrame),
+				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				object: nil
+			)
 		}
 		//
 		// Lifecycle - Deinit
@@ -69,7 +75,7 @@ extension UICommonComponents
 		}
 		func teardown()
 		{
-			self._dismiss() // just in case
+			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // just in case
 			self.stopObserving()
 		}
 		func stopObserving()
@@ -81,6 +87,11 @@ extension UICommonComponents
 			)
 			//
 			NotificationCenter.default.removeObserver(self, name: MMApplication.NotificationNames.didSendEvent.notificationName, object: nil)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				object: nil
+			)
 		}
 		//
 		// Imperatives - Presentation
@@ -144,19 +155,19 @@ extension UICommonComponents
 				}
 			}
 		}
-		func _dismiss()
+		func _dismiss(dismissEvenIfCurrentlyAnimating: Bool = true)
 		{
 			if self.tip == nil {
 				return
 			}
-			self.tip!.hide()
+			self.tip!.hide(forced: dismissEvenIfCurrentlyAnimating)
 		}
 		//
 		// Delegation - Interactions
 		func tapped()
 		{
 			if self.tip != nil {
-				self._dismiss()
+				self._dismiss(dismissEvenIfCurrentlyAnimating: true)
 				return
 			}
 			self._present()
@@ -165,20 +176,23 @@ extension UICommonComponents
 		// Delegation - Notifications
 		func willDeconstructBootedStateAndClearPassword()
 		{
-			self._dismiss() // if necessary
+			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary
 		}
-		//
 		@objc fileprivate func MMApplication_didSendEvent(_ notification: Notification)
 		{
 			if self._isPresenting == false { // only if done presenting - i.e. only if this is not the same event as the spawning tap
-				self._dismiss() // if necessary
+				self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary
 			}
+		}
+		@objc fileprivate func UIApplicationWillChangeStatusBarFrame()
+		{
+			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary - or else it'll be off center (alternative is just move it but that's more work)
 		}
 		//
 		// Delegation - Interface for instantiator
 		func parentViewWillDisappear(animated: Bool)
 		{
-			self._dismiss() // if necessary
+			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary
 			// e.g. if a user has a tooltip open during SendFunds and the 'success' transaction details view is pushed, we want the tooltip to be dismissed. is there a better way to support that than this even though this method will probably result in more code for the instantiator/integrator?
 		}
 	}
