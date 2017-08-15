@@ -104,6 +104,7 @@ struct EmojiUI
 		var popover: EmojiPickerPopoverView?
 		func tapped()
 		{
+			assert(self.popover == nil)
 			// the popover should be guaranteed not to be showing here… 
 			if let tapped_fn = self.tapped_fn {
 				tapped_fn()
