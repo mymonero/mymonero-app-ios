@@ -25,7 +25,12 @@ class RootViewController: UIViewController
 		super.init(nibName: nil, bundle: nil)
 		//
 		self.setup_presentationSingletons()
+		//
+		self.preEmptively_startObserving_passwordEntryNavigationViewController() // before the tab bar views are set up and cause the pw to be requested
+		//
 		self.setup_views()
+		//
+		self.startObserving_statusBarFrame()
 	}
 	func setup_presentationSingletons()
 	{
@@ -37,14 +42,28 @@ class RootViewController: UIViewController
 	{
 		self.view.backgroundColor = UIColor.contentBackgroundColor
 		//
-		do { // start observing (usually is split out, but should be fine here esp since we don't need to stop observing)
-			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willDismissView), name: PasswordEntryNavigationViewController.NotificationNames.willDismissView.notificationName, object: nil)
-			NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willPresentInView), name: PasswordEntryNavigationViewController.NotificationNames.willPresentInView.notificationName, object: nil)
-		}
 		//
 		self.tabBarViewController = RootTabBarViewController()
 		self.addChildViewController(tabBarViewController)
 		self.view.addSubview(self.tabBarViewController.view)
+	}
+	func preEmptively_startObserving_passwordEntryNavigationViewController()
+	{
+		NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willDismissView), name: PasswordEntryNavigationViewController.NotificationNames.willDismissView.notificationName, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(PasswordEntryNavigationViewController_willPresentInView), name: PasswordEntryNavigationViewController.NotificationNames.willPresentInView.notificationName, object: nil)
+	}
+	func startObserving()
+	{
+		self.startObserving_statusBarFrame()
+	}
+	func startObserving_statusBarFrame()
+	{
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(UIApplicationWillChangeStatusBarFrame),
+			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			object: nil
+		)
 	}
 	//
 	// Lifecycle - Teardown
@@ -61,6 +80,26 @@ class RootViewController: UIViewController
 		// TODO: technically, good idea to remove all notification observations
 	}
 	//
+	// Delegation - Views - Layout - Overrides
+	override func viewDidLayoutSubviews()
+	{
+		super.viewDidLayoutSubviews()
+		var y: CGFloat!
+		do {
+			if let statusBarFrame = self._forLayout__to_statusBarFrame {
+				y = statusBarFrame.size.height
+			} else {
+				y = 0
+			}
+		}
+		self.tabBarViewController.view.frame = CGRect(
+			x: 0,
+			y: y,
+			width: self.view.bounds.size.width,
+			height: self.view.bounds.size.height - y
+		)
+	}
+	//
 	// Delegation - Notifications
 	@objc func PasswordEntryNavigationViewController_willDismissView()
 	{
@@ -69,6 +108,14 @@ class RootViewController: UIViewController
 	@objc func PasswordEntryNavigationViewController_willPresentInView()
 	{
 		self.tabBarViewController.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
+	}
+	//
+	var _forLayout__to_statusBarFrame: CGRect?
+	@objc func UIApplicationWillChangeStatusBarFrame(_ notification: Notification)
+	{
+		let to_statusBarFrame = notification.userInfo![UIApplicationStatusBarFrameUserInfoKey] as! NSValue
+		self._forLayout__to_statusBarFrame = to_statusBarFrame.cgRectValue
+		self.view.setNeedsLayout()
 	}
 }
 
