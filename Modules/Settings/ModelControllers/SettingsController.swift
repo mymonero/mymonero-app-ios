@@ -231,7 +231,7 @@ class SettingsController: DeleteEverythingRegistrant
 			if err_str != nil {
 				DDLog.Error("Persistence", "Error while saving new object: \(err_str!)")
 			} else {
-				DDLog.Done("Persistence", "Saved new \(self).")
+				DDLog.Done("Persistence", "Saved \(self).")
 			}
 			return err_str
 		} catch let e {
