@@ -11,7 +11,7 @@ import UIKit
 // Protocols
 protocol SettingsAppTimeoutAfterSecondsSliderInteractionsDelegate: class
 {
-    func durationUpdated(_ durationInSeconds: TimeInterval)
+    func durationUpdated(_ durationInSeconds_orNeverValue: TimeInterval)
 }
 //
 // Views
@@ -183,11 +183,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 		do {
 			self.minimumValue = Float(type(of: self).duration__min)
 			self.maximumValue = Float(type(of: self).duration__max)
-			do {
-				let to_value = Float(SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? SettingsController.shared.default_appTimeoutAfterS)
-				assert(to_value >= self.minimumValue && to_value < self.maximumValue)
-				self.value = to_value
-			}
+			//
 			let trackImage = UIImage(named: "slider_track")!.stretchableImage(withLeftCapWidth: 1, topCapHeight: 1)
 			self.setMaximumTrackImage(trackImage, for: .normal)
 			self.setMaximumTrackImage(trackImage, for: .highlighted)
@@ -206,7 +202,6 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 			view.frame = CGRect(x: 0, y: -8, width: 0, height: h) // must set y and h for sizeToFit() and layoutSubviews()
 			view.textAlignment = NSTextAlignment.center
 			self.addSubview(view)
-			self.configureValueLabel(animateTransitions: true)
 		}
 	}
 	//
@@ -219,20 +214,46 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 	}
 	//
 	// Accessors - Value
-	var valueAsWholeNumberOfSeconds: TimeInterval {
-		var wholeNumberOfSeconds: TimeInterval
+	var valueAsWholeNumberOfSeconds_orNeverValue: TimeInterval {
+		var value: TimeInterval
 		switch self.value {
 			case Float(SettingsAppTimeoutAfterSecondsSlider.duration__max):
-				wholeNumberOfSeconds = SettingsController.appTimeoutAfterS_neverValue
+				value = SettingsController.appTimeoutAfterS_neverValue
 			default:
-				wholeNumberOfSeconds = round(TimeInterval(self.value) / self.steppingCategory.secondsPerStep) * self.steppingCategory.secondsPerStep
+				value = round(TimeInterval(self.value) / self.steppingCategory.secondsPerStep) * self.steppingCategory.secondsPerStep
 		}
 		//
-		return wholeNumberOfSeconds
+		return value
 	}
 	//
 	// Imperatives - Configuration
-	fileprivate func configureValueLabel(animateTransitions: Bool)
+	func setValueFromSettings()
+	{
+		do {
+			var useValue: Float
+			let settingsController_value = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue
+			if settingsController_value != nil {
+				if settingsController_value == SettingsController.appTimeoutAfterS_neverValue {
+					useValue = self.maximumValue
+				} else {
+					useValue = Float(settingsController_value!)
+					assert(useValue >= self.minimumValue && useValue < self.maximumValue)
+				}
+			} else {
+				useValue = Float(SettingsController.shared.default_appTimeoutAfterS)
+			}
+			self.value = Float(useValue)
+		}
+		self._configureWithUpdatedValue()
+	}
+	fileprivate func _configureWithUpdatedValue()
+	{
+		// State
+		self.dateComponents.second = Int(self.value) // must update or we will get same value in value label
+		// UI
+		self.__configureValueLabel()
+	}
+	fileprivate func __configureValueLabel()
 	{
         if self.value == Float(type(of: self).duration__max) {
             self.durationLabel.text = SettingsAppTimeoutAfterSecondsSliderInputView.textForValue__never
@@ -274,17 +295,11 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 			//
 			// round value to step
 			self.value = round(self.value / Float(self.steppingCategory.secondsPerStep)) * Float(self.steppingCategory.secondsPerStep)
-			//
-			// update formatter for UI config
-			self.dateComponents.second = Int(self.value)
 		}
-		do { // update UI given new state
-			self.configureValueLabel(
-				animateTransitions: true // b/c from user interaction
-			)
-		}
-		do { // emit/yield
-			self.interactionsDelegate?.durationUpdated(self.valueAsWholeNumberOfSeconds)
-		}
+		//
+		self._configureWithUpdatedValue()
+		//
+		// emit/yield
+		self.interactionsDelegate?.durationUpdated(self.valueAsWholeNumberOfSeconds_orNeverValue)
     }
 }

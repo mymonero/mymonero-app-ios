@@ -363,6 +363,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.view.setNeedsLayout()
 		}
 		do {
+			self.appTimeoutAfterS_inputView.slider.setValueFromSettings()
+		}
+		do {
 			if PasswordController.shared.hasUserSavedAPassword == false {
 				self.changePasswordButton.isEnabled = false // can't change til entered
 				// self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
@@ -438,7 +441,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self._timerToSave_durationUpdated = nil
 		}
 	}
-	func durationUpdated(_ durationInSeconds: TimeInterval)
+	func durationUpdated(_ durationInSeconds_orNeverValue: TimeInterval)
 	{
 		// debounce to prevent/optimize spam/unnecessary saves
 		self.tearDown_timerToSave_durationUpdated()
@@ -449,7 +452,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			{ [unowned self] (timer) in
 				self.tearDown_timerToSave_durationUpdated()
 				let err_str = SettingsController.shared.set(
-					appTimeoutAfterS_nilForDefault_orNeverValue: self.appTimeoutAfterS_inputView.slider.valueAsWholeNumberOfSeconds
+					appTimeoutAfterS_nilForDefault_orNeverValue: self.appTimeoutAfterS_inputView.slider.valueAsWholeNumberOfSeconds_orNeverValue
 				)
 				if err_str != nil {
 					assert(false, "error while setting app timeout")
