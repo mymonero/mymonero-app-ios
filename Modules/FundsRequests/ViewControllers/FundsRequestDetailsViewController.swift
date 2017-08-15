@@ -118,19 +118,25 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		var value = "" // must use \r\n instead of \n for Windows
 		value += "Someone wants some Monero."
 		value += "\r\n------------"
+		var numberOfLinesAddedAfterJustPreviousSeparator = 0
 		do {
-			if let amount = self.fundsRequest.amount {
+			if let amount = self.fundsRequest.amount, amount != "" {
 				value += "\r\n\(amount) XMR"
+				numberOfLinesAddedAfterJustPreviousSeparator += 1
 			}
-			if let message = self.fundsRequest.message {
+			if let message = self.fundsRequest.message, message != "" {
 				value += "\r\n\(message)"
+				numberOfLinesAddedAfterJustPreviousSeparator += 1
 			}
-			if let description = self.fundsRequest.description {
+			if let description = self.fundsRequest.description, description != "" {
 				value += "\r\n\(description)"
+				numberOfLinesAddedAfterJustPreviousSeparator += 1
 			}
 		}
 		value += "\r\n" // spacer
-		value += "\r\n------------"
+		if numberOfLinesAddedAfterJustPreviousSeparator > 0 {
+			value += "\r\n------------"
+		}
 		value += "\r\nIf you have MyMonero installed, use this link to send the funds: \(self.fundsRequest.new_URI.absoluteString)"
 		value += "\r\n" // spacer
 		value += "\r\nIf you don't have MyMonero installed, download it from \(Homepage.appDownloadLink_fullURL)"
@@ -315,18 +321,19 @@ extension UICommonComponents.Details
 		//
 		// Imperatives - Layout - Overrides
 		override func layOut(
-			withContainingWidth containingWidth: CGFloat,
+			withContainerWidth containerWidth: CGFloat,
 			withXOffset xOffset: CGFloat,
 			andYOffset yOffset: CGFloat
 			)
 		{
-			let content_x: CGFloat = 0 // self will have xOffset so content can be at 0
-			let content_rightMargin: CGFloat = 0
-			let content_w = containingWidth - content_x - content_rightMargin
+			let contentInsets = self.contentInsets
+			let content_x: CGFloat = contentInsets.left
+			let content_rightMargin: CGFloat = contentInsets.right
+			let content_w = containerWidth - content_x - content_rightMargin
 			//
 			self.cellContentView.frame = CGRect(
 				x: content_x,
-				y: 0,
+				y: contentInsets.top,
 				width: content_w,
 				height: FundsRequestCellFieldView.cellHeight
 			)
@@ -334,7 +341,7 @@ extension UICommonComponents.Details
 			self.frame = CGRect(
 				x: xOffset,
 				y: yOffset,
-				width: containingWidth,
+				width: containerWidth,
 				height: FundsRequestCellFieldView.cellHeight
 			)
 		}

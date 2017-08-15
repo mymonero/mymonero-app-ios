@@ -166,15 +166,14 @@ extension WalletDetails
 				content_w: CGFloat
 			)
 			{
-				let x: CGFloat = 73
+				let xOffsetInContent: CGFloat = 73 // 73 is hardcoded right-side of 'Address' title label … too fragile?
 				self.contentLabel.frame = CGRect(
-					x: x,
+					x: content_x + xOffsetInContent,
 					y: self.titleLabel.frame.origin.y - 3,
-					width: content_w - x,
+					width: content_w - xOffsetInContent,
 					height: 19
 				)
 			}
-
 		}
 		
 		class ContentContainerView: UICommonComponents.Details.SectionContentContainerView

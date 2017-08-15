@@ -258,15 +258,14 @@ extension UICommonComponents
 						}
 						continue // skip
 					}
-					let contentInsets = fieldView.contentInsets
 					//
 					// fieldViews are actually sized here - it might be nicer if we could just measure them instead
 					fieldView.layOut(
-						withContainingWidth: self_width - contentInsets.left - contentInsets.right,
-						withXOffset: contentInsets.left,
-						andYOffset: currentField_yOffset + contentInsets.top
+						withContainerWidth: self_width,
+						withXOffset: 0,
+						andYOffset: currentField_yOffset
 					)
-					currentField_yOffset = fieldView.frame.origin.y + fieldView.frame.size.height + contentInsets.bottom
+					currentField_yOffset = fieldView.frame.origin.y + fieldView.frame.size.height
 					//
 					if isNotYetAtEnd { // any but the last field
 						// updating currentField_yOffset - not adding .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
@@ -276,6 +275,7 @@ extension UICommonComponents
 						if alsoLayOutSharedSeparatorViewsForDisplay { // should be true if we actually intend to display the fieldViews right here rather than just measure them
 							let separatorView = self.fieldSeparatorViews[idx] // we expect there to be one
 							separatorView.isHidden = false // just in case it was hidden
+							let contentInsets = fieldView.contentInsets
 							separatorView.frame = CGRect(
 								x: contentInsets.left,
 								y: currentField_yOffset + topMargin,
@@ -291,7 +291,7 @@ extension UICommonComponents
 				var frame_withHeight = frame_withoutHeight
 				do { // finalize
 					let last_fieldView = specific_fieldViews.last!
-					frame_withHeight.size.height = last_fieldView.frame.origin.y + last_fieldView.frame.size.height + last_fieldView.contentInsets.bottom
+					frame_withHeight.size.height = last_fieldView.frame.origin.y + last_fieldView.frame.size.height
 				}
 				return frame_withHeight
 			}
@@ -322,9 +322,9 @@ extension UICommonComponents
 			}
 			//
 			func layOut(
-				withContainingWidth containingWidth: CGFloat,
-				withXOffset xOffset: CGFloat,
-				andYOffset yOffset: CGFloat
+				withContainerWidth containerWidth: CGFloat, // containER width does not account for contentOffsets
+				withXOffset xOffset: CGFloat, // again, without contentOffset.left
+				andYOffset yOffset: CGFloat // also w/o contentOffset.top
 			)
 			{
 				assert(false, "Override and implement this")
@@ -456,38 +456,40 @@ extension UICommonComponents
 			//
 			// Imperatives - Layout - Overrides
 			override func layOut(
-				withContainingWidth containingWidth: CGFloat,
+				withContainerWidth containerWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
 			)
 			{
-				let content_x: CGFloat = 0 // self will have xOffset so content can be at 0
-				let content_rightMargin: CGFloat = 36
-				let content_w = containingWidth - content_x - content_rightMargin - CopyButton.visual_w
+				let contentInsets = self.contentInsets
+
+				let content_x: CGFloat = contentInsets.left
+				let content_rightMargin: CGFloat = 36 + contentInsets.right
+				let content_w = containerWidth - content_x - content_rightMargin - CopyButton.visual_w
 				self.titleLabel.frame = CGRect(
 					x: content_x,
-					y: 0,
+					y: contentInsets.top,
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
 				self.copyButton.frame = CGRect(
-					x: containingWidth - self.copyButton.frame.size.width + CopyButton.usabilityPadding_h,
+					x: containerWidth - contentInsets.right - self.copyButton.frame.size.width + CopyButton.usabilityPadding_h,
 					y: self.titleLabel.frame.origin.y - (CopyButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since CopyButton.h is increased for usability
 					width: CopyButton.w,
 					height: CopyButton.h 
 				).integral
 				self.layOut_contentLabel(content_x: content_x, content_w: content_w)
 				//
-				let bottomPadding: CGFloat = 0
+				let bottomPadding: CGFloat = contentInsets.bottom
 				self.frame = CGRect(
 					x: xOffset,
 					y: yOffset,
-					width: containingWidth,
+					width: containerWidth,
 					height: self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height + bottomPadding
 				)
 			}
 			func layOut_contentLabel(content_x: CGFloat, content_w: CGFloat)
-			{ // overridable
+			{
 				self.contentLabel.frame = CGRect(
 					x: content_x,
 					y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 12,
@@ -569,34 +571,40 @@ extension UICommonComponents
 				self.contentLabel.text = displayValue
 			}
 			//
-			// Imperatives - Layout - Overrides
-			func layOut(withContainingWidth containingWidth: CGFloat)
+			// Imperatives - Layout
+			func layOut(
+				withContainerWidth containerWidth: CGFloat,
+				contentInsets: UIEdgeInsets
+			)
 			{
-				let content_x: CGFloat = 0 // super will have xOffset so content can be at 0
-				let content_rightMargin: CGFloat = 0
-				let content_w = containingWidth - content_x - content_rightMargin
+				let content_x: CGFloat = contentInsets.left
+				let content_rightMargin: CGFloat = contentInsets.right
+				let content_w = containerWidth - content_x - content_rightMargin
 				self.titleLabel.frame = CGRect(
 					x: content_x,
-					y: 1,
+					y: contentInsets.top + 1,
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
-				self.layOut_contentLabel(content_x: content_x, content_w: content_w)
+				self.layOut_contentLabel(content_x: content_x, y: contentInsets.top, content_w: content_w)
 				//
-				let bottomPadding: CGFloat = 0
 				self.frame = CGRect(
 					x: 0,
 					y: 0,
-					width: containingWidth,
-					height: self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height + bottomPadding
+					width: containerWidth,
+					height: self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height + contentInsets.bottom
 				)
 			}
-			func layOut_contentLabel(content_x: CGFloat, content_w: CGFloat)
-			{ // overridable
+			func layOut_contentLabel(
+				content_x: CGFloat,
+				y: CGFloat,
+				content_w: CGFloat
+			)
+			{
 				let margin_x: CGFloat = 63 // may be improved by being obtained from a sized titleLabel
 				self.contentLabel.frame = CGRect(
 					x: content_x + margin_x,
-					y: 0,
+					y: y,
 					width: content_w - margin_x,
 					height: 15
 				)
@@ -651,12 +659,16 @@ extension UICommonComponents
 			//
 			// Imperatives - Layout - Overrides
 			override func layOut(
-				withContainingWidth containingWidth: CGFloat,
+				withContainerWidth containerWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
 			)
 			{
-				self.contentView.layOut(withContainingWidth: containingWidth) // this will set its bounds
+				let contentInsets = self.contentInsets
+				self.contentView.layOut(
+					withContainerWidth: containerWidth,
+					contentInsets: contentInsets
+				) // this will set its bounds
 				//
 				self.frame = CGRect(
 					x: xOffset,

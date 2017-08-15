@@ -166,6 +166,7 @@
 		9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */; };
 		9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */; };
 		9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */; };
+		9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */; };
 		9F9C59DF1F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */; };
 		9F9C59E01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */; };
 		9F9C59E11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */; };
@@ -400,6 +401,7 @@
 		9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EACF12@3x.png"; sourceTree = "<group>"; };
 		9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EB8316@3x.png"; sourceTree = "<group>"; };
 		9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-F97777@3x.png"; sourceTree = "<group>"; };
+		9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletDetailsActionButtonsCell.swift; sourceTree = "<group>"; };
 		9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_bottom@3x.png"; sourceTree = "<group>"; };
 		9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_middle@3x.png"; sourceTree = "<group>"; };
 		9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_standalone@3x.png"; sourceTree = "<group>"; };
@@ -1202,6 +1204,7 @@
 				9F2BFEC91EF0AA15006B2F7D /* WalletsListEmptyView.swift */,
 				9F33E6EE1F1ABDE300610662 /* WalletDetailsBalanceViewCell.swift */,
 				9F33E6F01F1ABEF300610662 /* WalletDetailsInfoDisclosingCell.swift */,
+				9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */,
 				9F33E6F61F1FE28100610662 /* WalletDetailsTransactionsSectionHeader.swift */,
 				9F33E6F41F1EFCE700610662 /* WalletDetailsTransactionCell.swift */,
 				9F33E70A1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift */,
@@ -1559,6 +1562,7 @@
 				9FA734071F05AF4E00C674D6 /* WalletsListViewController.swift in Sources */,
 				9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */,
 				9FAA18B21F0AEC2B001F1D4D /* OpenAliasResolverRequestMaker.swift in Sources */,
+				9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* CopyButton.swift in Sources */,
 				9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
