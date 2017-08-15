@@ -217,6 +217,10 @@
 		9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8AE901F241D2600AA553D /* IconAndMessage.swift */; };
+		9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */; };
+		9FCB92781F412EDA005852BA /* slider_knob@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCB92761F412EDA005852BA /* slider_knob@3x.png */; };
+		9FCB92791F412EDA005852BA /* slider_track@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCB92771F412EDA005852BA /* slider_track@3x.png */; };
+		9FCB927B1F412FA8005852BA /* slider_knob_highlighted@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCB927A1F412FA8005852BA /* slider_knob_highlighted@3x.png */; };
 		9FCE96C61F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */; };
 		9FCE96C91F04130200A5837D /* terms_checkbox_checked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */; };
 		9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */; };
@@ -448,6 +452,10 @@
 		9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormSubmissionController.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC8AE901F241D2600AA553D /* IconAndMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconAndMessage.swift; sourceTree = "<group>"; };
+		9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsAppTimeoutAfterSecondsSlider.swift; sourceTree = "<group>"; };
+		9FCB92761F412EDA005852BA /* slider_knob@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_knob@3x.png"; sourceTree = "<group>"; };
+		9FCB92771F412EDA005852BA /* slider_track@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_track@3x.png"; sourceTree = "<group>"; };
+		9FCB927A1F412FA8005852BA /* slider_knob_highlighted@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_knob_highlighted@3x.png"; sourceTree = "<group>"; };
 		9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mnemonicWordView_selected_bg_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FCE96C71F04130200A5837D /* terms_checkbox_checked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox_checked@3x.png"; sourceTree = "<group>"; };
 		9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
@@ -904,6 +912,7 @@
 			children = (
 				9F7298C21F33E1FE00CD59E1 /* ModelControllers */,
 				9F7298C41F33E1FE00CD59E1 /* ViewControllers */,
+				9FCB92731F3FCCBD005852BA /* Views */,
 				9F8E2FF01EE978DF00F89A1D /* Resources */,
 			);
 			path = Settings;
@@ -968,6 +977,9 @@
 		9F8E2FF01EE978DF00F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9FCB927A1F412FA8005852BA /* slider_knob_highlighted@3x.png */,
+				9FCB92761F412EDA005852BA /* slider_knob@3x.png */,
+				9FCB92771F412EDA005852BA /* slider_track@3x.png */,
 				9F7298CC1F3415F000CD59E1 /* logo_solid_light@3x.png */,
 				9F8E2FF11EE978DF00F89A1D /* icon_tabBar_settings@3x.png */,
 				9F8E2FF21EE978DF00F89A1D /* icon_tabBar_settings__active@3x.png */,
@@ -1197,6 +1209,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		9FCB92731F3FCCBD005852BA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		9FEC04EC1ECFD8C4009256BD /* Lists */ = {
 			isa = PBXGroup;
 			children = (
@@ -1335,6 +1355,7 @@
 				9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */,
 				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,
 				9F9C59E91F0C316C003B9266 /* groupedHighlightableCellBG_normal_standalone@3x.png in Resources */,
+				9FCB92791F412EDA005852BA /* slider_track@3x.png in Resources */,
 				9F33E6E91F1A9F9C00610662 /* balanceDisplayBG_stretchable_orange@3x.png in Resources */,
 				9F9C59FF1F0D8C11003B9266 /* dropdown-arrow-down@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
@@ -1346,6 +1367,7 @@
 				9F9C59E61F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_top@3x.png in Resources */,
 				9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */,
 				9F2BFE881EF08ABA006B2F7D /* pushButtonBG_disabled@3x.png in Resources */,
+				9FCB927B1F412FA8005852BA /* slider_knob_highlighted@3x.png in Resources */,
 				9F8E2FEF1EE978B700F89A1D /* qrDropzoneIcon@3x.png in Resources */,
 				9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */,
 				9FA734381F077EA100C674D6 /* popoverDisclosureArrow@3x.png in Resources */,
@@ -1373,6 +1395,7 @@
 				9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */,
 				9F8E2FFB1EE978E800F89A1D /* actionButton_iconImage__send@3x.png in Resources */,
 				9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */,
+				9FCB92781F412EDA005852BA /* slider_knob@3x.png in Resources */,
 				9F8E30401EEDAB9400F89A1D /* wallet-00C6FF@3x.png in Resources */,
 				9F33E6E61F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png in Resources */,
 				9F9C59E11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png in Resources */,
@@ -1457,6 +1480,7 @@
 				9F33E70B1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift in Sources */,
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
+				9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
