@@ -64,6 +64,12 @@ struct EmojiUI
 				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
 				object: PasswordController.shared
 			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(UIApplicationWillChangeStatusBarFrame),
+				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				object: nil
+			)
 		}
 		//
 		// Lifecycle - Deinit
@@ -81,11 +87,15 @@ struct EmojiUI
 		}
 		func stopObserving()
 		{
-			
 			NotificationCenter.default.removeObserver(
 				self,
 				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
 				object: PasswordController.shared
+			)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				object: nil
 			)
 		}
 		//
@@ -136,6 +146,13 @@ struct EmojiUI
 		{ // just in case 
 			if let popover = self.popover {
 				popover.dismiss()
+			}
+		}
+		
+		@objc fileprivate func UIApplicationWillChangeStatusBarFrame()
+		{
+			if let popover = self.popover {
+				popover.dismiss() // or else it'll be off center (alternative is just move it but that's more work)
 			}
 		}
 	}
