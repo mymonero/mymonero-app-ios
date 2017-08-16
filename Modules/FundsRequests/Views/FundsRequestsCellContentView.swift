@@ -20,9 +20,20 @@ class FundsRequestCellQRCodeMatteCells
 
 class FundsRequestsCellContentView: UIView
 {
+	//
+	// Constants
+	enum DisplayMode
+	{
+		case withQRCode
+		case noQRCode
+	}
+	//
+	// Properties
+	let displayMode: DisplayMode
+	//
 	let iconView = UICommonComponents.WalletIconView(sizeClass: .large43)
-	let qrCodeMatteView = UIImageView(image: FundsRequestCellQRCodeMatteCells.stretchableImage)
-	let qrCodeImageView = UIImageView()
+	var qrCodeMatteView: UIImageView?
+	var qrCodeImageView: UIImageView?
 	//
 	let amountLabel = UILabel()
 	let memoLabel = UILabel()
@@ -31,8 +42,9 @@ class FundsRequestsCellContentView: UIView
 	var willBeDisplayedWithRightSideAccessoryChevron = true // configurable after init, else also call self.setNeedsLayout
 	//
 	// Lifecycle - Init
-	init()
+	init(displayMode: DisplayMode)
 	{
+		self.displayMode = displayMode
 		super.init(frame: .zero)
 		self.setup()
 	}
@@ -42,8 +54,13 @@ class FundsRequestsCellContentView: UIView
 	func setup()
 	{
 		self.addSubview(self.iconView)
-		self.addSubview(self.qrCodeMatteView)
-		self.addSubview(self.qrCodeImageView)
+		if self.displayMode == .withQRCode {
+			self.qrCodeMatteView = UIImageView(image: FundsRequestCellQRCodeMatteCells.stretchableImage)
+			self.addSubview(self.qrCodeMatteView!)
+			//
+			self.qrCodeImageView = UIImageView()
+			self.addSubview(self.qrCodeImageView!)
+		}
 		do {
 			let view = self.amountLabel
 			view.textColor = UIColor(rgb: 0xFCFBFC)
@@ -111,7 +128,9 @@ class FundsRequestsCellContentView: UIView
 		assert(self.object != nil)
 		let object = self.object!
 		self.iconView.configure(withSwatchColor: object.to_walletSwatchColor)
-		self.qrCodeImageView.image = object.qrCodeImage
+		if self.displayMode == .withQRCode {
+			self.qrCodeImageView!.image = object.cached__qrCode_image_small
+		}
 		self.amountLabel.text = object.amount != nil ? "\(object.amount!) XMR" : "Any amount"
 		self.senderLabel.text = object.from_fullname ?? "N/A"
 		self.memoLabel.text = object.message ?? object.description ?? ""
@@ -134,23 +153,25 @@ class FundsRequestsCellContentView: UIView
 			width: self.iconView.frame.size.width,
 			height: self.iconView.frame.size.height
 		)
-		do {
-			let visual__side = 24
-			let side = visual__side + 2*FundsRequestCellQRCodeMatteCells.imagePaddingInset
-			let visual__x = 36
-			let visual__y = 36
-			self.qrCodeMatteView.frame = CGRect(
-				x: visual__x - FundsRequestCellQRCodeMatteCells.imagePaddingInset,
-				y: visual__y - FundsRequestCellQRCodeMatteCells.imagePaddingInset,
-				width: side,
-				height: side
-			)
-			//
-			let qrCodeInset: CGFloat = 2
-			self.qrCodeImageView.frame = self.qrCodeMatteView.frame.insetBy(
-				dx: CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset) + qrCodeInset,
-				dy: CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset) + qrCodeInset
-			)
+		if self.displayMode == .withQRCode {
+			do {
+				let visual__side = 24
+				let side = visual__side + 2*FundsRequestCellQRCodeMatteCells.imagePaddingInset
+				let visual__x = 36
+				let visual__y = 36
+				self.qrCodeMatteView!.frame = CGRect(
+					x: visual__x - FundsRequestCellQRCodeMatteCells.imagePaddingInset,
+					y: visual__y - FundsRequestCellQRCodeMatteCells.imagePaddingInset,
+					width: side,
+					height: side
+				)
+				//
+				let qrCodeInset: CGFloat = 2
+				self.qrCodeImageView!.frame = self.qrCodeMatteView!.frame.insetBy(
+					dx: CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset) + qrCodeInset,
+					dy: CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset) + qrCodeInset
+				)
+			}
 		}
 		let labels_x: CGFloat = self.iconView.frame.origin.x + self.iconView.frame.size.width + 20
 		let labels_rightMargin: CGFloat = self.willBeDisplayedWithRightSideAccessoryChevron ? 40 : 16

@@ -444,7 +444,6 @@ extension SendFundsForm
 			return inset
 		}
 		//
-		// Accessors - Overrides
 		override func nextInputFieldViewAfter(inputView: UIView) -> UIView?
 		{
 			switch inputView {

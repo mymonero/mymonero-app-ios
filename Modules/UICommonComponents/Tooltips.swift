@@ -167,7 +167,7 @@ extension UICommonComponents
 		func tapped()
 		{
 			if self.tip != nil {
-				self._dismiss(dismissEvenIfCurrentlyAnimating: true)
+				self._dismiss(dismissEvenIfCurrentlyAnimating: false) // false b/c else they can tap twice and it'll just appear to cancel animations and instantly disappear
 				return
 			}
 			self._present()

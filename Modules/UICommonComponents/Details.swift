@@ -17,20 +17,6 @@ extension UICommonComponents
 		// Principal View Controller
 		class ViewController: ScrollableValidatingInfoViewController
 		{
-			//
-			// Lifecycle - Init
-			override func setup_views()
-			{
-				super.setup_views()
-				self.view.backgroundColor = UIColor.contentBackgroundColor
-			}
-			override func setup_scrollView()
-			{
-				super.setup_scrollView()
-				do {
-					self.scrollView.indicatorStyle = .white
-				}
-			}
 		}
 		//
 		// Table view variation
@@ -377,8 +363,13 @@ extension UICommonComponents
 				fatalError("init(coder:) has not been implemented")
 			}
 		}
+		enum AccessoryButtonAction
+		{
+			case copy
+			case share
+		}
 		//
-		class CopyableLongStringFieldView: FieldView
+		class CopyableLongStringFieldView: FieldView // TODO: add AccessoryButtonAction support
 		{
 			//
 			// Constants
@@ -689,6 +680,135 @@ extension UICommonComponents
 					height: self.contentView.frame.size.height
 				)
 
+			}
+		}
+		class ImageButtonDisplayingFieldView: FieldView
+		{
+			//
+			// Constants
+			override var contentInsets: UIEdgeInsets {
+				return UIEdgeInsetsMake(17, 16, 17, 16)
+			}
+			//
+			// Properties
+			var labelVariant: FieldLabel.Variant
+			var fieldTitle: String
+			//
+			var titleLabel: FieldLabel!
+			var copyButton: CopyButton! // TODO: add AccessoryButtonAction support
+			var contentImageButton: UIButton!
+			fileprivate var tapped_fn: ((Void) -> Void)?
+			//
+			var accessoryButtonAction: AccessoryButtonAction
+			//
+			var _bottomMostView: UIView { // overridable
+				return self.contentImageButton
+			}
+			//
+			// Init
+			init(
+				labelVariant: FieldLabel.Variant,
+				title: String,
+				accessoryButtonAction: AccessoryButtonAction,
+				tapped_fn: ((Void) -> Void)?
+			)
+			{
+				self.labelVariant = labelVariant
+				self.fieldTitle = title
+				self.accessoryButtonAction = accessoryButtonAction
+				self.tapped_fn = tapped_fn
+				super.init()
+			}
+			required init?(coder aDecoder: NSCoder) {
+				fatalError("init(coder:) has not been implemented")
+			}
+			override func setup()
+			{
+				super.setup()
+				do {
+					let view = FieldLabel(variant: self.labelVariant, title: self.fieldTitle)
+					view.isUserInteractionEnabled = false // do not receive/obscure touches
+					self.titleLabel = view
+					self.addSubview(view)
+				}
+				do {
+					let view = CopyButton() // TODO: accessoryButtonAction support
+					self.copyButton = view
+					self.addSubview(view)
+				}
+				do {
+					let view = UIButton()
+					if self.tapped_fn != nil {
+						view.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+						view.adjustsImageWhenHighlighted = true // to show touches .. expose via config as funds request details view relies on this
+					} else {
+						view.isUserInteractionEnabled = false // so as not to intercept taps/scrolls/etc
+					}
+					self.contentImageButton = view
+					// TODO? configure here? or in subclass?
+					self.addSubview(view)
+				}
+			}
+			//
+			// Imperatives - Values
+			func set(image: UIImage?)
+			{
+				self.contentImageButton.setImage(image, for: .normal)
+				// TODO: share/copy support
+//				self.copyButton.set(text: text) // even if nil
+			}
+			//
+			// Imperatives - Layout - Overrides
+			override func layOut(
+				withContainerWidth containerWidth: CGFloat,
+				withXOffset xOffset: CGFloat,
+				andYOffset yOffset: CGFloat
+			)
+			{
+				let contentInsets = self.contentInsets
+
+				let content_x: CGFloat = contentInsets.left
+				let content_rightMargin: CGFloat = 36 + contentInsets.right
+				let content_w = containerWidth - content_x - content_rightMargin - CopyButton.visual_w
+				self.titleLabel.frame = CGRect(
+					x: content_x,
+					y: contentInsets.top,
+					width: content_w,
+					height: self.titleLabel.frame.size.height // it already has a fixed height
+				)
+				self.copyButton.frame = CGRect(
+					x: containerWidth - contentInsets.right - self.copyButton.frame.size.width + CopyButton.usabilityPadding_h,
+					y: self.titleLabel.frame.origin.y - (CopyButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since CopyButton.h is increased for usability
+					width: CopyButton.w,
+					height: CopyButton.h 
+				).integral
+				self.layOut_contentView(content_x: content_x, content_w: content_w)
+				//
+				let bottomPadding: CGFloat = contentInsets.bottom
+				let bottomMostView = self._bottomMostView
+				self.frame = CGRect(
+					x: xOffset,
+					y: yOffset,
+					width: containerWidth,
+					height: bottomMostView.frame.origin.y + bottomMostView.frame.size.height + bottomPadding
+				)
+			}
+			func layOut_contentView(content_x: CGFloat, content_w: CGFloat)
+			{
+				self.contentImageButton.frame = CGRect(
+					x: content_x + 1, // +1 for visual
+					y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 12,
+					width: 80,
+					height: 80 // TODO: enable override
+				)
+			}
+			//
+			// Delegation - Interactions
+			func buttonTapped()
+			{
+				if let fn = self.tapped_fn {
+					fn()
+				}
 			}
 		}
 		//

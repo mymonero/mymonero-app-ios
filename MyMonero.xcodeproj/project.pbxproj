@@ -168,6 +168,7 @@
 		9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */; };
 		9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */; };
 		9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */; };
+		9F96C3081F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3071F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift */; };
 		9F9C59DF1F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */; };
 		9F9C59E01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */; };
 		9F9C59E11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */; };
@@ -404,6 +405,7 @@
 		9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-F97777@3x.png"; sourceTree = "<group>"; };
 		9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletDetailsActionButtonsCell.swift; sourceTree = "<group>"; };
 		9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAppWalletActionsCoordinator.swift; sourceTree = "<group>"; };
+		9F96C3071F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestQRDisplayViewController.swift; sourceTree = "<group>"; };
 		9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_bottom@3x.png"; sourceTree = "<group>"; };
 		9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_middle@3x.png"; sourceTree = "<group>"; };
 		9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_standalone@3x.png"; sourceTree = "<group>"; };
@@ -1083,6 +1085,7 @@
 				9FA7340D1F05AF8800C674D6 /* FundsRequestsTabNavigationViewController.swift */,
 				9F9C59F61F0D8313003B9266 /* AddFundsRequestFormViewController.swift */,
 				9F740D581F1702DF0017A20E /* FundsRequestDetailsViewController.swift */,
+				9F96C3071F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1529,6 +1532,7 @@
 				9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */,
 				9F2BFECD1EF33015006B2F7D /* Contact.swift in Sources */,
 				9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */,
+				9F96C3081F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift in Sources */,
 				9F00B8E21EC276C30040F52A /* MoneroTransactions.swift in Sources */,
 				9F2BFF0D1EF8297E006B2F7D /* AddWallet_WizardController.swift in Sources */,
 				9F2BFF111EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift in Sources */,

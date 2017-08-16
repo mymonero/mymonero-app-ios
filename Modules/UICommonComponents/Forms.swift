@@ -42,10 +42,6 @@ extension UICommonComponents
 		{
 			super.setup_scrollView()
 			do {
-				self.scrollView.indicatorStyle = .white
-				self.configure_scrollView_contentInset()
-			}
-			do {
 				let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
 				recognizer.delegate = self
 				self.scrollView.addGestureRecognizer(recognizer)
@@ -116,7 +112,7 @@ extension UICommonComponents
 		var _new_heightForKeyboardInContentInsetsBottom: CGFloat {
 			return self.keyboardIsShowing == true ? self.keyboardHeight! : 0
 		}
-		func new_contentInset() -> UIEdgeInsets
+		override func new_contentInset() -> UIEdgeInsets
 		{ // overridable
 			return UIEdgeInsetsMake(
 				0,
@@ -222,12 +218,6 @@ extension UICommonComponents
 		func _tryToSubmitForm()
 		{
 			assert(false, "Override and implement \(#function)")
-		}
-		//
-		// Imperatives - Configuration - Scroll view
-		func configure_scrollView_contentInset()
-		{
-			self.scrollView.contentInset = self.new_contentInset()
 		}
 		//
 		var isFormEnabled = true

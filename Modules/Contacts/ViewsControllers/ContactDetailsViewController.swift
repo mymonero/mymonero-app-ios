@@ -40,7 +40,6 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	override func setup_views()
 	{
 		super.setup_views()
-		self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 14, 0)
 		do {
 			let sectionView = self.sectionView
 			do {
@@ -118,6 +117,15 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 		super.stopObserving()
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.contact)
 		NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: self.contact)
+	}
+	//
+	// Accessors - Overrides
+	override func new_contentInset() -> UIEdgeInsets
+	{
+		var inset = super.new_contentInset()
+		inset.bottom += UICommonComponents.ActionButton.wholeButtonsContainerHeight
+		
+		return inset
 	}
 	//
 	// Imperatives

@@ -28,6 +28,8 @@ extension UICommonComponents
 		}
 		func setup()
 		{
+			self.view.backgroundColor = .contentBackgroundColor
+			//
 			self.setup_scrollView() // must be before setup_views b/c a subclasser may put self.scrollView.addSubview prior to super.setup_views()
 			self.setup_views() // must be before _navigation b/c that may rely on _views
 			self.setup_navigation()
@@ -42,9 +44,11 @@ extension UICommonComponents
 		func setup_scrollView()
 		{
 			let view = UIScrollView()
+			view.indicatorStyle = .white
 			view.delegate = self
 			self.view.addSubview(view)
 			self.scrollView = view
+			self.configure_scrollView_contentInset()
 		}
 		func setup_messageView()
 		{
@@ -87,7 +91,7 @@ extension UICommonComponents
 		{
 		}
 		//
-		// Runtime - Accessors - Form components configuration
+		// Runtime - Accessors - Components configuration
 		func new_wantsInlineMessageViewForValidationMessages() -> Bool
 		{ // overridable
 			return true
@@ -96,6 +100,16 @@ extension UICommonComponents
 		func new_navigationBarTitleColor() -> UIColor?
 		{ // overridable
 			return nil // for themeController default 
+		}
+		//
+		func new_contentInset() -> UIEdgeInsets
+		{ // overridable
+			return UIEdgeInsetsMake(
+				0,
+				0,
+				0,
+				0
+			)
 		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
@@ -142,6 +156,12 @@ extension UICommonComponents
 			}
 			self.messageView!.clearAndHide() // as you can see, no ! required here. compiler bug?
 			// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
+		}
+		//
+		// Imperatives - Configuration - Scroll view
+		func configure_scrollView_contentInset()
+		{
+			self.scrollView.contentInset = self.new_contentInset()
 		}
 		//
 		// Imperatives - Convenience - Navigation bar title color

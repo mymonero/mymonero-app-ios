@@ -23,7 +23,9 @@ class FundsRequestsListViewCell: UITableViewCell
 		return contentViewHeight + imagePadding.top + imagePadding.bottom
 	}
 	//
-	let cellContentView = FundsRequestsCellContentView()
+	let cellContentView = FundsRequestsCellContentView(
+		displayMode: .withQRCode
+	)
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
 	let separatorView = UICommonComponents.Details.FieldSeparatorView(mode: .contiguousCellContainer)
 	//

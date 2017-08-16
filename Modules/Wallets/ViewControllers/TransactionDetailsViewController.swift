@@ -59,7 +59,6 @@ extension TransactionDetails
 		override func setup_views()
 		{
 			super.setup_views()
-			self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 14, 0)
 			// TODO: contact sent-to or received-from
 			do {
 				let sectionView = self.sectionView_details
@@ -126,9 +125,6 @@ extension TransactionDetails
 		{
 			super.setup_navigation()
 		}
-		override var overridable_wantsBackButton: Bool {
-			return true
-		}
 		//
 		override func startObserving()
 		{
@@ -147,6 +143,16 @@ extension TransactionDetails
 			return self.transaction.approxFloatAmount > 0
 				? nil // for theme default/reset
 				: UIColor(rgb: 0xF97777)
+		}
+		override var overridable_wantsBackButton: Bool {
+			return true
+		}
+		override func new_contentInset() -> UIEdgeInsets
+		{
+			var inset = super.new_contentInset()
+			inset.bottom += 14
+			
+			return inset
 		}
 		//
 		// Imperatives

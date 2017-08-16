@@ -30,10 +30,23 @@ class FundsRequest: PersistableObject
 		case amount = "amount"
 		case message = "message"
 		case description = "description"
-		case qrCode_imgDataURIString = "qrCode_imgDataURIString" // hopefully encrypting and saving this doesn't turn out to have been a terrible idea - but it could be reconstructed on init
 	}
-	//
-	static let targetSize_side: CGFloat = 8 * 13 // using 8 as grid
+	enum QRSize: CGFloat
+	{
+		case small = 20
+		case medium = 96 // 2 * 8
+		case large = 272 // 320 - 2*24
+		//
+		var side: CGFloat {
+			return self.rawValue
+		}
+		var width: CGFloat {
+			return self.side
+		}
+		var height: CGFloat {
+			return self.side
+		}
+	}
 	//
 	// Properties - Persisted Values
 	var from_fullname: String?
@@ -45,7 +58,8 @@ class FundsRequest: PersistableObject
 	var description: String?
 	//
 	// Properties - Transient
-	var qrCodeImage: UIImage!
+	var qrCode_cgImage: CGImage!
+	var cached__qrCode_image_small: UIImage!
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -119,54 +133,61 @@ class FundsRequest: PersistableObject
 	}
 	func setup()
 	{
-		do { // qrCodeCGImage
-			let uriStringData = self.new_URI.absoluteString.data(using: .utf8)
-			guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
-				assert(false)
-				return
-			}
-			filter.setValue(uriStringData, forKey: "inputMessage")
-			filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
-			let outputImage = filter.outputImage!
-			let context = CIContext(options: nil)
-			let cgImage = context.createCGImage(outputImage, from: outputImage.extent)!
-			//
-			
-			let targetSize = CGSize(
-				width: FundsRequest.targetSize_side,
-				height: FundsRequest.targetSize_side
-			)
-			UIGraphicsBeginImageContext(
-				CGSize(
-					width: targetSize.width * UIScreen.main.scale,
-					height: targetSize.height * UIScreen.main.scale
-				)
-			)
-			var preScaledImage: UIImage!
-			do {
-				let graphicsContext = UIGraphicsGetCurrentContext()!
-				graphicsContext.interpolationQuality = .none
-				let boundingBoxOfClipPath = graphicsContext.boundingBoxOfClipPath
-				graphicsContext.draw(
-					cgImage,
-					in: CGRect(
-						x: 0,
-						y: 0,
-						width: boundingBoxOfClipPath.width,
-						height: boundingBoxOfClipPath.height
-					)
-				)
-				//
-				preScaledImage = UIGraphicsGetImageFromCurrentImageContext()!
-			}
-			UIGraphicsEndImageContext()
-			let scaled_qrCodeImage = UIImage(
-				cgImage: preScaledImage.cgImage!,
-				scale: 1.0/UIScreen.main.scale,
-				orientation: .downMirrored
-			)
-			self.qrCodeImage = scaled_qrCodeImage
+		self.setup_qrCode_cgImage()
+		self.cached__qrCode_image_small = self.new_qrCodeImage(withQRSize: .small) // cache for table view access
+	}
+	func setup_qrCode_cgImage()
+	{
+		let uriStringData = self.new_URI.absoluteString.data(using: .utf8)
+		guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
+			assert(false)
+			return
 		}
+		filter.setValue(uriStringData, forKey: "inputMessage")
+		filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
+		let outputImage = filter.outputImage!
+		let context = CIContext(options: nil)
+		self.qrCode_cgImage = context.createCGImage(outputImage, from: outputImage.extent)!
+	}
+	//
+	// Accessors - Factories
+	func new_qrCodeImage(withQRSize qrSize: QRSize) -> UIImage
+	{
+		let targetSize = CGSize(
+			width: qrSize.width,
+			height: qrSize.height
+		)
+		UIGraphicsBeginImageContext(
+			CGSize(
+				width: targetSize.width * UIScreen.main.scale,
+				height: targetSize.height * UIScreen.main.scale
+			)
+		)
+		var preScaledImage: UIImage!
+		do {
+			let graphicsContext = UIGraphicsGetCurrentContext()!
+			graphicsContext.interpolationQuality = .none
+			let boundingBoxOfClipPath = graphicsContext.boundingBoxOfClipPath
+			graphicsContext.draw(
+				self.qrCode_cgImage,
+				in: CGRect(
+					x: 0,
+					y: 0,
+					width: boundingBoxOfClipPath.width,
+					height: boundingBoxOfClipPath.height
+				)
+			)
+			//
+			preScaledImage = UIGraphicsGetImageFromCurrentImageContext()!
+		}
+		UIGraphicsEndImageContext()
+		let scaled_qrCodeImage = UIImage(
+			cgImage: preScaledImage.cgImage!,
+			scale: 1.0/UIScreen.main.scale,
+			orientation: .downMirrored
+		)
+		
+		return scaled_qrCodeImage
 	}
 	//
 	// Interface - Runtime - Accessors/Properties

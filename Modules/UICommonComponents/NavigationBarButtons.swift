@@ -27,11 +27,15 @@ extension UICommonComponents
 		{
 			self.init(type: type, target: target, action: action, title_orNilForDefault: nil)
 		}
-		init(type: ButtonItemType, tapped_fn: @escaping (Void) -> Void)
+		convenience init(type: ButtonItemType, tapped_fn: @escaping (Void) -> Void)
+		{
+			self.init(type: type, tapped_fn: tapped_fn, title_orNilForDefault: nil)
+		}
+		init(type: ButtonItemType, tapped_fn: @escaping (Void) -> Void, title_orNilForDefault: String?)
 		{
 			super.init()
 			self.tapped_fn = tapped_fn
-			self._shared_initializeWith(type: type, target: self, action: #selector(_forFn_tapped), title_orNilForDefault: nil)
+			self._shared_initializeWith(type: type, target: self, action: #selector(_forFn_tapped), title_orNilForDefault: title_orNilForDefault)
 		}
 		init(type: ButtonItemType, target: Any?, action: Selector?, title_orNilForDefault: String?)
 		{

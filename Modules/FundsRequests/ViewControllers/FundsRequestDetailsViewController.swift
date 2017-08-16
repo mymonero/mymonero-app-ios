@@ -18,9 +18,9 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	// Properties
 	var fundsRequest: FundsRequest
 	//
-	var sectionView_instanceCell = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
-	var sectionView_link = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
-	var sectionView_message = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
+	let sectionView_instanceCell = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
+	let sectionView_codeAndLink = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
+	let sectionView_message = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
 	var deleteButton: UICommonComponents.LinkButtonView!
 	//
 	//
@@ -38,17 +38,33 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	override func setup_views()
 	{
 		super.setup_views()
-		self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 14, 0)
 		do {
 			let sectionView = self.sectionView_instanceCell
 			do {
-				let view = UICommonComponents.Details.FundsRequestCellFieldView(fundsRequest: self.fundsRequest)
+				let view = UICommonComponents.Details.FundsRequestCellFieldView(
+					fundsRequest: self.fundsRequest,
+					displayMode: .noQRCode
+				)
 				sectionView.add(fieldView: view)
 			}
 			self.scrollView.addSubview(sectionView)
 		}
 		do {
-			let sectionView = self.sectionView_link
+			let sectionView = self.sectionView_codeAndLink
+			do {
+				let view = QRImageButtonDisplayingFieldView(
+					labelVariant: self.fieldLabels_variant,
+					title: NSLocalizedString("QR Code", comment: ""),
+					accessoryButtonAction: .share,
+					tapped_fn:
+					{ [unowned self] in
+						self.qrImageFieldView_tapped()
+					}
+				)
+				let image = self.fundsRequest.new_qrCodeImage(withQRSize: .medium) // generating a new image here - is this performant enough?
+				view.set(image: image)
+				sectionView.add(fieldView: view)
+			}
 			do {
 				let view = UICommonComponents.Details.CopyableLongStringFieldView(
 					labelVariant: self.fieldLabels_variant,
@@ -90,15 +106,13 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		super.setup_navigation()
 		self.set_navigationTitle() // also to be called on contact info updated
-		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .save,
-			target: self,
-			action: #selector(tapped_rightBarButtonItem),
-			title_orNilForDefault: NSLocalizedString("Download", comment: "")
-		)
-	}
-	override var overridable_wantsBackButton: Bool {
-		return true
+		// TODO: remove; replaced with 'SHARE' functionality on new qr code image display section
+//		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+//			type: .save,
+//			target: self,
+//			action: #selector(tapped_rightBarButtonItem),
+//			title_orNilForDefault: NSLocalizedString("Download", comment: "")
+//		)
 	}
 	//
 	override func startObserving()
@@ -110,6 +124,18 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		super.stopObserving()
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.wasDeleted.notificationName, object: self.fundsRequest)
+	}
+	//
+	// Accessors - Overrides
+	override var overridable_wantsBackButton: Bool {
+		return true
+	}
+	override func new_contentInset() -> UIEdgeInsets
+	{
+		var inset = super.new_contentInset()
+		inset.bottom += 14
+		
+		return inset
 	}
 	//
 	// Accessors - Factories
@@ -183,7 +209,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
 		//
-		self.sectionView_link.layOut(
+		self.sectionView_codeAndLink.layOut(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
 			andYOffset: self.sectionView_instanceCell.frame.origin.y + self.sectionView_instanceCell.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
@@ -192,7 +218,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		self.sectionView_message.layOut(
 			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
 			withXOffset: 0,
-			andYOffset: self.sectionView_link.frame.origin.y + self.sectionView_link.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
+			andYOffset: self.sectionView_codeAndLink.frame.origin.y + self.sectionView_codeAndLink.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
 		)
 		//
 		self.deleteButton.frame = CGRect(
@@ -240,10 +266,11 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)
 	}
-	func tapped_rightBarButtonItem()
-	{
-		UIImageWriteToSavedPhotosAlbum(self.fundsRequest.qrCodeImage, self, #selector(_savedToPhotosAlbum(image:error:context:)), nil)
-	}
+	// TODO: remove; replaced with share functionality
+//	func tapped_rightBarButtonItem()
+//	{
+//		UIImageWriteToSavedPhotosAlbum(self.fundsRequest.qrCodeImage, self, #selector(_savedToPhotosAlbum(image:error:context:)), nil)
+//	}
 	func _savedToPhotosAlbum(image: UIImage?, error: Error?, context: Any?)
 	{
 		if error != nil {
@@ -281,6 +308,14 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		}
 		self.navigationController!.popViewController(animated: true)
 	}
+	//
+	// Delegation - Interactions
+	func qrImageFieldView_tapped()
+	{
+		let controller = FundsRequestQRDisplayViewController(fundsRequest: self.fundsRequest)
+		let navigationController = UINavigationController(rootViewController: controller)
+		self.navigationController!.present(navigationController, animated: true, completion: nil)
+	}
 }
 //
 //
@@ -298,13 +333,17 @@ extension UICommonComponents.Details
 		static let cellHeight: CGFloat = 80
 		//
 		// Properties
-		let cellContentView = FundsRequestsCellContentView()
+		var cellContentView: FundsRequestsCellContentView!
 		//
 		// Init
-		init(fundsRequest: FundsRequest)
+		init(
+			fundsRequest: FundsRequest,
+			displayMode: FundsRequestsCellContentView.DisplayMode? = .withQRCode
+		)
 		{
 			do {
-				let view = self.cellContentView
+				let view = FundsRequestsCellContentView(displayMode: displayMode ?? .withQRCode)
+				self.cellContentView = view
 				view.willBeDisplayedWithRightSideAccessoryChevron = false // so we get proper right margin
 				view.configure(withObject: fundsRequest)
 			}
@@ -345,5 +384,48 @@ extension UICommonComponents.Details
 				height: FundsRequestCellFieldView.cellHeight
 			)
 		}
+	}
+}
+
+class QRImageButtonDisplayingFieldView: UICommonComponents.Details.ImageButtonDisplayingFieldView
+{
+	//
+	// Properties
+	var qrCodeMatteView: UIImageView!
+	//
+	// Properties - Overrides
+	override var _bottomMostView: UIView {
+		return self.qrCodeMatteView // to support proper bottom inset
+	}
+	//
+	override func setup()
+	{
+		super.setup()
+		do {
+			let view = UIImageView(
+				image: FundsRequestCellQRCodeMatteCells.stretchableImage
+			)
+			self.qrCodeMatteView = view
+			self.insertSubview(view, at: 0) // underneath image
+		}
+	}
+	//
+	override func layOut_contentView(content_x: CGFloat, content_w: CGFloat)
+	{
+		// not going to call on super
+		let qrCodeImageSide = FundsRequest.QRSize.medium.side
+		let qrCodeInsetFromMatteView: CGFloat = 3
+		let offsetFromImage = CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset) + qrCodeInsetFromMatteView
+		let qrCodeMatteViewSide: CGFloat = qrCodeImageSide + 2*offsetFromImage
+		self.qrCodeMatteView!.frame = CGRect(
+			x: content_x + 1 - CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset), // +1 for visual,
+			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 12 - CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset),
+			width: qrCodeMatteViewSide,
+			height: qrCodeMatteViewSide
+		).integral
+		self.contentImageButton.frame = self.qrCodeMatteView!.frame.insetBy(
+			dx: offsetFromImage,
+			dy: offsetFromImage
+		).integral
 	}
 }
