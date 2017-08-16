@@ -84,6 +84,10 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			recognizer.direction = .down
 			self.scrollView.addGestureRecognizer(recognizer)
 		}
+		do {
+			let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+			self.scrollView.addGestureRecognizer(recognizer)
+		}
 	}
 	//
 	// Lifecycle - Teardown
@@ -122,6 +126,10 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 	//
 	// Delegation - Interactions
 	func swipedDown()
+	{
+		self.navigationController!.dismiss(animated: true, completion: nil)
+	}
+	func tapped()
 	{
 		self.navigationController!.dismiss(animated: true, completion: nil)
 	}
