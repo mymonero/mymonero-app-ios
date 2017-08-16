@@ -24,6 +24,7 @@ class RootViewController: UIViewController
 	{
 		super.init(nibName: nil, bundle: nil)
 		//
+		
 		self.setup_presentationSingletons()
 		//
 		self.preEmptively_startObserving_passwordEntryNavigationViewController() // before the tab bar views are set up and cause the pw to be requested
@@ -41,11 +42,14 @@ class RootViewController: UIViewController
 	func setup_views()
 	{
 		self.view.backgroundColor = UIColor.contentBackgroundColor
+		self.edgesForExtendedLayout = [.top] // slide under status bar but handle root tab vc layout
 		//
-		//
-		self.tabBarViewController = RootTabBarViewController()
-		self.addChildViewController(tabBarViewController)
-		self.view.addSubview(self.tabBarViewController.view)
+		do {
+			let controller = RootTabBarViewController()
+			self.tabBarViewController = controller
+			self.addChildViewController(controller)
+			self.view.addSubview(controller.view)
+		}
 	}
 	func preEmptively_startObserving_passwordEntryNavigationViewController()
 	{
@@ -62,6 +66,12 @@ class RootViewController: UIViewController
 			self,
 			selector: #selector(UIApplicationWillChangeStatusBarFrame),
 			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			object: nil
+		)
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(UIApplicationDidChangeStatusBarFrame),
+			name: NSNotification.Name.UIApplicationDidChangeStatusBarFrame,
 			object: nil
 		)
 	}
@@ -84,20 +94,8 @@ class RootViewController: UIViewController
 	override func viewDidLayoutSubviews()
 	{
 		super.viewDidLayoutSubviews()
-		var y: CGFloat!
-		do {
-			if let statusBarFrame = self._forLayout__to_statusBarFrame {
-				y = statusBarFrame.size.height
-			} else {
-				y = 0
-			}
-		}
-		self.tabBarViewController.view.frame = CGRect(
-			x: 0,
-			y: y,
-			width: self.view.bounds.size.width,
-			height: self.view.bounds.size.height - y
-		)
+		//
+		self.tabBarViewController.view.frame = self.view.bounds
 	}
 	//
 	// Delegation - Notifications
@@ -110,11 +108,12 @@ class RootViewController: UIViewController
 		self.tabBarViewController.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 	}
 	//
-	var _forLayout__to_statusBarFrame: CGRect?
 	@objc func UIApplicationWillChangeStatusBarFrame(_ notification: Notification)
 	{
-		let to_statusBarFrame = notification.userInfo![UIApplicationStatusBarFrameUserInfoKey] as! NSValue
-		self._forLayout__to_statusBarFrame = to_statusBarFrame.cgRectValue
+		self.view.setNeedsLayout()
+	}
+	@objc func UIApplicationDidChangeStatusBarFrame(_ notification: Notification)
+	{
 		self.view.setNeedsLayout()
 	}
 }
