@@ -40,19 +40,19 @@ extension UICommonComponents
 			case .utility:
 				image = UICommonComponents.PushButtonCells.Variant.utility.stretchableImage
 				highlightedImage = UICommonComponents.PushButtonCells.Variant.utility_highlighted.stretchableImage
-				font = UIFont.middlingSemiboldSansSerif
+				font = .middlingSemiboldSansSerif
 				color = UIColor(rgb: 0xFCFBFC)
 				break
 			case .action:
 				image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
 				highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
-				font = UIFont.middlingSemiboldSansSerif
+				font = .middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
 			case .destructive:
 				image = UICommonComponents.PushButtonCells.Variant.destructive.stretchableImage
 				highlightedImage = UICommonComponents.PushButtonCells.Variant.destructive_highlighted.stretchableImage
-				font = UIFont.middlingSemiboldSansSerif
+				font = .middlingSemiboldSansSerif
 				color = UIColor(rgb: 0x161416)
 				break
 			}
