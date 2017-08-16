@@ -24,7 +24,7 @@ class WalletAppContactActionsCoordinator
 	}
 	enum NotificationUserInfoKeys: String
 	{
-		case contact = "WalletAppCoordinator.NotificationUserInfoKeys.contact"
+		case contact = "WalletAppWalletActionsCoordinator.NotificationUserInfoKeys.contact"
 		//
 		var key: String {
 			return self.rawValue

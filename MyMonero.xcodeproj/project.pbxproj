@@ -167,6 +167,7 @@
 		9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */; };
 		9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */; };
 		9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */; };
+		9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */; };
 		9F9C59DF1F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */; };
 		9F9C59E01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */; };
 		9F9C59E11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */; };
@@ -402,6 +403,7 @@
 		9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EB8316@3x.png"; sourceTree = "<group>"; };
 		9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-F97777@3x.png"; sourceTree = "<group>"; };
 		9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletDetailsActionButtonsCell.swift; sourceTree = "<group>"; };
+		9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAppWalletActionsCoordinator.swift; sourceTree = "<group>"; };
 		9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_bottom@3x.png"; sourceTree = "<group>"; };
 		9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_middle@3x.png"; sourceTree = "<group>"; };
 		9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "groupedHighlightableCellBG_disabled_standalone@3x.png"; sourceTree = "<group>"; };
@@ -1047,6 +1049,7 @@
 				9FA734011F05AF4E00C674D6 /* WalletsListController.swift */,
 				9F33E6FA1F2004DD00610662 /* EditFormSubmissionController.swift */,
 				9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */,
+				9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */,
 			);
 			path = ModelControllers;
 			sourceTree = "<group>";
@@ -1486,6 +1489,7 @@
 				9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
+				9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
 				9F0801441F188A690074B35A /* Homepage.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,

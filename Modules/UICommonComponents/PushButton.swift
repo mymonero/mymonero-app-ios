@@ -27,6 +27,8 @@ extension UICommonComponents
 		}
 		func setup()
 		{
+			self.adjustsImageWhenHighlighted = false // looks better when disabled imo -PS
+			//
 			var image: UIImage!
 			let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
 			var highlightedImage: UIImage!

@@ -347,7 +347,12 @@ extension SendFundsForm
 				name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, // observe 'did' so we're guaranteed to already be on right tab
 				object: nil
 			)
-			
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_:)),
+				name: WalletAppWalletActionsCoordinator.NotificationNames.didTrigger_sendFundsFromWallet.notificationName, // observe 'did' so we're guaranteed to already be on right tab
+				object: nil
+			)
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(PasswordController_willDeconstructBootedStateAndClearPassword),
@@ -1235,6 +1240,21 @@ extension SendFundsForm
 			self._clearForm() // figure that since this method is called when user is trying to initiate a new request we should clear the form
 			let contact = notification.userInfo![WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
 			self.sendTo_inputView.pick(contact: contact) // simulate user picking the contact
+		}
+		func WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_ notification: Notification)
+		{
+			self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // whether we should force-dismiss these (create new contact) is debatable…
+			self.navigationController?.popToRootViewController(animated: false) // now pop pushed stack views - essential for the case they're viewing a transaction
+			//
+			if self.isFormEnabled == false {
+				DDLog.Warn("SendFunds", "Triggered send funds from wallet while submit btn disabled. Beep.")
+				// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+				// TODO: mayyybe alert tx in progress
+				return
+			}
+			self._clearForm() // figure that since this method is called when user is trying to initiate a new request we should clear the form
+			let wallet = notification.userInfo![WalletAppWalletActionsCoordinator.NotificationUserInfoKeys.wallet.key] as! Wallet
+			self.fromWallet_inputView.set(selectedWallet: wallet)
 		}
 	}
 }

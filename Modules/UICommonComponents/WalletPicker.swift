@@ -47,9 +47,7 @@ extension UICommonComponents
 				let view = WalletPickerView()
 				view.didSelect_fn =
 				{ [unowned self] (wallet) in
-					self.selectedWallet = wallet
-					self.contentView.configure(withObject: wallet)
-					// TODO/NOTE: bubble if necessary
+					self.set(selectedWallet: wallet)
 				}
 				view.reloaded_fn =
 				{ [unowned self] in
@@ -139,6 +137,14 @@ extension UICommonComponents
 		}
 		//
 		// Imperatives - Config
+		func set(selectedWallet wallet: Wallet)
+		{
+			self.selectedWallet = wallet
+			self.configure(withRecord: wallet)
+			// TODO/NOTE: bubble if necessary
+		}
+
+		//
 		func configure(withRecord record: Wallet)
 		{
 			self.contentView.configure(withObject: record)

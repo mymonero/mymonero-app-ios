@@ -19,6 +19,33 @@ extension WalletDetails
 		// Constants/Types
 		static let margin_h: CGFloat = 16
 		//
+		enum SectionName: UInt
+		{
+			case balance		= 0
+			case infoDisclosing = 1
+			case actionButtons	= 2
+			case transactions	= 3
+			//
+			var indexInTable: Int {
+				return Int(self.rawValue)
+			}
+			static var numberOfSections: UInt {
+				var count: UInt = 0
+				while let _ = SectionName(rawValue: count) {
+					count += 1
+				}
+				//
+				return count
+			}
+			static func new_SectionName(withSectionIndex sectionIndex: Int) -> SectionName?
+			{
+				assert(sectionIndex >= 0)
+				return SectionName(
+					rawValue: UInt(sectionIndex)
+				)
+			}
+		}
+		//
 		// Properties
 		var wallet: Wallet // keeping this strong b/c self will be torn down; similarly, ∴, no need to observe .willBeDeinitialized
 		var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
@@ -153,42 +180,41 @@ extension WalletDetails
 		// - Transforms
 		func cellViewType(forCellAtIndexPath indexPath: IndexPath) -> UICommonComponents.Tables.ReusableTableViewCell.Type
 		{
-			switch indexPath.section {
-				case 0:
+			let sectionName = SectionName.new_SectionName(withSectionIndex: indexPath.section)!
+			switch sectionName {
+				case .balance:
 					return WalletDetails.Balance.Cell.self
-				case 1:
+				case .infoDisclosing:
 					return type(of: self.infoDisclosingCellView) //WalletDetails.InfoDisclosing.Cell.self
-				case 2:
+				case .actionButtons:
+					return WalletDetails.ActionButtons.Cell.self
+				case .transactions:
 					if self.hasTransactions {
 						return WalletDetails.Transaction.Cell.self
-					} else {
-						return WalletDetails.TransactionsEmptyState.Cell.self
 					}
-				default:
-					return UICommonComponents.Tables.ReusableTableViewCell.self
+					return WalletDetails.TransactionsEmptyState.Cell.self
 			}
 		}
 		func cellPosition(forCellAtIndexPath indexPath: IndexPath) -> UICommonComponents.CellPosition
 		{
-			if indexPath.section == 0 {
-				return .standalone
-			} else if indexPath.section == 1 { // infodisclosing
-				return .standalone // never need this though
-			} else if indexPath.section == 2 { // transactions
-				if self.hasTransactions {
-					let index = indexPath.row
-					let cellsCount = self.wallet.transactions!.count
-					let cellPosition = UICommonComponents.newCellPosition(
-						withCellIndex: index,
-						cellsCount: cellsCount
-					)
-					return cellPosition
-				} else {
+			let sectionName = SectionName.new_SectionName(withSectionIndex: indexPath.section)!
+			switch sectionName {
+				case .balance,
+				     .infoDisclosing,
+				     .actionButtons:
 					return .standalone
-				}
+				case .transactions:
+					if self.hasTransactions {
+						let index = indexPath.row
+						let cellsCount = self.wallet.transactions!.count
+						let cellPosition = UICommonComponents.newCellPosition(
+							withCellIndex: index,
+							cellsCount: cellsCount
+						)
+						return cellPosition
+					}
+					return .standalone
 			}
-			assert(false)
-			return .standalone
 		}
 		// - Factories - Views - Sections - Transactions
 		var _new_transactionSectionHeaderView_importTransactionsButton: WalletDetails.TransactionsSectionHeaderView {
@@ -271,13 +297,16 @@ extension WalletDetails
 			let reuseIdentifier = cellType.reuseIdentifier()
 			var lazy_cell: UICommonComponents.Tables.ReusableTableViewCell?
 			do {
-				if indexPath.section == 1 { // infodisclosing
-					lazy_cell = self.infoDisclosingCellView
-				} else {
-					lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
-					if lazy_cell == nil {
-						lazy_cell = cellType.init()
-					}
+				switch indexPath.section {
+					case SectionName.infoDisclosing.indexInTable:
+						lazy_cell = self.infoDisclosingCellView
+						break
+					default:
+						lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
+						if lazy_cell == nil {
+							lazy_cell = cellType.init()
+						}
+						break
 				}
 			}
 			let cell = lazy_cell!
@@ -294,84 +323,82 @@ extension WalletDetails
 		}
 		func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
 		{
-			switch section {
-				case 0: // balance
+			let sectionName = SectionName.new_SectionName(withSectionIndex: section)!
+			switch sectionName {
+				case .balance,
+					 .infoDisclosing,
+					 .actionButtons:
 					return 1
-				case 1: // infodisclosing
-					return 1
-				case 2: // transactions
+				case .transactions:
 					if self.hasTransactions {
 						return self.wallet.transactions?.count ?? 0
-					} else {
-						return 1 // for empty state cell
 					}
-				default:
-					assert(false)
-					return 0
+					return 1 // for empty state cell
 			}
 		}
 		func numberOfSections(in tableView: UITableView) -> Int
 		{
-			var count = 0
-			count += 1 // balance
-			count += 1 // infodisclosing
-			count += 1 // transactions, 'scanning', 'import', …
-			//
-			return count
+			return Int(SectionName.numberOfSections) // UInt -> Int
 		}
 		func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
 		{
 			tableView.deselectRow(at: indexPath, animated: true)
-			if indexPath.section == 0 { // balance
-				return // nothing to do except return early
-			} else if indexPath.section == 1 { // infodisclosing
-				self.toggleInfoDisclosureCell()
-				return
-			} else if indexPath.section == 2 { // transactions
-				if self.hasTransactions == false {
-					return // empty state cell
-				}
-				let transaction = self.wallet.transactions![indexPath.row]
-				let viewController = TransactionDetails.ViewController(transaction: transaction, inWallet: self.wallet)
-				self.navigationController!.pushViewController(
-					viewController,
-					animated: true
-				)
-				return
+			let sectionName = SectionName.new_SectionName(withSectionIndex: indexPath.section)!
+			switch sectionName {
+				case .balance,
+				     .actionButtons:
+					return // nothing to do except return early
+				case .infoDisclosing:
+					self.toggleInfoDisclosureCell()
+					return
+				case .transactions:
+					if self.hasTransactions == false {
+						return // empty state cell
+					}
+					let transaction = self.wallet.transactions![indexPath.row]
+					let viewController = TransactionDetails.ViewController(transaction: transaction, inWallet: self.wallet)
+					self.navigationController!.pushViewController(
+						viewController,
+						animated: true
+					)
+					return
 			}
-			assert(false)
 		}
 		func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 		{
 			let cellPosition = self.cellPosition(forCellAtIndexPath: indexPath)
-			if indexPath.section == 0 {
-				return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
-			} else if indexPath.section == 1 { // infodisclosing
-				if let frame = self.infoDisclosing_contentContainerView_toFrame { // while animating disclosure toggle - done due to how begin and endUpdates works with a custom animation context
-					return type(of: self.infoDisclosingCellView).cellHeight(with_contentContainerView_toFrame: frame)
-				}
-				return self.infoDisclosingCellView.cellHeight
-			} else if indexPath.section == 2 { // transactions
-				return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
+			let sectionName = SectionName.new_SectionName(withSectionIndex: indexPath.section)!
+			switch sectionName {
+				case .balance,
+				     .actionButtons,
+				     .transactions:
+					return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
+				case .infoDisclosing:
+					if let frame = self.infoDisclosing_contentContainerView_toFrame { // while animating disclosure toggle - done due to how begin and endUpdates works with a custom animation context
+						return type(of: self.infoDisclosingCellView).cellHeight(with_contentContainerView_toFrame: frame)
+					}
+					return self.infoDisclosingCellView.cellHeight
 			}
-			assert(false)
-			return 0
 		}
 		func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
 		{
 			let baseSpacing: CGFloat = 16
-			if section == 0 {
-				return .leastNormalMagnitude // must be this rather than 0
-			} else if section == 1 {
-				return baseSpacing/* Note: Not sure why the following must be commented out -WalletDetails.Balance.DisplayView.imagePaddingInsets.bottom*/
-			} else if section == 2 {
-				// remove top shadow height for transactions… but only if not showing resolving indicator
-				// here is some header view mode precedence logic
-				if self.shouldShowImportTransactionsButton {
-					return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: baseSpacing)
-				} else if self.shouldShowScanningBlockchainActivityIndicator {
-					return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 10)
-				} else {
+			let sectionName = SectionName.new_SectionName(withSectionIndex: section)!
+			switch sectionName {
+				case .balance:
+					return .leastNormalMagnitude // must be this rather than 0
+				case .infoDisclosing:
+					return baseSpacing/* Note: Not sure why the following must be commented out -WalletDetails.Balance.DisplayView.imagePaddingInsets.bottom*/
+				case .actionButtons:
+					return .leastNormalMagnitude // the cell supplies its own; must be this instead of 0
+				case .transactions:
+					// remove top shadow height for transactions… but only if not showing resolving indicator
+					// here is some header view mode precedence logic
+					if self.shouldShowImportTransactionsButton {
+						return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: baseSpacing)
+					} else if self.shouldShowScanningBlockchainActivityIndicator {
+						return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 10)
+					}
 					let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
 						withState: .normal,
 						position: .top
@@ -379,10 +406,7 @@ extension WalletDetails
 					let imagePadding = groupedHighlightableCellVariant.imagePaddingForShadow
 					//
 					return baseSpacing - imagePadding.top
-				}
 			}
-			assert(false)
-			return .leastNormalMagnitude
 		}
 		func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat
 		{
@@ -390,7 +414,7 @@ extension WalletDetails
 		}
 		func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
 		{
-			if section == 2 { // transactions - so, scanning blockchain header
+			if section == SectionName.transactions.indexInTable { // transactions - so, scanning blockchain header
 				// here is some header view mode logic
 				// we hang onto self.transactionsSectionHeaderView so that on reloadData etc we can keep showing the same state, e.g. animation step
 				if self.shouldShowImportTransactionsButton {
@@ -414,7 +438,7 @@ extension WalletDetails
 		}
 		func tableView(_ tableView: UITableView, willDisplayHeaderView headerView: UIView, forSection section: Int)
 		{
-			if section == 2 { // transactions
+			if section == SectionName.transactions.indexInTable { // transactions
 				assert(headerView == self.transactionsSectionHeaderView)
 				let view = self.transactionsSectionHeaderView!
 				if view.mode == .scanningIndicator {
@@ -428,7 +452,7 @@ extension WalletDetails
 		}
 		func tableView(_ tableView: UITableView, didEndDisplayingHeaderView headerView: UIView, forSection section: Int)
 		{
-			if section == 2 { // transactions
+			if section == SectionName.transactions.indexInTable { // transactions
 				assert(headerView == self.transactionsSectionHeaderView)
 				let view = self.transactionsSectionHeaderView!
 				if view.mode == .scanningIndicator {
