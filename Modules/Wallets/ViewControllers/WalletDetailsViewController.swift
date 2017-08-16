@@ -72,7 +72,7 @@ extension WalletDetails
 		// Overrides
 		override func setup_scrollView()
 		{ // NOTE: not going to call on super here b/c UITableView&Delegate conform to UIScrollView, etc…
-			let view = UITableView(frame: .zero, style: .grouped)
+			let view = UICommonComponents.Details.TableView(frame: .zero, style: .grouped)
 			do { // need to specify this b/c we're not getting super's config
 				view.indicatorStyle = .white
 				view.backgroundColor = .contentBackgroundColor

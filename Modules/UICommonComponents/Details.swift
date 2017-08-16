@@ -33,6 +33,18 @@ extension UICommonComponents
 			}
 		}
 		//
+		// Table view variation
+		class TableView: UITableView
+		{
+			override func touchesShouldCancel(in view: UIView) -> Bool
+			{
+				if view is UIButton { // prevent buttons from preventing self from scrolling, catching user pan
+					return true
+				}
+				return super.touchesShouldCancel(in: view)
+			}
+		}
+		//
 		// Sections
 		class SectionView: UIView
 		{
