@@ -88,7 +88,7 @@ extension WalletDetails
 		{
 			super.setup_views()
 			do {
-				self.scrollView.contentInset = UIEdgeInsetsMake(14, 0, 0/*14 commented as janky semi-fix to unwanted visual btm padding */, 0)
+				self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
 			}
 		}
 		override func setup_navigation()
@@ -386,7 +386,7 @@ extension WalletDetails
 			let sectionName = SectionName.new_SectionName(withSectionIndex: section)!
 			switch sectionName {
 				case .balance:
-					return .leastNormalMagnitude // must be this rather than 0
+					return 14 // since we don't supply this as contentInset.top
 				case .infoDisclosing:
 					return baseSpacing/* Note: Not sure why the following must be commented out -WalletDetails.Balance.DisplayView.imagePaddingInsets.bottom*/
 				case .actionButtons:
@@ -395,9 +395,15 @@ extension WalletDetails
 					// remove top shadow height for transactions… but only if not showing resolving indicator
 					// here is some header view mode precedence logic
 					if self.shouldShowImportTransactionsButton {
-						return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: baseSpacing)
+						return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(
+							forMode: .scanningIndicator,
+							topPadding: baseSpacing
+						)
 					} else if self.shouldShowScanningBlockchainActivityIndicator {
-						return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(forMode: .scanningIndicator, topPadding: 10)
+						return WalletDetails.TransactionsSectionHeaderView.fullViewHeight(
+							forMode: .scanningIndicator,
+							topPadding: 10
+						)
 					}
 					let groupedHighlightableCellVariant = UICommonComponents.GroupedHighlightableCells.Variant.new(
 						withState: .normal,
