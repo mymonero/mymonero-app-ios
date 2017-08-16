@@ -100,7 +100,9 @@ extension WalletDetails
 			}
 			func receive_tapped()
 			{
-				assert(false, "TODO")
+				let configuration = self.configuration!
+				let wallet = configuration.dataObject as! Wallet
+				WalletAppWalletActionsCoordinator.Trigger_receiveFunds(toWallet: wallet)
 			}
 		}
 	}

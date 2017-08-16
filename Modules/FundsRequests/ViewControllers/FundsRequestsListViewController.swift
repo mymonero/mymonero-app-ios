@@ -28,6 +28,7 @@ class FundsRequestsListViewController: ListViewController
 	{
 		super.startObserving()
 		NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_didTrigger_requestFundsFromContact(_:)), name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_requestFundsFromContact.notificationName, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(WalletAppWalletActionsCoordinator_didTrigger_receiveFundsToWallet(_:)), name: WalletAppWalletActionsCoordinator.NotificationNames.didTrigger_receiveFundsToWallet.notificationName, object: nil)
 	}
 	override func configure_navigation_barButtonItems()
 	{
@@ -38,6 +39,7 @@ class FundsRequestsListViewController: ListViewController
 	{
 		super.stopObserving()
 		NotificationCenter.default.removeObserver(self, name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_requestFundsFromContact.notificationName, object: nil)
+		NotificationCenter.default.removeObserver(self, name: WalletAppWalletActionsCoordinator.NotificationNames.didTrigger_receiveFundsToWallet.notificationName, object: nil)
 	}
 	//
 	// Accessors - Required overrides
@@ -51,29 +53,35 @@ class FundsRequestsListViewController: ListViewController
 	}
 	//
 	// Imperatives - Modals
-	func presentOrConfigureExistingCreateRequestFormView(withContact contact: Contact?)
+	func presentOrConfigureExistingCreateRequestFormView(
+		withContact contact: Contact?,
+		selectedWallet wallet: Wallet?
+	)
 	{
 		if let presentedViewController = self.navigationController!.presentedViewController {
 			guard let presented_addFundsRequestFormViewController = presentedViewController as? AddFundsRequestFormViewController else {
 				DDLog.Warn("FundsRequests", "Presented view is not a AddFundsRequestFormViewController. Bailing")
 				return
 			}
-			if contact == nil {
+			if contact == nil && wallet == nil {
 				assert(
 					false,
-					"expected contact to always be non-nil when being asked to reconfigure already presented Form"
+					"expected either contact or wallet to always be non-nil when being asked to reconfigure already presented Form"
 				)
 				return
 			}
 			presented_addFundsRequestFormViewController.reconfigureFormAtRuntime_havingElsewhereSelected(
-				requestFromContact: contact!
+				requestFromContact: contact,
+				receiveToWallet: wallet
 			)
 			return
 		}
-		let viewController = AddFundsRequestFormViewController(contact: contact) // which might be nil
+		let viewController = AddFundsRequestFormViewController(
+			contact: contact, // which might be nil
+			selectedWallet: wallet // also might be nil
+		)
 		let modalViewController = UINavigationController(rootViewController: viewController)
 		self.navigationController!.present(modalViewController, animated: true, completion: nil)
-
 	}
 	//
 	// Delegation - Table
@@ -115,17 +123,33 @@ class FundsRequestsListViewController: ListViewController
 	// Delegation - Interactions
 	func addButton_tapped()
 	{
-		self.presentOrConfigureExistingCreateRequestFormView(withContact: nil)
+		self.presentOrConfigureExistingCreateRequestFormView(
+			withContact: nil,
+			selectedWallet: nil
+		)
 	}
 	//
 	// Delegation - Notifications
 	func WalletAppContactActionsCoordinator_didTrigger_requestFundsFromContact(_ notification: Notification)
 	{
-		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request…
+		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request details view…
 		// but do not dismiss modals - reconfigure instead
 		let userInfo = notification.userInfo!
 		let contact = userInfo[WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
-		self.presentOrConfigureExistingCreateRequestFormView(withContact: contact)
-
+		self.presentOrConfigureExistingCreateRequestFormView(
+			withContact: contact,
+			selectedWallet: nil
+		)
+	}
+	func WalletAppWalletActionsCoordinator_didTrigger_receiveFundsToWallet(_ notification: Notification)
+	{
+		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request details view…
+		// but do not dismiss modals - reconfigure instead
+		let userInfo = notification.userInfo!
+		let wallet = userInfo[WalletAppWalletActionsCoordinator.NotificationUserInfoKeys.wallet.key] as! Wallet
+		self.presentOrConfigureExistingCreateRequestFormView(
+			withContact: nil,
+			selectedWallet: wallet
+		)
 	}
 }

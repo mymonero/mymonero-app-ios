@@ -47,7 +47,10 @@ extension UICommonComponents
 				let view = WalletPickerView()
 				view.didSelect_fn =
 				{ [unowned self] (wallet) in
-					self.set(selectedWallet: wallet)
+					self.set(
+						selectedWallet: wallet,
+						skipSettingOnPickerView: true // because we got this from the picker view
+					)
 				}
 				view.reloaded_fn =
 				{ [unowned self] in
@@ -137,10 +140,16 @@ extension UICommonComponents
 		}
 		//
 		// Imperatives - Config
-		func set(selectedWallet wallet: Wallet)
+		func set(
+			selectedWallet wallet: Wallet,
+			skipSettingOnPickerView: Bool = false // leave as false if you're setting from anywhere but the PickerView
+		)
 		{
 			self.selectedWallet = wallet
 			self.configure(withRecord: wallet)
+			if skipSettingOnPickerView == false {
+				self.pickerView.selectWithoutYielding(wallet: wallet)
+			}
 			// TODO/NOTE: bubble if necessary
 		}
 
@@ -235,8 +244,15 @@ extension UICommonComponents
 			return records[selectedIndex] as? Wallet
 		}
 		//
-		// Imperatives - Programmatic picking
-		func pickWallet(atRow row: Int)
+		// Imperatives - Interface - Setting wallet externally
+		func selectWithoutYielding(wallet: Wallet)
+		{
+			let row = WalletsListController.shared.records.index(of: wallet)!
+			self.selectRow(row, inComponent: 0, animated: false) // not pickWallet(atRow:) b/c that will merely notify
+		}
+		//
+		// Delegation - Yielding
+		func didPickWallet(atRow row: Int)
 		{
 			let record = WalletsListController.shared.records[row] as! Wallet
 			if let fn = self.didSelect_fn {
@@ -259,7 +275,7 @@ extension UICommonComponents
 		}
 		func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
 		{
-			self.pickWallet(atRow: row)
+			self.didPickWallet(atRow: row)
 		}
 		func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat
 		{

@@ -37,12 +37,18 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var manualPaymentID_inputView: UICommonComponents.FormInputField!
 	//
 	// Lifecycle - Init
-	required init(contact: Contact?)
+	required init(
+		contact: Contact?,
+		selectedWallet: Wallet?
+	)
 	{
 		super.init()
 		// ^ this will call setup (synchronously)
 		if contact != nil {
 			self.requestFrom_inputView.pick(contact: contact!)
+		}
+		if selectedWallet != nil {
+			self.toWallet_inputView.set(selectedWallet: selectedWallet!)
 		}
 	}
 	required init?(coder aDecoder: NSCoder) {
@@ -400,11 +406,22 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			finished_fn: {}
 		)
 	}
-	public func reconfigureFormAtRuntime_havingElsewhereSelected(requestFromContact contact: Contact)
+	public func reconfigureFormAtRuntime_havingElsewhereSelected(
+		requestFromContact contact: Contact?,
+		receiveToWallet wallet: Wallet?
+	)
 	{
 		self.amount_fieldset.inputField.text = "" // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
 		//
-		self.requestFrom_inputView.pick(contact: contact)
+		if contact != nil {
+			self.requestFrom_inputView.pick(contact: contact!)
+		} else {
+			self.requestFrom_inputView.unpickSelectedContact_andRedisplayInputField()
+		}
+		//
+		if wallet != nil {
+			self.toWallet_inputView.set(selectedWallet: wallet!)
+		}
 	}
 	//
 	// Runtime - Imperatives - Overrides

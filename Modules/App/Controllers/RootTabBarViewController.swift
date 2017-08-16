@@ -88,6 +88,7 @@ class RootTabBarViewController: UITabBarController
 		do { // walletAppContactActionsCoordinator
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_sendFundsToContact.notificationName, object: nil)
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_requestFundsFromContact.notificationName, object: nil)
+			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppWalletActionsCoordinator_willTrigger_receiveFundsToWallet), name: WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_receiveFundsToWallet.notificationName, object: nil)
 		}
 		do {
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppWalletActionsCoordinator_willTrigger_sendFundsFromWallet), name: WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_sendFundsFromWallet.notificationName, object: nil)
@@ -236,6 +237,10 @@ class RootTabBarViewController: UITabBarController
 		self.selectTab_sendFunds()
 	}
 	func WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact()
+	{
+		self.selectTab_fundsRequests()
+	}
+	func WalletAppWalletActionsCoordinator_willTrigger_receiveFundsToWallet()
 	{
 		self.selectTab_fundsRequests()
 	}

@@ -16,9 +16,6 @@ extension SendFundsForm
 	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant, UIImagePickerControllerDelegate, UINavigationControllerDelegate
 	{
 		//
-		// Constants
-		
-		//
 		// Static - Shared singleton
 		static let shared = SendFundsForm.ViewController()
 		//
