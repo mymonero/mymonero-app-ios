@@ -12,6 +12,8 @@ import UIKit
 
 class FundsRequest: PersistableObject
 {
+	//
+	// Types/Constants
 	enum NotificationNames: String
 	{
 		case infoUpdated		= "FundsRequest_NotificationNames_infoUpdated"
@@ -30,6 +32,8 @@ class FundsRequest: PersistableObject
 		case description = "description"
 		case qrCode_imgDataURIString = "qrCode_imgDataURIString" // hopefully encrypting and saving this doesn't turn out to have been a terrible idea - but it could be reconstructed on init
 	}
+	//
+	static let targetSize_side: CGFloat = 8 * 13 // using 8 as grid
 	//
 	// Properties - Persisted Values
 	var from_fullname: String?
@@ -126,7 +130,42 @@ class FundsRequest: PersistableObject
 			let outputImage = filter.outputImage!
 			let context = CIContext(options: nil)
 			let cgImage = context.createCGImage(outputImage, from: outputImage.extent)!
-			self.qrCodeImage = UIImage(cgImage: cgImage, scale: 1, orientation: .up)
+			//
+			
+			let targetSize = CGSize(
+				width: FundsRequest.targetSize_side,
+				height: FundsRequest.targetSize_side
+			)
+			UIGraphicsBeginImageContext(
+				CGSize(
+					width: targetSize.width * UIScreen.main.scale,
+					height: targetSize.height * UIScreen.main.scale
+				)
+			)
+			var preScaledImage: UIImage!
+			do {
+				let graphicsContext = UIGraphicsGetCurrentContext()!
+				graphicsContext.interpolationQuality = .none
+				let boundingBoxOfClipPath = graphicsContext.boundingBoxOfClipPath
+				graphicsContext.draw(
+					cgImage,
+					in: CGRect(
+						x: 0,
+						y: 0,
+						width: boundingBoxOfClipPath.width,
+						height: boundingBoxOfClipPath.height
+					)
+				)
+				//
+				preScaledImage = UIGraphicsGetImageFromCurrentImageContext()!
+			}
+			UIGraphicsEndImageContext()
+			let scaled_qrCodeImage = UIImage(
+				cgImage: preScaledImage.cgImage!,
+				scale: 1.0/UIScreen.main.scale,
+				orientation: .downMirrored
+			)
+			self.qrCodeImage = scaled_qrCodeImage
 		}
 	}
 	//
