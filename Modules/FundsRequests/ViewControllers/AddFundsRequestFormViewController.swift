@@ -754,6 +754,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.requestFrom_inputView.pick(contact: instance) // not going to call AtRuntime_reconfigureWith_fromContact() here because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
 		}
 		let navigationController = UINavigationController(rootViewController: viewController)
+		navigationController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 	func addPaymentID_tapped()

@@ -81,6 +81,7 @@ class FundsRequestsListViewController: ListViewController
 			selectedWallet: wallet // also might be nil
 		)
 		let modalViewController = UINavigationController(rootViewController: viewController)
+		modalViewController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(modalViewController, animated: true, completion: nil)
 	}
 	//

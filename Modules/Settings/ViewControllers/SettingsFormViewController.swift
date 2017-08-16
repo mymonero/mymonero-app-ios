@@ -395,6 +395,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	{
 		let viewController = AboutMyMoneroViewController()
 		let navigationController = UINavigationController(rootViewController: viewController)
+		navigationController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 	//

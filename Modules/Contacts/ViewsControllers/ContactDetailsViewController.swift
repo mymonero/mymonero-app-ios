@@ -170,6 +170,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	{
 		let viewController = EditContactFormViewController(withContact: self.contact)
 		let presenting_viewController = UINavigationController(rootViewController: viewController)
+		presenting_viewController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(presenting_viewController, animated: true, completion: nil)
 	}
 	//

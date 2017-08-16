@@ -115,6 +115,7 @@ class AddWallet_WizardController
 		{ [unowned self] in
 			let rootViewController = UIApplication.shared.delegate?.window??.rootViewController
 			// ^- typically it's not great to reach through the delegate like this, but I made the call that it's ok for a number of reasons; open to discussion
+			self.wizard_navigationController.modalPresentationStyle = .formSheet
 			rootViewController!.present(self.wizard_navigationController, animated: true, completion: nil)
 		}
 	}

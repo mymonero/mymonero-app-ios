@@ -700,6 +700,7 @@ extension SendFundsForm
 										parameters: parameters
 									)
 									let navigationController = UINavigationController(rootViewController: viewController)
+									navigationController.modalPresentationStyle = .formSheet
 									self.navigationController!.present(navigationController, animated: true, completion: nil)
 								}
 							)
@@ -1006,6 +1007,7 @@ extension SendFundsForm
 			pickerController.navigationBar.tintColor = UIColor.systemStandard_navigationBar_tintColor // make it look at least slightly passable… would be nice if font size of btns could be reduced (next to such a small nav title font)… TODO: pimp out nav bar btns, including 'back', ala PushButton
 			pickerController.allowsEditing = false
 			pickerController.delegate = self
+			pickerController.modalPresentationStyle = .formSheet
 			self.presented_imagePickerController = pickerController
 			self.navigationController!.present(pickerController, animated: true, completion: nil)
 		}

@@ -81,6 +81,7 @@ class ContactsListViewController: ListViewController
 	{
 		let viewController = AddContactFromContactsTabFormViewController()
 		let modalViewController = UINavigationController(rootViewController: viewController)
+		modalViewController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(modalViewController, animated: true, completion: nil)
 	}
 }

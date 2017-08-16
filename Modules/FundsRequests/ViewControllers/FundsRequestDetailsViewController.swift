@@ -106,13 +106,6 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		super.setup_navigation()
 		self.set_navigationTitle() // also to be called on contact info updated
-		// TODO: remove; replaced with 'SHARE' functionality on new qr code image display section
-//		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-//			type: .save,
-//			target: self,
-//			action: #selector(tapped_rightBarButtonItem),
-//			title_orNilForDefault: NSLocalizedString("Download", comment: "")
-//		)
 	}
 	//
 	override func startObserving()
@@ -266,39 +259,6 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)
 	}
-	//
-// TODO: remove; replaced with share functionality
-//	func tapped_rightBarButtonItem()
-//	{
-//		UIImageWriteToSavedPhotosAlbum(self.fundsRequest.qrCodeImage, self, #selector(_savedToPhotosAlbum(image:error:context:)), nil)
-//	}
-//	func _savedToPhotosAlbum(image: UIImage?, error: Error?, context: Any?)
-//	{
-//		if error != nil {
-//			let alertController = UIAlertController(
-//				title: NSLocalizedString("Error saving QR Code", comment: ""),
-//				message: NSLocalizedString("Please ensure MyMonero can access Photos via iOS Settings > Privacy.", comment: ""),
-//				// error!.localizedDescription doesn't appear to be a good match to display here
-//				preferredStyle: .alert
-//			)
-//			alertController.addAction(
-//				UIAlertAction(
-//					title: NSLocalizedString("OK", comment: ""),
-//					style: .default
-//					)
-//				{ (result: UIAlertAction) -> Void in
-//				}
-//			)
-//			self.navigationController!.present(alertController, animated: true, completion: nil)
-//			return
-//		}
-//		HUD.flash(
-//			.label(
-//				NSLocalizedString("Saved to Camera Roll album.", comment: "")
-//			),
-//			delay: 1
-//		)
-//	}
 	//
 	// Delegation - Notifications - Object
 	func wasDeleted()

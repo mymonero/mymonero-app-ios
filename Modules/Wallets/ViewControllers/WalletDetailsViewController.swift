@@ -273,6 +273,7 @@ extension WalletDetails
 		{
 			let viewController = ImportTransactionsModal.ViewController(wallet: self.wallet)
 			let navigationController = UINavigationController(rootViewController: viewController)
+			navigationController.modalPresentationStyle = .formSheet
 			self.navigationController!.present(navigationController, animated: true, completion: nil)
 		}
 		//
@@ -287,6 +288,7 @@ extension WalletDetails
 		{
 			let viewController = EditWallet.ViewController(wallet: self.wallet)
 			let navigationController = UINavigationController(rootViewController: viewController)
+			navigationController.modalPresentationStyle = .formSheet
 			self.navigationController!.present(navigationController, animated: true, completion: nil)
 		}
 		//

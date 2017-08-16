@@ -53,6 +53,11 @@ class AboutMyMoneroViewController: UIViewController
 			self.view.addSubview(view)
 		}
 		self.setup_navigation()
+		do {
+			let recognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipedDown))
+			recognizer.direction = .down
+			self.view.addGestureRecognizer(recognizer)
+		}
 	}
 	func setup_navigation()
 	{
@@ -65,7 +70,8 @@ class AboutMyMoneroViewController: UIViewController
 					animated: true,
 					completion: nil
 				)
-			}
+			},
+			title_orNilForDefault: NSLocalizedString("Close", comment: "")
 		)
 	}
 	//
@@ -121,4 +127,11 @@ class AboutMyMoneroViewController: UIViewController
 		let options: [String: Any] = [:]
 		UIApplication.shared.open(url, options: options, completionHandler: nil)
 	}
+	//
+	// Delegation - Interactions
+	func swipedDown()
+	{
+		self.navigationController!.dismiss(animated: true, completion: nil)
+	}
+
 }

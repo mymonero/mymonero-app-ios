@@ -175,6 +175,7 @@ class PasswordEntryNavigationViewController: UINavigationController
 				presentIn_viewController = parentViewController
 			}
 		}
+		self.modalPresentationStyle = .fullScreen // occlude everything
 		presentIn_viewController.present(self, animated: animated, completion: nil)
 	}
 	func dismiss(animated: Bool = true) // this method might need to be renamed (more specifically) in the future to avoid conflict with UIKit
