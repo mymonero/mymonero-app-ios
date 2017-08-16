@@ -39,13 +39,13 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			var text: String
 			if hasAmount {
 				text = String(
-					format: NSLocalizedString("Scan this code to send %@ XMR to %@….", comment: ""),
+					format: NSLocalizedString("Scan this code to send %@ XMR to %@.", comment: ""),
 					self.fundsRequest.amount!,
 					to_address
 				)
 			} else {
 				text = String(
-					format: NSLocalizedString("Scan this code to send Monero to %@….", comment: ""),
+					format: NSLocalizedString("Scan this code to send Monero to %@.", comment: ""),
 					to_address
 				)
 			}
@@ -105,10 +105,13 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		super.viewDidLayoutSubviews()
 		let top_yOffset: CGFloat = 48
 		do { // label
-			let x: CGFloat = 16
-			let w = self.view.frame.size.width - 2*x
+			let min_marginX: CGFloat = 16
+			let w = min(
+				self.view.frame.size.width - 2*min_marginX,
+				400
+			)
 			self.informationalLabel.frame = CGRect(
-				x: x,
+				x: (self.view.frame.size.width - w)/2,
 				y: top_yOffset,
 				width: w,
 				height: 18

@@ -31,11 +31,11 @@ extension ImportTransactionsModal
 		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
 		//
 		var toAddress_label: UICommonComponents.Form.FieldLabel!
-		var toAddress_labelAccessory_copyButton: UICommonComponents.CopyButton!
+		var toAddress_labelAccessory_copyButton: UICommonComponents.SmallUtilityCopyValueButton!
 		var toAddress_inputView: UICommonComponents.FormInputField!
 		//
 		var paymentID_label: UICommonComponents.Form.FieldLabel!
-		var paymentID_labelAccessory_copyButton: UICommonComponents.CopyButton!
+		var paymentID_labelAccessory_copyButton: UICommonComponents.SmallUtilityCopyValueButton!
 		var paymentID_inputView: UICommonComponents.FormInputField!
 		//
 		// Lifecycle - Init
@@ -127,7 +127,7 @@ extension ImportTransactionsModal
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.CopyButton()
+				let view = UICommonComponents.SmallUtilityCopyValueButton()
 //				view.contentHorizontalAlignment = .right // so we can just set the width to whatever
 				self.toAddress_labelAccessory_copyButton = view
 				self.scrollView.addSubview(view)
@@ -151,7 +151,7 @@ extension ImportTransactionsModal
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.CopyButton()
+				let view = UICommonComponents.SmallUtilityCopyValueButton()
 //				view.contentHorizontalAlignment = .right // so we can just set the width to whatever
 				self.paymentID_labelAccessory_copyButton = view
 				self.scrollView.addSubview(view)

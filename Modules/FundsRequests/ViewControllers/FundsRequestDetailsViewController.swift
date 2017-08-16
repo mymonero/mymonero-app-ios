@@ -55,7 +55,6 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 				let view = QRImageButtonDisplayingFieldView(
 					labelVariant: self.fieldLabels_variant,
 					title: NSLocalizedString("QR Code", comment: ""),
-					accessoryButtonAction: .share,
 					tapped_fn:
 					{ [unowned self] in
 						self.qrImageFieldView_tapped()
@@ -66,13 +65,14 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 				sectionView.add(fieldView: view)
 			}
 			do {
-				let view = UICommonComponents.Details.CopyableLongStringFieldView(
+				let view = UICommonComponents.Details.SharableLongStringFieldView(
 					labelVariant: self.fieldLabels_variant,
 					title: NSLocalizedString("Request Link", comment: ""),
 					valueToDisplayIfZero: nil
 				)
 				view.contentLabel.lineBreakMode = .byCharWrapping // flows better w/o awkward break
-				view.set(text: self.fundsRequest.new_URI.absoluteString)
+				let url = self.fundsRequest.new_URI
+				view.set(text: url.absoluteString, url: url)
 				sectionView.add(fieldView: view)
 			}
 			self.scrollView.addSubview(sectionView)
@@ -80,7 +80,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		do {
 			let sectionView = self.sectionView_message
 			do {
-				let view = UICommonComponents.Details.CopyableLongStringFieldView(
+				let view = UICommonComponents.Details.SharableLongStringFieldView(
 					labelVariant: self.fieldLabels_variant,
 					title: NSLocalizedString("Message for Requestee", comment: ""),
 					valueToDisplayIfZero: nil
@@ -266,38 +266,39 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)
 	}
-	// TODO: remove; replaced with share functionality
+	//
+// TODO: remove; replaced with share functionality
 //	func tapped_rightBarButtonItem()
 //	{
 //		UIImageWriteToSavedPhotosAlbum(self.fundsRequest.qrCodeImage, self, #selector(_savedToPhotosAlbum(image:error:context:)), nil)
 //	}
-	func _savedToPhotosAlbum(image: UIImage?, error: Error?, context: Any?)
-	{
-		if error != nil {
-			let alertController = UIAlertController(
-				title: NSLocalizedString("Error saving QR Code", comment: ""),
-				message: NSLocalizedString("Please ensure MyMonero can access Photos via iOS Settings > Privacy.", comment: ""),
-				// error!.localizedDescription doesn't appear to be a good match to display here
-				preferredStyle: .alert
-			)
-			alertController.addAction(
-				UIAlertAction(
-					title: NSLocalizedString("OK", comment: ""),
-					style: .default
-					)
-				{ (result: UIAlertAction) -> Void in
-				}
-			)
-			self.navigationController!.present(alertController, animated: true, completion: nil)
-			return
-		}
-		HUD.flash(
-			.label(
-				NSLocalizedString("Saved to Camera Roll album.", comment: "")
-			),
-			delay: 1
-		)
-	}
+//	func _savedToPhotosAlbum(image: UIImage?, error: Error?, context: Any?)
+//	{
+//		if error != nil {
+//			let alertController = UIAlertController(
+//				title: NSLocalizedString("Error saving QR Code", comment: ""),
+//				message: NSLocalizedString("Please ensure MyMonero can access Photos via iOS Settings > Privacy.", comment: ""),
+//				// error!.localizedDescription doesn't appear to be a good match to display here
+//				preferredStyle: .alert
+//			)
+//			alertController.addAction(
+//				UIAlertAction(
+//					title: NSLocalizedString("OK", comment: ""),
+//					style: .default
+//					)
+//				{ (result: UIAlertAction) -> Void in
+//				}
+//			)
+//			self.navigationController!.present(alertController, animated: true, completion: nil)
+//			return
+//		}
+//		HUD.flash(
+//			.label(
+//				NSLocalizedString("Saved to Camera Roll album.", comment: "")
+//			),
+//			delay: 1
+//		)
+//	}
 	//
 	// Delegation - Notifications - Object
 	func wasDeleted()

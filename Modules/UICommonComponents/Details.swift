@@ -363,14 +363,76 @@ extension UICommonComponents
 				fatalError("init(coder:) has not been implemented")
 			}
 		}
-		enum AccessoryButtonAction
-		{
-			case copy
-			case share
-		}
 		//
-		class CopyableLongStringFieldView: FieldView // TODO: add AccessoryButtonAction support
+		class CopyableLongStringFieldView: UtilityActionableLongStringFieldView
 		{
+			override class func valueButtonClass() -> SmallUtilityValueButton.Type {
+				return SmallUtilityCopyValueButton.self
+			}
+			override func set(
+				text: String?,
+				ifNonNil_overridingTextAndZeroValue_attributedDisplayText: NSAttributedString?
+			)
+			{
+				super.set(
+					text: text,
+					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: ifNonNil_overridingTextAndZeroValue_attributedDisplayText
+				)
+				self.copyButton.set(text: text) // even if nil
+			}
+			//
+			// Accessors
+			var copyButton: SmallUtilityCopyValueButton {
+				return self.valueButton as! SmallUtilityCopyValueButton
+			}
+		}
+		class SharableLongStringFieldView: UtilityActionableLongStringFieldView
+		{
+			//
+			// Properties
+			var urlToShare: URL?
+			//
+			override class func valueButtonClass() -> SmallUtilityValueButton.Type {
+				return SmallUtilityShareValueButton.self
+			}
+			func set(text: String?, url: URL?)
+			{
+				self.urlToShare = url // may be nil
+				self.set(
+					text: text,
+					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: nil
+				)
+			}
+			override func set(
+				text: String?,
+				ifNonNil_overridingTextAndZeroValue_attributedDisplayText: NSAttributedString?
+			)
+			{
+				super.set(
+					text: text,
+					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: ifNonNil_overridingTextAndZeroValue_attributedDisplayText
+				)
+				if let url = self.urlToShare {
+					self.shareButton.setButtonValue(url: url)
+					self.shareButton.setButtonValue(text: nil) // to clear
+				} else {
+					self.shareButton.setButtonValue(text: text) // even if nil
+					self.shareButton.setButtonValue(url: nil) // to clear
+				}
+			}
+			//
+			// Accessors
+			var shareButton: SmallUtilityShareValueButton {
+				return self.valueButton as! SmallUtilityShareValueButton
+			}
+		}
+		class UtilityActionableLongStringFieldView: FieldView
+		{
+			//
+			// Class - Overridable
+			class func valueButtonClass() -> SmallUtilityValueButton.Type {
+				return SmallUtilityCopyValueButton.self
+			}
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
@@ -382,7 +444,7 @@ extension UICommonComponents
 			var fieldTitle: String
 			//
 			var titleLabel: FieldLabel!
-			var copyButton: CopyButton!
+			var valueButton: SmallUtilityValueButton!
 			var contentLabel: UILabel! // TODO a class?
 			//
 			var valueToDisplayIfZero: String?
@@ -412,8 +474,9 @@ extension UICommonComponents
 					self.addSubview(view)
 				}
 				do {
-					let view = CopyButton()
-					self.copyButton = view
+					let valueButtonClass = type(of: self).valueButtonClass()
+					let view = valueButtonClass.init()
+					self.valueButton = view
 					self.addSubview(view)
 				}
 				do {
@@ -436,7 +499,7 @@ extension UICommonComponents
 					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: nil
 				)
 			}
-			func set(
+			func set( // Overridable, but call on super
 				text: String?,
 				ifNonNil_overridingTextAndZeroValue_attributedDisplayText: NSAttributedString?
 			)
@@ -454,7 +517,7 @@ extension UICommonComponents
 				} else {
 					self.contentLabel.text = displayValue
 				}
-				self.copyButton.set(text: text) // even if nil
+				// NOTE: subclassers: override this method and put your (self.valueButton as! …).set(…: …) call heres
 			}
 			//
 			// Imperatives - Layout - Overrides
@@ -468,18 +531,18 @@ extension UICommonComponents
 
 				let content_x: CGFloat = contentInsets.left
 				let content_rightMargin: CGFloat = 36 + contentInsets.right
-				let content_w = containerWidth - content_x - content_rightMargin - CopyButton.visual_w
+				let content_w = containerWidth - content_x - content_rightMargin - SmallUtilityCopyValueButton.visual_w()
 				self.titleLabel.frame = CGRect(
 					x: content_x,
 					y: contentInsets.top,
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
-				self.copyButton.frame = CGRect(
-					x: containerWidth - contentInsets.right - self.copyButton.frame.size.width + CopyButton.usabilityPadding_h,
-					y: self.titleLabel.frame.origin.y - (CopyButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since CopyButton.h is increased for usability
-					width: CopyButton.w,
-					height: CopyButton.h 
+				self.valueButton.frame = CGRect(
+					x: containerWidth - contentInsets.right - self.valueButton.frame.size.width + SmallUtilityCopyValueButton.usabilityPadding_h,
+					y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+					width: SmallUtilityCopyValueButton.w(),
+					height: SmallUtilityCopyValueButton.h 
 				).integral
 				self.layOut_contentLabel(content_x: content_x, content_w: content_w)
 				//
@@ -695,11 +758,9 @@ extension UICommonComponents
 			var fieldTitle: String
 			//
 			var titleLabel: FieldLabel!
-			var copyButton: CopyButton! // TODO: add AccessoryButtonAction support
+			var valueButton: SmallUtilityShareValueButton!
 			var contentImageButton: UIButton!
 			fileprivate var tapped_fn: ((Void) -> Void)?
-			//
-			var accessoryButtonAction: AccessoryButtonAction
 			//
 			var _bottomMostView: UIView { // overridable
 				return self.contentImageButton
@@ -709,13 +770,11 @@ extension UICommonComponents
 			init(
 				labelVariant: FieldLabel.Variant,
 				title: String,
-				accessoryButtonAction: AccessoryButtonAction,
 				tapped_fn: ((Void) -> Void)?
 			)
 			{
 				self.labelVariant = labelVariant
 				self.fieldTitle = title
-				self.accessoryButtonAction = accessoryButtonAction
 				self.tapped_fn = tapped_fn
 				super.init()
 			}
@@ -732,8 +791,8 @@ extension UICommonComponents
 					self.addSubview(view)
 				}
 				do {
-					let view = CopyButton() // TODO: accessoryButtonAction support
-					self.copyButton = view
+					let view = SmallUtilityShareValueButton()
+					self.valueButton = view
 					self.addSubview(view)
 				}
 				do {
@@ -754,8 +813,7 @@ extension UICommonComponents
 			func set(image: UIImage?)
 			{
 				self.contentImageButton.setImage(image, for: .normal)
-				// TODO: share/copy support
-//				self.copyButton.set(text: text) // even if nil
+				self.valueButton.setButtonValue(image: image)
 			}
 			//
 			// Imperatives - Layout - Overrides
@@ -769,18 +827,18 @@ extension UICommonComponents
 
 				let content_x: CGFloat = contentInsets.left
 				let content_rightMargin: CGFloat = 36 + contentInsets.right
-				let content_w = containerWidth - content_x - content_rightMargin - CopyButton.visual_w
+				let content_w = containerWidth - content_x - content_rightMargin - SmallUtilityCopyValueButton.visual_w()
 				self.titleLabel.frame = CGRect(
 					x: content_x,
 					y: contentInsets.top,
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
-				self.copyButton.frame = CGRect(
-					x: containerWidth - contentInsets.right - self.copyButton.frame.size.width + CopyButton.usabilityPadding_h,
-					y: self.titleLabel.frame.origin.y - (CopyButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since CopyButton.h is increased for usability
-					width: CopyButton.w,
-					height: CopyButton.h 
+				self.valueButton.frame = CGRect(
+					x: containerWidth - contentInsets.right - self.valueButton.frame.size.width + SmallUtilityShareValueButton.usabilityPadding_h,
+					y: self.titleLabel.frame.origin.y - (SmallUtilityShareValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+					width: SmallUtilityShareValueButton.w(),
+					height: SmallUtilityShareValueButton.h
 				).integral
 				self.layOut_contentView(content_x: content_x, content_w: content_w)
 				//
