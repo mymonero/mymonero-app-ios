@@ -105,7 +105,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		super.viewDidLayoutSubviews()
 		let top_yOffset: CGFloat = 48
 		do { // label
-			let x: CGFloat = 8
+			let x: CGFloat = 16
 			let w = self.view.frame.size.width - 2*x
 			self.informationalLabel.frame = CGRect(
 				x: x,
