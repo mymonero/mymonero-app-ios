@@ -185,13 +185,11 @@ class PersistableObject: Equatable
 			DDLog.Error("Persistence", "Error while deleting object: \(err_str!.debugDescription)")
 		} else {
 			DDLog.Deleting("Persistence", "Deleted \(self).")
-			DispatchQueue.main.async
-			{ [unowned self] in
-				NotificationCenter.default.post(
-					name: NotificationNames.wasDeleted.notificationName,
-					object: self
-				)
-			}
+			// NOTE: handlers of this should dispatch async so err_str can be returned -- it would be nice to post this on next-tick but self might have been released by then
+			NotificationCenter.default.post(
+				name: NotificationNames.wasDeleted.notificationName,
+				object: self
+			)
 		}
 		return err_str
 	}

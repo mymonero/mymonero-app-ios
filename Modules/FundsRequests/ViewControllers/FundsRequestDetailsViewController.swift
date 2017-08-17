@@ -263,11 +263,14 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	// Delegation - Notifications - Object
 	func wasDeleted()
 	{ // was instead of willBe b/c willBe is premature and won't let us see a returned deletion error 
-		if self.navigationController!.topViewController! != self {
-			assert(false)
-			return
+		// but we must perform this method's operations on next tick so as not to prevent delete()'s err_str from being returned before we can perform them
+		DispatchQueue.main.async {
+			if self.navigationController!.topViewController! != self {
+				assert(false)
+				return
+			}
+			self.navigationController!.popViewController(animated: true)
 		}
-		self.navigationController!.popViewController(animated: true)
 	}
 	//
 	// Delegation - Interactions
