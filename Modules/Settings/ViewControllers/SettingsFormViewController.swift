@@ -195,7 +195,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 		}
 		if value != nil {
-			if value!.contains(".") == false {
+			if value!.contains(".") == false && value!.contains(":") == false && value!.contains("localhost") == false { // not sure it's worth doing this - it's not a strict validation
 				preSubmission_validationError = newValidationMessage_invalidFormat()
 			}
 		}
