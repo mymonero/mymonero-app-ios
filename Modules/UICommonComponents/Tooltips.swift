@@ -181,18 +181,24 @@ extension UICommonComponents
 		@objc fileprivate func MMApplication_didSendEvent(_ notification: Notification)
 		{
 			if self._isPresenting == false { // only if done presenting - i.e. only if this is not the same event as the spawning tap
-				self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary
+				self._dismiss( // if necessary
+					dismissEvenIfCurrentlyAnimating: false // false b/c not only are we guaranteed not to be presenting here, but this is coming from user input - we don't want to stomp on existing dismiss animations - which will race to exist here b/c of tapped!
+				)
 			}
 		}
 		@objc fileprivate func UIApplicationWillChangeStatusBarFrame()
 		{
-			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary - or else it'll be off center (alternative is just move it but that's more work)
+			self._dismiss(
+				dismissEvenIfCurrentlyAnimating: true // just clear regardless of whether it's animating
+			) // if necessary - or else it'll be off center (alternative is just move it but that's more work)
 		}
 		//
 		// Delegation - Interface for instantiator
 		func parentViewWillDisappear(animated: Bool)
 		{
-			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary
+			self._dismiss( // if necessary
+				dismissEvenIfCurrentlyAnimating: true // just clear regardless of whether it's animating
+			)
 			// e.g. if a user has a tooltip open during SendFunds and the 'success' transaction details view is pushed, we want the tooltip to be dismissed. is there a better way to support that than this even though this method will probably result in more code for the instantiator/integrator?
 		}
 	}
