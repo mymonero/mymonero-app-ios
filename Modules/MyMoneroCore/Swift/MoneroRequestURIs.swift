@@ -52,10 +52,12 @@ extension MyMoneroCoreUtils
 		if let value = message, value != "" {
 			queryItems.append(URLQueryItem(name: FundsRequestURIQueryItemNames.message.rawValue, value: value))
 		}
-		urlComponents.queryItems = queryItems
+		if queryItems.count > 0 {
+			urlComponents.queryItems = queryItems // do not set empty or we get superfluous trailing '?'
+		}
 		let url = urlComponents.url
 		//
-		return url! // TODO: is this ! ok?
+		return url!
 	}
 	//
 	static func New_ParsedRequest_FromURIString(
