@@ -207,7 +207,11 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		self.tearDown()
 	}
 	func tearDown()
-	{
+	{ // overridable but call on super obvs
+		self.stopObserving()
+	}
+	func stopObserving()
+	{ // overridable but call on super obvs
 		self._stopObserving_passwordController()
 	}
 	func _stopObserving_passwordController()
@@ -306,6 +310,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 			let userInfo = [ Notifications_userInfoKeys.record.rawValue: object ]
 			NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: userInfo)
 		}
+		// TODO: isn't one of these .post()s redundant?
 		self._listUpdated_records()
 	}
 	//

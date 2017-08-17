@@ -437,27 +437,51 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.set(resolvingIndicatorIsVisible: true) // show
 		}
 		self.view.setNeedsLayout() // for validation err
+		func _exitAndUnlock(
+			withValidationErr err_str: String?
+		)
+		{
+			if err_str != nil {
+				self.address_inputView.setValidationError(err_str!)
+			}
+			self.set(resolvingIndicatorIsVisible: false) // hide
+			self.view.setNeedsLayout() // for validation err
+		}
+		func _havingUnlocked_revertValueToExistingSettingsValue()
+		{
+			self.address_inputView.text = SettingsController.shared.specificAPIAddressURLAuthority
+			// we don't really want this to cause address_inputView__editingChanged() to be called, although it wouldn't be so bad
+		}
 		//
 		self._timerToSave_addressEditingChanged = Timer.scheduledTimer(
-			withTimeInterval: 0.5, // wait until they're really done typing
+			withTimeInterval: 0.6, // wait until they're really done typing (probably want to extend this to 1.75s or risk annoyed users if you add back the alert), b/c we'll cause their wallets to be cleared and logged into the new server if a change happened
 			repeats: false,
 			block:
 			{ [unowned self] (timer) in
 				self.tearDown_timerToSave_addressEditingChanged()
+				//
 				let (didError, savableValue) = self._updateValidationErrorForAddressInputView() // also called on init so we get validation error on load
 				if didError {
 					return // not proceeding to save
 				}
-				//
-				let err_str = SettingsController.shared.set(
-					specificAPIAddressURLAuthority: savableValue
-				)
-				if err_str != nil {
-					self.address_inputView.setValidationError(err_str!)
+				func _writeValue() -> String? // err_str
+				{
+					let err_str = SettingsController.shared.set(
+						specificAPIAddressURLAuthority: savableValue
+					)
+					// but note! This does not handle reverting the value if failure occurs
+					return err_str
 				}
-				self.set(resolvingIndicatorIsVisible: false) // hide
-				self.view.setNeedsLayout() // for validation err
-
+				if savableValue == SettingsController.shared.specificAPIAddressURLAuthority {
+					_exitAndUnlock(withValidationErr: nil) // do not clear/re-log-in on wallets if we're, e.g., resetting the password programmatically after the user has canceled deleting all wallets
+					return
+				}
+				let err_str = _writeValue() // this will notify any wallets that they must log out and log back in
+				if err_str != nil { // write failed, so revert value
+					_havingUnlocked_revertValueToExistingSettingsValue() // importantly, revert the input contents, b/c the write failed
+					return
+				}
+				_exitAndUnlock(withValidationErr: err_str)
 			}
 		)
 	}

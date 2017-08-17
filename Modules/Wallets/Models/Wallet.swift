@@ -432,6 +432,7 @@ class Wallet: PersistableObject
 			spend_key_orNilForViewOnly: generatedOnInit_walletDescription.privateKeys.spend,
 			seed_orNil: generatedOnInit_walletDescription.seed,
 			wasAGeneratedWallet: true, // in this case
+			persistEvenIfLoginFailed_forServerChange: false, // always, in this case
 			fn
 		)
 	}
@@ -439,6 +440,7 @@ class Wallet: PersistableObject
 		walletLabel: String,
 		swatchColor: SwatchColor,
 		mnemonicString: MoneroSeedAsMnemonic,
+		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
 	) -> Void
 	{
@@ -469,6 +471,7 @@ class Wallet: PersistableObject
 					spend_key_orNilForViewOnly: walletDescription!.privateKeys.spend,
 					seed_orNil: walletDescription!.seed,
 					wasAGeneratedWallet: false,
+					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
 					fn
 				)
 			}
@@ -479,6 +482,7 @@ class Wallet: PersistableObject
 		swatchColor: SwatchColor,
 		address: MoneroAddress,
 		privateKeys: MoneroKeyDuo,
+		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
 	)
 	{
@@ -491,6 +495,7 @@ class Wallet: PersistableObject
 			spend_key_orNilForViewOnly: privateKeys.spend,
 			seed_orNil: nil,
 			wasAGeneratedWallet: false,
+			persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
 			fn
 		)
 	}
@@ -585,13 +590,16 @@ class Wallet: PersistableObject
 	// Runtime - Imperatives - Private - Booting
 	func __trampolineFor_failedToBootWith_fnAndErrStr(
 		fn: (_ err_str: String?) -> Void,
-		err_str: String?
+		err_str: String?,
+		shouldUseTrampolineToExit: Bool = true
 	)
 	{
 		self.didFailToBoot_flag = true
 		self.didFailToBoot_errStr = err_str
 		//
-		fn(err_str)
+		if shouldUseTrampolineToExit {
+			fn(err_str) // then do NOT call this, b/c we will treat a failure as a suc
+		}
 	}
 	func _trampolineFor_successfullyBooted(
 		_ fn: @escaping (_ err_str: String?) -> Void
@@ -644,6 +652,7 @@ class Wallet: PersistableObject
 		spend_key_orNilForViewOnly: MoneroKey?,
 		seed_orNil: MoneroSeed?,
 		wasAGeneratedWallet: Bool,
+		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
 	)
 	{
@@ -658,27 +667,43 @@ class Wallet: PersistableObject
 		)
 		{ [unowned self] (err_str, verifiedComponentsForLogIn) in
 			if let err_str = err_str {
+				if persistEvenIfLoginFailed_forServerChange == true {
+					assert(false, "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true")
+				}
 				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
 				return
 			}
+			//
+			// record these properties regardless of whether we are about to error on login
+			self.public_address = verifiedComponentsForLogIn!.publicAddress
+			self.account_seed = verifiedComponentsForLogIn!.seed
+			self.public_keys = verifiedComponentsForLogIn!.publicKeys
+			self.private_keys = verifiedComponentsForLogIn!.privateKeys
+			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
+			//
 			HostedMoneroAPIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
 				{ [unowned self] (err_str, isANewAddressToServer) in
-					if err_str != nil {
-						self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
-						return
-					}
-					self.public_address = verifiedComponentsForLogIn!.publicAddress
-					self.account_seed = verifiedComponentsForLogIn!.seed
-					self.public_keys = verifiedComponentsForLogIn!.publicKeys
-					self.private_keys = verifiedComponentsForLogIn!.privateKeys
-					self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
 					//
 					self.isLoggingIn = false
-					self.isLoggedIn = true
+					self.isLoggedIn = err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
 					//
-					self.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true
+					self.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true && self.isLoggedIn/*supporting shouldExitOnLoginError=false*/
+					//
+					let shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
+					if err_str != nil {
+						self.__trampolineFor_failedToBootWith_fnAndErrStr(
+							fn: fn,
+							err_str: err_str,
+							shouldUseTrampolineToExit: shouldExitOnLoginError
+						)
+						if shouldExitOnLoginError == true {
+							return
+						} else {
+							// this allows us to continue to with the above-set login info to call 'saveToDisk()' when this call to log in is coming from a wallet reboot. reason is that we expect all such wallets to be valid monero wallets if they are able to have been rebooted.
+						}
+					}
 					//
 					let err_str = self.saveToDisk()
 					if err_str != nil {
