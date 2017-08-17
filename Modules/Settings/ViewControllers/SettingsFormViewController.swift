@@ -25,7 +25,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var appTimeoutAfterS_inputView: SettingsAppTimeoutAfterSecondsSliderInputView!
 	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
-	var deleteButton_separatorView: UICommonComponents.Details.FieldSeparatorView!
 	var deleteButton: UICommonComponents.LinkButtonView!
 	//
 	// Lifecycle - Init
@@ -71,11 +70,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.scrollView.addSubview(view)
 		}
 		//
-		do {
-			let view = UICommonComponents.Details.FieldSeparatorView(mode: .contentBackgroundAccent)
-			self.deleteButton_separatorView = view
-			self.scrollView.addSubview(view)
-		}
 		do {
 			let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "DELETE EVERYTHING")
 			view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
@@ -250,6 +244,8 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		let formFieldsCustomInsets = self.new__formFieldsCustomInsets
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView + formFieldsCustomInsets.top
 		//
+		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16
+		//
 		let label_x = CGFloat.form_label_margin_x + formFieldsCustomInsets.left
 		let input_x = CGFloat.form_input_margin_x + formFieldsCustomInsets.left
 		let textField_w = self.new__textField_w // already has customInsets subtracted
@@ -293,7 +289,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		
 		self.appTimeoutAfterS_label!.frame = CGRect(
 			x: label_x,
-			y: addressFieldset_bottomEdge + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16,
+			y: addressFieldset_bottomEdge + spacingBetweenFieldsets,
 			width: fullWidth_label_w,
 			height: self.appTimeoutAfterS_label!.frame.size.height
 			).integral
@@ -315,21 +311,13 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			assert(self.appTimeoutAfterS_fieldAccessoryMessageLabel != nil)
 			let justPreviousView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
-			self.deleteButton_separatorView!.frame = CGRect(
-				x: input_x,
-				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-				width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
-				height: UICommonComponents.Details.FieldSeparatorView.h
-			)
-			//
 			self.deleteButton!.frame = CGRect(
 				x: label_x,
-				y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
+				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + spacingBetweenFieldsets,
 				width: self.deleteButton!.frame.size.width,
 				height: self.deleteButton!.frame.size.height
 			)
 		}
-		//
 		//
 		let bottomMostView = self.deleteButton
 		let bottomPadding: CGFloat = 18
