@@ -758,7 +758,7 @@ extension UICommonComponents
 			}
 			self.validationErrorMessageLabel!.setMessageText(message)
 			self._configureBackground() // AFTER setting self.validationErrorMessageLabel
-			self.setNeedsLayout()
+			self.layout_validationErrorMessageLabel() // lay it out immediately so that we have the layout by the time we exit this function - we'll just assume that we have a self.frame.size.width by now - and if we don't, we will just lay out the validation label again in layoutSubviews()
 		}
 		func clearValidationError()
 		{
@@ -788,19 +788,26 @@ extension UICommonComponents
 			}
 		}
 		//
+		func layout_validationErrorMessageLabel()
+		{
+			assert(self.validationErrorMessageLabel != nil)
+			let validationErrorMessageLabel = self.validationErrorMessageLabel!
+			let frame = CGRect(
+				x: FormInputField.textInsets.left,
+				y: self.frame.size.height + FormInputField.textInsets.top,
+				width: self.frame.size.width - FormInputField.textInsets.left - FormInputField.textInsets.right,
+				height: 0
+			)
+			validationErrorMessageLabel.frame = frame
+			validationErrorMessageLabel.sizeToFit()
+		}
+		//
 		// Imperatives - Overrides
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
-			if let validationErrorMessageLabel = self.validationErrorMessageLabel {
-				let frame = CGRect(
-					x: FormInputField.textInsets.left,
-					y: self.frame.size.height + FormInputField.textInsets.top,
-					width: self.frame.size.width - FormInputField.textInsets.left - FormInputField.textInsets.right,
-					height: 0
-				)
-				validationErrorMessageLabel.frame = frame
-				validationErrorMessageLabel.sizeToFit()
+			if self.validationErrorMessageLabel != nil {
+				self.layout_validationErrorMessageLabel()
 			}
 		}
 	}

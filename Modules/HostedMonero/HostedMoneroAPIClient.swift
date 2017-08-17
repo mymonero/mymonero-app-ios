@@ -74,10 +74,8 @@ enum HostedMoneroAPI_Endpoint: String
 //
 struct HostedMoneroAPIClient_HostConfig
 {
-	static let hostDomainPlusPortPlusSlash = "api.mymonero.com:8443/"
-	static let protocolScheme = "https"
-	//
-	static let hostingServiceFee_depositAddress = "49VNLa9K5ecJo13bwKYt5HCmA8GkgLwpyFjgGKG6qmp8dqoXww8TKPU2PJaLfAAtoZGgtHfJ1nYY8G2YaewycB4f72yFT6u"
+	// currently not in use
+//	static let hostingServiceFee_depositAddress = "49VNLa9K5ecJo13bwKYt5HCmA8GkgLwpyFjgGKG6qmp8dqoXww8TKPU2PJaLfAAtoZGgtHfJ1nYY8G2YaewycB4f72yFT6u"
 	static let hostingServiceFee_txFeeRatioOfNetworkFee = 0.5 // Service fee relative to tx fee (0.5 => 50%)
 	//
 	static func HostingServiceChargeForTransaction(with networkFee: MoneroAmount) -> MoneroAmount
@@ -98,10 +96,15 @@ final class HostedMoneroAPIClient
 	static let apiAddress_scheme = "https"
 	//
 	// Constants
-	let mymonero_apiAddress_authority = "api.mymonero.com:8443"
+	static let mymonero_apiAddress_authority = "api.mymonero.com:8443"
 	//
 	var final_apiAddress_authority: String { // authority means [subdomain.]host.…[:…]
-		return "\(self.mymonero_apiAddress_authority)" // TODO: read from settings
+		assert(SettingsController.shared.hasBooted)
+		let settings_authorityValue = SettingsController.shared.specificAPIAddressURLAuthority
+		if settings_authorityValue == nil {
+			return type(of: self).mymonero_apiAddress_authority
+		}
+	 	return settings_authorityValue!
 	}
 	//
 	// Properties
