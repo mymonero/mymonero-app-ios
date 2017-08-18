@@ -10,7 +10,34 @@ import Foundation
 
 class WalletsListController: PersistedObjectListController
 {
-	// initial
+	//
+	// Constants
+	struct WalletRebootReconstitutionDescription
+	{
+//		var currency: Currency!
+		var walletLabel: String
+		var swatchColor: Wallet.SwatchColor
+		//
+		var mnemonicString: MoneroSeedAsMnemonic?
+		var account_seed: MoneroSeed?
+		var private_keys: MoneroKeyDuo!
+		var public_address: MoneroAddress!
+		//
+		static func new(fromWallet wallet: Wallet) -> WalletRebootReconstitutionDescription
+		{
+			return WalletRebootReconstitutionDescription(
+				walletLabel: wallet.walletLabel,
+				swatchColor: wallet.swatchColor,
+				//
+				mnemonicString: wallet.mnemonicString,
+				account_seed: wallet.account_seed,
+				private_keys: wallet.private_keys,
+				public_address: wallet.public_address
+			)
+		}
+	}
+	//
+	// Properties - Initial
 	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
@@ -245,44 +272,77 @@ class WalletsListController: PersistedObjectListController
 		})
 	}
 	//
+	// Imperatives - Wallet re-booting - Shared
+	func reboot(
+		nonBootedWallet wallet: Wallet,
+		withSpecificReconstitutionDescription specific_reconstitutionDescription: WalletRebootReconstitutionDescription?
+	)
+	{
+		assert(wallet.isBooted == false)
+		assert(wallet.isLoggedIn == false)
+		//
+		var reconstitutionDescription: WalletRebootReconstitutionDescription
+		if specific_reconstitutionDescription == nil {
+			assert(wallet.walletLabel != nil) // just one of the things we would definitely expect on the wallet if this is the case
+			reconstitutionDescription = WalletRebootReconstitutionDescription.new(
+				fromWallet: wallet
+			)
+		} else {
+			reconstitutionDescription = specific_reconstitutionDescription!
+		}
+		if let mnemonicString = reconstitutionDescription.mnemonicString {
+			wallet.Boot_byLoggingIn_existingWallet_withMnemonic(
+				walletLabel: reconstitutionDescription.walletLabel,
+				swatchColor: reconstitutionDescription.swatchColor,
+				mnemonicString: mnemonicString,
+				persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+				{ (err_str) in
+					if err_str != nil {
+						// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
+					}
+				}
+			)
+		} else {
+			wallet.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
+				walletLabel: reconstitutionDescription.walletLabel,
+				swatchColor: reconstitutionDescription.swatchColor,
+				address: reconstitutionDescription.public_address,
+				privateKeys: reconstitutionDescription.private_keys,
+				persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+				{ (err_str) in
+					if err_str != nil {
+						// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
+					}
+				}
+			)
+		}
+	}
+	//
 	// Delegation - Overrides - Booting reconstitution - Instance setup
 	override func overridable_booting_didReconstitute(listedObjectInstance: PersistableObject)
 	{
 		let wallet = listedObjectInstance as! Wallet
-		wallet.Boot_havingLoadedDecryptedExistingInitDoc(
-			{ err_str in
-				if let err_str = err_str {
-					DDLog.Error("Wallets", "Error while booting wallet: \(err_str)")
+		if wallet.isLoggedIn {
+			wallet.Boot_havingLoadedDecryptedExistingInitDoc(
+				{ err_str in
+					if let err_str = err_str {
+						DDLog.Error("Wallets", "Error while booting wallet: \(err_str)")
+					}
 				}
-			}
-		)
-	}
-	//
-	// Delegation - Notifications
-	struct WalletRebootReconstitutionDescription
-	{
-//		var currency: Currency!
-		var walletLabel: String
-		var swatchColor: Wallet.SwatchColor
-		//
-		var mnemonicString: MoneroSeedAsMnemonic?
-		var account_seed: MoneroSeed?
-		var private_keys: MoneroKeyDuo!
-		var public_address: MoneroAddress!
-		//
-		static func new(fromWallet wallet: Wallet) -> WalletRebootReconstitutionDescription
-		{
-			return WalletRebootReconstitutionDescription(
-				walletLabel: wallet.walletLabel,
-				swatchColor: wallet.swatchColor,
-				//
-				mnemonicString: wallet.mnemonicString,
-				account_seed: wallet.account_seed,
-				private_keys: wallet.private_keys,
-				public_address: wallet.public_address
+			)
+		} else {
+			assert(wallet.isLoggingIn == false) // jic
+			DDLog.Do("Wallets", "Wallet which was unable to log in was loaded. Attempting to reboot.")
+			//
+			// going to treat this as a wallet which was saved but which failed to log in
+			self.reboot(
+				nonBootedWallet: wallet,
+				withSpecificReconstitutionDescription: nil // function will extract a reconstitutionDescription from the wallet
 			)
 		}
 	}
+	//
+	// Delegation - Notifications
 	@objc func SettingsController__NotificationNames_Changed__specificAPIAddressURLAuthority()
 	{
 		// 'log out' all wallets by grabbing their keys (info to reconstitute them), deleting them, then reconstituting and booting them
@@ -303,9 +363,8 @@ class WalletsListController: PersistedObjectListController
 		let walletsToDelete = self.records
 		for (_, object) in walletsToDelete.enumerated() {
 			let wallet = object as! Wallet
-			reconstitutionDescriptions.append(
-				WalletRebootReconstitutionDescription.new(fromWallet: wallet)
-			)
+			let reconstitutionDescription = WalletRebootReconstitutionDescription.new(fromWallet: wallet)
+			reconstitutionDescriptions.append(reconstitutionDescription)
 			let err_str = wallet.delete()
 			// TODO if needed: add self.stopObserving(record: record) for each deleted record if added later…
 			if err_str != nil { // remove / release
@@ -328,32 +387,10 @@ class WalletsListController: PersistedObjectListController
 				// ^- appending immediately so we don't have to wait for success before updating
 				//
 				// now boot (aka login)
-				if let mnemonicString = reconstitutionDescription.mnemonicString {
-					wallet.Boot_byLoggingIn_existingWallet_withMnemonic(
-						walletLabel: reconstitutionDescription.walletLabel,
-						swatchColor: reconstitutionDescription.swatchColor,
-						mnemonicString: mnemonicString,
-						persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
-						{ (err_str) in
-							if err_str != nil {
-								// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
-							}
-						}
-					)
-				} else {
-					wallet.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
-						walletLabel: reconstitutionDescription.walletLabel,
-						swatchColor: reconstitutionDescription.swatchColor,
-						address: reconstitutionDescription.public_address,
-						privateKeys: reconstitutionDescription.private_keys,
-						persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
-						{ (err_str) in
-							if err_str != nil {
-								// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
-							}
-						}
-					)
-				}
+				self.reboot(
+					nonBootedWallet: wallet,
+					withSpecificReconstitutionDescription: reconstitutionDescription // important to pass this, b/c the wallet instance has no information on it right now!
+				)
 			} catch let e {
 				assert(false, "Error while addind wallet: \(e)")
 				continue // skip - nothing to append

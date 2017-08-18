@@ -93,11 +93,7 @@ extension WalletDetails
 					assert(false)
 					return
 				}
-				if wallet!.didFailToInitialize_flag == true || wallet!.didFailToBoot_flag == true {
-					return
-				} else {
-					self.contentContainerView.set(infoWithWallet: wallet!)
-				}
+				self.contentContainerView.set(infoWithWallet: wallet!)
 			}
 			//
 			// Imperatives - Disclosure
@@ -258,7 +254,22 @@ extension WalletDetails
 			}
 			func _configureFieldViews(withWallet wallet: Wallet)
 			{
+				if wallet.didFailToInitialize_flag == true {
+					self.truncated__fieldView_address.set(text: "")
+					//
+					self.disclosed__fieldView_address.set(text: "")
+					self.disclosed__fieldView_viewKey.set(text: "")
+					self.disclosed__fieldView_spendKey.set(text: "")
+					if self.wantsMnemonicDisplay {
+						self.disclosed__fieldView_mnemonic.set(text: "")
+					}
+					return
+				}
+				if wallet.didFailToBoot_flag == true {
+					// in this state, we ought to still have enough info to display, so do not bail here
+				}
 				self.truncated__fieldView_address.set(text: wallet.public_address)
+				//
 				self.disclosed__fieldView_address.set(text: wallet.public_address)
 				self.disclosed__fieldView_viewKey.set(text: wallet.private_keys.view)
 				self.disclosed__fieldView_spendKey.set(text: wallet.private_keys.spend)

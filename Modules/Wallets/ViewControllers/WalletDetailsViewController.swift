@@ -109,6 +109,8 @@ extension WalletDetails
 		{
 			super.startObserving()
 			//
+			NotificationCenter.default.addObserver(self, selector: #selector(_wallet_loggedIn), name: PersistableObject.NotificationNames.booted.notificationName, object: self.wallet)
+			NotificationCenter.default.addObserver(self, selector: #selector(_wallet_failedToLogIn), name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self.wallet)
 			NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.wallet)
 			NotificationCenter.default.addObserver(
 				self,
@@ -150,6 +152,9 @@ extension WalletDetails
 		override func stopObserving()
 		{
 			super.stopObserving()
+			//
+			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.booted.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.heightsUpdated.notificationName, object: self.wallet)
@@ -163,10 +168,18 @@ extension WalletDetails
 		// - State
 		var shouldShowScanningBlockchainActivityIndicator: Bool {
 			assert(self.shouldShowImportTransactionsButton == false) // putting this check outside so priority logic is dictated elsewhere (in delegate methods)
-			return self.wallet.isAccountScannerCatchingUp
+			let wallet = self.wallet
+			if wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true {
+				return false // not yet
+			}
+			return wallet.isAccountScannerCatchingUp
 		}
 		var shouldShowImportTransactionsButton: Bool {
-			if self.wallet.hasEverFetched_transactions != false {
+			let wallet = self.wallet
+			if wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true {
+				return false // not yet
+			}
+			if wallet.hasEverFetched_transactions != false {
 				let transactions = wallet.transactions ?? []
 				if transactions.count > 0 {
 					return false // if transactions are appearing, we're going to assume we don't need to show the prompt button
@@ -189,9 +202,11 @@ extension WalletDetails
 				case .actionButtons:
 					return WalletDetails.ActionButtons.Cell.self
 				case .transactions:
+					assert(wallet.didFailToInitialize_flag != true && wallet.didFailToBoot_flag != true)
 					if self.hasTransactions {
 						return WalletDetails.Transaction.Cell.self
 					}
+					//
 					return WalletDetails.TransactionsEmptyState.Cell.self
 			}
 		}
@@ -204,6 +219,7 @@ extension WalletDetails
 				     .actionButtons:
 					return .standalone
 				case .transactions:
+					assert(wallet.didFailToInitialize_flag != true && wallet.didFailToBoot_flag != true)
 					if self.hasTransactions {
 						let index = indexPath.row
 						let cellsCount = self.wallet.transactions!.count
@@ -332,6 +348,9 @@ extension WalletDetails
 					 .actionButtons:
 					return 1
 				case .transactions:
+					if wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true {
+						return 0 // no empty state cell until logged in (cause we don't know)
+					}
 					if self.hasTransactions {
 						return self.wallet.transactions?.count ?? 0
 					}
@@ -372,8 +391,10 @@ extension WalletDetails
 			let sectionName = SectionName.new_SectionName(withSectionIndex: indexPath.section)!
 			switch sectionName {
 				case .balance,
-				     .actionButtons,
-				     .transactions:
+				     .actionButtons:
+					return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
+				case .transactions:
+					assert(wallet.didFailToInitialize_flag != true && wallet.didFailToBoot_flag != true)
 					return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
 				case .infoDisclosing:
 					if let frame = self.infoDisclosing_contentContainerView_toFrame { // while animating disclosure toggle - done due to how begin and endUpdates works with a custom animation context
@@ -394,6 +415,9 @@ extension WalletDetails
 				case .actionButtons:
 					return .leastNormalMagnitude // the cell supplies its own; must be this instead of 0
 				case .transactions:
+					if self.wallet.didFailToInitialize_flag == true || self.wallet.didFailToBoot_flag == true {
+						return .leastNormalMagnitude
+					}
 					// remove top shadow height for transactions… but only if not showing resolving indicator
 					// here is some header view mode precedence logic
 					if self.shouldShowImportTransactionsButton {
@@ -422,7 +446,10 @@ extension WalletDetails
 		}
 		func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
 		{
-			if section == SectionName.transactions.indexInTable { // transactions - so, scanning blockchain header
+			if section == SectionName.transactions.indexInTable { // transactions - so, scanning blockchain header, etc
+				if self.wallet.didFailToInitialize_flag == true || self.wallet.didFailToBoot_flag == true {
+					return nil
+				}
 				// here is some header view mode logic
 				// we hang onto self.transactionsSectionHeaderView so that on reloadData etc we can keep showing the same state, e.g. animation step
 				if self.shouldShowImportTransactionsButton {
@@ -472,6 +499,14 @@ extension WalletDetails
 		}
 		//
 		// Delegation - Notifications
+		func _wallet_loggedIn()
+		{
+			self.tableView.reloadData()
+		}
+		func _wallet_failedToLogIn()
+		{
+			self.tableView.reloadData()
+		}
 		func willBeDeleted()
 		{
 			if self.navigationController!.topViewController! != self {

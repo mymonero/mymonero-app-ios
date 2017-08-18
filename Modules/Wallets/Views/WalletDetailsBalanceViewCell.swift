@@ -50,17 +50,7 @@ extension WalletDetails
 					assert(false)
 					return
 				}
-				if wallet!.didFailToInitialize_flag == true || wallet!.didFailToBoot_flag == true {
-					self.balanceDisplayView.label.textColor = .white
-					self.balanceDisplayView.label.text = NSLocalizedString("ERROR LOADING", comment: "")
-				} else if wallet!.hasEverFetched_accountInfo == false {
-					self.balanceDisplayView.set(
-						utilityText: NSLocalizedString("LOADING…", comment: ""),
-						withWallet: wallet!
-					)
-				} else {
-					self.balanceDisplayView.set(balanceWithWallet: wallet!)
-				}
+				self.balanceDisplayView.set(balanceWithWallet: wallet!)
 			}
 		}
 
@@ -137,6 +127,27 @@ extension WalletDetails
 			// Imperatives
 			func set(balanceWithWallet wallet: Wallet)
 			{
+				if wallet.didFailToInitialize_flag == true {
+					self.set(
+						utilityText: NSLocalizedString("LOAD ERROR", comment: ""),
+						withWallet: wallet
+					)
+					return
+				}
+				if wallet.didFailToBoot_flag == true {
+					self.set(
+						utilityText: NSLocalizedString("LOGIN ERROR", comment: ""),
+						withWallet: wallet
+					)
+					return
+				}
+				if wallet.hasEverFetched_accountInfo == false {
+					self.set(
+						utilityText: NSLocalizedString("LOADING…", comment: ""),
+						withWallet: wallet
+					)
+					return
+				}
 				var finalized_main_string = ""
 				var finalized_paddingZeros_string = ""
 				do {
@@ -173,14 +184,14 @@ extension WalletDetails
 					attributedText.addAttributes(
 						[
 							NSForegroundColorAttributeName: mainSectionColor,
-							],
+						],
 						range: NSMakeRange(0, finalized_main_string.characters.count)
 					)
 					if finalized_paddingZeros_string.characters.count > 0 {
 						attributedText.addAttributes(
 							[
 								NSForegroundColorAttributeName: paddingZeroesSectionColor,
-								],
+							],
 							range: NSMakeRange(
 								finalized_main_string.characters.count,
 								attributedText.string.characters.count - finalized_paddingZeros_string.characters.count
@@ -200,7 +211,7 @@ extension WalletDetails
 			}
 			func _configureBackgroundColor(withWallet wallet: Wallet)
 			{
-				self.image = type(of: self).stretchableBackgroundImage(forSwatchColor: wallet.swatchColor)
+				self.image = type(of: self).stretchableBackgroundImage(forSwatchColor: wallet.swatchColor ?? Wallet.SwatchColor.blue)
 			}
 		}
 	}

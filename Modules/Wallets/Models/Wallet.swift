@@ -241,8 +241,10 @@ class Wallet: PersistableObject
 			dict[DictKey.walletLabel.rawValue] = self.walletLabel
 			dict[DictKey.swatchColorHexString.rawValue] = self.swatchColor.jsonRepresentation()
 			dict[DictKey.publicAddress.rawValue] = self.public_address
-			if let value = self.account_seed {
+			if let value = self.account_seed, value != "" {
 				dict[DictKey.accountSeed.rawValue] = value
+			} else {
+				DDLog.Warn("Wallets", "Saving w/o acct seed")
 			}
 			if let value = self.mnemonic_wordsetName {
 				dict[DictKey.mnemonic_wordsetName.rawValue] = value.jsonRepresentation
@@ -453,6 +455,7 @@ class Wallet: PersistableObject
 			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: wordsetName__err_str)
 			return
 		}
+		self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
 		self.mnemonic_wordsetName = wordsetName!
 		//
 		// We're not going to set self.mnemonicString here because we re-derive it from seed in _trampolineFor_successfullyBooted
@@ -513,6 +516,10 @@ class Wallet: PersistableObject
 	}
 	var isAccountScannerCatchingUp: Bool
 	{
+		if self.didFailToInitialize_flag == true || self.didFailToBoot_flag == true {
+			assert(false, "not strictly illegal but accessing isAccountScannerCatching up before logged in")
+			return false
+		}
 		if self.blockchain_height == nil || self.blockchain_height == 0 {
 			DDLog.Warn("Wallets", ".isScannerCatchingUp called while nil/0 blockchain_height")
 			return true
@@ -588,18 +595,23 @@ class Wallet: PersistableObject
 	}
 	//
 	// Runtime - Imperatives - Private - Booting
-	func __trampolineFor_failedToBootWith_fnAndErrStr(
-		fn: (_ err_str: String?) -> Void,
-		err_str: String?,
-		shouldUseTrampolineToExit: Bool = true
+	func _setStateThatFailedToBoot(
+		withErrStr err_str: String?
 	)
 	{
 		self.didFailToBoot_flag = true
 		self.didFailToBoot_errStr = err_str
-		//
-		if shouldUseTrampolineToExit {
-			fn(err_str) // then do NOT call this, b/c we will treat a failure as a suc
+	}
+	func __trampolineFor_failedToBootWith_fnAndErrStr(
+		fn: (_ err_str: String?) -> Void,
+		err_str: String?
+	)
+	{
+		self._setStateThatFailedToBoot(withErrStr: err_str)
+		DispatchQueue.main.async {
+			NotificationCenter.default.post(name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self, userInfo: nil)
 		}
+		fn(err_str)
 	}
 	func _trampolineFor_successfullyBooted(
 		_ fn: @escaping (_ err_str: String?) -> Void
@@ -609,14 +621,16 @@ class Wallet: PersistableObject
 		{
 			DDLog.Done("Wallets", "Successfully booted \(self)")
 			self.isBooted = true
-			fn(nil)
 			DispatchQueue.main.async
 			{ [weak self] in
 				guard let thisSelf = self else {
 					return
 				}
 				thisSelf._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
+				//
+				NotificationCenter.default.post(name: PersistableObject.NotificationNames.booted.notificationName, object: self, userInfo: nil)
 			}
+			fn(nil)
 		}
 		if self.account_seed == nil || self.account_seed!.characters.count < 1 {
 			DDLog.Warn("Wallets", "Wallet initialized without an account_seed.")
@@ -638,7 +652,15 @@ class Wallet: PersistableObject
 				thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
 				return
 			}
-			thisSelf.mnemonicString = seedAsMnemonic!
+			if thisSelf.mnemonicString != nil {
+				if thisSelf.mnemonicString != seedAsMnemonic! { // would be rather odd
+					assert(false, "Different mnemonicString derived from accountSeed than was entered for login")
+					thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: "Mnemonic seed mismatch")
+					return
+				}
+			} else {
+				thisSelf.mnemonicString = seedAsMnemonic!
+			}
 			__proceed_havingActuallyBooted()
 		}
 	}
@@ -684,33 +706,43 @@ class Wallet: PersistableObject
 			HostedMoneroAPIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
-				{ [unowned self] (err_str, isANewAddressToServer) in
+				{ [unowned self] (login__err_str, isANewAddressToServer) in
 					//
 					self.isLoggingIn = false
-					self.isLoggedIn = err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
+					self.isLoggedIn = login__err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
 					//
 					self.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true && self.isLoggedIn/*supporting shouldExitOnLoginError=false*/
 					//
 					let shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
-					if err_str != nil {
-						self.__trampolineFor_failedToBootWith_fnAndErrStr(
-							fn: fn,
-							err_str: err_str,
-							shouldUseTrampolineToExit: shouldExitOnLoginError
-						)
+					if login__err_str != nil {
 						if shouldExitOnLoginError == true {
+							self.__trampolineFor_failedToBootWith_fnAndErrStr(
+								fn: fn,
+								err_str: login__err_str
+							)
 							return
 						} else {
 							// this allows us to continue to with the above-set login info to call 'saveToDisk()' when this call to log in is coming from a wallet reboot. reason is that we expect all such wallets to be valid monero wallets if they are able to have been rebooted.
 						}
 					}
 					//
-					let err_str = self.saveToDisk()
-					if err_str != nil {
-						self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
+					let saveToDisk__err_str = self.saveToDisk()
+					if saveToDisk__err_str != nil {
+						self.__trampolineFor_failedToBootWith_fnAndErrStr(
+							fn: fn,
+							err_str: saveToDisk__err_str
+						)
 						return
 					}
-					self._trampolineFor_successfullyBooted(fn)
+					if shouldExitOnLoginError == false && login__err_str != nil {
+						// if we are attempting to re-boot the wallet, but login failed
+						self.__trampolineFor_failedToBootWith_fnAndErrStr( // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
+							fn: fn,
+							err_str: login__err_str
+						)
+					} else { // it's actually a success
+						self._trampolineFor_successfullyBooted(fn)
+					}
 				}
 			)
 		}

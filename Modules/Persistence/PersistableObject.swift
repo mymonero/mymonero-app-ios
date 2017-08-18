@@ -20,6 +20,11 @@ class PersistableObject: Equatable
 	//
 	enum NotificationNames: String
 	{
+		// boot state change notification declarations for your convenience - not posted for you - see Wallet.swift
+		case booted = "PersistableObject_NotificationNames_booted"
+		case failedToBoot = "PersistableObject_NotificationNames_failedToBoot"
+		//
+		// posted automatically
 		case willBeDeinitialized = "PersistableObject_NotificationNames_willBeDeinitialized" // this is necessary since views like UITableView and UIPickerView won't necessarily call .prepareForReuse() on an unused cell (e.g. after logged-in-runtime teardown), leaving PersistableObject instances hanging around
 		//
 		case willBeDeleted = "PersistableObject_NotificationNames_willBeDeleted" // this (or 'was') may end up being redundant with new .willBeDeinitialized

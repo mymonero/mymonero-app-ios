@@ -69,6 +69,9 @@ class WalletCellContentView: UIView
 	func stopObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.booted.notificationName, object: self.object!)
+		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self.object!)
+		//
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.labelChanged.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
 		NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
@@ -125,18 +128,25 @@ class WalletCellContentView: UIView
 	func _configureUIWithWallet()
 	{
 		assert(self.object != nil)
-		self.__configureUIWithWallet_accountInfo()
+		self.__configureUIWithWallet_labels()
 		self.__configureUIWithWallet_swatchColor()
 	}
-	func __configureUIWithWallet_accountInfo()
+	func __configureUIWithWallet_labels()
 	{
 		assert(self.object != nil)
-		if self.object!.didFailToInitialize_flag == true || self.object!.didFailToBoot_flag == true { // unlikely but possible
-			self.titleLabel.text = "Error"
-			self.subtitleLabel.text = "Couldn't unlock wallet. Please contact support."
+		self.titleLabel.text = self.object!.walletLabel
+		if self.object!.isLoggingIn {
+			self.subtitleLabel.text = "Logging in…"
 			return
 		}
-		self.titleLabel.text = self.object!.walletLabel
+		if self.object!.didFailToInitialize_flag == true { // unlikely but possible
+			self.subtitleLabel.text = "Load error"
+			return
+		}
+		if self.object!.didFailToBoot_flag == true { // possible when server incorrect
+			self.subtitleLabel.text = "Login error"
+			return
+		}
 		var subtitleLabel_text: String?
 		do {
 			if self.object!.hasEverFetched_accountInfo == false {
@@ -165,6 +175,9 @@ class WalletCellContentView: UIView
 	func startObserving_object()
 	{
 		assert(self.object != nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(_wallet_loggedIn), name: PersistableObject.NotificationNames.booted.notificationName, object: self.object!)
+		NotificationCenter.default.addObserver(self, selector: #selector(_wallet_failedToLogIn), name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self.object!)
+		//
 		NotificationCenter.default.addObserver(self, selector: #selector(_labelChanged), name: Wallet.NotificationNames.labelChanged.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_balanceChanged), name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_swatchColorChanged), name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.object!)
@@ -200,13 +213,21 @@ class WalletCellContentView: UIView
 	}
 	//
 	// Delegation - Wallet NSNotifications
+	@objc func _wallet_loggedIn()
+	{
+		self.__configureUIWithWallet_labels()
+	}
+	@objc func _wallet_failedToLogIn()
+	{
+		self.__configureUIWithWallet_labels()
+	}
 	@objc func _labelChanged()
 	{
-		self.__configureUIWithWallet_accountInfo()
+		self.__configureUIWithWallet_labels()
 	}
 	@objc func _balanceChanged()
 	{
-		self.__configureUIWithWallet_accountInfo()
+		self.__configureUIWithWallet_labels()
 	}
 	@objc func _swatchColorChanged()
 	{
