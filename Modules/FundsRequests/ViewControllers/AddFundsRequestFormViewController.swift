@@ -461,6 +461,14 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		self.clearValidationMessage()
 		//
 		let toWallet = self.toWallet_inputView.selectedWallet!
+		if toWallet.didFailToInitialize_flag == true {
+			self.setValidationMessage(NSLocalizedString("Unable to load that wallet.", comment: ""))
+			return
+		}
+		if toWallet.didFailToBoot_flag    ¥ == true {
+			self.setValidationMessage(NSLocalizedString("Unable to log into that wallet.", comment: ""))
+			return
+		}
 		//
 		let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
 		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil

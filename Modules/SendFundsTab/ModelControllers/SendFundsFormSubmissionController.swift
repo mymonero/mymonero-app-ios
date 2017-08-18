@@ -50,6 +50,18 @@ extension SendFundsForm
 		// Imperatives
 		func handle()
 		{
+			if self.parameters.fromWallet.didFailToInitialize_flag == true {
+				self.parameters.preSuccess_terminal_validationMessage_fn(
+					NSLocalizedString("Unable to load that wallet.", comment: "")
+				)
+				return
+			}
+			if self.parameters.fromWallet.didFailToBoot_flag == true {
+				self.parameters.preSuccess_terminal_validationMessage_fn(
+					NSLocalizedString("Unable to log into that wallet.", comment: "")
+				)
+				return
+			}
 			let enteredAddressValue_exists = self.parameters.enteredAddressValue != "" && self.parameters.enteredAddressValue != nil // it will be valid if it exists
 			let hasPickedAContact = self.parameters.selectedContact != nil
 //			let notPickedContactBut_enteredAddressValue = !hasPickedAContact && enteredAddressValue_exists ? true : false
