@@ -127,6 +127,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				}
 			}
 			let description = self._new_moneroWalletDescription_byParsing_dict(dict, mnemonicString)
+			assert(description.seed != "")
 			fn(nil, description)
 		}
 	}
@@ -340,6 +341,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	{
 		let mnemonicString = optl_passThrough_mnemonicString ?? dict["mnemonicString"] as! MoneroSeedAsMnemonic
 		let seed = dict["seed"] as! MoneroSeed
+		assert(seed != "")
 		let keys = dict["keys"] as! [String: AnyObject]
 		let spendKeys = keys["spend"] as! [String: AnyObject]
 		let viewKeys = keys["view"] as! [String: AnyObject]

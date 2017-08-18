@@ -12,9 +12,7 @@ import UIKit // for UIApplication idle timer
 class Wallet: PersistableObject
 {
 	//
-	//
 	// Types
-	//
 	enum Currency: String
 	{
 		case Monero = "xmr"
@@ -148,6 +146,32 @@ class Wallet: PersistableObject
 			return NSNotification.Name(self.rawValue)
 		}
 	}
+	struct RebootReconstitutionDescription
+	{
+		//		var currency: Currency!
+		var walletLabel: String
+		var swatchColor: Wallet.SwatchColor
+		//
+		var mnemonic_wordsetName: MoneroMnemonicWordsetName? // be sure this is supplied if account_seed is not nil nil but mnemonicSeed is nil so mnemonicString can be rederived
+		var mnemonicString: MoneroSeedAsMnemonic?
+		var account_seed: MoneroSeed?
+		var private_keys: MoneroKeyDuo!
+		var public_address: MoneroAddress!
+		//
+		static func new(fromWallet wallet: Wallet) -> RebootReconstitutionDescription
+		{
+			return RebootReconstitutionDescription(
+				walletLabel: wallet.walletLabel,
+				swatchColor: wallet.swatchColor,
+				mnemonic_wordsetName: wallet.mnemonic_wordsetName,
+				//
+				mnemonicString: wallet.mnemonicString,
+				account_seed: wallet.account_seed,
+				private_keys: wallet.private_keys,
+				public_address: wallet.public_address
+			)
+		}
+	}
 	// Internal
 	enum DictKey: String
 	{ // (For persistence)
@@ -243,6 +267,7 @@ class Wallet: PersistableObject
 			dict[DictKey.publicAddress.rawValue] = self.public_address
 			if let value = self.account_seed, value != "" {
 				dict[DictKey.accountSeed.rawValue] = value
+				assert(value != "")
 			} else {
 				DDLog.Warn("Wallets", "Saving w/o acct seed")
 			}
@@ -458,8 +483,6 @@ class Wallet: PersistableObject
 		self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
 		self.mnemonic_wordsetName = wordsetName!
 		//
-		// We're not going to set self.mnemonicString here because we re-derive it from seed in _trampolineFor_successfullyBooted
-		//
 		MyMoneroCore.shared.WalletDescriptionFromMnemonicSeed(
 			mnemonicString,
 			self.mnemonic_wordsetName!,
@@ -468,6 +491,7 @@ class Wallet: PersistableObject
 					self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str!)
 					return
 				}
+				assert(walletDescription!.seed != "")
 				self._boot_byLoggingIn(
 					address: walletDescription!.publicAddress,
 					view_key__private: walletDescription!.privateKeys.view,
@@ -500,6 +524,57 @@ class Wallet: PersistableObject
 			wasAGeneratedWallet: false,
 			persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
 			fn
+		)
+	}
+	func Boot_byLoggingIn_existingWallet(
+		reconstitutionDescription: RebootReconstitutionDescription,
+		persistEvenIfLoginFailed_forServerChange: Bool,
+		_ fn: @escaping (_ err_str: String?) -> Void
+	)
+	{
+		func _proceedTo_login(mnemonicString: MoneroSeedAsMnemonic?)
+		{
+			if mnemonicString != nil {
+				self.Boot_byLoggingIn_existingWallet_withMnemonic(
+					walletLabel: reconstitutionDescription.walletLabel,
+					swatchColor: reconstitutionDescription.swatchColor,
+					mnemonicString: mnemonicString!,
+					persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+					fn
+				)
+			} else {
+				assert(self.account_seed == nil)
+				//
+				self.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
+					walletLabel: reconstitutionDescription.walletLabel,
+					swatchColor: reconstitutionDescription.swatchColor,
+					address: reconstitutionDescription.public_address,
+					privateKeys: reconstitutionDescription.private_keys,
+					persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+					fn
+				)
+			}
+		}
+		if reconstitutionDescription.mnemonicString == nil {
+			if reconstitutionDescription.account_seed != nil {
+				assert(reconstitutionDescription.mnemonic_wordsetName != nil)
+				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
+				MyMoneroCore.shared.MnemonicStringFromSeed(
+					reconstitutionDescription.account_seed!,
+					reconstitutionDescription.mnemonic_wordsetName!
+				)
+				{ (err_str, seedAsMnemonic) in
+					if let err_str = err_str {
+						fn(err_str)
+						return
+					}
+					_proceedTo_login(mnemonicString: seedAsMnemonic!)
+				}
+				return
+			}
+		}
+		_proceedTo_login(
+			mnemonicString: reconstitutionDescription.mnemonicString // might be nil
 		)
 	}
 	//
@@ -632,7 +707,7 @@ class Wallet: PersistableObject
 			}
 			fn(nil)
 		}
-		if self.account_seed == nil || self.account_seed!.characters.count < 1 {
+		if self.account_seed == nil || self.account_seed! == "" {
 			DDLog.Warn("Wallets", "Wallet initialized without an account_seed.")
 			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
 			__proceed_havingActuallyBooted()
@@ -695,10 +770,13 @@ class Wallet: PersistableObject
 				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
 				return
 			}
+			assert(seed_orNil == nil || seed_orNil != "") // not "" if not nil - so we can just check nilness
+			assert(verifiedComponentsForLogIn!.seed != "")
 			//
 			// record these properties regardless of whether we are about to error on login
 			self.public_address = verifiedComponentsForLogIn!.publicAddress
 			self.account_seed = verifiedComponentsForLogIn!.seed
+			assert(self.account_seed != "")
 			self.public_keys = verifiedComponentsForLogIn!.publicKeys
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode

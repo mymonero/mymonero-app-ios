@@ -465,7 +465,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.setValidationMessage(NSLocalizedString("Unable to load that wallet.", comment: ""))
 			return
 		}
-		if toWallet.didFailToBoot_flag    ¥ == true {
+		if toWallet.didFailToBoot_flag == true {
 			self.setValidationMessage(NSLocalizedString("Unable to log into that wallet.", comment: ""))
 			return
 		}

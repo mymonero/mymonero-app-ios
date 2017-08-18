@@ -11,32 +11,6 @@ import Foundation
 class WalletsListController: PersistedObjectListController
 {
 	//
-	// Constants
-	struct WalletRebootReconstitutionDescription
-	{
-//		var currency: Currency!
-		var walletLabel: String
-		var swatchColor: Wallet.SwatchColor
-		//
-		var mnemonicString: MoneroSeedAsMnemonic?
-		var account_seed: MoneroSeed?
-		var private_keys: MoneroKeyDuo!
-		var public_address: MoneroAddress!
-		//
-		static func new(fromWallet wallet: Wallet) -> WalletRebootReconstitutionDescription
-		{
-			return WalletRebootReconstitutionDescription(
-				walletLabel: wallet.walletLabel,
-				swatchColor: wallet.swatchColor,
-				//
-				mnemonicString: wallet.mnemonicString,
-				account_seed: wallet.account_seed,
-				private_keys: wallet.private_keys,
-				public_address: wallet.public_address
-			)
-		}
-	}
-	//
 	// Properties - Initial
 	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
@@ -275,47 +249,30 @@ class WalletsListController: PersistedObjectListController
 	// Imperatives - Wallet re-booting - Shared
 	func reboot(
 		nonBootedWallet wallet: Wallet,
-		withSpecificReconstitutionDescription specific_reconstitutionDescription: WalletRebootReconstitutionDescription?
+		withSpecificReconstitutionDescription specific_reconstitutionDescription: Wallet.RebootReconstitutionDescription?
 	)
 	{
 		assert(wallet.isBooted == false)
 		assert(wallet.isLoggedIn == false)
 		//
-		var reconstitutionDescription: WalletRebootReconstitutionDescription
+		var reconstitutionDescription: Wallet.RebootReconstitutionDescription
 		if specific_reconstitutionDescription == nil {
 			assert(wallet.walletLabel != nil) // just one of the things we would definitely expect on the wallet if this is the case
-			reconstitutionDescription = WalletRebootReconstitutionDescription.new(
+			reconstitutionDescription = Wallet.RebootReconstitutionDescription.new(
 				fromWallet: wallet
 			)
 		} else {
 			reconstitutionDescription = specific_reconstitutionDescription!
 		}
-		if let mnemonicString = reconstitutionDescription.mnemonicString {
-			wallet.Boot_byLoggingIn_existingWallet_withMnemonic(
-				walletLabel: reconstitutionDescription.walletLabel,
-				swatchColor: reconstitutionDescription.swatchColor,
-				mnemonicString: mnemonicString,
-				persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
-				{ (err_str) in
-					if err_str != nil {
-						// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
-					}
+		wallet.Boot_byLoggingIn_existingWallet(
+			reconstitutionDescription: reconstitutionDescription,
+			persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+			{ (err_str) in
+				if err_str != nil {
+					// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
 				}
-			)
-		} else {
-			wallet.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
-				walletLabel: reconstitutionDescription.walletLabel,
-				swatchColor: reconstitutionDescription.swatchColor,
-				address: reconstitutionDescription.public_address,
-				privateKeys: reconstitutionDescription.private_keys,
-				persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
-				{ (err_str) in
-					if err_str != nil {
-						// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
-					}
-				}
-			)
-		}
+			}
+		)
 	}
 	//
 	// Delegation - Overrides - Booting reconstitution - Instance setup
@@ -359,11 +316,13 @@ class WalletsListController: PersistedObjectListController
 			assert(false, "App expected password to exist as wallets exist")
 			return
 		}
-		var reconstitutionDescriptions: [WalletRebootReconstitutionDescription] = []
+		var reconstitutionDescriptions: [Wallet.RebootReconstitutionDescription] = []
 		let walletsToDelete = self.records
 		for (_, object) in walletsToDelete.enumerated() {
 			let wallet = object as! Wallet
-			let reconstitutionDescription = WalletRebootReconstitutionDescription.new(fromWallet: wallet)
+			let reconstitutionDescription = Wallet.RebootReconstitutionDescription.new(
+				fromWallet: wallet
+			)
 			reconstitutionDescriptions.append(reconstitutionDescription)
 			let err_str = wallet.delete()
 			// TODO if needed: add self.stopObserving(record: record) for each deleted record if added later…
