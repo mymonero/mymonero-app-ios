@@ -22,7 +22,7 @@ struct EmojiUI
 		static let visual__arrowRightPadding: CGFloat = 8
 		//
 		// Properties
-		var tapped_fn: ((Void) -> Void)?
+		var willPresentPopover_fn: ((Void) -> Void)?
 		//
 		// Lifecycle - Init
 		init()
@@ -116,29 +116,26 @@ struct EmojiUI
 		{
 			assert(self.popover == nil)
 			// the popover should be guaranteed not to be showing here… 
-			if let tapped_fn = self.tapped_fn {
-				tapped_fn()
+			if let fn = self.willPresentPopover_fn {
+				fn()
 			}
-			DispatchQueue.main.async
-			{ [unowned self] in // on next tick so as not to conflict with any responder resigns
-				let popover = EmojiPickerPopoverView(
-					dismissHandler:
-					{ [weak self] in
-						guard let thisSelf = self else {
-							return // already torn down
-						}
-						thisSelf.popover = nil
+			let popover = EmojiPickerPopoverView(
+				dismissHandler:
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return // already torn down
 					}
-				)
-				self.popover = popover
-				popover.selectedEmojiCharacter_fn =
-				{ [unowned self] (emojiCharacter) in
-					self.configure(withEmojiCharacter: emojiCharacter)
-					self.popover!.dismiss()
+					thisSelf.popover = nil
 				}
-				let initial_emojiCharacter = self.titleLabel!.text! as Emoji.EmojiCharacter
-				popover.show(fromView: self, selecting_emojiCharacter: initial_emojiCharacter)
+			)
+			self.popover = popover
+			popover.selectedEmojiCharacter_fn =
+			{ [unowned self] (emojiCharacter) in
+				self.configure(withEmojiCharacter: emojiCharacter)
+				self.popover!.dismiss()
 			}
+			let initial_emojiCharacter = self.titleLabel!.text! as Emoji.EmojiCharacter
+			popover.show(fromView: self, selecting_emojiCharacter: initial_emojiCharacter)
 		}
 		//
 		// Delegation - Notifications

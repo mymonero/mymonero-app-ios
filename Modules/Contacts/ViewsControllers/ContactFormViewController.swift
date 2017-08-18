@@ -78,7 +78,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		do {
 			let view = EmojiUI.EmojiPickerButtonView()
 			view.configure(withEmojiCharacter: self.new_initial_value_emoji)
-			view.tapped_fn =
+			view.willPresentPopover_fn =
 			{ [unowned self] in
 				self.scrollView.resignCurrentFirstResponder() // if any
 			}

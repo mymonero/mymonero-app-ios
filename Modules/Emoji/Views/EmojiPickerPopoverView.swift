@@ -9,6 +9,55 @@
 import UIKit
 import Popover
 
+class EmojiPickerPopoverView: Popover
+{
+	//
+	// Properties
+	var selectedEmojiCharacter_fn: ((Emoji.EmojiCharacter) -> Void)!
+	//
+	// Lifecycle - Init
+	required init(dismissHandler: @escaping () -> Void)
+	{
+		let options: [PopoverOption] =
+		[
+			.cornerRadius(5),
+			.arrowSize(CGSize(width: 19, height: 17)),
+			//
+			.animationIn(0.46),
+			.animationOut(0.2),
+			//
+			.showBlackOverlay(true),
+			.blackOverlayColor(UIColor(red: 0, green: 0, blue: 0, alpha: 0.08)),
+			.dismissOnBlackOverlayTap(true)
+		]
+		super.init(options: options, showHandler: nil, dismissHandler: dismissHandler)
+		self.setup()
+	}
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	func setup()
+	{
+	}
+	//
+	// Accessors - Factories
+	func new_contentView(selecting_emojiCharacter emojiCharacter: Emoji.EmojiCharacter) -> EmojiPickerContentView
+	{
+		let view = EmojiPickerContentView(selecting_emojiCharacter: emojiCharacter)
+		view.selectedEmojiCharacter_fn = self.selectedEmojiCharacter_fn
+		//
+		return view
+	}
+	//
+	// Imperatives - Convenience
+	func show(fromView: UIView, selecting_emojiCharacter emojiCharacter: Emoji.EmojiCharacter)
+	{
+		let contentView = self.new_contentView(selecting_emojiCharacter: emojiCharacter)
+		self.show(contentView, fromView: fromView)
+	}
+	
+}
+
 class EmojiPickerCollectionViewCell: UICollectionViewCell
 {
 	//
@@ -168,55 +217,3 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 		}
 	}
 }
-
-class EmojiPickerPopoverView: Popover
-{
-	//
-	// Properties
-	var selectedEmojiCharacter_fn: ((Emoji.EmojiCharacter) -> Void)!
-	//
-	// Lifecycle - Init
-	required init(dismissHandler: @escaping () -> Void)
-	{
-		let options: [PopoverOption] =
-		[
-			.cornerRadius(5),
-			.arrowSize(CGSize(width: 19, height: 17)),
-			//
-			.animationIn(0.46),
-			.animationOut(0.2),
-			//
-			.showBlackOverlay(true),
-			.blackOverlayColor(UIColor(red: 0, green: 0, blue: 0, alpha: 0.08)),
-			.dismissOnBlackOverlayTap(true)
-		]
-		super.init(options: options, showHandler: nil, dismissHandler: dismissHandler)
-		self.setup()
-	}
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	func setup()
-	{
-		
-	}
-	//
-	// Accessors - Factories
-	func new_contentView(selecting_emojiCharacter emojiCharacter: Emoji.EmojiCharacter) -> EmojiPickerContentView
-	{
-		let view = EmojiPickerContentView(selecting_emojiCharacter: emojiCharacter)
-		view.selectedEmojiCharacter_fn = self.selectedEmojiCharacter_fn
-		//
-		return view
-	}
-	//
-	// Imperatives - Convenience
-	func show(fromView: UIView, selecting_emojiCharacter emojiCharacter: Emoji.EmojiCharacter)
-	{
-		let contentView = self.new_contentView(selecting_emojiCharacter: emojiCharacter)
-		self.show(contentView, fromView: fromView)
-	}
-	
-}
-
-// dismiss on teardown as well b/c the view may be torn down w/o user having initiated it via a touch (which would have dismissed)
