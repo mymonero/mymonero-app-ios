@@ -50,6 +50,11 @@ extension ImportTransactionsModal
 		override func setup_views()
 		{
 			super.setup_views()
+			//
+			let approximate_importOAAddress: String = SettingsController.shared.specificAPIAddressURLAuthority != nil
+				? "import.\(SettingsController.shared.specificAPIAddressURLAuthority!)" // this is obvs 'approximate' and only meant to be used as an example…… if specificAPIAddressURLAuthority contains a port or a subdomain then this will appear to be obviously wrong but still server its purpose as an example to the power user who is entering a custom server address
+				: HostedMoneroAPIClient.mymonero_importFeeSubmissionTarget_openAliasAddress
+			//
 			do {
 				let view = UICommonComponents.FormAccessoryMessageLabel(
 					text: NSLocalizedString("Loading…", comment: "") // for now…
@@ -60,7 +65,7 @@ extension ImportTransactionsModal
 			do {
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: NSLocalizedString(
-						"Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to import.mymonero.com.",
+						"Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to the server at e.g. \(approximate_importOAAddress).",
 						comment: ""
 					)
 				)
@@ -134,10 +139,9 @@ extension ImportTransactionsModal
 			}
 			do {
 				let view = UICommonComponents.FormInputField(
-					placeholder: nil
+					placeholder: approximate_importOAAddress
 				)
 				let inputField = view
-				inputField.placeholder = "import.mymonero.com"
 				inputField.isEnabled = false
 				self.toAddress_inputView = view
 				self.scrollView.addSubview(view)

@@ -96,6 +96,7 @@ final class HostedMoneroAPIClient
 	static let apiAddress_scheme = "https"
 	//
 	// Constants
+	static let mymonero_importFeeSubmissionTarget_openAliasAddress = "import.mymonero.com" // possibly exists a better home for this
 	static let mymonero_apiAddress_authority = "api.mymonero.com:8443"
 	//
 	var final_apiAddress_authority: String { // authority means [subdomain.]host.…[:…]
