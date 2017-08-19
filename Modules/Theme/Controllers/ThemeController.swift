@@ -67,6 +67,10 @@ class ThemeController
 		titleTextColor: UIColor? // nil to reset
 	)
 	{
+		if viewController.navigationController == nil {
+			DDLog.Warn("Theme", "Asked to \(#function) for viewController \(viewController.debugDescription) but viewController.navigationController=nil.")
+			return
+		}
 		let navigationBar = viewController.navigationController!.navigationBar
 		navigationBar.titleTextAttributes =
 		[
