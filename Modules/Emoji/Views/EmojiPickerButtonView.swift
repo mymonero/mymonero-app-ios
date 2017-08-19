@@ -119,20 +119,29 @@ struct EmojiUI
 			if let fn = self.willPresentPopover_fn {
 				fn()
 			}
-			let popover = EmojiPickerPopoverView(
-				dismissHandler:
-				{ [weak self] in
-					guard let thisSelf = self else {
-						return // already torn down
-					}
-					thisSelf.popover = nil
-				}
-			)
+			let popover = EmojiPickerPopoverView()
 			self.popover = popover
+			popover.didDismissHandler =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return // already torn down
+				}
+				assert(thisSelf.popover == popover)
+				thisSelf.popover = nil
+			}
 			popover.selectedEmojiCharacter_fn =
-			{ [unowned self] (emojiCharacter) in
-				self.configure(withEmojiCharacter: emojiCharacter)
-				self.popover!.dismiss()
+			{ [weak self] (emojiCharacter) in
+				guard let thisSelf = self else {
+					return // already torn down?
+				}
+				assert(thisSelf.popover != nil)
+				assert(thisSelf.popover == popover)
+				thisSelf.configure(withEmojiCharacter: emojiCharacter)
+				DispatchQueue.main.async { // next tick… does this help to avoid any dealloc racing? i didn't think it would…
+					assert(thisSelf.popover != nil)
+					assert(thisSelf.popover == popover)
+					thisSelf.popover!.dismiss()
+				}
 			}
 			let initial_emojiCharacter = self.titleLabel!.text! as Emoji.EmojiCharacter
 			popover.show(fromView: self, selecting_emojiCharacter: initial_emojiCharacter)

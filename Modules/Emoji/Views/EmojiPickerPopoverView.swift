@@ -16,7 +16,7 @@ class EmojiPickerPopoverView: Popover
 	var selectedEmojiCharacter_fn: ((Emoji.EmojiCharacter) -> Void)!
 	//
 	// Lifecycle - Init
-	required init(dismissHandler: @escaping () -> Void)
+	required override init()
 	{
 		let options: [PopoverOption] =
 		[
@@ -30,7 +30,7 @@ class EmojiPickerPopoverView: Popover
 			.blackOverlayColor(UIColor(red: 0, green: 0, blue: 0, alpha: 0.08)),
 			.dismissOnBlackOverlayTap(true)
 		]
-		super.init(options: options, showHandler: nil, dismissHandler: dismissHandler)
+		super.init(options: options, showHandler: nil, dismissHandler: nil) // set the handlers after init if you want
 		self.setup()
 	}
 	required init?(coder aDecoder: NSCoder) {
