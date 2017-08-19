@@ -177,6 +177,19 @@ class PersistableObject: Equatable
 			)
 			return nil // just bail
 		}
+		if self.insertedAt_date == nil || self._id == nil {
+			DDLog.Warn("Persistence", "Asked to \(#function) but had not yet been saved.")
+			// posting notifications so UI updates, e.g. to pop views etc
+			NotificationCenter.default.post(
+				name: NotificationNames.willBeDeleted.notificationName,
+				object: self
+			)
+			NotificationCenter.default.post(
+				name: NotificationNames.wasDeleted.notificationName,
+				object: self
+			)
+			return nil // no error
+		}
 		assert(self._id != nil)
 		NotificationCenter.default.post(
 			name: NotificationNames.willBeDeleted.notificationName,
