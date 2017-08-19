@@ -92,6 +92,7 @@ extension UICommonComponents.Form
 				let view = self.inputField
 				view.delegate = self
 				view.autocapitalizationType = self.inputMode == .contactsAndAddresses ? .none/*prevent caps in OA addrs*/ : .words
+				view.keyboardType = self.inputMode == .contactsAndAddresses ? .URL : .asciiCapable
 				view.autocorrectionType = .no
 				view.addTarget(self, action: #selector(inputField_editingChanged), for: .editingChanged)
 				self.addSubview(view)

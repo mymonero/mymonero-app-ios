@@ -97,6 +97,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			let view = UICommonComponents.FormTextViewContainerView(
 				placeholder: NSLocalizedString("Enter normal, integrated, or OpenAlias address", comment: "")
 			)
+			view.textView.keyboardType = .URL
 			view.textView.autocorrectionType = .no
 			view.textView.autocapitalizationType = .none
 			view.textView.spellCheckingType = .no
