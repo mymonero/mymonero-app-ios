@@ -169,9 +169,9 @@ class MoneroHistoricalTransactionRecord: Equatable
 	{
 		return MyMoneroCoreUtils.IsTransactionConfirmed(height, blockchain_height)
 	}
-	static func isUnlocked(givenTransactionHeight height: Int, andWalletBlockchainHeight blockchain_height: Int) -> Bool
+	static func isUnlocked(givenTransactionUnlockTime unlock_time: Double, andWalletBlockchainHeight blockchain_height: Int) -> Bool
 	{
-		return MyMoneroCoreUtils.IsTransactionConfirmed(height, blockchain_height)
+		return MyMoneroCoreUtils.IsTransactionUnlocked(unlock_time, blockchain_height)
 	}
 	static func lockedReason(givenTransactionUnlockTime unlock_time: Double, andWalletBlockchainHeight blockchain_height: Int) -> String
 	{
@@ -252,7 +252,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			andWalletBlockchainHeight: wallet__blockchainHeight
 		)
 		let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
-			givenTransactionHeight: height,
+			givenTransactionUnlockTime: unlockTime,
 			andWalletBlockchainHeight: wallet__blockchainHeight
 		)
 		let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
@@ -327,7 +327,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			andWalletBlockchainHeight: wallet__blockchainHeight
 		)
 		let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
-			givenTransactionHeight: height,
+			givenTransactionUnlockTime: unlockTime,
 			andWalletBlockchainHeight: wallet__blockchainHeight
 		)
 		let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(

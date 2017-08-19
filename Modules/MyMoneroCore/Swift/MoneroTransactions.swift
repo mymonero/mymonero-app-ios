@@ -18,7 +18,7 @@ extension MyMoneroCoreUtils
 	{
 		return (blockchain_height - tx_height) > MoneroConstants.txMinConfirms
 	}
-	static func IsTxUnlocked(_ tx_unlockTime: Double, _ blockchain_height: Int) -> Bool
+	static func IsTransactionUnlocked(_ tx_unlockTime: Double, _ blockchain_height: Int) -> Bool
 	{
 		if (tx_unlockTime < Double(MoneroConstants.maxBlockNumber)) { // then unlock time is block height
 			return Double(blockchain_height) >= tx_unlockTime
