@@ -292,47 +292,6 @@ final class HostedMoneroAPIClient
 		return requestHandle
 	}
 	//
-	//
-	// Open alias lookup - this should be replaced with a lookup implemented
-	// on the client, so we can actually use DNSSEC etc
-	//
-	@discardableResult
-	func TXTRecords(
-		openAlias_domain: String,
-		_ fn: @escaping (
-			_ err_str: String?,
-			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_TXTRecords?
-		) -> Void
-	) -> RequestHandle?
-	{
-		let endpointPath = HostedMoneroAPI_Endpoint.TXTRecords
-		let parameters: [String: Any] =
-		[
-			"domain": openAlias_domain
-		]
-		let requestHandle = self._request(endpointPath, parameters)
-		{ [unowned self] (err_str, response_data, response_jsonDict) in
-			if let err_str = err_str {
-				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
-				return
-			}
-			let response_jsonDict = response_jsonDict!
-			let records = response_jsonDict["records"] as! [String]
-			let dnssec_used = response_jsonDict["dnssec_used"] as! Bool
-			let secured = response_jsonDict["secured"] as! Bool
-			let dnssec_fail_reason = response_jsonDict["dnssec_fail_reason"] as? String
-			let result = HostedMoneroAPIClient_Parsing.ParsedResult_TXTRecords(
-				records: records,
-				dnssec_used: dnssec_used,
-				secured: secured,
-				dnssec_fail_reason: dnssec_fail_reason
-			)
-			self._shared_onMain_callBackFromRequest(nil, result, fn)
-		}
-		//
-		return requestHandle
-	}
-	//
 	// Import request info
 	func ImportRequestInfoAndStatus(
 		address: MoneroAddress,

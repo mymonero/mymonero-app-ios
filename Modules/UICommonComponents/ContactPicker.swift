@@ -659,7 +659,7 @@ extension UICommonComponents.Form
 				fn()
 			}
 			//
-			let couldBeOAAddress = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
+			let couldBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
 			if couldBeOAAddress == false {
 				MyMoneroCore.shared.DecodeAddress(possibleAddress)
 				{ [unowned self] (err_str, decodedAddressComponents) in
@@ -1216,8 +1216,9 @@ extension UICommonComponents.Form
 		// Imperatives
 		func resolve()
 		{
-			self.resolve_requestHandle = OpenAliasResolver.shared.resolveOpenAliasAddress(
+			self.resolve_requestOperation = OpenAliasResolver.shared.resolveOpenAliasAddress(
 				openAliasAddress: self.parameters.address,
+				forCurrency: .monero,
 				{ [weak self] ( // rather than unowned
 					err_str: String?,
 					addressWhichWasPassedIn: String?,
@@ -1232,8 +1233,8 @@ extension UICommonComponents.Form
 						return
 					}
 					//
-					let handle_wasNil = this.resolve_requestHandle == nil
-					this.resolve_requestHandle = nil
+					let handle_wasNil = this.resolve_requestOperation == nil
+					this.resolve_requestOperation = nil
 					//
 					if err_str != nil {
 						if let fn = this.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {

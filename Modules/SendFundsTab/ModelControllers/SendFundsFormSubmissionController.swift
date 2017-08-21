@@ -113,7 +113,7 @@ extension SendFundsForm
 				}
 				let enteredAddressValue = self.parameters.enteredAddressValue!
 				// address input via text input…
-				let is_enteredAddressValue_OAAddress = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
+				let is_enteredAddressValue_OAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
 					enteredAddressValue
 				)
 				if is_enteredAddressValue_OAAddress {

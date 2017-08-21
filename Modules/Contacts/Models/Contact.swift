@@ -95,7 +95,7 @@ class Contact: PersistableObject
 	//
 	// Interface - Runtime - Accessors/Properties - Convenience
 	var hasOpenAliasAddress: Bool {
-		return MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.address)
+		return OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.address)
 	}
 
 	//
@@ -111,7 +111,7 @@ class Contact: PersistableObject
 		self.fullname = fullname
 		self.emoji = emoji
 		self.address = address
-		if MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) == false {
+		if OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) == false {
 			self.cached_OAResolved_XMR_address = nil // if new one is not OA addr, clear cached OA-resolved info
 		} else {
 			self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address

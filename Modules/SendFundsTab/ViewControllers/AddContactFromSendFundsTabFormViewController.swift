@@ -36,7 +36,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	{
 		self.parameters = parameters
 		do {
-			self.isEnteredAddress_OA = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.enteredAddressValue)
+			self.isEnteredAddress_OA = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.enteredAddressValue)
 		}
 		super.init()
 	}

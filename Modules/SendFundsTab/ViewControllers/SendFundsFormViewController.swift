@@ -219,6 +219,7 @@ extension SendFundsForm
 				}
 				view.finishedValidatingTextInput_foundValidMoneroAddress_fn =
 				{ [unowned self] (detectedEmbedded_paymentID) in
+					assert(Thread.isMainThread)
 					self.set_isFormSubmittable_needsUpdate()
 					if detectedEmbedded_paymentID != nil { // i.e. integrated address supplying one - we show it as 'detected'
 						self.set_addPaymentID_buttonView(isHidden: true)
@@ -227,17 +228,20 @@ extension SendFundsForm
 				}
 				view.willBeginResolvingPossibleOATextInput_fn =
 				{
+					assert(Thread.isMainThread)
 					self.hideAndClear_manualPaymentIDField()
 					self.set_addPaymentID_buttonView(isHidden: true)
 					self.clearValidationMessage() // this is probably redundant here
 				}
 				view.oaResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
+					assert(Thread.isMainThread)
 					self.setValidationMessage(localizedString)
 					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
 				}
 				view.oaResolve__success_fn =
 				{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+					assert(Thread.isMainThread)
 					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
 					//
 					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve

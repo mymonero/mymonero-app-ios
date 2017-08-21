@@ -69,7 +69,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				return
 			}
 		}
-		let isPresumedToBeOAAddress = MyMoneroCoreUtils.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.address)
+		let isPresumedToBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.address)
 		do {
 			if isPresumedToBeOAAddress {
 				if self.parameters.canSkipEntireOAResolveAndDirectlyUseInputValues == true {
@@ -157,8 +157,9 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 	{
 		self.parameters.didBeginResolving_fn()
 		//
-		self.resolve_requestHandle = OpenAliasResolver.shared.resolveOpenAliasAddress(
+		self.resolve_requestOperation = OpenAliasResolver.shared.resolveOpenAliasAddress(
 			openAliasAddress: self.parameters.address,
+			forCurrency: .monero,
 			{ [unowned self] (
 				err_str: String?,
 				addressWhichWasPassedIn: String?,
@@ -171,8 +172,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				//
 				self.parameters.didEndResolving_fn()
 				//
-				let handle_wasNil = self.resolve_requestHandle == nil
-				self.resolve_requestHandle = nil
+				let handle_wasNil = self.resolve_requestOperation == nil
+				self.resolve_requestOperation = nil
 				//
 				if err_str != nil {
 					self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
