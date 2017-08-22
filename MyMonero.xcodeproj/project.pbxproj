@@ -84,8 +84,6 @@
 		9F33E6FB1F2004DD00610662 /* EditFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FA1F2004DD00610662 /* EditFormSubmissionController.swift */; };
 		9F33E6FD1F200CC000610662 /* TransactionDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FC1F200CC000610662 /* TransactionDetailsViewController.swift */; };
 		9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */; };
-		9F33E7021F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7001F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png */; };
-		9F33E7071F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */; };
 		9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */; };
 		9F33E70B1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E70A1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift */; };
 		9F453FA91F267A65004590DC /* SendFundsFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA51F267A65004590DC /* SendFundsFormSubmissionController.swift */; };
@@ -230,6 +228,8 @@
 		9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */; };
 		9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */; };
 		9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */; };
+		9FD354171F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */; };
+		9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */; };
 		9FD70E091F1988FB000FE675 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD70E081F1988FB000FE675 /* Tables.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
@@ -320,10 +320,6 @@
 		9F33E6FA1F2004DD00610662 /* EditFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F33E6FC1F200CC000610662 /* TransactionDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewController.swift; sourceTree = "<group>"; };
 		9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportTransactionsModalViewController.swift; sourceTree = "<group>"; };
-		9F33E7001F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_error_stretchable@3x.png"; sourceTree = "<group>"; };
-		9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
-		9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_error_stretchable@3x.png"; sourceTree = "<group>"; };
-		9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_disabled_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportTransactionsModalFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F33E70A1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletDetailsTransactionsEmptyStateCell.swift; sourceTree = "<group>"; };
 		9F453FA51F267A65004590DC /* SendFundsFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormSubmissionController.swift; sourceTree = "<group>"; };
@@ -470,6 +466,8 @@
 		9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__startOver@3x.png"; sourceTree = "<group>"; };
 		9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__tryAgain@3x.png"; sourceTree = "<group>"; };
+		9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_error_stretchable@3x.png"; sourceTree = "<group>"; };
+		9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD70E081F1988FB000FE675 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
@@ -843,8 +841,6 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9F33E7001F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png */,
-				9F33E7011F215E4C00610662 /* textField_bg_disabled_noErr_stretchable@3x.png */,
 				9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */,
 				9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */,
 				9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */,
@@ -875,8 +871,8 @@
 				9F2BFE7C1EF08ABA006B2F7D /* pushButtonBG_disabled@3x.png */,
 				9F2BFE7D1EF08ABA006B2F7D /* pushButtonBG_utility_highlighted@3x.png */,
 				9F2BFE7E1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png */,
-				9F33E7041F215F1700610662 /* textField_bg_disabled_error_stretchable@3x.png */,
-				9F33E7051F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png */,
+				9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */,
+				9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */,
 				9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */,
 				9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */,
 				9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */,
@@ -1366,9 +1362,8 @@
 				9F33E6EB1F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png in Resources */,
 				9F9C59EB1F0C316C003B9266 /* highlightableCellBG_disabled@3x.png in Resources */,
 				9F8E30421EEDAB9400F89A1D /* wallet-6B696B@3x.png in Resources */,
-				9F33E7071F215F1700610662 /* textField_bg_disabled_noErr_stretchable@3x.png in Resources */,
 				9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */,
-				9F33E7021F215E4C00610662 /* textField_bg_disabled_error_stretchable@3x.png in Resources */,
+				9FD354171F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F9C59E31F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_bottom@3x.png in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
@@ -1403,6 +1398,7 @@
 				9F8E2FED1EE978B700F89A1D /* icon_tabBar_sendFunds@3x.png in Resources */,
 				9F33E6F31F1AE33A00610662 /* disclosureArrow_icon@3x.png in Resources */,
 				9F2BFE8A1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png in Resources */,
+				9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */,
 				9F8E2F9A1EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png in Resources */,
 				9F7298CD1F3415F000CD59E1 /* logo_solid_light@3x.png in Resources */,
 				9F2BFE851EF08ABA006B2F7D /* pushButtonBG_action@3x.png in Resources */,

@@ -125,6 +125,7 @@ extension UICommonComponents.Form
 						placeholder: nil
 					)
 					view.set(isEnabled: false)
+					view.isImmutable = true
 					view.isHidden = true
 					self.resolvedXMRAddr_inputView = view
 					self.addSubview(view)
@@ -143,6 +144,7 @@ extension UICommonComponents.Form
 						placeholder: nil
 					)
 					view.set(isEnabled: false)
+					view.isImmutable = true
 					view.isHidden = true
 					self.resolvedPaymentID_inputView = view
 					self.addSubview(view)

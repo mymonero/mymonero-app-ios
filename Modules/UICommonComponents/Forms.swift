@@ -479,8 +479,11 @@ extension UICommonComponents
 	{
 		case textField_bg_noErr = "textField_bg_noErr_stretchable"
 		case textField_bg_error = "textField_bg_error_stretchable"
-		case textField_bg_disabled_noErr = "textField_bg_disabled_noErr_stretchable"
-		case textField_bg_disabled_error = "textField_bg_disabled_error_stretchable"
+		// if input is not immutable (typical), actually using the same images for 'disabled', therefore not declaring new cases for disabled state. this may change. but it is done to prevent 'visual flash' on fast form submits when elements are temporarily disabled even though not immutable
+		//
+		// and for immutable, no distinction between enabled/disabled anyway
+		case textField_bg_immutable_noErr = "textField_bg_immutable_noErr_stretchable"
+		case textField_bg_immutable_error = "textField_bg_immutable_error_stretchable"
 		//
 		static var imagePadding_x: CGFloat { return 1 }
 		static var imagePadding_y: CGFloat { return 1 }
@@ -493,9 +496,18 @@ extension UICommonComponents
 	}
 	class FormTextViewContainerView: UIView
 	{
-		var textView: FormTextView!
 		static let stretchableBackgroundImage = FormInputCells.textField_bg_noErr.stretchableImage
-		static let disabled_stretchableBackgroundImage = FormInputCells.textField_bg_disabled_noErr.stretchableImage
+		static let disabled_stretchableBackgroundImage = FormInputCells.textField_bg_noErr.stretchableImage // actually the same, for now
+		static let immutable_stretchableBackgroundImage = FormInputCells.textField_bg_immutable_noErr.stretchableImage
+		//
+		var textView: FormTextView!
+		var isImmutable: Bool = false
+		{
+			didSet {
+				// logically+semantically does not matter if enabled but consumer should .set(isEnabled: false), too so that interactivity of field disabled and interactivity values are also correct at runtime
+				self.setNeedsDisplay() // must cause redraw
+			}
+		}
 		//
 		static let visual__height: CGFloat = 64
 		static let height: CGFloat = FormTextViewContainerView.visual__height + 2*UICommonComponents.FormInputCells.imagePadding_y
@@ -568,11 +580,15 @@ extension UICommonComponents
 		}
 		override func draw(_ rect: CGRect)
 		{
-			if self.textView.isEditable == false {
-				FormTextViewContainerView.disabled_stretchableBackgroundImage.draw(in: rect)
+			var image: UIImage!
+			if self.isImmutable { // doesn't matter if it's enabled anyway
+				image = FormTextViewContainerView.immutable_stretchableBackgroundImage
+			} else if self.textView.isEditable {
+				image = FormTextViewContainerView.stretchableBackgroundImage
 			} else {
-				FormTextViewContainerView.stretchableBackgroundImage.draw(in: rect)
+				image = FormTextViewContainerView.disabled_stretchableBackgroundImage
 			}
+			image.draw(in: rect)
 			super.draw(rect)
 		}
 	}
@@ -685,6 +701,14 @@ extension UICommonComponents
 		var validationErrorMessageLabel: FormFieldAccessoryMessageLabel?
 		var init_placeholder: String?
 		//
+		var isImmutable: Bool = false
+		{
+			didSet {
+				// logically+semantically does not matter if enabled but consumer should .set(isEnabled: false), too so that interactivity of field disabled and interactivity values are also correct at runtime
+				self.setNeedsDisplay() // must cause redraw
+			}
+		}
+		//
 		override var isEnabled: Bool {
 			didSet {
 				self._configureBackground()
@@ -781,10 +805,10 @@ extension UICommonComponents
 		{
 			if self.validationErrorMessageLabel != nil {
 				self.background = FormInputCells.textField_bg_error.stretchableImage
-				self.disabledBackground = FormInputCells.textField_bg_disabled_error.stretchableImage
+				self.disabledBackground = self.isImmutable ? FormInputCells.textField_bg_immutable_error.stretchableImage : FormInputCells.textField_bg_error.stretchableImage
 			} else {
 				self.background = FormInputCells.textField_bg_noErr.stretchableImage
-				self.disabledBackground = FormInputCells.textField_bg_disabled_noErr.stretchableImage
+				self.disabledBackground = self.isImmutable ? FormInputCells.textField_bg_immutable_noErr.stretchableImage : FormInputCells.textField_bg_noErr.stretchableImage
 			}
 		}
 		//
