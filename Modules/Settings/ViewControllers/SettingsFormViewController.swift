@@ -136,7 +136,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	// Accessors - Overrides
 	override func new_isFormSubmittable() -> Bool
 	{
-		return false // doesn't exist
+		return true // this is actually for the interactivity of the 'About' button in this case
 	}
 	//
 	// Accessors - Overrides
@@ -233,7 +233,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	}
 	override func _tryToSubmitForm()
 	{
-		assert(false) // no such thing
+		assert(false) // no such thing - the 'About' button target is overridden
 	}
 	//
 	// Delegation - View
