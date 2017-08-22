@@ -153,7 +153,7 @@ class DNSLookups
 		var mutable_lookupResultReceiptHandler: __TXTRecords_DNSLookupRecordRowHandler =
 		{ (err_str, hasMoreComing, recordRow) in
 			if err_str != nil {
-				DDLog.Error("OpenAlias.DNSLookups", "Has errored")
+//				DDLog.Error("OpenAlias.DNSLookups", "Has errored")
 				assert(hasMoreComing == false)
 				assert(received__err_str == nil) // in case the callback is called multiple times…… maybe we should just bail immediately to ignore successive err_strs instead of throwing via the assert
 				received__err_str = err_str!
@@ -174,11 +174,7 @@ class DNSLookups
 			)
 			let errorType_Int = Int(errorType)
 			if errorType_Int != kDNSServiceErr_NoError {
-				DDLog.Error("OpenAlias.DNSLookups", "had error")
-				if errorType_Int == kDNSServiceErr_NoSuchName {
-					DDLog.Info("OpenAlias.DNSLookups", "no name!")
-				}
-				DDLog.Info("OpenAlias.DNSLookups", "queryRecord: errorType: \(errorType)")
+				DDLog.Info("OpenAlias.DNSLookups", "DNSServiceQueryRecord returned: \(errorType)")
 				assert(false) // for dev visibility - verify case
 			}
 		}
@@ -187,11 +183,7 @@ class DNSLookups
 			let errorType = DNSServiceProcessResult(serviceRef_pointee) // "Read a reply from the daemon, calling the appropriate application callback. This call will block until the daemon's response is received"
 			let errorType_Int = Int(errorType)
 			if errorType_Int != kDNSServiceErr_NoError {
-				DDLog.Error("OpenAlias.DNSLookups", "had error")
-				if errorType_Int == kDNSServiceErr_NoSuchName {
-					DDLog.Info("OpenAlias.DNSLookups", "no name!")
-				}
-				DDLog.Info("OpenAlias.DNSLookups", "processResult: errorType: \(errorType)")
+				DDLog.Info("OpenAlias.DNSLookups", "DNSServiceProcessResult returned: \(errorType)")
 				assert(false) // for dev visibility - verify case
 			}
 		}
