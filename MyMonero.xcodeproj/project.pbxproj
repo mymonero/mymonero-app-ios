@@ -239,6 +239,7 @@
 
 /* Begin PBXFileReference section */
 		23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyMonero.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B74196A259183D102DC72F7 /* Pods-MyMonero.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.profiling.xcconfig"; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
 		9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryPresentationController.swift; sourceTree = "<group>"; };
 		9F0022C51F38063F0089400D /* ConnectivityMessagePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessagePresentationController.swift; sourceTree = "<group>"; };
@@ -474,7 +475,10 @@
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
 		9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentCryptor.swift; sourceTree = "<group>"; };
+		A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.internal.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.internal.xcconfig"; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
+		D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.testing.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.testing.xcconfig"; sourceTree = "<group>"; };
+		F56E327D2325F7E70A93F182 /* Pods-MyMonero.app store.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.app store.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.app store.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -495,6 +499,10 @@
 			children = (
 				B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */,
 				78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */,
+				D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */,
+				F56E327D2325F7E70A93F182 /* Pods-MyMonero.app store.xcconfig */,
+				5B74196A259183D102DC72F7 /* Pods-MyMonero.profiling.xcconfig */,
+				A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1741,7 +1749,7 @@
 		};
 		9F24AE431EBA7D3A00841BCB /* App Store */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */;
+			baseConfigurationReference = F56E327D2325F7E70A93F182 /* Pods-MyMonero.app store.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";
@@ -1802,7 +1810,7 @@
 		};
 		9F96C2FC1F429BE20016CEFC /* Internal */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */;
+			baseConfigurationReference = A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";
@@ -1863,7 +1871,7 @@
 		};
 		9F96C2FE1F429BF90016CEFC /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */;
+			baseConfigurationReference = 5B74196A259183D102DC72F7 /* Pods-MyMonero.profiling.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";
@@ -1931,7 +1939,7 @@
 		};
 		9F96C3001F429C740016CEFC /* Testing */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */;
+			baseConfigurationReference = D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";

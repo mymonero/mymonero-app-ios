@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '10.0'
 use_frameworks!
 
-target 'MyMonero' do
+def common_pods
 	pod 'BigInt', '~> 2.1'
 	pod 'SwiftDate', '~> 4.0'
 	pod 'Alamofire', '~> 4.4'
@@ -12,6 +12,10 @@ target 'MyMonero' do
 	pod 'PKHUD', '~> 4.0'
 	pod 'AMPopTip', '~> 2.1.6'
 end
+
+target 'MyMonero' do
+    common_pods
+end	
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
