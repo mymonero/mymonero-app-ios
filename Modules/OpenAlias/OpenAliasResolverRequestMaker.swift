@@ -9,7 +9,7 @@
 import Foundation
 
 class OpenAliasResolverRequestMaker
-{ // Subclass this
+{ // Subclass this in application code for cancellation/teardown handling 
 	//
 	// Properties
 	var resolve_requestOperation: Operation?
