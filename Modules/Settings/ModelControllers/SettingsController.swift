@@ -126,10 +126,26 @@ class SettingsController: DeleteEverythingRegistrant
 	func set(valuesByDictKey: [DictKey: Any]) -> String? // err_str
 	{
 		// configure
-		for (key, value) in valuesByDictKey {
+		for (key, raw_value) in valuesByDictKey {
 			if self.setForbidden_DictKeys.contains(key) == true {
 				assert(false)
 			}
+			var value: Any? = raw_value
+//
+// TODO: this is commented b/c it might demonstrate a Swift bug.. or a lacking in my understanding?
+//			do { // to finalize
+//				switch key {
+//					case .specificAPIAddressURLAuthority:
+//						if value != nil {
+//							if (value as! String) == "" { // this crashes when value is nil via user clearing text field
+//								value = nil
+//							}
+//						}
+//						break
+//					default:
+//						break // nothing to do
+//				}
+//			}
 			self._set(value: value, forPropertyWithDictKey: key)
 		}
 		// save

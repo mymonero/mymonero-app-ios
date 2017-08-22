@@ -180,7 +180,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	func _updateValidationErrorForAddressInputView() -> ( // TODO: migrate this to be async?
 		didError: Bool,
 		savableValue: String?
-		)
+	)
 	{
 		var value = self.sanitizedInputValue__address // use even nil b/c it means use mymonero.com api
 		if value == "" {

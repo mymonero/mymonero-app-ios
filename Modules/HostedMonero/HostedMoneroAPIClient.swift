@@ -105,6 +105,10 @@ final class HostedMoneroAPIClient
 		if settings_authorityValue == nil {
 			return type(of: self).mymonero_apiAddress_authority
 		}
+		if settings_authorityValue == "" { // NOTE: This should not technically be here. See SettingsController's set(valuesByDictKey:)'s failed attempt at nil detection in normalizing "" to nil
+			return type(of: self).mymonero_apiAddress_authority
+		}
+		assert(settings_authorityValue != "")
 	 	return settings_authorityValue!
 	}
 	//
