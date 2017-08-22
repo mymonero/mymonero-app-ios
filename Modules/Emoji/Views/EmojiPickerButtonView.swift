@@ -126,6 +126,7 @@ struct EmojiUI
 				guard let thisSelf = self else {
 					return // already torn down
 				}
+				assert(thisSelf.popover != nil)
 				assert(thisSelf.popover == popover)
 				thisSelf.popover = nil
 			}
