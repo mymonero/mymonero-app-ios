@@ -212,6 +212,7 @@
 		9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */; };
 		9FAA18AB1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */; };
 		9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */; };
+		9FB603011F4E525800951175 /* Popover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603001F4E525800951175 /* Popover.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8AE901F241D2600AA553D /* IconAndMessage.swift */; };
 		9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */; };
@@ -234,7 +235,6 @@
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
-		9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -450,6 +450,7 @@
 		9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicators.swift; sourceTree = "<group>"; };
 		9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graphicActivityIndicator_decoration@3x.png"; sourceTree = "<group>"; };
 		9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormSubmissionController.swift; sourceTree = "<group>"; };
+		9FB603001F4E525800951175 /* Popover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Popover.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC8AE901F241D2600AA553D /* IconAndMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconAndMessage.swift; sourceTree = "<group>"; };
 		9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsAppTimeoutAfterSecondsSlider.swift; sourceTree = "<group>"; };
@@ -472,7 +473,6 @@
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
-		9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentCryptor.swift; sourceTree = "<group>"; };
 		A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.internal.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.internal.xcconfig"; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 		D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.testing.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.testing.xcconfig"; sourceTree = "<group>"; };
@@ -562,6 +562,7 @@
 				9F740D501F10549E0017A20E /* ContactPicker.swift */,
 				9FC8AE901F241D2600AA553D /* IconAndMessage.swift */,
 				9F8441551F39405C00BED8E3 /* Tooltips.swift */,
+				9FB603001F4E525800951175 /* Popover.swift */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -1263,7 +1264,6 @@
 			children = (
 				9FEC04F81ECFD94B009256BD /* PersistableObject.swift */,
 				9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */,
-				9FEC04FC1ECFE249009256BD /* DocumentCryptor.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -1493,6 +1493,7 @@
 				9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */,
 				9F4668811EC664CC0075F9CD /* MoneroPaymentIDs.swift in Sources */,
 				9FCD9D611F4948A7004C0349 /* OpenAlias.swift in Sources */,
+				9FB603011F4E525800951175 /* Popover.swift in Sources */,
 				9F7298C71F33E1FE00CD59E1 /* SettingsController.swift in Sources */,
 				9F33E70B1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift in Sources */,
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
@@ -1548,7 +1549,6 @@
 				9F2BFF141EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */,
 				9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
-				9FEC04FD1ECFE249009256BD /* DocumentCryptor.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
 				9F0022CB1F383F260089400D /* ConnectivityMessageViewController.swift in Sources */,
