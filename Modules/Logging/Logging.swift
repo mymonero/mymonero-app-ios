@@ -16,16 +16,16 @@ struct DDLog
 	//
 	enum LogLevel: String
 	{
-		case info = "💬"
-		case warn = "⚠️"
-		case error = "❌"
-		case perform = "🔁" /* `do` is reserved, so calling this perform */
-		case done = "✅"
-		case write = "📝"
-		case net = "📡"
-		case tearingDown = "♻️"
-		case todo = "📌"
-		case deleting = "🗑"
+		case info			= "💬"
+		case warn			= "⚠️"
+		case error			= "❌"
+		case perform		= "🔁" /* `do` is reserved, so calling this perform */
+		case done			= "✅"
+		case write			= "📝"
+		case net			= "📡"
+		case tearingDown	= "♻️"
+		case todo			= "📌"
+		case deleting		= "🗑"
 		//
 		var logMessagePrefix: String
 		{
