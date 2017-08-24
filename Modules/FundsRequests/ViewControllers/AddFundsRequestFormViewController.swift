@@ -132,7 +132,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.Form.ContactAndAddressPickerView()
+			let view = UICommonComponents.Form.ContactAndAddressPickerView(
+				parentScrollView: self.scrollView
+			)
 			// TODO: initial contact selection? (from spawn)
 			view.textFieldDidBeginEditing_fn =
 			{ [unowned self] (textField) in

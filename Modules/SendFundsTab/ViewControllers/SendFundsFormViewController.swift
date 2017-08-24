@@ -144,7 +144,8 @@ extension SendFundsForm
 			do {
 				let view = UICommonComponents.Form.ContactAndAddressPickerView(
 					inputMode: .contactsAndAddresses,
-					displayMode: .paymentIds_andResolvedAddrs
+					displayMode: .paymentIds_andResolvedAddrs,
+					parentScrollView: self.scrollView
 				)
 				view.inputField.set(
 					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")

@@ -31,6 +31,7 @@ extension UICommonComponents.Form
 		// Properties
 		var inputMode: InputMode
 		var displayMode: AccessoryInfoDisplayMode
+		var parentScrollView: UIScrollView?
 		//
 		var selectedContact: Contact? // strong should be ok here b/c we unpick the selectedContact when contacts reloads on logged-in runtime teardown
 		//
@@ -66,20 +67,33 @@ extension UICommonComponents.Form
 		var willBeginResolvingPossibleOATextInput_fn: ((Void) -> Void)?
 		//
 		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
-		var oaResolve__success_fn: ((_ resolved_xmr_address: MoneroAddress, _ payment_id: MoneroPaymentID?, _ tx_description: String?) -> Void)?
+		var oaResolve__success_fn: ((
+			_ resolved_xmr_address: MoneroAddress,
+			_ payment_id: MoneroPaymentID?,
+			_ tx_description: String?
+		) -> Void)?
 		//
 		var didClearPickedContact_fn: ((_ preExistingContact: Contact) -> Void)?
 		//
 		//
 		// Lifecycle
-		convenience init()
+		convenience init(parentScrollView: UIScrollView?)
 		{
-			self.init(inputMode: .contactsOnly, displayMode: .noResolvedFields)
+			self.init(
+				inputMode: .contactsOnly,
+				displayMode: .noResolvedFields,
+				parentScrollView: parentScrollView
+			)
 		}
-		init(inputMode: InputMode, displayMode: AccessoryInfoDisplayMode)
+		init(
+			inputMode: InputMode,
+			displayMode: AccessoryInfoDisplayMode,
+			parentScrollView: UIScrollView?
+		)
 		{
 			self.inputMode = inputMode
 			self.displayMode = displayMode
+			self.parentScrollView = parentScrollView
 			super.init(frame: .zero)
 			self.setup()
 		}
@@ -483,6 +497,17 @@ extension UICommonComponents.Form
 			self.updateBounds()
 		}
 		//
+		// Imperatives - Internal - Parent scrolling UX
+		// NOTE: This may be somewhat fragile and make problems.
+		func temporarilyDisableParentScrolling()
+		{
+			self.parentScrollView?.isScrollEnabled = false
+		}
+		func reEnableParentScrolling()
+		{
+			self.parentScrollView?.isScrollEnabled = true
+		}
+		//
 		// Imperatives - Internal - Layout
 		private func updateBounds()
 		{
@@ -841,6 +866,20 @@ extension UICommonComponents.Form
 			cell!.configure(withContact: contact)
 			//
 			return cell!
+		}
+		//
+		// Delegation - Scrolling
+		func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
+		{
+			self.temporarilyDisableParentScrolling()
+		}
+		func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
+		{
+			self.reEnableParentScrolling()
+		}
+		func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool)
+		{ // TODO: redundant?
+			self.reEnableParentScrolling()
 		}
 	}
 	//
