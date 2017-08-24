@@ -135,6 +135,10 @@ extension UICommonComponents
 				assert(false, "override \(#function)")
 				return
 			}
+			if let timer = self._validationMessageDismissing_clearAndShowDebounceTimer {
+				timer.invalidate() // always prevent an existing 'close' timer from stomping on a more recent 'show'
+				self._validationMessageDismissing_clearAndShowDebounceTimer = nil
+			}
 			let view = self.messageView! // this ! is not necessary according to the var's optionality but there seems to be a compiler bug
 			view.set(text: message)
 			view.set(mode: wantsXButton ? .withCloseButton : .noCloseButton)
@@ -142,14 +146,37 @@ extension UICommonComponents
 			view.show()
 			self.view.setNeedsLayout() // so views (below messageView) get re-laid-out
 		}
+		var _validationMessageDismissing_clearAndShowDebounceTimer: Timer?
 		func clearValidationMessage()
 		{
 			if self.new_wantsInlineMessageViewForValidationMessages() == false {
 				assert(false, "override \(#function)")
 				return
 			}
-			self.messageView!.clearAndHide() // as you can see, no ! required here. compiler bug?
-			// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
+			if let timer = self._validationMessageDismissing_clearAndShowDebounceTimer {
+				timer.invalidate()
+				self._validationMessageDismissing_clearAndShowDebounceTimer = nil // not technically necessary
+			}
+			self._validationMessageDismissing_clearAndShowDebounceTimer = Timer.scheduledTimer(
+				withTimeInterval: 0.2, // just a tiny delay, to prevent the message from being hidden and shown immediately
+				repeats: false,
+				block:
+				{ [weak self] (timer) in
+					guard let thisSelf = self else {
+						return
+					}
+					if thisSelf._validationMessageDismissing_clearAndShowDebounceTimer == nil {
+						assert(false) // ever expected?
+						return
+					}
+					assert(timer == thisSelf._validationMessageDismissing_clearAndShowDebounceTimer)
+					//
+					thisSelf.messageView!.clearAndHide() // as you can see, no ! required here. compiler bug?
+					// we don't need to call setNeedsLayout() here b/c the messageView callback in self.setup will do so
+					//
+					thisSelf._validationMessageDismissing_clearAndShowDebounceTimer = nil
+				}
+			)
 		}
 		//
 		// Imperatives - Configuration - Scroll view

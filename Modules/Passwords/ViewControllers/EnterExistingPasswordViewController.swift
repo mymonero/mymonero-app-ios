@@ -126,6 +126,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	}
 	override func clearValidationMessage()
 	{
+		// no need to place this on super's 'really_clear' timer
 		self.password_inputView.clearValidationError()
 	}
 	//

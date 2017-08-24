@@ -556,6 +556,8 @@ extension UICommonComponents
 		// Imperatives
 		func set(isEnabled: Bool)
 		{
+			assert(Thread.isMainThread)
+			//
 			self.textView.isEditable = isEnabled
 			do { // whether or not to ignore touches, to support bg taps to blur 
 				self.isUserInteractionEnabled = isEnabled
