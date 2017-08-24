@@ -122,7 +122,7 @@ extension UICommonComponents
 				tip.shouldDismissOnTap = false // we'll observe other events - do not want conflict
 			}
 			self.tip = tip
-			let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController!
+			let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController! // not the WindowController.presentModalsInViewController, b/c we want these to be over the entire app window
 			var inViewController: UIViewController = rootViewController
 			while inViewController.presentedViewController != nil { // 'while' necessary rather than 'if'?
 				inViewController = inViewController.presentedViewController!

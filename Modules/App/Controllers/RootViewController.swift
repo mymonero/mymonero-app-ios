@@ -10,28 +10,40 @@ import UIKit
 
 class RootViewController: UIViewController
 {
+	//
+	// Types
+	enum NotificationNames: String {
+		case didAppearForFirstTime = "RootViewController_NotificationNames_didAppearForFirstTime"
+		//
+		var notificationName: NSNotification.Name {
+			return NSNotification.Name(self.rawValue)
+		}
+	}
+	//
+	// Properties
 	var tabBarViewController: RootTabBarViewController!
 	//
-	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
-	{
-		fatalError("\(#function) has not been implemented")
-	}
-	required init?(coder aDecoder: NSCoder)
-	{
-		fatalError("\(#function) has not been implemented")
-	}
+	// Lifecycle - Init
 	init()
 	{
 		super.init(nibName: nil, bundle: nil)
+		self.setup()
+	}
+	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+		fatalError("\(#function) has not been implemented")
+	}
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("\(#function) has not been implemented")
+	}
+	func setup()
+	{
 		//
-		
 		self.setup_presentationSingletons()
-		//
 		self.preEmptively_startObserving_passwordEntryNavigationViewController() // before the tab bar views are set up and cause the pw to be requested
 		//
 		self.setup_views()
 		//
-		self.startObserving_statusBarFrame()
+		self.startObserving()
 	}
 	func setup_presentationSingletons()
 	{
@@ -88,6 +100,20 @@ class RootViewController: UIViewController
 	func stopObserving()
 	{
 		// TODO: technically, good idea to remove all notification observations
+	}
+	//
+	// Delegation - Views - Visibility lifecycle
+	var _hasAppeared: Bool = false
+	override func viewDidAppear(_ animated: Bool)
+	{
+		let isFirstAppearance = self._hasAppeared == false
+		self._hasAppeared = true
+		//
+		super.viewDidAppear(animated)
+		//
+		if isFirstAppearance {
+			NotificationCenter.default.post(name: NotificationNames.didAppearForFirstTime.notificationName, object: nil)
+		}
 	}
 	//
 	// Delegation - Views - Layout - Overrides

@@ -10,11 +10,8 @@ import UIKit
 //
 class AppRuntimeController
 {
-	var windowController: WindowController!
-	//
-	init(windowController: WindowController)
+	init()
 	{
-		self.windowController = windowController
 		setup()
 	}
 	func setup()

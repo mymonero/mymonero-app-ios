@@ -17,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	// Constants
 	enum NotificationNames: String
 	{
+		case didSetUpWindowAndRuntime_willMakeWindowKeyAndVisible = "AppDelegate_NotificationNames_didSetUpWindowAndRuntime_willMakeWindowKeyAndVisible"
+		case didSetUpWindowAndRuntime_didMakeWindowKeyAndVisible = "AppDelegate_NotificationNames_didSetUpWindowAndRuntime_didMakeWindowKeyAndVisible"
+		//
 		case willLockDownAppOn_didEnterBackground = "AppDelegate.NotificationNames.willLockDownAppOn_didEnterBackground"
 		//
 		var notificationName: NSNotification.Name {
@@ -39,11 +42,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	) -> Bool
 	{
 		self.windowController = WindowController() // the window must be initialized after app finishes launching or nested UITabBarControllers will
-		self.window = self.windowController.window
-		self.appRuntimeController = AppRuntimeController(
-			windowController: self.windowController
-		)
-		self.windowController.makeKeyAndVisible()
+		self.window = self.windowController.window // setting this as early as possible
+		self.appRuntimeController = AppRuntimeController() // TODO: this contains some services - some of which request pw controller, like UserIdle - maybe this should be refactored or renamed. 'app runtime' too vague
+		do { // the posting of these notifications should remain synchronous
+			NotificationCenter.default.post(
+				name: NotificationNames.didSetUpWindowAndRuntime_willMakeWindowKeyAndVisible.notificationName,
+				object: nil
+			)
+			//
+			self.windowController.makeKeyAndVisible()
+			//
+			NotificationCenter.default.post(
+				name: NotificationNames.didSetUpWindowAndRuntime_didMakeWindowKeyAndVisible.notificationName,
+				object: nil
+			)
+		}
 //		do { // apparently we don't need to do this… given new application:open:
 //			if launchOptions != nil {
 //				if let launchOptions_url = launchOptions![UIApplicationLaunchOptionsKey.url] as? URL {

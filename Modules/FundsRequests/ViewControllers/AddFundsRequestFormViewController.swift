@@ -542,7 +542,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	func _didSave(instance: FundsRequest)
 	{
 		let viewController = FundsRequestDetailsViewController(fundsRequest: instance)
-		let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController! as! RootViewController
+		let rootViewController = WindowController.rootViewController!
 		let fundsRequestsTabNavigationController = rootViewController.tabBarViewController.fundsRequestsTabViewController
 		fundsRequestsTabNavigationController.pushViewController(viewController, animated: false) // NOT animated
 		DispatchQueue.main.async // on next tick to make sure push view finished

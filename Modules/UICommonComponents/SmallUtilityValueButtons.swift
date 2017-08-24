@@ -167,7 +167,7 @@ extension UICommonComponents
 				applicationActivities: nil
 			)
 			controller.modalPresentationStyle = .popover // to prevent iPad crash
-			let presentInViewController = UIApplication.shared.delegate!.window!!.rootViewController! // TODO: is this ok? preferable to yield items and controller to present / ask for or be initialized with presentInViewController?
+			let presentInViewController = WindowController.presentModalsInViewController! // TODO: is this ok? or is it preferable to yield items and controller to present / ask for or be initialized with presentInViewController?
 			if let popoverPresentationController = controller.popoverPresentationController { // iPad support
 				popoverPresentationController.sourceView = self
 				var sourceRect: CGRect = .zero

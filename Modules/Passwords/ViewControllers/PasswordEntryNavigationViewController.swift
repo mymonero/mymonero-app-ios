@@ -51,11 +51,30 @@ class PasswordEntryNavigationViewController: UINavigationController
 	func setup()
 	{
 		self.view.backgroundColor = .contentBackgroundColor // so we don't get content flashing through transparency during modal transitions
+		self.startObserving()
+	}
+	func startObserving()
+	{
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(RootViewController_didAppearForFirstTime),
+			name: RootViewController.NotificationNames.didAppearForFirstTime.notificationName,
+			object: nil
+		)
 	}
 	//
 	// Lifecycle - Teardown
 	deinit
 	{
+		self.stopObserving()
+	}
+	func stopObserving()
+	{
+		NotificationCenter.default.removeObserver(
+			self,
+			name: RootViewController.NotificationNames.didAppearForFirstTime.notificationName,
+			object: nil
+		)
 	}
 	//
 	// Accessors
@@ -118,6 +137,8 @@ class PasswordEntryNavigationViewController: UINavigationController
 	}
 	//
 	// Imperatives - Presentation
+	var _appLaunchOnly_isWaitingForWindowControllerSetupAfterPresentCall: Bool?
+	var __appLaunchIsWaitingOnly_presentArg_animated: Bool?
 	@objc func present(animated: Bool)
 	{
 		if Thread.isMainThread == false {
@@ -145,16 +166,12 @@ class PasswordEntryNavigationViewController: UINavigationController
 			DDLog.Warn("Passwords", "Asked to present PasswordEntry modal while already presented and not being dismissed. Ignoring.")
 			return
 		}
-		let window = UIApplication.shared.delegate!.window!
-		let rootViewController = window?.rootViewController
-		if window == nil || rootViewController == nil { // being asked to present before app has finished launching; wait til next tick to try again
-			DispatchQueue.main.async
-			{ [unowned self] in
-				// TODO: is there a better way to do this so we get notified /just/ after the rootViewController is set but before the window is made key?
-				self.present(animated: animated)
-				// (this will cause an unterminated loop as written if window/rootViewController are never set up, but that would indicate a code fault anyway)
-			}
-			return
+		guard let presentModalsInViewController = WindowController.presentModalsInViewController else { // being asked to present before app has finished launching
+			self._appLaunchOnly_isWaitingForWindowControllerSetupAfterPresentCall = true
+			// We'll wait for notification of app launch and present self instead of doing a dispatch .async call to .present(). Otherwise there will be a delay responsible for a flash of the wallets empty screen before pw entry view presented right on app launch 
+			self.__appLaunchIsWaitingOnly_presentArg_animated = animated
+			// now wait for (promised) notification…
+			return // and exit
 		}
 		do { // 'will'
 			NotificationCenter.default.post(
@@ -162,17 +179,16 @@ class PasswordEntryNavigationViewController: UINavigationController
 				object: nil
 			)
 		}
-		let parentViewController = rootViewController!
 		var presentIn_viewController: UIViewController
 		do {
-			if let already_presentedViewController = parentViewController.presentedViewController { // must be able to display on top of existing modals
+			if let already_presentedViewController = presentModalsInViewController.presentedViewController { // must be able to display on top of existing modals
 				if already_presentedViewController.isBeingDismissed == false { // e.g. the About modal when backgrounding the app
 					presentIn_viewController = already_presentedViewController
 				} else {
-					presentIn_viewController = parentViewController
+					presentIn_viewController = presentModalsInViewController
 				}
 			} else {
-				presentIn_viewController = parentViewController
+				presentIn_viewController = presentModalsInViewController
 			}
 		}
 		self.modalPresentationStyle = .fullScreen // occlude everything
@@ -253,6 +269,20 @@ class PasswordEntryNavigationViewController: UINavigationController
 			self.topPasswordEntryScreenViewController.setValidationMessage(err_str)
 		} else {
 			self.topPasswordEntryScreenViewController.clearValidationMessage()
+		}
+	}
+	//
+	// Delegation - Notifications
+	@objc func RootViewController_didAppearForFirstTime()
+	{ // ^-- now, we're waiting for the rootViewController's first appearance, instead of merely the window having been made key and visible, in order to avoid the "Unbalanced calls to begin/end appearance transitions for RootViewController" issue"
+		//
+		if self._appLaunchOnly_isWaitingForWindowControllerSetupAfterPresentCall == true {
+			let animated = self.__appLaunchIsWaitingOnly_presentArg_animated!
+			//
+			self._appLaunchOnly_isWaitingForWindowControllerSetupAfterPresentCall = nil
+			self.__appLaunchIsWaitingOnly_presentArg_animated = nil
+			//
+			self.present(animated: animated)
 		}
 	}
 }

@@ -61,7 +61,22 @@ class ConnectivityMessageViewController: UIViewController
 	}
 	func startObserving()
 	{
-		
+		self.startObserving_statusBarFrame()
+	}
+	func startObserving_statusBarFrame()
+	{
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(UIApplicationWillChangeStatusBarFrame),
+			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			object: nil
+		)
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(UIApplicationDidChangeStatusBarFrame),
+			name: NSNotification.Name.UIApplicationDidChangeStatusBarFrame,
+			object: nil
+		)
 	}
 	//
 	// Lifecycle - Deinit
@@ -75,7 +90,20 @@ class ConnectivityMessageViewController: UIViewController
 	}
 	func stopObserving()
 	{
-		
+		self.stopObserving_statusBarFrame()
+	}
+	func stopObserving_statusBarFrame()
+	{
+		NotificationCenter.default.removeObserver(
+			self,
+			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			object: nil
+		)
+		NotificationCenter.default.removeObserver(
+			self,
+			name: NSNotification.Name.UIApplicationDidChangeStatusBarFrame,
+			object: nil
+		)
 	}
 	//
 	// Imperatives - Overrides - Layout
@@ -87,7 +115,7 @@ class ConnectivityMessageViewController: UIViewController
 		//
 		let statusBarFrame = UIApplication.shared.statusBarFrame
 		let margin = UIEdgeInsetsMake(
-			44/*janky way of approximating nav bar offset*/,
+			44/*janky way of approximating nav bar offset*/ - 8/* to move as high as possible to occlude as little as possible */,
 			8,
 			0,
 			8
@@ -105,5 +133,13 @@ class ConnectivityMessageViewController: UIViewController
 		self.label.frame = self.containerView.frame.insetBy(dx: 8, dy: 0)
 	}
 	//
-	// Delegation - Status bar
+	// Delegation - Notifications
+	@objc func UIApplicationWillChangeStatusBarFrame(_ notification: Notification)
+	{
+		self.view.setNeedsLayout()
+	}
+	@objc func UIApplicationDidChangeStatusBarFrame(_ notification: Notification)
+	{
+		self.view.setNeedsLayout()
+	}
 }
