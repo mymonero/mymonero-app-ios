@@ -192,10 +192,10 @@ extension SendFundsForm
 					self.set_addPaymentID_buttonView(isHidden: true) // hide if showing
 					self.hideAndClear_manualPaymentIDField() // if there's a pid we'll show it as 'Detected' anyway
 					//
+					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
+					//
 					if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
 						// contact picker will show its own resolving indicator while we look up the paymentID again
-						self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
-						//
 						self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
 						//
 						return
