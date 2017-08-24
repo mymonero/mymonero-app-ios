@@ -130,7 +130,7 @@ class SettingsController: DeleteEverythingRegistrant
 			if self.setForbidden_DictKeys.contains(key) == true {
 				assert(false)
 			}
-			var value: Any? = raw_value
+			let/*var*/ value: Any? = raw_value
 // TODO: this is commented b/c it might demonstrate a Swift bug.. or a lacking in my understanding?
 //			do { // to finalize
 //				switch key {

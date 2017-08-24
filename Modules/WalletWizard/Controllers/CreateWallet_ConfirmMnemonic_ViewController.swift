@@ -112,16 +112,13 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	var margin_h: CGFloat { return 16 }
 	var content_x: CGFloat { return self.margin_h }
 	var content_w: CGFloat { return (self.scrollView.frame.size.width - 2*content_x) }
-	var topPadding: CGFloat { return 36 }
-	override var yOffsetForViewsBelowValidationMessageView: CGFloat
-	{ // overridden to get topPadding and max() behavior
-		if self.messageView!.isHidden {
-			return self.topPadding
+	override var yOffsetForViewsBelowValidationMessageView: CGFloat {
+		let minValue: CGFloat = 36
+		if self.messageView?.isHidden == false {
+			assert(minValue > self.validationView_bottomMargin)
+			return minValue - self.validationView_bottomMargin
 		}
-		return max(
-			self.topPadding,
-			(self.inlineMessageValidationView_topMargin + self.messageView!.frame.size.height + self.inlineMessageValidationView_bottomMargin)
-		)
+		return minValue
 	}
 	//
 	var wizardWalletMnemonicString: MoneroSeedAsMnemonic {
@@ -151,15 +148,11 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	{
 		super.disableForm()
 		//
-		self.scrollView.isScrollEnabled = false
-		//
 		self.selectedWordsView.isEnabled = false
 	}
 	override func reEnableForm()
 	{
 		super.reEnableForm()
-		//
-		self.scrollView.isScrollEnabled = true
 		//
 		self.selectedWordsView.isEnabled = true
 	}

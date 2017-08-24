@@ -13,9 +13,9 @@ extension UICommonComponents
 	class ScrollableValidatingInfoViewController: UIViewController, UIScrollViewDelegate
 	{
 		//
-		// Properties - Cached
-		var scrollView: UIScrollView!
+		// Properties - Views
 		var messageView: UICommonComponents.InlineMessageView?
+		var scrollView: UIScrollView!
 		//
 		// Imperatives - Init
 		init()
@@ -60,7 +60,7 @@ extension UICommonComponents
 				}
 			)
 			self.messageView = view
-			self.scrollView.addSubview(view)
+			self.view.addSubview(view) // rather than to self.scrollView
 		}
 		func setup_navigation()
 		{ // override but call on super
@@ -113,21 +113,15 @@ extension UICommonComponents
 		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
-		var inlineMessageValidationView_topMargin: CGFloat {
-			return 16
-		}
-		var inlineMessageValidationView_bottomMargin: CGFloat {
-			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // just for visual consistency
+		var validationView_bottomMargin: CGFloat {
+			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // for consistency
 		}
 		var yOffsetForViewsBelowValidationMessageView: CGFloat
 		{
-			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
-			if self.messageView!.isHidden {
-				return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
+			if let messageView = self.messageView, messageView.isHidden == false {
+				return 0 // message view already has its validationView_bottomMargin
 			}
-			let y = self.inlineMessageValidationView_topMargin + self.messageView!.frame.size.height + self.inlineMessageValidationView_bottomMargin
-			//
-			return ceil(y) // b/c having it be .5 doesn't mix well with consumers' usage of .integral
+			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
 		}
 		//
 		// Runtime - Imperatives - Convenience/Overridable - Validation error
@@ -176,10 +170,17 @@ extension UICommonComponents
 		// Imperatives - Internal - Layout
 		func layOut_messageView()
 		{
-			assert(self.new_wantsInlineMessageViewForValidationMessages() == true)
+			assert(self.new_wantsInlineMessageViewForValidationMessages())
+			// we'll allow laying out while hidden, here, for text/button reflow before .show(), etc
+			assert(self.messageView != nil)
+			//
 			let x = CGFloat.visual__form_input_margin_x // use visual__ instead so we don't get extra img padding
-			let w = self.view.frame.size.width - 2 * x
-			self.messageView!.layOut(atX: x, y: self.inlineMessageValidationView_topMargin, width: w)
+			let w = self.view.frame.size.width - 2*x
+			self.messageView!.layOut(
+				atX: x,
+				y: 8, // was 16
+				width: w
+			)
 		}
 		//
 		// Imperatives - Overrides - Layout
@@ -187,18 +188,18 @@ extension UICommonComponents
 		{
 			super.viewWillLayoutSubviews()
 			//
-			self.scrollView.frame = self.view.bounds
-		}
-		//
-		// Delegation - View
-		override func viewDidLayoutSubviews()
-		{
-			super.viewDidLayoutSubviews()
-			if self.new_wantsInlineMessageViewForValidationMessages() {
-				if self.messageView!.shouldPerformLayOut { // i.e. is visible
-					self.layOut_messageView()
-				}
+			var scrollView_top: CGFloat = 0
+			if let messageView = self.messageView, messageView.isHidden == false {
+				self.layOut_messageView()
+				//
+				scrollView_top = messageView.frame.origin.y + messageView.frame.size.height + self.validationView_bottomMargin
 			}
+			self.scrollView.frame = CGRect(
+				x: 0,
+				y: scrollView_top,
+				width: self.view.bounds.size.width,
+				height: self.view.bounds.size.height - scrollView_top
+			)
 		}
 		//
 		// Delegation - Internal/Convenience - Scroll view

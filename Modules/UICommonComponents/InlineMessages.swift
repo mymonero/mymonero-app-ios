@@ -82,9 +82,6 @@ extension UICommonComponents
 		}
 		//
 		// Accessors
-		var shouldPerformLayOut: Bool {
-			return self.isHidden == false // i.e. lay out if showing
-		}
 		//
 		// Imperatives - Configuration
 		// NOTE: This interface/API for config->layout->show->layout could possibly be improved/condensed slightly
@@ -152,7 +149,7 @@ extension UICommonComponents
 				y: y,
 				width: width,
 				height: InlineMessageView.padding.top + label.frame.size.height + InlineMessageView.padding.bottom
-			)
+			).integral // no split pixels
 		}
 		//
 		// Delegation - Interactions
