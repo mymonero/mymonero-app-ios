@@ -52,6 +52,7 @@ struct DDLog
 		#endif
 	}
 	//
+	// TODO: can these be procedurally generated?
 	static func Info(_ categoryName: CategoryName, _ message: String)
 	{
 		self.addLogEntry(categoryName: categoryName, level: .info, message: message)
