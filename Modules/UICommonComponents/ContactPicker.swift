@@ -813,7 +813,7 @@ extension UICommonComponents.Form
 					self.mediumDelay_waitingToFinishTypingTimer = nil
 				}
 				self.mediumDelay_waitingToFinishTypingTimer = Timer.scheduledTimer(
-					withTimeInterval: 0.3,
+					withTimeInterval: 0.5,
 					repeats: false,
 					block:
 					{ [unowned self] (timer) in
