@@ -73,6 +73,7 @@
 	}
 	{
 		self.recordsStrings = [NSMutableArray new];
+		self.dnssecStatus = DNSLookup_DNSSECStatus_undetermined; // zero state
 	}
 	//
 	return self;
@@ -155,10 +156,11 @@
 		flags |= (DNSServiceFlags)kDNSServiceFlagsLongLivedQuery; // b/c it's a TXT record lookup
 //		flags |= (DNSServiceFlags)kDNSServiceFlagsUnicastResponse; // TODO: ?
 //		flags |= (DNSServiceFlags)kDNSServiceFlagsSuppressUnusable; // TODO: do we want this?
-//
-//		flags |= (DNSServiceFlags)kDNSServiceFlagsValidateOptional; // TODO: unless they flip the flag to true via settings - "OpenAlias: Require DNSSEC OK"
-		// - OR -
-		flags |= (DNSServiceFlags)kDNSServiceFlagsValidate;
+		if (self.isValidationOptional == YES) {
+			flags |= (DNSServiceFlags)kDNSServiceFlagsValidateOptional;
+		} else {
+			flags |= (DNSServiceFlags)kDNSServiceFlagsValidate;
+		}
 	}
 	//
 	DNSServiceRef dnsServiceRef = NULL; // TODO: change to instance prop

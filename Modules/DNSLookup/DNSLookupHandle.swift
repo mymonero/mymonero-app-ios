@@ -62,7 +62,7 @@ class DNSLookupHandle: NSObject, DNSLookupEventDelegate
 		//
 		let didStart = self.lookup.start()
 		if didStart == false {
-			DDLog.Warn("OpenAlias/DNSLookupHandle", "Could not start DNSLookup instance.");
+			DDLog.Warn("DNSLookup/DNSLookupHandle", "Could not start DNSLookup instance.");
 			return;
 		}
 
@@ -96,6 +96,7 @@ class DNSLookupHandle: NSObject, DNSLookupEventDelegate
 	)
 	{
 		self.recordsStrings = recordsStrings
+		NSLog("dnssecStatus \(dnssecStatus)")
 		self.dnssecStatus = dnssecStatus
 		//
 		self.__didGetFinalState()
@@ -115,7 +116,7 @@ class DNSLookupHandle: NSObject, DNSLookupEventDelegate
 				let errorCode: NSInteger = error.code
 				switch errorCode {
 					case kDNSServiceErr_Timeout:
-						DDLog.Warn("OpenAlias", "Timed out.")
+						DDLog.Warn("DNSLookup", "Timed out.")
 						break
 					case kDNSServiceErr_NoSuchRecord:
 						err_str = NSLocalizedString("No such DNS record found", comment: "")
@@ -137,7 +138,7 @@ class DNSLookupHandle: NSObject, DNSLookupEventDelegate
 				}
 			}
 		}
-		DDLog.Error("OpenAlias", "_didErrorOnTXTLookup error: \(error), err_str: \(err_str.debugDescription)")
+		DDLog.Error("DNSLookup", "_didErrorOnTXTLookup error: \(error), err_str: \(err_str.debugDescription)")
 		self.err_str = err_str
 		self.__didGetFinalState()
 	}

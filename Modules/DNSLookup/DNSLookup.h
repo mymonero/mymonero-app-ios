@@ -13,10 +13,12 @@
 @protocol DNSLookupEventDelegate;
 enum DNSLookup_DNSSECStatus: NSInteger
 {
-	DNSLookup_DNSSECStatus_secure			= 0,
-	DNSLookup_DNSSECStatus_insecure			= 1,
-	DNSLookup_DNSSECStatus_indeterminate	= 2,
-	DNSLookup_DNSSECStatus_bogus			= 3,
+	DNSLookup_DNSSECStatus_undetermined		= 0, // zero value
+	//
+	DNSLookup_DNSSECStatus_secure			= 1,
+	DNSLookup_DNSSECStatus_insecure			= 2,
+	DNSLookup_DNSSECStatus_indeterminate	= 3,
+	DNSLookup_DNSSECStatus_bogus			= 4,
 	//
 	DNSLookup_DNSSECStatus_unrecognized		= -1
 };

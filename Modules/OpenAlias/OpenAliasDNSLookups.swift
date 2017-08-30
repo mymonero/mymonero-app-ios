@@ -56,7 +56,7 @@ struct OpenAliasDNSLookups
 			return nil
 		}
 		let emailNormalized_address = openAliasAddress.replacingOccurrences(of: "@", with: ".")
-		let validationRequired = true // TODO: look this up in settings
+		let validationRequired = false // TODO: look this up in settings
 		let lookupHandle = DNSLookupHandle(
 			lookupType: .TXT,
 			validationRequired: validationRequired,
@@ -113,16 +113,21 @@ struct OpenAliasDNSLookups
 							fn(err_str, nil)
 							return
 						case DNSLookup_DNSSECStatus_insecure:
-							let err_str = NSLocalizedString("DNSSEC validation failed: Chain of trust could not be built from trust anchor to response.", comment: "")
+							let err_str = NSLocalizedString("DNSSEC validation failed: Chain of trust could not be built from trust anchor to response (\"Insecure\").", comment: "")
 							fn(err_str, nil)
 							return
 						case DNSLookup_DNSSECStatus_bogus:
-							let err_str = NSLocalizedString("DNSSEC validation failed: Possible expired or missing signatures.", comment: "")
+							let err_str = NSLocalizedString("DNSSEC validation failed: Possible expired or missing signatures (\"Bogus\").", comment: "")
 							fn(err_str, nil)
 							return
 						case DNSLookup_DNSSECStatus_indeterminate:
-							let err_str = NSLocalizedString("DNSSEC validation failed: No valid trust anchor that can be used to determine if response secure.", comment: "")
+							let err_str = NSLocalizedString("DNSSEC validation failed: No valid trust anchor that can be used to determine if response secure (\"Indeterminate\").", comment: "")
 							fn(err_str, nil)
+							return
+						case DNSLookup_DNSSECStatus_undetermined:
+							// TODO: pretty sure this is a bug…
+//							assert(false, "Status should at least be determined by now")
+							fn(NSLocalizedString("DNSSEC validation failed: Unable to be determined", comment: ""), nil)
 							return
 						default:
 							assert(false, "switch ought to have been exhaustive")
