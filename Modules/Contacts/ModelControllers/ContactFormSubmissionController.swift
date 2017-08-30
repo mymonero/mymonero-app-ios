@@ -157,7 +157,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 	{
 		self.parameters.didBeginResolving_fn()
 		//
-		self.resolve_requestOperation = OpenAliasResolver.shared.resolveOpenAliasAddress(
+		self.resolve_lookupHandle = OpenAliasResolver.shared.resolveOpenAliasAddress(
 			openAliasAddress: self.parameters.address,
 			forCurrency: .monero,
 			{ [unowned self] (
@@ -172,8 +172,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				//
 				self.parameters.didEndResolving_fn()
 				//
-				let handle_wasNil = self.resolve_requestOperation == nil
-				self.resolve_requestOperation = nil
+				let handle_wasNil = self.resolve_lookupHandle == nil
+				self.resolve_lookupHandle = nil
 				//
 				if err_str != nil {
 					self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)

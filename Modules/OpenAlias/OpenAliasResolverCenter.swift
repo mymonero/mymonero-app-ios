@@ -33,7 +33,9 @@ class OpenAliasResolver
 		var tx_description: String?
 		var openAlias_domain: String?
 		var recipient_name: String?
-//		var dnssec_used_and_secured: Bool // TODO
+		//
+		var dnssec_validationRequired: Bool
+		var dnssec_status: DNSLookup_DNSSECStatus?
 	}
 	//
 	// Properties - Static
@@ -60,15 +62,16 @@ class OpenAliasResolver
 	@discardableResult
 	func resolveOpenAliasAddress(
 		openAliasAddress: String,
+		validationRequired: Bool = false,
 		forCurrency currency: OpenAliasDNSLookups.OpenAliasAddressCurrency, // TODO: possibly return all which are found
 		_ fn: @escaping (
 			_ err_str: String?,
 			_ addressWhichWasPassedIn: String?,
 			_ response: OpenAliasResolverResponse?
 		) -> Void
-	) -> Operation?
+	) -> DNSLookupHandle?
 	{
-		let operation = OpenAliasDNSLookups.moneroAddressInfo(
+		let lookupHandle = OpenAliasDNSLookups.moneroAddressInfo(
 			fromOpenAliasAddress: openAliasAddress,
 			forCurrency: currency,
 			isReachable: self.reachability.isReachable,
@@ -83,8 +86,9 @@ class OpenAliasResolver
 					returned__payment_id: validResolvedAddressDescription!.payment_id,
 					tx_description: validResolvedAddressDescription!.tx_description,
 					openAlias_domain: openAliasAddress,
-					recipient_name: validResolvedAddressDescription!.recipient_name
-//					, dnssec_used_and_secured: validResolvedAddressDescription!.dnssec_used_and_secured
+					recipient_name: validResolvedAddressDescription!.recipient_name,
+					dnssec_validationRequired: validationRequired,
+					dnssec_status: validResolvedAddressDescription!.dnssec_status
 				)
 				DispatchQueue.main.async
 				{
@@ -98,6 +102,6 @@ class OpenAliasResolver
 				fn(nil, openAliasAddress, response)
 			}
 		)
-		return operation
+		return lookupHandle
 	}
 }

@@ -106,7 +106,7 @@ extension UICommonComponents.Form
 				let view = self.inputField
 				view.delegate = self
 				view.autocapitalizationType = self.inputMode == .contactsAndAddresses ? .none/*prevent caps in OA addrs*/ : .words
-				view.keyboardType = self.inputMode == .contactsAndAddresses ? .URL : .asciiCapable
+				view.keyboardType = self.inputMode == .contactsAndAddresses ? .emailAddress/* or URL but that lacks @ … email lacks ".com" */ : .asciiCapable
 				view.autocorrectionType = .no
 				view.addTarget(self, action: #selector(inputField_editingChanged), for: .editingChanged)
 				self.addSubview(view)
@@ -813,7 +813,7 @@ extension UICommonComponents.Form
 					self.mediumDelay_waitingToFinishTypingTimer = nil
 				}
 				self.mediumDelay_waitingToFinishTypingTimer = Timer.scheduledTimer(
-					withTimeInterval: 0.5,
+					withTimeInterval: 0.6, // so slow b/c mobile typing is slower than keyboard
 					repeats: false,
 					block:
 					{ [unowned self] (timer) in
@@ -1257,7 +1257,7 @@ extension UICommonComponents.Form
 		// Imperatives
 		func resolve()
 		{
-			self.resolve_requestOperation = OpenAliasResolver.shared.resolveOpenAliasAddress(
+			self.resolve_lookupHandle = OpenAliasResolver.shared.resolveOpenAliasAddress(
 				openAliasAddress: self.parameters.address,
 				forCurrency: .monero,
 				{ [weak self] ( // rather than unowned
@@ -1274,8 +1274,8 @@ extension UICommonComponents.Form
 						return
 					}
 					//
-					let handle_wasNil = this.resolve_requestOperation == nil
-					this.resolve_requestOperation = nil
+					let handle_wasNil = this.resolve_lookupHandle == nil
+					this.resolve_lookupHandle = nil
 					//
 					if err_str != nil {
 						if let fn = this.parameters.oaResolve__preSuccess_terminal_validationMessage_fn {

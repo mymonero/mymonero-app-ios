@@ -84,6 +84,8 @@
 		9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */; };
 		9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */; };
 		9F33E70B1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33E70A1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift */; };
+		9F3826681F5678AE00800CA0 /* DNSLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F3826661F5678AE00800CA0 /* DNSLookup.m */; };
+		9F3826691F5678AE00800CA0 /* DNSLookupHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3826671F5678AE00800CA0 /* DNSLookupHandle.swift */; };
 		9F453FA91F267A65004590DC /* SendFundsFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA51F267A65004590DC /* SendFundsFormSubmissionController.swift */; };
 		9F453FAA1F267A65004590DC /* SendFundsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */; };
 		9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */; };
@@ -219,7 +221,6 @@
 		9FCB92781F412EDA005852BA /* slider_knob@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCB92761F412EDA005852BA /* slider_knob@3x.png */; };
 		9FCB92791F412EDA005852BA /* slider_track@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCB92771F412EDA005852BA /* slider_track@3x.png */; };
 		9FCB927B1F412FA8005852BA /* slider_knob_highlighted@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCB927A1F412FA8005852BA /* slider_knob_highlighted@3x.png */; };
-		9FCD9D601F4948A7004C0349 /* DNSLookups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCD9D5B1F4948A7004C0349 /* DNSLookups.swift */; };
 		9FCD9D611F4948A7004C0349 /* OpenAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCD9D5C1F4948A7004C0349 /* OpenAlias.swift */; };
 		9FCD9D621F4948A7004C0349 /* OpenAliasResolverCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCD9D5D1F4948A7004C0349 /* OpenAliasResolverCenter.swift */; };
 		9FCD9D631F4948A7004C0349 /* OpenAliasDNSLookups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCD9D5E1F4948A7004C0349 /* OpenAliasDNSLookups.swift */; };
@@ -320,6 +321,10 @@
 		9F33E6FE1F213B8A00610662 /* ImportTransactionsModalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportTransactionsModalViewController.swift; sourceTree = "<group>"; };
 		9F33E7081F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportTransactionsModalFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F33E70A1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletDetailsTransactionsEmptyStateCell.swift; sourceTree = "<group>"; };
+		9F3826631F566A2E00800CA0 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		9F3826651F5678AE00800CA0 /* DNSLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DNSLookup.h; sourceTree = "<group>"; };
+		9F3826661F5678AE00800CA0 /* DNSLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DNSLookup.m; sourceTree = "<group>"; };
+		9F3826671F5678AE00800CA0 /* DNSLookupHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DNSLookupHandle.swift; sourceTree = "<group>"; };
 		9F453FA51F267A65004590DC /* SendFundsFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormViewController.swift; sourceTree = "<group>"; };
 		9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsTabNavigationViewController.swift; sourceTree = "<group>"; };
@@ -457,7 +462,6 @@
 		9FCB92761F412EDA005852BA /* slider_knob@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_knob@3x.png"; sourceTree = "<group>"; };
 		9FCB92771F412EDA005852BA /* slider_track@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_track@3x.png"; sourceTree = "<group>"; };
 		9FCB927A1F412FA8005852BA /* slider_knob_highlighted@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_knob_highlighted@3x.png"; sourceTree = "<group>"; };
-		9FCD9D5B1F4948A7004C0349 /* DNSLookups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DNSLookups.swift; sourceTree = "<group>"; };
 		9FCD9D5C1F4948A7004C0349 /* OpenAlias.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAlias.swift; sourceTree = "<group>"; };
 		9FCD9D5D1F4948A7004C0349 /* OpenAliasResolverCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAliasResolverCenter.swift; sourceTree = "<group>"; };
 		9FCD9D5E1F4948A7004C0349 /* OpenAliasDNSLookups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAliasDNSLookups.swift; sourceTree = "<group>"; };
@@ -665,6 +669,24 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		9F3826621F566A2E00800CA0 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				9F3826631F566A2E00800CA0 /* Bridging-Header.h */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
+		9F3826641F56789600800CA0 /* DNSLookup */ = {
+			isa = PBXGroup;
+			children = (
+				9F3826671F5678AE00800CA0 /* DNSLookupHandle.swift */,
+				9F3826651F5678AE00800CA0 /* DNSLookup.h */,
+				9F3826661F5678AE00800CA0 /* DNSLookup.m */,
+			);
+			path = DNSLookup;
+			sourceTree = "<group>";
+		};
 		9F453FA41F267A65004590DC /* ModelControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -722,6 +744,7 @@
 				9F8E2F861EE8807500F89A1D /* Contacts */,
 				9FA7342B1F077C6800C674D6 /* Emoji */,
 				9FCD9D5A1F4948A7004C0349 /* OpenAlias */,
+				9F3826641F56789600800CA0 /* DNSLookup */,
 				9F8E2F8C1EE8807500F89A1D /* Settings */,
 				9FB603041F4F6B6B00951175 /* ConnectivityMessage */,
 			);
@@ -731,6 +754,7 @@
 		9F7ADAA61EBD2B420073C2BB /* App */ = {
 			isa = PBXGroup;
 			children = (
+				9F3826621F566A2E00800CA0 /* Headers */,
 				9F7ADAF31EBD2C1C0073C2BB /* Controllers */,
 				9F7ADAF61EBD2C1C0073C2BB /* Resources */,
 			);
@@ -1229,7 +1253,6 @@
 				9FCD9D5E1F4948A7004C0349 /* OpenAliasDNSLookups.swift */,
 				9FCD9D5C1F4948A7004C0349 /* OpenAlias.swift */,
 				9FCD9D5F1F4948A7004C0349 /* OpenAliasResolverRequestMaker.swift */,
-				9FCD9D5B1F4948A7004C0349 /* DNSLookups.swift */,
 			);
 			path = OpenAlias;
 			sourceTree = "<group>";
@@ -1312,6 +1335,7 @@
 				TargetAttributes = {
 					9F24AE181EBA7D3A00841BCB = {
 						CreatedOnToolsVersion = 8.3.2;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1502,6 +1526,7 @@
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
 				9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */,
+				9F3826681F5678AE00800CA0 /* DNSLookup.m in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
 				9F0801441F188A690074B35A /* Homepage.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
@@ -1528,6 +1553,7 @@
 				9F2BFF0F1EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift in Sources */,
 				9F740D591F1702DF0017A20E /* FundsRequestDetailsViewController.swift in Sources */,
 				9F33E6F51F1EFCE700610662 /* WalletDetailsTransactionCell.swift in Sources */,
+				9F3826691F5678AE00800CA0 /* DNSLookupHandle.swift in Sources */,
 				9F9C59F31F0C4716003B9266 /* UIResponder+Current.swift in Sources */,
 				9FA7340E1F05AF8800C674D6 /* FundsRequestsListController.swift in Sources */,
 				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
@@ -1589,7 +1615,6 @@
 				9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */,
-				9FCD9D601F4948A7004C0349 /* DNSLookups.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
 				9F2BFF101EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
 				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
@@ -1727,6 +1752,7 @@
 			baseConfigurationReference = B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1738,6 +1764,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymoneromobile-debug";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
+				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1748,6 +1776,7 @@
 			baseConfigurationReference = F56E327D2325F7E70A93F182 /* Pods-MyMonero.app store.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
@@ -1756,6 +1785,7 @@
 				LLVM_LTO = YES_THIN;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1809,6 +1839,7 @@
 			baseConfigurationReference = A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
@@ -1817,6 +1848,7 @@
 				LLVM_LTO = YES_THIN;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymoneromobile-internal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1870,6 +1902,7 @@
 			baseConfigurationReference = 5B74196A259183D102DC72F7 /* Pods-MyMonero.profiling.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
@@ -1878,6 +1911,7 @@
 				LLVM_LTO = YES_THIN;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mymonero.mymoneromobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1938,6 +1972,7 @@
 			baseConfigurationReference = D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1949,6 +1984,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymoneromobile-testing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
+				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

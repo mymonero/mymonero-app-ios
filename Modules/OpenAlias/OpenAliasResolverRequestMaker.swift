@@ -7,12 +7,14 @@
 //
 
 import Foundation
-
+//
+// TODO: This class could stand to be improved / fleshed out a little
+//
 class OpenAliasResolverRequestMaker
 { // Subclass this in application code for cancellation/teardown handling 
 	//
 	// Properties
-	var resolve_requestOperation: Operation?
+	var resolve_lookupHandle: DNSLookupHandle?
 	//
 	// Lifecycle - Deinit
 	deinit
@@ -23,9 +25,9 @@ class OpenAliasResolverRequestMaker
 	// Imperatives
 	func cancelAnyRequestFor_oaResolution()
 	{
-		if let requestHandle = self.resolve_requestOperation {
-			requestHandle.cancel()
-			self.resolve_requestOperation = nil
+		if let handle = self .resolve_lookupHandle {
+			handle.cancel()
+			self.resolve_lookupHandle = nil
 		}
 	}
 }
