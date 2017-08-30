@@ -55,8 +55,17 @@ struct OpenAliasDNSLookups
 			fn(err_str, nil)
 			return nil
 		}
-		let emailNormalized_address = openAliasAddress.replacingOccurrences(of: "@", with: ".")
-		let validationRequired = false // TODO: look this up in settings
+		let emailNormalized_address = openAliasAddress.replacingOccurrences(of: "@", with: ".") // per OA spec
+		
+		
+		
+		//
+		// TODO: look this up in settings
+		let validationRequired = false
+		
+		
+		
+		
 		let lookupHandle = DNSLookupHandle(
 			lookupType: .TXT,
 			validationRequired: validationRequired,
@@ -127,7 +136,7 @@ struct OpenAliasDNSLookups
 						case DNSLookup_DNSSECStatus_undetermined:
 							// TODO: pretty sure this is a bug…
 //							assert(false, "Status should at least be determined by now")
-							fn(NSLocalizedString("DNSSEC validation failed: Unable to be determined", comment: ""), nil)
+							fn(NSLocalizedString("DNSSEC validation failed: Status not able to be determined", comment: ""), nil)
 							return
 						default:
 							assert(false, "switch ought to have been exhaustive")
