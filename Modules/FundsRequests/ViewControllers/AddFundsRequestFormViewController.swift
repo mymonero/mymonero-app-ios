@@ -59,7 +59,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		super.setup_views()
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("TO", comment: "")
+				title: NSLocalizedString("RECEIVE MONERO AT", comment: "")
 			)
 			self.toWallet_label = view
 			self.scrollView.addSubview(view)
@@ -121,7 +121,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("REQUEST FROM", comment: "")
+				title: NSLocalizedString("REQUEST MONERO FROM", comment: "")
 			)
 			self.requestFrom_label = view
 			self.scrollView.addSubview(view)
