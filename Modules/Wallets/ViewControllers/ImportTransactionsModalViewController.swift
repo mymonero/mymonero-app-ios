@@ -120,6 +120,7 @@ extension ImportTransactionsModal
 				let view = UICommonComponents.Form.AmountInputFieldsetView()
 				let inputField = view.inputField
 				inputField.isEnabled = false
+				inputField.isImmutable = true
 				self.amount_fieldset = view
 				self.scrollView.addSubview(view)
 			}
@@ -143,6 +144,7 @@ extension ImportTransactionsModal
 				)
 				let inputField = view
 				inputField.isEnabled = false
+				inputField.isImmutable = true
 				self.toAddress_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -166,6 +168,7 @@ extension ImportTransactionsModal
 				)
 				let inputField = view
 				inputField.isEnabled = false
+				inputField.isImmutable = true
 				self.paymentID_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -293,7 +296,9 @@ extension ImportTransactionsModal
 				if amountStr.contains(".") == false {
 					amountStr += ".00"
 				}
-				amountStr = "0" + amountStr
+				if amountStr.characters.first != "0" { // checking, in case amountStr < 1.0
+					amountStr = "0" + amountStr
+				}
 				self.amount_fieldset.inputField.text = amountStr
 			}
 			//

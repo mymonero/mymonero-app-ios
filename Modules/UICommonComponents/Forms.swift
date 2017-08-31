@@ -707,6 +707,7 @@ extension UICommonComponents
 		{
 			didSet {
 				// logically+semantically does not matter if enabled but consumer should .set(isEnabled: false), too so that interactivity of field disabled and interactivity values are also correct at runtime
+				self._configureBackground() // need to update the images
 				self.setNeedsDisplay() // must cause redraw
 			}
 		}

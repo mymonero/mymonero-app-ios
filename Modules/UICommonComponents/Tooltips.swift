@@ -148,6 +148,10 @@ extension UICommonComponents
 			}
 			tip.dismissHandler =
 			{ [unowned self] popTip in
+				if self.tip == nil {
+					DDLog.Warn("UICommonComponents.Tooltips", "dismissHandler called but self.tip already nulled")
+					return
+				}
 				if popTip == self.tip {
 					self.tip = nil // if tip is still around, may as well release it
 				} else {
