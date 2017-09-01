@@ -29,12 +29,13 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 				self.walletLabel_label = view
 				self.scrollView.addSubview(view)
 			}
-			do {
+			do { // TODO: Factor this and share it with AddWalletWizardScreen ?
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("For your reference", comment: "")
 				)
 				view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				view.delegate = self
+				view.autocapitalizationType = .words
 				view.returnKeyType = .go
 				self.walletLabel_inputView = view
 				self.scrollView.addSubview(view)

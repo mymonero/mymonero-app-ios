@@ -50,13 +50,14 @@ extension EditWallet
 					self.walletLabel_label = view
 					self.scrollView.addSubview(view)
 				}
-				do {
+				do { // TODO: Factor this and share it with WalletWizard ?
 					let view = UICommonComponents.FormInputField(
 						placeholder: NSLocalizedString("For your reference", comment: "")
 					)
 					view.text = self.wallet.walletLabel
 					view.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 					view.delegate = self
+					view.autocapitalizationType = .words
 					view.returnKeyType = .go
 					self.walletLabel_inputView = view
 					self.scrollView.addSubview(view)
