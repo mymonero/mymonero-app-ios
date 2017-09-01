@@ -17,7 +17,7 @@ All app source code and assets copyright © 2014-2017 by MyMonero. All rights re
 
 * `UICommonComponents`
 	* `WalletPicker`: Diverged from JS app and original design due to mobile-specific UI by implementing wallet picker as a custom keyboard rather than hovering dropdown list.
-	* `ContactPicker`: Now manages display of any 'Detected' fields (address and payment ID), and now encapsulates actual OA lookup call so it's not repeated. This can/should be ported to to the JS app.
+	* `ContactPicker`: Now manages display of any 'Detected' fields (address and payment ID), and now encapsulates actual OA lookup call so it's not repeated. This can/should be ported to the JS app.
 
 * There are still various namespacing improvements which can be made to the earlier Swift code and `Forms` - e.g. `FormViewController` should become `Forms.ViewController`, `FormInputField` should become `Forms.InputField`, etc.
 
