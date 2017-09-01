@@ -22,6 +22,7 @@ enum DNSLookup_DNSSECStatus: NSInteger
 	//
 	DNSLookup_DNSSECStatus_unrecognized		= -1
 };
+extern NSString *_Nullable NSStringFromDNSSECStatus(enum DNSLookup_DNSSECStatus value);
 //
 // Principal object - Interface
 @interface DNSLookup: NSObject

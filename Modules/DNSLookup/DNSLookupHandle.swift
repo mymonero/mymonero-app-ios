@@ -96,7 +96,6 @@ class DNSLookupHandle: NSObject, DNSLookupEventDelegate
 	)
 	{
 		self.recordsStrings = recordsStrings
-		NSLog("dnssecStatus \(dnssecStatus)")
 		self.dnssecStatus = dnssecStatus
 		//
 		self.__didGetFinalState()

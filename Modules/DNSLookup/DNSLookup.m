@@ -25,6 +25,29 @@
 //
 #define RR_TYPE_SIZE 16
 //
+// C - Shared - Functions - Implementations
+NSString *_Nullable NSStringFromDNSSECStatus(enum DNSLookup_DNSSECStatus value)
+{
+	switch (value) {
+		case DNSLookup_DNSSECStatus_undetermined:
+			return NSLocalizedString(@"undetermined", @"");
+		case DNSLookup_DNSSECStatus_indeterminate:
+			return NSLocalizedString(@"indeterminate", @"");
+		case DNSLookup_DNSSECStatus_bogus:
+			return NSLocalizedString(@"bogus", @"");
+		case DNSLookup_DNSSECStatus_unrecognized:
+			return NSLocalizedString(@"unrecognized", @"");
+		case DNSLookup_DNSSECStatus_insecure:
+			return NSLocalizedString(@"insecure", @"");
+		case DNSLookup_DNSSECStatus_secure:
+			return NSLocalizedString(@"secure", @"");
+		default:
+			return nil;
+			NSCAssert(false, @"Unrecognized DNSLookup_DNSSECStatus case");
+			break;
+	}
+}
+//
 #ifdef DEBUG
 // TODO: check if these are defined! this will probably conflict with any other C/ObjC DDLogInfo/Warn/Error
 #define DDLogInfo(s, ...) NSLog(@"%@  %@", @"💬",  [NSString stringWithFormat:(s), ##__VA_ARGS__])
