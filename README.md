@@ -86,6 +86,6 @@ Contributors to each release are credited in release notes.
 * 🍄 `luigi` Monero tech advisor; Main MyMonero JS core crypto contributor
 
 
-### Volunteers
+### Ongoing Volunteers
 
 * 👑 `john_alan` iOS engineer
