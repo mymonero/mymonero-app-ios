@@ -10,13 +10,15 @@ import UIKit
 
 class RootTabBarViewController: UITabBarController
 {
+	//
+	// Properties - View Controllers
 	var walletsTabViewController = WalletsTabNavigationViewController()
 	var sendFundsTabViewController = SendFundsTabNavigationViewController()
 	var fundsRequestsTabViewController = FundsRequestsTabNavigationViewController()
 	var contactsTabViewController = ContactsTabNavigationViewController()
-	//
 	var settingsTabViewController = SettingsTabNavigationViewController()
 	//
+	// Lifecycle - Init
 	required init?(coder aDecoder: NSCoder)
 	{
 		fatalError("init(coder:) has not been implemented")
@@ -167,45 +169,35 @@ class RootTabBarViewController: UITabBarController
 		}
 	}
 	//
-	func selectTab_wallets()
+	func programmatically_set(selectedIndex index: Int)
 	{
-		if self.walletsTabViewController.tabBarItem.isEnabled == false {
-			DDLog.Warn("App", "Asked to \(#function) but it was disabled.")
+		let viewController = self.viewControllers![index]
+		if viewController.tabBarItem.isEnabled == false {
+			DDLog.Warn("App", "Asked to \(#function) selectedIndex to \(index) but its tabBarItem was disabled.")
 			return
 		}
-		self.selectedIndex = 0
+		self.selectedIndex = index
+	}
+	//
+	func selectTab_wallets()
+	{
+		self.programmatically_set(selectedIndex: 0)
 	}
 	func selectTab_sendFunds()
 	{
-		if self.sendFundsTabViewController.tabBarItem.isEnabled == false {
-			DDLog.Warn("App", "Asked to \(#function) but it was disabled.")
-			return
-		}
-		self.selectedIndex = 1
+		self.programmatically_set(selectedIndex: 1)
 	}
 	func selectTab_fundsRequests()
 	{
-		if self.fundsRequestsTabViewController.tabBarItem.isEnabled == false {
-			DDLog.Warn("App", "Asked to \(#function) but it was disabled.")
-			return
-		}
-		self.selectedIndex = 2
+		self.programmatically_set(selectedIndex: 2)
 	}
 	func selectTab_contacts()
 	{
-		if self.contactsTabViewController.tabBarItem.isEnabled == false {
-			DDLog.Warn("App", "Asked to \(#function) but it was disabled.")
-			return
-		}
-		self.selectedIndex = 3
+		self.programmatically_set(selectedIndex: 3)
 	}
 	func selectTab_settings()
 	{
-		if self.settingsTabViewController.tabBarItem.isEnabled == false {
-			DDLog.Warn("App", "Asked to \(#function) but it was disabled.")
-			return
-		}
-		self.selectedIndex = 4
+		self.programmatically_set(selectedIndex: 4)
 	}
 	//
 	// Delegation - Notifications
