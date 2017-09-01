@@ -11,11 +11,16 @@ All app source code and assets copyright © 2014-2017 by MyMonero. All rights re
 * `MyMoneroCore`: Bridged MyMonero JS app core crypto code via async Swift calls; implemented specific functionality in Swift to keep synchrony 
 
 * `Persistence`, `Lists`, `Passwords`: Object encryption, document persistence, password management, and business object implementations nearly equivalent to [MyMonero JS app](https://github.com/mymonero/mymonero-app-js) with various improvements
-	* *Of note:* This iOS app presently encrypts whole document; JS app encrypts values at specified keys
+	* *Of note:* This iOS app presently encrypts whole document; JS app encrypts values at specified keys. This can and possibly should be ported to to the JS app for simplicity.
 
 * `OpenAlias`, `DNSLookup`: DNS lookup of TXT record content for OpenAlias address resolution now implemented via zero-configuration system-level API (`dnssd`) instead of via server API endpoint, enabling proper DNSSEC status validation
 
-* `UICommonComponents/WalletPicker`: Diverged from JS app and original design due to mobile-specific UI by implementing wallet picker as a custom keyboard rather than hovering dropdown list.
+* `UICommonComponents`
+	* `WalletPicker`: Diverged from JS app and original design due to mobile-specific UI by implementing wallet picker as a custom keyboard rather than hovering dropdown list.
+	* `ContactPicker`: Now manages display of any 'Detected' fields (address and payment ID), and now encapsulates actual OA lookup call so it's not repeated. This can/should be ported to to the JS app.
+
+* There are still various namespacing improvements which can be made to the earlier Swift code and `Forms` - e.g. `FormViewController` should become `Forms.ViewController`, `FormInputField` should become `Forms.InputField`, etc.
+
 
 ## Repository Setup
 
