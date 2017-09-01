@@ -1,5 +1,5 @@
 //
-//  MoneroAmounts.swift
+//  MoneroTypes_Amounts.swift
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/12/17.

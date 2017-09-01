@@ -107,7 +107,7 @@ extension HostedMoneroAPIClient
 		DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
 		//
 		// Derive/finalize some values…
-		let final__mixin = FixedMixin()
+		let final__mixin = MyMoneroCore.fixedMixin
 		if final__mixin < 0 {
 			__trampolineFor_err_withStr(err_str: "Invalid mixin")
 			return
@@ -132,7 +132,7 @@ extension HostedMoneroAPIClient
 				final__payment_id = decodedAddressComponents.intPaymentId
 				final__pid_encrypt = true // we do want to encrypt if using an integrated address
 			} else {
-				if MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(final__payment_id) == false { // Validation
+				if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
 					__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
 					return
 				}

@@ -474,7 +474,7 @@ class Wallet: PersistableObject
 		self.walletLabel = walletLabel
 		self.swatchColor = swatchColor
 		//
-		let (wordsetName__err_str, wordsetName) = WordsetName(accordingToMnemonicString: mnemonicString)
+		let (wordsetName__err_str, wordsetName) = MoneroUtils.Mnemonics.wordsetName(accordingToMnemonicString: mnemonicString)
 		if wordsetName__err_str != nil {
 			DDLog.Error("Wallets", "Error while detecting mnemonic wordset from mnemonic string: \(wordsetName__err_str.debugDescription)")
 			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: wordsetName__err_str)

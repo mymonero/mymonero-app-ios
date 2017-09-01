@@ -106,7 +106,7 @@ extension SendFundsForm
 							"Monero makes transactions with your \"available outputs\", so part of your balance will be briefly locked and then returned as change.\n\nMonero ringsize value set to %d.",
 							comment: ""
 						),
-						FixedMixin()+1
+						MyMoneroCore.fixedMixin+1
 					)
 				)
 				view.willPresentTipView_fn =
@@ -1090,7 +1090,7 @@ extension SendFundsForm
 			//
 			self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
 			//
-			let (err_str, optl_requestPayload) = MyMoneroCoreUtils.New_ParsedRequest_FromURIString(requestURIString)
+			let (err_str, optl_requestPayload) = MoneroUtils.RequestURIs.new_parsedRequest(fromURIString: requestURIString)
 			if err_str != nil {
 				self.set(
 					validationMessage: NSLocalizedString(

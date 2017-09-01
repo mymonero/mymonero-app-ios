@@ -193,7 +193,7 @@ class FundsRequest: PersistableObject
 	// Interface - Runtime - Accessors/Properties
 	var new_URI: URL
 	{
-		return MyMoneroCoreUtils.New_RequestFunds_URL(
+		return MoneroUtils.RequestURIs.new_URL(
 			address: self.to_address,
 			amount: self.amount,
 			description: self.description,

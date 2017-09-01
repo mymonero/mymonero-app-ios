@@ -167,7 +167,7 @@ extension SendFundsForm
 					}
 					let paymentID_orNil = paymentID_toUseOrToNilIfIntegrated
 					// since we may have a payment ID here (which may also have been entered manually), validate
-					if MyMoneroCoreUtils.isValidPaymentIDOrNoPaymentID(paymentID_orNil) == false { // convenience function - will be true if nil pid
+					if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: paymentID_orNil) == false { // convenience function - will be true if nil pid
 						self.parameters.preSuccess_terminal_validationMessage_fn(
 							NSLocalizedString("Please enter a valid payment ID.", comment: "")
 						)
@@ -233,7 +233,7 @@ extension SendFundsForm
 				timestamp: Date(), // faking this
 				hash: transactionHash,
 				paymentId: sentWith_paymentID, // transaction.paymentId will therefore be nil for integrated addresses
-				mixin: FixedMixin(),
+				mixin: MyMoneroCore.fixedMixin,
 				mempool: false, // TODO: is this correct?
 				unlock_time: 0,
 				height: 0, // TODO: is this correct?
