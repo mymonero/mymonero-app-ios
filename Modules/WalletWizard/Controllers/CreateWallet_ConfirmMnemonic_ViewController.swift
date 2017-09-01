@@ -113,12 +113,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	var content_x: CGFloat { return self.margin_h }
 	var content_w: CGFloat { return (self.scrollView.frame.size.width - 2*content_x) }
 	override var yOffsetForViewsBelowValidationMessageView: CGFloat {
-		let minValue: CGFloat = 36
-		if self.messageView?.isHidden == false {
-			assert(minValue > self.validationView_bottomMargin)
-			return minValue - self.validationView_bottomMargin
-		}
-		return minValue
+		return 36
 	}
 	//
 	var wizardWalletMnemonicString: MoneroSeedAsMnemonic {

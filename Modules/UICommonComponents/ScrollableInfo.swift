@@ -113,15 +113,9 @@ extension UICommonComponents
 		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
-		var validationView_bottomMargin: CGFloat {
-			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // for consistency
-		}
 		var yOffsetForViewsBelowValidationMessageView: CGFloat
 		{
-			if let messageView = self.messageView, messageView.isHidden == false {
-				return 0 // message view already has its validationView_bottomMargin
-			}
-			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
+			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // chosen in order to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
 		}
 		//
 		// Runtime - Imperatives - Convenience/Overridable - Validation error
@@ -219,7 +213,7 @@ extension UICommonComponents
 			if let messageView = self.messageView, messageView.isHidden == false {
 				self.layOut_messageView()
 				//
-				scrollView_top = messageView.frame.origin.y + messageView.frame.size.height + self.validationView_bottomMargin
+				scrollView_top = messageView.frame.origin.y + messageView.frame.size.height
 			}
 			self.scrollView.frame = CGRect(
 				x: 0,
