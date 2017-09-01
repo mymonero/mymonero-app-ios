@@ -9,9 +9,6 @@
 import Foundation
 import UIKit // because we use a WKWebView
 //
-// Top-level namespace declarations
-struct MyMoneroCoreUtils {} // TODO: refactor this namespace?
-//
 // Principal type
 final class MyMoneroCore : MyMoneroCoreJS
 {
