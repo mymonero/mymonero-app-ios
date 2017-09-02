@@ -49,7 +49,7 @@ extension WalletDetails
 					let iconImage = UIImage(named: "actionButton_iconImage__request")! // borrowing the 'request' image for this
 					let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
 					view.addTarget(self, action: #selector(receive_tapped), for: .touchUpInside)
-					view.setTitle(NSLocalizedString("Receive To", comment: ""), for: .normal)
+					view.setTitle(NSLocalizedString("Receive At", comment: ""), for: .normal)
 					self.receive_actionButtonView = view
 					self.addSubview(view)
 				}
