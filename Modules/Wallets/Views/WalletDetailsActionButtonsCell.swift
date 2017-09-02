@@ -26,8 +26,8 @@ extension WalletDetails
 			}
 			//
 			// Properties
-			var send_actionButtonView: UICommonComponents.ActionButton!
 			var receive_actionButtonView: UICommonComponents.ActionButton!
+			var send_actionButtonView: UICommonComponents.ActionButton!
 			//
 			// Lifecycle - Init - Overrides
 			override func setup()
@@ -38,19 +38,19 @@ extension WalletDetails
 					self.backgroundColor = UIColor.contentBackgroundColor
 				}
 				do {
-					let iconImage = UIImage(named: "actionButton_iconImage__send")!
+					let iconImage = UIImage(named: "actionButton_iconImage__request")! // TODO: borrowing the 'request' image for this - not great
 					let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
-					view.addTarget(self, action: #selector(send_tapped), for: .touchUpInside)
-					view.setTitle(NSLocalizedString("Send From", comment: ""), for: .normal)
-					self.send_actionButtonView = view
-					self.addSubview(view)
-				}
-				do {
-					let iconImage = UIImage(named: "actionButton_iconImage__request")! // borrowing the 'request' image for this
-					let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
 					view.addTarget(self, action: #selector(receive_tapped), for: .touchUpInside)
 					view.setTitle(NSLocalizedString("Receive At", comment: ""), for: .normal)
 					self.receive_actionButtonView = view
+					self.addSubview(view)
+				}
+				do {
+					let iconImage = UIImage(named: "actionButton_iconImage__send")!
+					let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
+					view.addTarget(self, action: #selector(send_tapped), for: .touchUpInside)
+					view.setTitle(NSLocalizedString("Send From", comment: ""), for: .normal)
+					self.send_actionButtonView = view
 					self.addSubview(view)
 				}
 			}
@@ -60,11 +60,11 @@ extension WalletDetails
 			{
 				super.layoutSubviews()
 				let buttons_y = UICommonComponents.ActionButton.topMargin
-				self.send_actionButtonView.givenSuperview_layOut(
+				self.receive_actionButtonView.givenSuperview_layOut(
 					atY: buttons_y,
 					withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h
 				)
-				self.receive_actionButtonView.givenSuperview_layOut(
+				self.send_actionButtonView.givenSuperview_layOut(
 					atY: buttons_y,
 					withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h
 				)
