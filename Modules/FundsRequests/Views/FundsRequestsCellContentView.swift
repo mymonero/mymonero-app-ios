@@ -132,7 +132,7 @@ class FundsRequestsCellContentView: UIView
 			self.qrCodeImageView!.image = object.cached__qrCode_image_small
 		}
 		self.amountLabel.text = object.amount != nil ? "\(object.amount!) XMR" : "Any amount"
-		self.senderLabel.text = object.from_fullname ?? "N/A"
+		self.senderLabel.text = object.from_fullname ?? "" // appears to be better not to show 'N/A' in else case
 		self.memoLabel.text = object.message ?? object.description ?? ""
 	}
 	//
