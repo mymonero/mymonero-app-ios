@@ -22,6 +22,15 @@
 		9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D002F1EE345E500A4B3A5 /* Details.swift */; };
 		9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */; };
 		9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */; };
+		9F2119211F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2119171F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift */; };
+		9F2119221F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2119181F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift */; };
+		9F2119231F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2119191F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */; };
+		9F2119241F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191A1F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift */; };
+		9F2119251F5E0EC300B8FA0E /* CreateWallet_InformOfMnemonic_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191B1F5E0EC300B8FA0E /* CreateWallet_InformOfMnemonic_ViewController.swift */; };
+		9F2119261F5E0EC300B8FA0E /* CreateWallet_Instructions_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191C1F5E0EC300B8FA0E /* CreateWallet_Instructions_ViewController.swift */; };
+		9F2119271F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191D1F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift */; };
+		9F2119281F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191E1F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift */; };
+		9F2119291F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191F1F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift */; };
 		9F22B7991EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */; };
 		9F22B79D1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */; };
 		9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B79E1EFF44B60036B02F /* InlineMessages.swift */; };
@@ -52,15 +61,6 @@
 		9F2BFEE21EF382CB006B2F7D /* FundsRequestsListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE11EF382CB006B2F7D /* FundsRequestsListViewCell.swift */; };
 		9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE31EF38E46006B2F7D /* FundsRequestsCellContentView.swift */; };
 		9F2BFEE61EF38E61006B2F7D /* ContactsCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */; };
-		9F2BFF0D1EF8297E006B2F7D /* AddWallet_WizardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF041EF8297E006B2F7D /* AddWallet_WizardController.swift */; };
-		9F2BFF0E1EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF051EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */; };
-		9F2BFF0F1EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF061EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift */; };
-		9F2BFF101EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF071EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift */; };
-		9F2BFF111EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF081EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift */; };
-		9F2BFF121EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF091EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift */; };
-		9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF0A1EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift */; };
-		9F2BFF141EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF0B1EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift */; };
-		9F2BFF151EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFF0C1EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift */; };
 		9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */; };
 		9F2BFF191EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */; };
 		9F30470D1EC657CB00190268 /* MoneroTypes_Amounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30470C1EC657CB00190268 /* MoneroTypes_Amounts.swift */; };
@@ -256,6 +256,15 @@
 		9F1D002F1EE345E500A4B3A5 /* Details.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Details.swift; sourceTree = "<group>"; };
 		9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkButtonView.swift; sourceTree = "<group>"; };
 		9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBarButtons.swift; sourceTree = "<group>"; };
+		9F2119171F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardModalNavigationController.swift; sourceTree = "<group>"; };
+		9F2119181F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardScreen_BaseViewController.swift; sourceTree = "<group>"; };
+		9F2119191F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardScreen_MetaInfo_BaseViewController.swift; sourceTree = "<group>"; };
+		9F21191A1F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_ConfirmMnemonic_ViewController.swift; sourceTree = "<group>"; };
+		9F21191B1F5E0EC300B8FA0E /* CreateWallet_InformOfMnemonic_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_InformOfMnemonic_ViewController.swift; sourceTree = "<group>"; };
+		9F21191C1F5E0EC300B8FA0E /* CreateWallet_Instructions_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_Instructions_ViewController.swift; sourceTree = "<group>"; };
+		9F21191D1F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_MetaInfo_ViewController.swift; sourceTree = "<group>"; };
+		9F21191E1F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickCreateOrUseExisting_Landing_ViewController.swift; sourceTree = "<group>"; };
+		9F21191F1F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UseExisting_MetaInfo_ViewController.swift; sourceTree = "<group>"; };
 		9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walletColorPicker_selectionIndicator_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "highlightableCellBG_disabled@3x.png"; sourceTree = "<group>"; };
 		9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walletColorPicker_selectionIndicator_disabled_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -289,15 +298,6 @@
 		9F2BFEE11EF382CB006B2F7D /* FundsRequestsListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsListViewCell.swift; sourceTree = "<group>"; };
 		9F2BFEE31EF38E46006B2F7D /* FundsRequestsCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestsCellContentView.swift; sourceTree = "<group>"; };
 		9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsCellContentView.swift; sourceTree = "<group>"; };
-		9F2BFF041EF8297E006B2F7D /* AddWallet_WizardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWallet_WizardController.swift; sourceTree = "<group>"; };
-		9F2BFF051EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardScreen_MetaInfo_BaseViewController.swift; sourceTree = "<group>"; };
-		9F2BFF061EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardScreen_BaseViewController.swift; sourceTree = "<group>"; };
-		9F2BFF071EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_ConfirmMnemonic_ViewController.swift; sourceTree = "<group>"; };
-		9F2BFF081EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_InformOfMnemonic_ViewController.swift; sourceTree = "<group>"; };
-		9F2BFF091EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_Instructions_ViewController.swift; sourceTree = "<group>"; };
-		9F2BFF0A1EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_MetaInfo_ViewController.swift; sourceTree = "<group>"; };
-		9F2BFF0B1EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickCreateOrUseExisting_Landing_ViewController.swift; sourceTree = "<group>"; };
-		9F2BFF0C1EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UseExisting_MetaInfo_ViewController.swift; sourceTree = "<group>"; };
 		9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroTypes_Amounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes_Amounts.swift; sourceTree = "<group>"; };
@@ -554,6 +554,22 @@
 			path = UICommonComponents;
 			sourceTree = "<group>";
 		};
+		9F2119161F5E0EC300B8FA0E /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				9F2119171F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift */,
+				9F2119181F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift */,
+				9F2119191F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */,
+				9F21191A1F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift */,
+				9F21191B1F5E0EC300B8FA0E /* CreateWallet_InformOfMnemonic_ViewController.swift */,
+				9F21191C1F5E0EC300B8FA0E /* CreateWallet_Instructions_ViewController.swift */,
+				9F21191D1F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift */,
+				9F21191E1F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift */,
+				9F21191F1F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
 		9F22B7A61F006E4B0036B02F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -640,7 +656,7 @@
 			isa = PBXGroup;
 			children = (
 				9F22B7A61F006E4B0036B02F /* Resources */,
-				9F2BFF031EF8297E006B2F7D /* Controllers */,
+				9F2119161F5E0EC300B8FA0E /* ViewControllers */,
 				9F2BFEF01EF7373E006B2F7D /* Views */,
 			);
 			path = WalletWizard;
@@ -651,22 +667,6 @@
 			children = (
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		9F2BFF031EF8297E006B2F7D /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				9F2BFF041EF8297E006B2F7D /* AddWallet_WizardController.swift */,
-				9F2BFF061EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift */,
-				9F2BFF051EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */,
-				9F2BFF0C1EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift */,
-				9F2BFF0A1EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift */,
-				9F2BFF091EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift */,
-				9F2BFF081EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift */,
-				9F2BFF071EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift */,
-				9F2BFF0B1EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift */,
-			);
-			path = Controllers;
 			sourceTree = "<group>";
 		};
 		9F3826621F566A2E00800CA0 /* Headers */ = {
@@ -1512,6 +1512,7 @@
 			files = (
 				9F453FAD1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift in Sources */,
 				9F00B8E41EC276C30040F52A /* MyMoneroJSCore.swift in Sources */,
+				9F2119251F5E0EC300B8FA0E /* CreateWallet_InformOfMnemonic_ViewController.swift in Sources */,
 				9F2BFEDE1EF37E58006B2F7D /* FundsRequestListEmptyView.swift in Sources */,
 				9F9C59FD1F0D89BE003B9266 /* WalletPicker.swift in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */,
@@ -1520,6 +1521,8 @@
 				9F7298C71F33E1FE00CD59E1 /* SettingsController.swift in Sources */,
 				9F33E70B1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift in Sources */,
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
+				9F2119241F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
+				9F2119231F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */,
 				9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */,
@@ -1536,7 +1539,6 @@
 				9F7298BB1F329EB900CD59E1 /* MMApplication.swift in Sources */,
 				9F33E6FB1F2004DD00610662 /* EditFormSubmissionController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
-				9F2BFF0E1EF8297E006B2F7D /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */,
 				9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9FCD9D621F4948A7004C0349 /* OpenAliasResolverCenter.swift in Sources */,
@@ -1548,31 +1550,28 @@
 				9FA734051F05AF4E00C674D6 /* Wallet_HostPollingController.swift in Sources */,
 				9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */,
 				9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */,
+				9F2119211F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift in Sources */,
 				9F30470D1EC657CB00190268 /* MoneroTypes_Amounts.swift in Sources */,
-				9F2BFF121EF8297E006B2F7D /* CreateWallet_Instructions_ViewController.swift in Sources */,
-				9F2BFF0F1EF8297E006B2F7D /* AddWalletWizardScreen_BaseViewController.swift in Sources */,
 				9F740D591F1702DF0017A20E /* FundsRequestDetailsViewController.swift in Sources */,
 				9F33E6F51F1EFCE700610662 /* WalletDetailsTransactionCell.swift in Sources */,
 				9F3826691F5678AE00800CA0 /* DNSLookupHandle.swift in Sources */,
 				9F9C59F31F0C4716003B9266 /* UIResponder+Current.swift in Sources */,
 				9FA7340E1F05AF8800C674D6 /* FundsRequestsListController.swift in Sources */,
 				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
-				9F2BFF151EF8297E006B2F7D /* UseExisting_MetaInfo_ViewController.swift in Sources */,
 				9F2BFEE61EF38E61006B2F7D /* ContactsCellContentView.swift in Sources */,
 				9FA734311F077DF300C674D6 /* EmojiPickerPopoverView.swift in Sources */,
 				9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */,
+				9F2119291F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift in Sources */,
 				9F7298C81F33E1FE00CD59E1 /* SettingsFormViewController.swift in Sources */,
+				9F2119221F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift in Sources */,
 				9F453FA91F267A65004590DC /* SendFundsFormSubmissionController.swift in Sources */,
 				9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */,
 				9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */,
 				9F2BFECD1EF33015006B2F7D /* Contact.swift in Sources */,
 				9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */,
 				9F96C3081F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift in Sources */,
-				9F2BFF0D1EF8297E006B2F7D /* AddWallet_WizardController.swift in Sources */,
-				9F2BFF111EF8297E006B2F7D /* CreateWallet_InformOfMnemonic_ViewController.swift in Sources */,
 				9F86738A1F2C396C00F89EAB /* URLOpening.swift in Sources */,
 				9FCD9D631F4948A7004C0349 /* OpenAliasDNSLookups.swift in Sources */,
-				9F2BFF141EF8297E006B2F7D /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */,
 				9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
@@ -1586,6 +1585,7 @@
 				9F33E6F11F1ABEF300610662 /* WalletDetailsInfoDisclosingCell.swift in Sources */,
 				9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,
+				9F2119271F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
 				9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */,
 				9FA734181F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift in Sources */,
@@ -1605,9 +1605,9 @@
 				9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */,
 				9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* SmallUtilityValueButtons.swift in Sources */,
-				9F2BFF131EF8297E006B2F7D /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
+				9F2119281F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */,
 				9FA7340F1F05AF8800C674D6 /* FundsRequestsListViewController.swift in Sources */,
 				9F33E6FD1F200CC000610662 /* TransactionDetailsViewController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
@@ -1615,7 +1615,6 @@
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
-				9F2BFF101EF8297E006B2F7D /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
 				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
 				9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */,
 				9FA7341C1F05D92700C674D6 /* AddContactBaseFormViewController.swift in Sources */,
@@ -1625,6 +1624,7 @@
 				9F2BFECA1EF0AA15006B2F7D /* WalletsListEmptyView.swift in Sources */,
 				9F9C59FB1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
+				9F2119261F5E0EC300B8FA0E /* CreateWallet_Instructions_ViewController.swift in Sources */,
 				9F00B8E11EC276C30040F52A /* MoneroUtils_RequestURIs.swift in Sources */,
 				9F8E30271EED7D7800F89A1D /* EnterExistingPasswordViewController.swift in Sources */,
 				9F8E30161EED6FC200F89A1D /* ActionButtons.swift in Sources */,

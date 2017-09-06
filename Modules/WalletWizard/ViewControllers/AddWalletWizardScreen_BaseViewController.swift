@@ -12,10 +12,10 @@ class AddWalletWizardScreen_BaseViewController: UICommonComponents.FormViewContr
 {
 	//
 	// Properties
-	var wizardController: AddWallet_WizardController
+	var wizardController: AddWalletWizardModalNavigationController
 	//
 	// Lifecycle - Init
-	required init(wizardController: AddWallet_WizardController)
+	required init(wizardController: AddWalletWizardModalNavigationController)
 	{
 		self.wizardController = wizardController
 		super.init()

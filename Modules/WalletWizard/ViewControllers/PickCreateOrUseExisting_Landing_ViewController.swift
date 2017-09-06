@@ -87,14 +87,14 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 	func useExisting_tapped()
 	{
 		self.wizardController.patchToDifferentWizardTaskMode_byPushingScreen(
-			patchTo_wizardTaskMode: AddWallet_WizardController.TaskMode.afterPick_useExisting,
+			patchTo_wizardTaskMode: .afterPick_useExisting,
 			atIndex: 1 // first screen after 0 - maintain ability to hit 'back'
 		)
 	}
 	func createNew_tapped()
 	{
 		self.wizardController.patchToDifferentWizardTaskMode_byPushingScreen(
-			patchTo_wizardTaskMode: AddWallet_WizardController.TaskMode.afterPick_createWallet,
+			patchTo_wizardTaskMode: .afterPick_createWallet,
 			atIndex: 1 // first screen after 0 - maintain ability to hit 'back'
 		)
 	}

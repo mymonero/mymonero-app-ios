@@ -61,17 +61,10 @@ class WalletsListViewController: ListViewController
 	}
 	//
 	// Runtime - Imperatives - Wizard
-	var current_wizardController: AddWallet_WizardController?
-	func _presentAddWalletWizard(inTaskMode taskMode: AddWallet_WizardController.TaskMode)
+	func _presentAddWalletWizard(inTaskMode taskMode: AddWalletWizardModalNavigationController.TaskMode)
 	{
-		assert(self.current_wizardController == nil)
-		let wizardController = AddWallet_WizardController(taskMode: taskMode)
-		wizardController.willDismiss_fn =
-		{ [unowned self] in
-			self.current_wizardController = nil
-		}
-		self.current_wizardController = wizardController
-		wizardController.present(/*inViewController: self.navigationController*/)
+		let wizardController = AddWalletWizardModalNavigationController(taskMode: taskMode)
+		wizardController.present()
 	}
 	//
 	// Delegation - Table

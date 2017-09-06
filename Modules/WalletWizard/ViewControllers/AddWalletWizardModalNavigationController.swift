@@ -1,15 +1,14 @@
 //
-//  AddWallet_WizardController.swift
+//  AddWalletWizardModalNavigationController.swift
 //  MyMonero
 //
-//  Created by Paul Shapiro on 6/18/17.
+//  Created by Paul Shapiro on 9/4/17.
 //  Copyright © 2017 MyMonero. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class AddWallet_WizardController
+class AddWalletWizardModalNavigationController: UINavigationController
 {
 	//
 	// Types/Constants
@@ -29,7 +28,7 @@ class AddWallet_WizardController
 		var stepsScreenViewControllerClasses: [AddWalletWizardScreen_BaseViewController.Type]
 		{
 			switch self
-			{ // TODO: maybe cache these
+			{ // TODO:? maybe cache these
 				case .firstTime_createWallet:
 					return [
 						CreateWallet_MetaInfo_ViewController.self,
@@ -45,7 +44,7 @@ class AddWallet_WizardController
 				case .pickCreateOrUseExisting:
 					return [
 						PickCreateOrUseExisting_Landing_ViewController.self
-					] // ^--- only one screen, before we patch to the following two:
+				] // ^--- only one screen, before we patch to the following two:
 				case .afterPick_createWallet:
 					return [
 						PickCreateOrUseExisting_Landing_ViewController.self, // which will not actually be used/hit as we patch 'across' it… provided here so that we can have idx at 1 for screen after Landing, having patched
@@ -67,7 +66,6 @@ class AddWallet_WizardController
 	var initial_wizardTaskMode: TaskMode!
 	var current_wizardTaskMode: TaskMode!
 	var current_wizardTaskMode_stepIdx: Int!
-	var wizard_navigationController: UINavigationController!
 	//
 	// Properties - Settable by consumer
 	var willDismiss_fn: ((Void) -> Void)?
@@ -75,18 +73,20 @@ class AddWallet_WizardController
 	// Lifecycle - Init
 	init(taskMode: TaskMode)
 	{
-		self.initial_wizardTaskMode = taskMode
+		super.init(nibName: nil, bundle: nil)
 		//
+		self.initial_wizardTaskMode = taskMode
 		self.setup()
 	}
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
 	func setup()
-	{ // aka EnterWizardTaskMode_returningNavigationView in the JS app
-		self._configureRuntimeStateForTaskModeName(taskMode: self.initial_wizardTaskMode, toIdx: 0) // set current_wizardTaskMode
+	{
+		self.modalPresentationStyle = .formSheet
 		//
-		let navigationController = UINavigationController(
-			rootViewController: self._new_current_wizardTaskMode_stepViewController
-		)
-		self.wizard_navigationController = navigationController
+		self._configureRuntimeStateForTaskModeName(taskMode: self.initial_wizardTaskMode, toIdx: 0) // set current_wizardTaskMode
+		self.viewControllers = [ self._new_current_wizardTaskMode_stepViewController ]
 	}
 	//
 	// Runtime - Accessors - Factories
@@ -113,8 +113,8 @@ class AddWallet_WizardController
 	{
 		DispatchQueue.main.async
 		{ [unowned self] in
-			self.wizard_navigationController.modalPresentationStyle = .formSheet
-			WindowController.presentModalsInViewController!.present(self.wizard_navigationController, animated: true, completion: nil)
+			let presentInViewController = WindowController.presentModalsInViewController!
+			presentInViewController.present(self, animated: true, completion: nil)
 		}
 	}
 	//
@@ -143,7 +143,7 @@ class AddWallet_WizardController
 		}
 		// now configure UI / push
 		let next_viewController = self._new_current_wizardTaskMode_stepViewController
-		self.wizard_navigationController.pushViewController(next_viewController, animated: true)
+		self.pushViewController(next_viewController, animated: true)
 	}
 	func patchToDifferentWizardTaskMode_withoutPushingScreen(
 		patchTo_wizardTaskMode: TaskMode,
@@ -168,24 +168,18 @@ class AddWallet_WizardController
 			return
 		}
 		let next_viewController = self._new_current_wizardTaskMode_stepViewController
-		self.wizard_navigationController.pushViewController(next_viewController, animated: true)
+		self.pushViewController(next_viewController, animated: true)
 	}
 	func dismissWizardModal(
-		// these should of course not both be true at the same time
 		userCanceled: Bool,
 		didTaskFinish: Bool
+		// ^-- these should of course not both be true at the same time
 	)
 	{
 		assert((!userCanceled || !didTaskFinish) && (userCanceled || didTaskFinish), "Unrecognized args config")
-		if let fn = self.willDismiss_fn {
-			fn()
-		}
-		self.wizard_navigationController.dismiss(animated: true)
-		{ [weak self] in
-			guard let _ = self else {
-				return
-			}
-		}
+		self._willDismissWizardModal()
+		NSLog("dismiss!")
+		self.dismiss(animated: true) {}
 	}
 	//
 	// Runtime - Imperatives - Steps - Convenience - Advancing steps - Create wallet
@@ -205,45 +199,44 @@ class AddWallet_WizardController
 	private func __generateWallet(_ fn: @escaping ((Void) -> Void))
 	{
 		WalletsListController.shared.CreateNewWallet_NoBootNoListAdd
-		{ [unowned self] (err_str, walletInstance) in
-			if err_str != nil {
-				assert(false)
-				let alertController = UIAlertController(
-					title: NSLocalizedString("Error", comment: ""),
-					message: NSLocalizedString(
-						"An error occurred while creating your wallet. Please try again or contact us for support.",
-						comment: ""
-					),
-					preferredStyle: .alert
-				)
-				alertController.addAction(
-					UIAlertAction(
-						title: NSLocalizedString("OK", comment: ""),
-						style: .default
+			{ [unowned self] (err_str, walletInstance) in
+				if err_str != nil {
+					assert(false)
+					let alertController = UIAlertController(
+						title: NSLocalizedString("Error", comment: ""),
+						message: NSLocalizedString(
+							"An error occurred while creating your wallet. Please try again or contact us for support.",
+							comment: ""
+						),
+						preferredStyle: .alert
 					)
-					{ (result: UIAlertAction) -> Void in
-					}
-				)
-				self.wizard_navigationController.present(alertController, animated: true, completion: nil)
-				return
-			}
-			self.walletCreation_walletInstance = walletInstance
-			fn()
+					alertController.addAction(
+						UIAlertAction(
+							title: NSLocalizedString("OK", comment: ""),
+							style: .default
+							)
+						{ (result: UIAlertAction) -> Void in
+						}
+					)
+					self.present(alertController, animated: true, completion: nil)
+					return
+				}
+				self.walletCreation_walletInstance = walletInstance
+				fn()
 		}
 	}
 	func createWalletInstanceAndProceedToNextStep()
 	{
 		self.__generateWallet
-		{ [unowned self] in
-			self.proceedToNextStep()
+			{ [unowned self] in
+				self.proceedToNextStep()
 		}
 	}
 	func regenerateWalletAndPopToInformOfMnemonicScreen()
-	{
-		// TODO: maybe assert that this is being called from the correct screen
+	{ // TODO: maybe assert that this is being called from the correct screen
 		self.__generateWallet
-		{ [unowned self] in
-			self.wizard_navigationController.popViewController(animated: true)
+			{ [unowned self] in
+				self.popViewController(animated: true)
 		}
 	}
 	//
@@ -254,5 +247,11 @@ class AddWallet_WizardController
 			userCanceled: true,
 			didTaskFinish: false
 		)
+	}
+	func _willDismissWizardModal()
+	{ // TODO: this needs to get called every time the navigationView dismisses
+		if let fn = self.willDismiss_fn {
+			fn()
+		}
 	}
 }
