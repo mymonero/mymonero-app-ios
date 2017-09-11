@@ -771,12 +771,13 @@ class Wallet: PersistableObject
 				return
 			}
 			assert(seed_orNil == nil || seed_orNil != "") // not "" if not nil - so we can just check nilness
-			assert(verifiedComponentsForLogIn!.seed != "")
+			if seed_orNil != nil { // only if user entered a seed, rather than addr+keys
+				assert(verifiedComponentsForLogIn!.seed != "")
+			}
 			//
 			// record these properties regardless of whether we are about to error on login
 			self.public_address = verifiedComponentsForLogIn!.publicAddress
 			self.account_seed = verifiedComponentsForLogIn!.seed
-			assert(self.account_seed != "")
 			self.public_keys = verifiedComponentsForLogIn!.publicKeys
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
