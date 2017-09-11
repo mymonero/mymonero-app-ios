@@ -194,7 +194,7 @@ extension WalletDetails
 							],
 							range: NSMakeRange(
 								finalized_main_string.characters.count,
-								attributedText.string.characters.count - finalized_paddingZeros_string.characters.count
+								attributedText.string.characters.count - finalized_main_string.characters.count
 							)
 						)
 					}
