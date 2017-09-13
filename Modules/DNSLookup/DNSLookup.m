@@ -33,23 +33,6 @@
 //
 //
 #import "DNSLookup.h"
-// TODO: clean this up / strip unnecessary
-#include <ctype.h>
-//#include <stdio.h>          // For stdout, stderr
-//#include <stdlib.h>         // For exit()
-#include <string.h>         // For strlen(), strcpy()
-#include <errno.h>          // For errno, EINTR
-#include <time.h>
-#include <sys/types.h>      // For u_char
-#include <unistd.h>         // For getopt() and optind
-#include <netdb.h>          // For getaddrinfo()
-#include <sys/time.h>       // For struct timeval
-#include <sys/socket.h>     // For AF_INET
-#include <netinet/in.h>     // For struct sockaddr_in()
-#include <arpa/inet.h>      // For inet_addr()
-#include <net/if.h>         // For if_nametoindex()
-//
-#define RR_TYPE_SIZE 16
 //
 // C - Shared - Functions - Implementations
 NSString *_Nullable NSStringFromDNSSECStatus(enum DNSLookup_DNSSECStatus value)
@@ -212,7 +195,7 @@ NSString *_Nullable NSStringFromDNSSECStatus(enum DNSLookup_DNSSECStatus value)
 		}
 	}
 	//
-	DNSServiceRef dnsServiceRef = NULL; // TODO: change to instance prop
+	DNSServiceRef dnsServiceRef = NULL;
 	DNSServiceErrorType errorCode = DNSServiceQueryRecord(
 		&dnsServiceRef,
 		flags,
@@ -220,7 +203,7 @@ NSString *_Nullable NSStringFromDNSSECStatus(enum DNSLookup_DNSSECStatus value)
 		[self.address_fullname cStringUsingEncoding:NSUTF8StringEncoding],
 		kDNSServiceType_TXT,
 		kDNSServiceClass_IN,
-		qr_reply,
+		queryRecordHandler,
 		(__bridge void *)(self)
 	);
 	self->_dnsServiceRef = dnsServiceRef;
@@ -274,19 +257,19 @@ NSString *_Nullable NSStringFromDNSSECStatus(enum DNSLookup_DNSSECStatus value)
 }
 //
 // Delegation - DNSSD - C
-static void DNSSD_API qr_reply(
-							   DNSServiceRef sdref,
-							   const DNSServiceFlags flags,
-							   uint32_t ifIndex,
-							   DNSServiceErrorType errorCode,
-							   const char *fullname,
-							   uint16_t rrtype,
-							   uint16_t rrclass,
-							   uint16_t rdlen,
-							   const void *rdata,
-							   uint32_t ttl,
-							   void *context
-							   )
+static void DNSSD_API queryRecordHandler(
+	DNSServiceRef sdref,
+	const DNSServiceFlags flags,
+	uint32_t ifIndex,
+	DNSServiceErrorType errorCode,
+	const char *fullname,
+	uint16_t rrtype,
+	uint16_t rrclass,
+	uint16_t rdlen,
+	const void *rdata,
+	uint32_t ttl,
+	void *context
+)
 {
 	assert([NSThread isMainThread]); // because dnsServiceRef dispatches to the main queue
 	assert(rrtype == kDNSServiceType_TXT);
@@ -296,7 +279,7 @@ static void DNSSD_API qr_reply(
 	assert(sdref == lookup->_dnsServiceRef); // TODO: this won't compile…
 	//
 	if (lookup->_hasTornDown) {
-		DDLogWarn(@"DNSLookup/qr_reply: Already torn down. Ignoring.");
+		DDLogWarn(@"DNSLookup/queryRecordHandler: Already torn down. Ignoring.");
 		return; // ignoring
 	}
 	//
