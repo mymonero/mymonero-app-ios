@@ -115,13 +115,11 @@ struct HostedMoneroAPIClient_HostConfig
 final class HostedMoneroAPIClient
 {
 	//
-	// Types
-	typealias RequestHandle = Alamofire.DataRequest
+	// Static - Singleton
+	static let shared = HostedMoneroAPIClient()
 	//
-	// Static
+	// Static - Constants
 	static let apiAddress_scheme = "https"
-	//
-	// Constants
 	static let mymonero_importFeeSubmissionTarget_openAliasAddress = "import.mymonero.com" // possibly exists a better home for this
 	static let mymonero_apiAddress_authority = "api.mymonero.com:8443"
 	//
@@ -138,12 +136,14 @@ final class HostedMoneroAPIClient
 	 	return settings_authorityValue!
 	}
 	//
-	// Properties
+	// Types
+	typealias RequestHandle = Alamofire.DataRequest
+	//
+	// Instance - Properties
 	var manager: SessionManager!
 	var mymoneroCore = MyMoneroCore.shared
 	//
 	// Lifecycle - Singleton Init
-	static let shared = HostedMoneroAPIClient()
 	private init()
 	{
 		setup()
@@ -317,7 +317,6 @@ final class HostedMoneroAPIClient
 			{ (err_str, result) in
 				self._shared_onMain_callBackFromRequest(err_str, result, fn)
 			}
-
 		}
 		return requestHandle
 	}
