@@ -280,6 +280,7 @@ class Wallet: PersistableObject
 	var isSendingFunds = false
 	//
 	// Properties - Objects
+	var logIn_requestHandle: HostedMoneroAPIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
 	//
 	// 'Protocols' - Persistable Object
@@ -463,6 +464,10 @@ class Wallet: PersistableObject
 	override func teardown()
 	{
 		super.teardown()
+		self.hostPollingController = nil // just to be clear
+		if let handle = self.logIn_requestHandle {
+			handle.cancel() // in case wallet is being rebooted on API address change via settings
+		}
 	}
 	//
 	//
@@ -808,20 +813,23 @@ class Wallet: PersistableObject
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
 			//
-			HostedMoneroAPIClient.shared.LogIn(
+			self.logIn_requestHandle = HostedMoneroAPIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
-				{ [unowned self] (login__err_str, isANewAddressToServer) in
+				{ [weak self] (login__err_str, isANewAddressToServer) in
+					guard let thisSelf = self else {
+						return // already dealloc'd
+					}
 					//
-					self.isLoggingIn = false
-					self.isLoggedIn = login__err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
+					thisSelf.isLoggingIn = false
+					thisSelf.isLoggedIn = login__err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
 					//
-					self.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true && self.isLoggedIn/*supporting shouldExitOnLoginError=false*/
+					thisSelf.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true && thisSelf.isLoggedIn/*supporting shouldExitOnLoginError=false*/
 					//
 					let shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
 					if login__err_str != nil {
 						if shouldExitOnLoginError == true {
-							self.__trampolineFor_failedToBootWith_fnAndErrStr(
+							thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(
 								fn: fn,
 								err_str: login__err_str
 							)
@@ -831,9 +839,9 @@ class Wallet: PersistableObject
 						}
 					}
 					//
-					let saveToDisk__err_str = self.saveToDisk()
+					let saveToDisk__err_str = thisSelf.saveToDisk()
 					if saveToDisk__err_str != nil {
-						self.__trampolineFor_failedToBootWith_fnAndErrStr(
+						thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(
 							fn: fn,
 							err_str: saveToDisk__err_str
 						)
@@ -841,12 +849,12 @@ class Wallet: PersistableObject
 					}
 					if shouldExitOnLoginError == false && login__err_str != nil {
 						// if we are attempting to re-boot the wallet, but login failed
-						self.__trampolineFor_failedToBootWith_fnAndErrStr( // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
+						thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr( // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
 							fn: fn,
 							err_str: login__err_str
 						)
 					} else { // it's actually a success
-						self._trampolineFor_successfullyBooted(fn)
+						thisSelf._trampolineFor_successfullyBooted(fn)
 					}
 				}
 			)

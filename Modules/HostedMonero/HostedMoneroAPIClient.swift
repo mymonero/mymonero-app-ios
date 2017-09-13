@@ -120,8 +120,9 @@ final class HostedMoneroAPIClient
 	//
 	// Static - Constants
 	static let apiAddress_scheme = "https"
-	static let mymonero_importFeeSubmissionTarget_openAliasAddress = "import.mymonero.com" // possibly exists a better home for this
 	static let mymonero_apiAddress_authority = "api.mymonero.com:8443"
+	//
+	static let mymonero_importFeeSubmissionTarget_openAliasAddress = "import.mymonero.com" // possibly exists a better home for this
 	//
 	var final_apiAddress_authority: String { // authority means [subdomain.]host.…[:…]
 		assert(SettingsController.shared.hasBooted)
@@ -141,7 +142,7 @@ final class HostedMoneroAPIClient
 	//
 	// Instance - Properties
 	var manager: SessionManager!
-	var mymoneroCore = MyMoneroCore.shared
+	var mymoneroCore = MyMoneroCore.shared // TODO: probably can remove this property
 	//
 	// Lifecycle - Singleton Init
 	private init()
@@ -150,7 +151,31 @@ final class HostedMoneroAPIClient
 	}
 	func setup()
 	{
-		self.initializeManagerWithFinalServerAuthority() // TODO: defer this until we have booted Settings
+		self.initializeManagerWithFinalServerAuthority() // TODO: defer this until we have booted Settings for extra rigor
+		self.startObserving()
+	}
+	func startObserving()
+	{
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(SettingsController__NotificationNames_Changed__specificAPIAddressURLAuthority),
+			name: SettingsController.NotificationNames_Changed.specificAPIAddressURLAuthority.notificationName,
+			object: nil
+		)
+	}
+	//
+	// Lifecycle - Teardown
+	deinit
+	{
+		self.teardown()
+	}
+	func teardown()
+	{
+		self.stopObserving()
+	}
+	func stopObserving()
+	{
+		NotificationCenter.default.removeObserver(self, name: SettingsController.NotificationNames_Changed.specificAPIAddressURLAuthority.notificationName, object: nil)
 	}
 	//
 	// Runtime - Configuration - Manager
@@ -170,9 +195,7 @@ final class HostedMoneroAPIClient
 		)
 	}
 	//
-	//
 	// Internal - Accessors - Shared
-	//
 	private func _new_parameters_forWalletRequest(
 		address: MoneroAddress,
 		view_key__private: MoneroKey
@@ -184,9 +207,7 @@ final class HostedMoneroAPIClient
 		]
 	}
 	//
-	//
 	// Internal - Imperatives - Shared
-	//
 	private func _shared_onMain_callBackFromRequest<T>(
 		_ err_str: String?,
 		_ result: T?,
@@ -210,7 +231,6 @@ final class HostedMoneroAPIClient
 	}
 	//
 	// Login
-	//
 	@discardableResult
 	func LogIn(
 		address: MoneroAddress,
@@ -241,9 +261,7 @@ final class HostedMoneroAPIClient
 		return requestHandle
 	}
 	//
-	//
 	// Wallet info / sync
-	//
 	@discardableResult
 	func AddressInfo(
 		address: MoneroAddress,
@@ -354,9 +372,7 @@ final class HostedMoneroAPIClient
 		return requestHandle
 	}
 	//
-	//
 	// Sending funds
-	//
 	@discardableResult
 	func UnspentOuts(
 		address: MoneroAddress,
@@ -478,9 +494,7 @@ final class HostedMoneroAPIClient
 		return requestHandle
 	}
 	//
-	//
 	// Private - Runtime - Imperatives - Requests - Shared
-	//
 	@discardableResult
 	open func _request(
 		_ endpoint: HostedMoneroAPI_Endpoint,
@@ -549,6 +563,12 @@ final class HostedMoneroAPIClient
 		}
 		//
 		return requestHandle
+	}
+	//
+	// Delegation - Notifications - Custom API address change
+	@objc func SettingsController__NotificationNames_Changed__specificAPIAddressURLAuthority()
+	{
+		self.initializeManagerWithFinalServerAuthority()
 	}
 }
 //

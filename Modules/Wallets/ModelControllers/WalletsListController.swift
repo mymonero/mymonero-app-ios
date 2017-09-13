@@ -359,7 +359,6 @@ class WalletsListController: PersistedObjectListController
 		self.records = [] // free old wallets, now that we have deleted them after obtaining their reconstitutionDescriptions
 		//
 		for (_, reconstitutionDescription) in reconstitutionDescriptions.enumerated() {
-			
 			do {
 				guard let wallet = try Wallet(
 					ifGeneratingNewWallet_walletDescription: nil
@@ -377,7 +376,7 @@ class WalletsListController: PersistedObjectListController
 					withSpecificReconstitutionDescription: reconstitutionDescription // important to pass this, b/c the wallet instance has no information on it right now!
 				)
 			} catch let e {
-				assert(false, "Error while addind wallet: \(e)")
+				assert(false, "Error while adding wallet: \(e)")
 				continue // skip - nothing to append
 			}
 		}
