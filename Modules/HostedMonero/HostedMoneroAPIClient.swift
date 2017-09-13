@@ -514,7 +514,7 @@ final class HostedMoneroAPIClient
 		let url = "\(type(of: self).apiAddress_scheme)://\(self.final_apiAddress_authority)/\(endpoint.rawValue)"
 		DDLog.Net("HostedMonero", "\(url)")
 		var final_parameters = parameters
-		do {
+		do { // client metadata
 			if let value = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
 				final_parameters["app_name"] = value
 			} else {
@@ -525,7 +525,10 @@ final class HostedMoneroAPIClient
 			} else {
 				DDLog.Warn("HostedMonero", "Bundle.main missing CFBundleShortVersionString")
 			}
-			// TODO: put app user agent (system version etc) and platform name info on request
+			//
+			final_parameters["app_system_version"] = UIDevice.current.systemVersion
+			final_parameters["app_system_name"] = UIDevice.current.systemName
+			final_parameters["app_device_model"] = UIDevice.current.model
 		}
 		let requestHandle = self.manager.request(
 			url,
