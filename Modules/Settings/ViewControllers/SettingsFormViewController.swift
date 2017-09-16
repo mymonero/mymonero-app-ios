@@ -202,8 +202,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	}
 	//
 	// Imperatives - Address validation error message
-	
-	func _updateValidationErrorForAddressInputView() -> ( // TODO: migrate this to be async?
+	func _updateValidationErrorForAddressInputView() -> (
 		didError: Bool,
 		savableValue: String?
 	)
@@ -214,15 +213,14 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			value = nil
 		}
 		var preSubmission_validationError: String?
-		func newValidationMessage_invalidFormat() -> String {
-			return String(
-				format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
-				HostedMoneroAPIClient.mymonero_apiAddress_authority
-			)
-		}
-		if value != nil {
-			if value!.contains(".") == false && value!.contains(":") == false && value!.contains("localhost") == false { // not sure it's worth doing this - it's not a strict validation
-				preSubmission_validationError = newValidationMessage_invalidFormat()
+		do {
+			if value != nil {
+				if value!.contains(".") == false && value!.contains(":") == false && value!.contains("localhost") == false {
+					preSubmission_validationError = String(
+						format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
+						HostedMoneroAPIClient.mymonero_apiAddress_authority
+					)
+				}
 			}
 		}
 		if preSubmission_validationError != nil { // exit
