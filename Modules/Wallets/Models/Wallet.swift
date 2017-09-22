@@ -559,7 +559,7 @@ class Wallet: PersistableObject
 	}
 	func Boot_byLoggingIn_existingWallet(
 		reconstitutionDescription: RebootReconstitutionDescription,
-		persistEvenIfLoginFailed_forServerChange: Bool,
+		persistEvenIfLoginFailed_forServerChange: Bool = true,
 		_ fn: @escaping (_ err_str: String?) -> Void
 	)
 	{
@@ -570,7 +570,7 @@ class Wallet: PersistableObject
 					walletLabel: reconstitutionDescription.walletLabel,
 					swatchColor: reconstitutionDescription.swatchColor,
 					mnemonicString: mnemonicString!,
-					persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
 					fn
 				)
 			} else {
@@ -581,7 +581,7 @@ class Wallet: PersistableObject
 					swatchColor: reconstitutionDescription.swatchColor,
 					address: reconstitutionDescription.public_address,
 					privateKeys: reconstitutionDescription.private_keys,
-					persistEvenIfLoginFailed_forServerChange: true, // IS forServerChange
+					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
 					fn
 				)
 			}
