@@ -796,7 +796,7 @@ class Wallet: PersistableObject
 		{ [unowned self] (err_str, verifiedComponentsForLogIn) in
 			if let err_str = err_str {
 				if persistEvenIfLoginFailed_forServerChange == true {
-					assert(false, "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true")
+					assert(false, "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true") // yet components are now invalid…?
 				}
 				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
 				return
@@ -835,7 +835,7 @@ class Wallet: PersistableObject
 							)
 							return
 						} else {
-							// this allows us to continue to with the above-set login info to call 'saveToDisk()' when this call to log in is coming from a wallet reboot. reason is that we expect all such wallets to be valid monero wallets if they are able to have been rebooted.
+							// this allows us to continue with the above-set login info to call 'saveToDisk()' when this call to log in is coming from a wallet reboot. reason is that we expect all such wallets to be valid monero wallets if they are able to have been rebooted.
 						}
 					}
 					//
