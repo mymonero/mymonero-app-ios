@@ -86,7 +86,18 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		webView.evaluateJavaScript(fileJSString)
 		{ [unowned self] (returnedValue, err) in
 			if let err = err {
-				DDLog.Error("MyMoneroCore", "Load err \(err)")
+				DDLog.Error("MyMoneroCore", "Fatal err while evaluating Javascript on WebView load \(err)")
+				assert(false, err.localizedDescription)
+				//
+				let exception = NSException(
+					name: NSExceptionName("WebView JS eval err"),
+					reason: err.localizedDescription,
+					userInfo: (err as NSError).userInfo
+				)
+				exception.raise()
+				//
+				self.hasBooted = false
+				//
 				return
 			}
 			self.hasBooted = true

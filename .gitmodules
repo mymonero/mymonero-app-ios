@@ -1,0 +1,3 @@
+[submodule "Modules/MyMoneroCore/sub_modules/mymonero_core_js"]
+	path = Modules/MyMoneroCore/sub_modules/mymonero_core_js
+	url = https://github.com/mymonero/mymonero-core-js

@@ -39,7 +39,9 @@ All app source code and assets copyright © 2014-2017 by MyMonero. All rights re
 2. `cd` into the repo directory.
 
 3. **Important:** Run `./bin/setup`. 
-	* This will set up `./Modules/MyMoneroCore` and do a `pod install`.
+	* This will set up `./Modules/MyMoneroCore`, download the required submodules, and do a `pod install`.
+
+	* NOTE: If you ever need to pull the latest submodule commits, you can run `bin/update_submodules`.
 
 ## Running the iOS app
 

@@ -44,5 +44,7 @@ class AppRuntimeController
 	{
 		let _ = UserIdle.shared // just to make sure it gets instantiated!
 		let _ = URLOpening.shared // "
+		//
+		let _ = MyMoneroCore.shared // we want to be able to detect a failure to load this on boot
 	}
 }

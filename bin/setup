@@ -7,5 +7,9 @@ bin/setup;
 echo "🔁  cd ../..";
 cd ../..;
 
+echo "🔁  Initializing submodules…";
+git submodule init;
+git submodule update;
+
 echo "🔁  pod install";
 pod install;
