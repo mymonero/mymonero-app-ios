@@ -1,0 +1,37 @@
+{
+  "default": {
+    "keyword": {
+      "fonts": [
+        {
+          "font": "./fonts/Georgia.ttf",
+          "supported": ["en-US"]
+        }
+      ]
+    },
+    "title": {
+      "fonts": [
+        {
+          "font": "./fonts/Georgia.ttf",
+          "supported": ["en-US"]
+        }
+      ],
+      "color": "#ffffff"
+    },
+    "background": "./background.jpg",
+    "padding": 50
+  },
+  "data": [
+    {
+      "filter": "Onboarding",
+      "keyword": {
+        "color": "#6A40BE"
+      }
+    },
+    {
+      "filter": "Explore",
+      "keyword": {
+        "color": "#6A40BE"
+      }
+    }
+  ]
+}

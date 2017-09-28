@@ -236,7 +236,19 @@
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
+		9FF6C9A71F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */; };
+		9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9FF6C9A91F7C919B00B20D40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9F24AE111EBA7D3A00841BCB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9F24AE181EBA7D3A00841BCB;
+			remoteInfo = MyMonero;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyMonero.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -477,6 +489,10 @@
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
+		9FF6C9A41F7C919B00B20D40 /* MyMoneroScreenshotsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyMoneroScreenshotsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshotsUITests.swift; sourceTree = "<group>"; };
+		9FF6C9A81F7C919B00B20D40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.internal.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.internal.xcconfig"; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 		D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.testing.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.testing.xcconfig"; sourceTree = "<group>"; };
@@ -490,6 +506,13 @@
 			files = (
 				9F2A21E01F2BD48B005117DB /* AVFoundation.framework in Frameworks */,
 				6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FF6C9A11F7C919B00B20D40 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +609,7 @@
 			isa = PBXGroup;
 			children = (
 				9F7ADAA51EBD2B420073C2BB /* Modules */,
+				9FF6C9A51F7C919B00B20D40 /* MyMoneroScreenshotsUITests */,
 				9F24AE1A1EBA7D3A00841BCB /* Products */,
 				1E71B88EA031DF8E0C808D87 /* Pods */,
 				B1FD17CA08A86496EC2BCADE /* Frameworks */,
@@ -596,6 +620,7 @@
 			isa = PBXGroup;
 			children = (
 				9F24AE191EBA7D3A00841BCB /* MyMonero.app */,
+				9FF6C9A41F7C919B00B20D40 /* MyMoneroScreenshotsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1291,6 +1316,16 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
+		9FF6C9A51F7C919B00B20D40 /* MyMoneroScreenshotsUITests */ = {
+			isa = PBXGroup;
+			children = (
+				9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */,
+				9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */,
+				9FF6C9A81F7C919B00B20D40 /* Info.plist */,
+			);
+			path = MyMoneroScreenshotsUITests;
+			sourceTree = "<group>";
+		};
 		B1FD17CA08A86496EC2BCADE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1323,6 +1358,24 @@
 			productReference = 9F24AE191EBA7D3A00841BCB /* MyMonero.app */;
 			productType = "com.apple.product-type.application";
 		};
+		9FF6C9A31F7C919B00B20D40 /* MyMoneroScreenshotsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9FF6C9B01F7C919B00B20D40 /* Build configuration list for PBXNativeTarget "MyMoneroScreenshotsUITests" */;
+			buildPhases = (
+				9FF6C9A01F7C919B00B20D40 /* Sources */,
+				9FF6C9A11F7C919B00B20D40 /* Frameworks */,
+				9FF6C9A21F7C919B00B20D40 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9FF6C9AA1F7C919B00B20D40 /* PBXTargetDependency */,
+			);
+			name = MyMoneroScreenshotsUITests;
+			productName = MyMoneroScreenshotsUITests;
+			productReference = 9FF6C9A41F7C919B00B20D40 /* MyMoneroScreenshotsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1337,6 +1390,11 @@
 						CreatedOnToolsVersion = 8.3.2;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
+					};
+					9FF6C9A31F7C919B00B20D40 = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 9F24AE181EBA7D3A00841BCB;
 					};
 				};
 			};
@@ -1354,6 +1412,7 @@
 			projectRoot = "";
 			targets = (
 				9F24AE181EBA7D3A00841BCB /* MyMonero */,
+				9FF6C9A31F7C919B00B20D40 /* MyMoneroScreenshotsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1452,6 +1511,13 @@
 				9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */,
 				9F33E6E81F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png in Resources */,
 				9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FF6C9A21F7C919B00B20D40 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1651,7 +1717,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9FF6C9A01F7C919B00B20D40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FF6C9A71F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift in Sources */,
+				9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9FF6C9AA1F7C919B00B20D40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9F24AE181EBA7D3A00841BCB /* MyMonero */;
+			targetProxy = 9FF6C9A91F7C919B00B20D40 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9F24AE3F1EBA7D3A00841BCB /* Debug */ = {
@@ -1991,6 +2074,214 @@
 			};
 			name = Testing;
 		};
+		9FF6C9AB1F7C919B00B20D40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = MyMoneroScreenshotsUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.MyMoneroScreenshotsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = MyMonero;
+			};
+			name = Debug;
+		};
+		9FF6C9AC1F7C919B00B20D40 /* Testing */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = MyMoneroScreenshotsUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.MyMoneroScreenshotsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = MyMonero;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Testing;
+		};
+		9FF6C9AD1F7C919B00B20D40 /* App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = MyMoneroScreenshotsUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.MyMoneroScreenshotsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = MyMonero;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "App Store";
+		};
+		9FF6C9AE1F7C919B00B20D40 /* Profiling */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = MyMoneroScreenshotsUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.MyMoneroScreenshotsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = MyMonero;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Profiling;
+		};
+		9FF6C9AF1F7C919B00B20D40 /* Internal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = MyMoneroScreenshotsUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.MyMoneroScreenshotsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = MyMonero;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Internal;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2017,6 +2308,17 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "App Store";
+		};
+		9FF6C9B01F7C919B00B20D40 /* Build configuration list for PBXNativeTarget "MyMoneroScreenshotsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9FF6C9AB1F7C919B00B20D40 /* Debug */,
+				9FF6C9AC1F7C919B00B20D40 /* Testing */,
+				9FF6C9AD1F7C919B00B20D40 /* App Store */,
+				9FF6C9AE1F7C919B00B20D40 /* Profiling */,
+				9FF6C9AF1F7C919B00B20D40 /* Internal */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
