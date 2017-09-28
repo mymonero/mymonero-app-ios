@@ -38,6 +38,8 @@ All app source code and assets copyright © 2014-2017 by MyMonero. All rights re
 
 2. `cd` into the repo directory.
 
+3. **For development/bleeding edge**: Run `git checkout develop`.
+
 3. **Important:** Run `./bin/setup`. 
 	* This will set up `./Modules/MyMoneroCore`, download the required submodules, and do a `pod install`.
 
