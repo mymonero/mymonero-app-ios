@@ -270,6 +270,7 @@ extension UICommonComponents
 		init(color: Wallet.SwatchColor)
 		{
 			super.init(frame: .zero)
+			self.accessibilityIdentifier = "walletColorOption.\(color.colorName)"
 			self.color = color
 			self.setup()
 		}

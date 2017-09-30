@@ -63,19 +63,60 @@ class MyMoneroScreenshotsUITests: XCTestCase
 	}
 	
 	func test_02_lightweight()
-	{
+	{ // will assume test_01 did not actually create a wallet
+		let app = XCUIApplication()
+		do {
+			let buttonElement = app.buttons["button.useExistingWallet"]
+			buttonElement.tap()
+		}
+		do {
+			let secretMnemonicTextArea = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"From your existing wallet").element
+			secretMnemonicTextArea.tap()
+			secretMnemonicTextArea.typeText("foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit")
+			//
+			let forYourReferenceTextField = app.textFields["For your reference"]
+			forYourReferenceTextField.tap()
+			forYourReferenceTextField.typeText("Spending Cash")
+			//
+			let purpleColorButton = app.otherElements["walletColorOption.purple"]
+			purpleColorButton.tap()
+			//
+			self.tapNext(inApp: app, atBarTitle: "Log Into Your Wallet")
+		}
+		do {
+			let secureTextField_1 = app.scrollViews.children(matching: .secureTextField).element(boundBy: 0)
+			secureTextField_1.tap()
+			secureTextField_1.typeText("qweqwe")
+			//s
+			let secureTextField_2 = app.scrollViews.children(matching: .secureTextField).element(boundBy: 1)
+			secureTextField_2.tap()
+			secureTextField_2.typeText("qweqwe")
+			//
+			self.tapNext(inApp: app, atBarTitle: "Create PIN or Password")
+		}
 		
+		//
+		// TODO: use expectation to wait for login success & first account info pull rather than the following (naive) sleep - so that failures can be detected w/o manual review of screenshots
+		sleep(6) // semi-excessive wait for slow connections
+		//
+		app.cells.element(boundBy: 0).tap() // tap on wallet list cell
+		//
 		snapshot("02_Lightweight")
 	}
 	
-	func test_03_contact()
+	func test_03_contacts()
 	{
-		
+		//
+		// TODO: show contact details having resolved an oa addr, like donate.getmonero.org
+		//
 		snapshot("03_Contacts")
 	}
 	
 	func test_04_openSource()
 	{
+		//
+		// TODO: show About page? anything better like a feature/use-case?
+		//
 		
 		snapshot("04_OpenSource")
 	}
