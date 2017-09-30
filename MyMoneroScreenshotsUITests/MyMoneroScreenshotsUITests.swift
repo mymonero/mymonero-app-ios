@@ -10,26 +10,41 @@ import XCTest
 
 class MyMoneroScreenshotsUITests: XCTestCase
 {
-    override func setUp()
+	//
+	// Tests - Init
+	override func setUp()
 	{ // This method is called before the invocation of each test method in the class.
-        super.setUp()
-        //
-        // In UI tests it is usually best to stop immediately when a failure occurs.
-        continueAfterFailure = false
+		super.setUp()
 		//
-        // UI tests must launch the application that they test.
+		// In UI tests it is usually best to stop immediately when a failure occurs.
+		continueAfterFailure = false
+		//
+		// UI tests must launch the application that they test.
 		let app = XCUIApplication()
 		setupSnapshot(app)
 		app.launch()
-    }
-    override func tearDown()
+	}
+	override func tearDown()
 	{ // This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
+		super.tearDown()
+	}
+	//
+	// Tests - Shared - Imperatives
 	func tapNext(inApp app: XCUIApplication, atBarTitle barTitle: String)
 	{
 		app.navigationBars[barTitle].buttons["Next"].tap()
 	}
+	func inject(text: String, intoField field: XCUIElement)
+	{
+		let app = XCUIApplication()
+		field.tap()
+		UIPasteboard.general.string = text
+		field.doubleTap()
+		app.menuItems["Paste"].tap()
+
+	}
+	//
+	// Tests - Cases
 	func test_01_bank()
 	{ // will assume this was a fresh install / clean simulator
 		let app = XCUIApplication()
@@ -71,12 +86,17 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		}
 		do {
 			let secretMnemonicTextArea = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"From your existing wallet").element
-			secretMnemonicTextArea.tap()
-			secretMnemonicTextArea.typeText("foxes selfish humid nexus juvenile dodge pepper ember biscuit elapse jazz vibrate biscuit")
+//			secretMnemonicTextArea.tap()
+//			secretMnemonicTextArea.typeText("") // this is error prone as it trips autocorrect
+			self.inject(
+				text: "",
+				intoField: secretMnemonicTextArea
+			)
 			//
 			let forYourReferenceTextField = app.textFields["For your reference"]
-			forYourReferenceTextField.tap()
-			forYourReferenceTextField.typeText("Spending Cash")
+//			forYourReferenceTextField.tap()
+//			forYourReferenceTextField.typeText("Spending Cash") // this often trips autocorrect to screw up the text
+			self.inject(text: "Spending Cash", intoField: forYourReferenceTextField)
 			//
 			let colorButton = app.otherElements["walletColorOption.blue"]
 			colorButton.tap()
@@ -94,30 +114,77 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			//
 			self.tapNext(inApp: app, atBarTitle: "Create PIN or Password")
 		}
-		
-		//
-		// TODO: use expectation to wait for login success & first account info pull rather than the following (naive) sleep - so that failures can be detected w/o manual review of screenshots
-		sleep(6) // semi-excessive wait for slow connections
 		//
 		app.cells.element(boundBy: 0).tap() // tap on wallet list cell
+		sleep(1) // just wait a moment in case acct info hasn't finished loading
 		//
 		snapshot("02_Lightweight")
 	}
 	
 	func test_03_contacts()
 	{
+		let app = XCUIApplication()
+		app.secureTextFields["So we know it's you"].typeText("qweqwe")
+		app.navigationBars["Enter Password"].buttons["Next"].tap()
 		//
-		// TODO: show contact details having resolved an oa addr, like donate.getmonero.org
+		app.tabBars.children(matching: .button).element(boundBy: 3).tap()
+		app.navigationBars["Contacts"].buttons["addButtonIcon 10"].tap()
+		self.inject(
+			text: "Ric",
+			intoField: app.textFields["Enter name"]
+		)
+		self.inject(
+			text: "ric@spagni.net",
+			intoField: app.scrollViews.otherElements.textViews.staticTexts["Enter address, email, or domain"]
+		)
+		app.navigationBars["New Contact"].buttons["Save"].tap()
+		
+		app.cells.element(boundBy: 0).tap() // tap on contacts list cell
 		//
 		snapshot("03_Contacts")
 	}
 	
-	func test_04_openSource()
+	func test_04_send()
 	{
+		let app = XCUIApplication()
+		app.secureTextFields["So we know it's you"].typeText("qweqwe")
+		app.navigationBars["Enter Password"].buttons["Next"].tap()
 		//
-		// TODO: show About page? anything better like a feature/use-case?
+		app.tabBars.children(matching: .button).element(boundBy: 3).tap() // tap on Contacts to add monero donation
+		app.navigationBars["Contacts"].buttons["addButtonIcon 10"].tap()
+		self.inject(
+			text: "The Monero Project",
+			intoField: app.textFields["Enter name"]
+		)
+		self.inject(
+			text: "donate@getmonero.org",
+			intoField: app.scrollViews.otherElements.textViews.staticTexts["Enter address, email, or domain"]
+		)
+		app.navigationBars["New Contact"].buttons["Save"].tap()
 		//
-		
-		snapshot("04_OpenSource")
+		sleep(3) // wait for DNS resolution to improve failure rate - is there a better way?
+		app.tabBars.children(matching: .button).element(boundBy: 1).tap() // tap on Send
+		do {
+			let field = app.scrollViews.otherElements.textFields["00.00"]
+			field.tap()
+			field.typeText("1")
+		}
+		app.scrollViews.otherElements.textFields["Contact name or address/domain"].tap()
+		app.scrollViews.otherElements.tables.staticTexts["The Monero Project"].tap()
+		sleep(1) // wait for possible DNS resolution again
+		//
+		snapshot("04_Send")
+	}
+	
+	func test_05_openSource()
+	{
+		let app = XCUIApplication()
+		app.secureTextFields["So we know it's you"].typeText("qweqwe")
+		app.navigationBars["Enter Password"].buttons["Next"].tap()
+		//
+		app.tabBars.children(matching: .button).element(boundBy: 4).tap()
+		app.navigationBars["Preferences"].buttons["About"].tap()
+		//
+		snapshot("05_OpenSource")
 	}
 }

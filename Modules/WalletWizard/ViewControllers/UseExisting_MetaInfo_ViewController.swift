@@ -121,7 +121,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				let view = UICommonComponents.FormTextViewContainerView(
 					placeholder: NSLocalizedString("From your existing wallet", comment: "")
 				)
-				view.textView.autocorrectionType = .no // unfortunately. because it chokes or changes a correct typed wordset memebr word, in some cases
+				view.textView.autocorrectionType = .yes
  				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next

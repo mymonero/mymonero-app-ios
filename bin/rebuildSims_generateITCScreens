@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SNAPSHOT_FORCE_DELETE=true fastlane snapshot reset_simulators &&
+
+fastlane snapshot && 
+
+cd ./screenshots && 
+
+fastlane frameit black
