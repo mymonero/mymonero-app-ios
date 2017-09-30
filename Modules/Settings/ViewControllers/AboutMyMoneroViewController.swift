@@ -70,7 +70,7 @@ class AboutMyMoneroViewController: UIViewController
 		}
 		do {
 			let view = self.viewSourceButton
-			view.setTitle(NSLocalizedString("View on Github", comment: ""), for: .normal)
+			view.setTitle(NSLocalizedString("View on GitHub", comment: ""), for: .normal)
 			view.titleLabel!.textAlignment = .center
 			view.titleLabel!.font = UIFont.smallRegularSansSerif
 			view.setTitleColor(UIColor(rgb: 0x8D8B8D), for: .normal)
