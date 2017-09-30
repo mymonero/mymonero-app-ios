@@ -715,6 +715,8 @@ extension CreateWallet_ConfirmMnemonic
 		{
 			do {
 				self.backgroundColor = .clear
+				//
+				self.accessibilityIdentifier = "buttonContainer.confirmMnemonic"
 			}
 			for (_, wordHandle) in self.shuffled_mnemonicWords.enumerated() {
 				let view = CreateWallet_ConfirmMnemonic.WordView(

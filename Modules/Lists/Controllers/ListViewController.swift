@@ -34,12 +34,14 @@
 //
 import UIKit
 //
-class ListViewController: UITableViewController
+class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource
 {
-	override init(style: UITableViewStyle)
-	{
-		fatalError("\(#function) has not been implemented")
-	}
+	//
+	// Properties
+	var tableView: UITableView!
+	var listController: PersistedObjectListController!
+	//
+	// Lifecycle - Init
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
 	{
 		fatalError("\(#function) has not been implemented")
@@ -48,9 +50,6 @@ class ListViewController: UITableViewController
 	{
 		fatalError("\(#function) has not been implemented")
 	}
-	var listController: PersistedObjectListController!
-	//
-	// Lifecycle - Init
 	init(withListController listController: PersistedObjectListController)
 	{
 		super.init(nibName: nil, bundle: nil)
@@ -68,15 +67,21 @@ class ListViewController: UITableViewController
 	}
 	func setup_views()
 	{
+		self.view.backgroundColor = .contentBackgroundColor
+		//
 		self.setup_tableView()
+		//
+		self.configure_emptyStateView()
 	}
 	func setup_tableView()
 	{
-		self.tableView.delegate = self
-		self.tableView.backgroundColor = .contentBackgroundColor
-		self.tableView.indicatorStyle = .white // TODO: configure via theme controller
-		
-		self.configure_emptyStateView()
+		let view = UITableView()
+		view.delegate = self
+		view.dataSource = self
+		view.backgroundColor = .contentBackgroundColor
+		view.indicatorStyle = .white // TODO: configure via theme controller
+		self.tableView = view
+		self.view.addSubview(tableView)
 	}
 	func startObserving()
 	{
@@ -128,40 +133,54 @@ class ListViewController: UITableViewController
 	{
 		let shouldShow = self.listController.records.count == 0 // TODO: fix this so it refreshes after app is unlocked: PasswordController.shared.hasUserSavedAPassword == false || (PasswordController.shared.hasUserEnteredValidPasswordYet && self.listController.records.count == 0)
 		if shouldShow {
-			if self.tableView.backgroundView == nil {
-				if self._emptyStateView == nil {
-					self._emptyStateView = self.new_emptyStateView()
+			if self._emptyStateView == nil {
+				self._emptyStateView = self.new_emptyStateView()
+				if self._emptyStateView != nil {
+					self.view.addSubview(self._emptyStateView!)
 				}
-				self.tableView.backgroundView = self._emptyStateView
 			}
 		} else {
-			self.tableView.backgroundView = nil
+			if self._emptyStateView != nil {
+				self._emptyStateView!.removeFromSuperview()
+				self._emptyStateView = nil
+			}
 		}
 
 	}
 	//
 	// Protocol - Table View - Accessors & Delegation
-	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
 	{
 		assert(false, "required")
 		return UITableViewCell()
 	}
-	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 	{
 		assert(false, "required")
 		return 0
 	}
-	override func numberOfSections(in tableView: UITableView) -> Int
+	func numberOfSections(in tableView: UITableView) -> Int
 	{
 		return 1
 	}
-	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
 	{
 		return self.listController.records.count
 	}
-	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
 	{
 		tableView.deselectRow(at: indexPath, animated: true)
+	}
+	//
+	// Delegation - Layout
+	override func viewDidLayoutSubviews()
+	{
+		super.viewDidLayoutSubviews()
+		//
+		self.tableView.frame = self.view.bounds
+		if let view = self._emptyStateView {
+			view.frame = self.view.bounds
+		}
 	}
 	//
 	// Delegation - Notifications

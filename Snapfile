@@ -7,10 +7,7 @@ devices([
   # "iPhone 8 Plus",
   "iPhone 7",
   "iPhone 7 Plus",
-  "iPhone 6",
-  "iPhone 6 Plus",
   "iPhone SE",
-  "iPhone 5",
   "iPad (5th generation)",
   "iPad Pro (10.5-inch)"
 ])

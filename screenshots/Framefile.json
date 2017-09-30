@@ -3,7 +3,7 @@
     "keyword": {
       "fonts": [
         {
-          "font": "./fonts/Georgia.ttf",
+          "font": "./fonts/Oxygen-regular.ttf",
           "supported": ["en-US"]
         }
       ]
@@ -11,26 +11,38 @@
     "title": {
       "fonts": [
         {
-          "font": "./fonts/Georgia.ttf",
+          "font": "./fonts/Oxygen-regular.ttf",
           "supported": ["en-US"]
         }
       ],
-      "color": "#ffffff"
+      "color": "#161416"
     },
     "background": "./background.jpg",
     "padding": 50
   },
   "data": [
     {
-      "filter": "Onboarding",
+      "filter": "Bank",
       "keyword": {
-        "color": "#6A40BE"
+        "color": "#161416"
       }
     },
     {
-      "filter": "Explore",
+      "filter": "Lightweight",
       "keyword": {
-        "color": "#6A40BE"
+        "color": "#161416"
+      }
+    },
+    {
+      "filter": "Contacts",
+      "keyword": {
+        "color": "#161416"
+      }
+    },
+    {
+      "filter": "OpenSource",
+      "keyword": {
+        "color": "#161416"
       }
     }
   ]

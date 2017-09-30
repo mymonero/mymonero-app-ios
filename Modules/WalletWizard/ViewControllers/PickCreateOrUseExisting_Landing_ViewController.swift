@@ -68,6 +68,7 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 			let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true)
 			view.addTarget(self, action: #selector(useExisting_tapped), for: .touchUpInside)
 			view.setTitle(NSLocalizedString("Use existing wallet", comment: ""), for: .normal)
+			view.accessibilityIdentifier = "button.useExistingWallet"
 			self.useExisting_actionButtonView = view
 			self.scrollView.addSubview(view)
 		}
@@ -75,6 +76,7 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 			let view = UICommonComponents.ActionButton(pushButtonType: .action, isLeftOfTwoButtons: false)
 			view.addTarget(self, action: #selector(createNew_tapped), for: .touchUpInside)
 			view.setTitle(NSLocalizedString("Create new wallet", comment: ""), for: .normal)
+			view.accessibilityIdentifier = "button.createNewWallet"
 			self.createNew_actionButtonView = view
 			self.scrollView.addSubview(view)
 		}
