@@ -3,7 +3,7 @@
     "keyword": {
       "fonts": [
         {
-          "font": "./fonts/Oxygen-regular.ttf",
+          "font": "./fonts/Oxygen-700.ttf",
           "supported": ["en-US"]
         }
       ]
@@ -11,13 +11,13 @@
     "title": {
       "fonts": [
         {
-          "font": "./fonts/Oxygen-regular.ttf",
+          "font": "./fonts/Oxygen-700.ttf",
           "supported": ["en-US"]
         }
       ],
       "color": "#161416"
     },
-    "background": "./background.jpg",
+    "background": "./background_white.jpg",
     "padding": 50
   },
   "data": [

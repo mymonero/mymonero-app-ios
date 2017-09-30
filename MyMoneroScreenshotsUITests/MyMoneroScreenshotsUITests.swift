@@ -78,8 +78,8 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			forYourReferenceTextField.tap()
 			forYourReferenceTextField.typeText("Spending Cash")
 			//
-			let purpleColorButton = app.otherElements["walletColorOption.purple"]
-			purpleColorButton.tap()
+			let colorButton = app.otherElements["walletColorOption.blue"]
+			colorButton.tap()
 			//
 			self.tapNext(inApp: app, atBarTitle: "Log Into Your Wallet")
 		}
