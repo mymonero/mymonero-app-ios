@@ -8,8 +8,8 @@ def common_pods
 	pod 'Alamofire', '~> 4.4'
 	pod 'RNCryptor', '~> 5.0.1'
 	pod 'ReachabilitySwift', '~> 3.0'
-	pod 'PKHUD', '~> 4.0'
-	pod 'AMPopTip', '~> 2.1.6'
+    pod 'PKHUD', :git => 'https://github.com/pkluz/PKHUD.git', :branch => 'release/swift4'
+    pod 'AMPopTip', '~> 2.1.6'
 end
 
 target 'MyMonero' do
