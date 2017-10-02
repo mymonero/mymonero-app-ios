@@ -75,7 +75,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	var records = [PersistableObject]()
 	// Properties - Runtime
 	var hasBooted = false // can be set from true back to false
-	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
+	var __blocksWaitingForBootToExecute: [() -> ()]?
 	//
 	//
 	// Lifecycle - Init
@@ -288,7 +288,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Imperatives - Deferring execution
 	// NOTE: onceBooted() exists because waiting for a password to be entered by the user must be asynchronous
 	func onceBooted(
-		_ fn: @escaping ((Void) -> Void)
+		_ fn: @escaping (() -> ())
 	)
 	{
 		if self.hasBooted == true {

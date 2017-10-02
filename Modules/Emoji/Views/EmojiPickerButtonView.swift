@@ -48,7 +48,7 @@ struct EmojiUI
 		static let visual__arrowRightPadding: CGFloat = 8
 		//
 		// Properties
-		var willPresentPopover_fn: ((Void) -> Void)?
+		var willPresentPopover_fn: (() -> ())?
 		//
 		// Lifecycle - Init
 		init()

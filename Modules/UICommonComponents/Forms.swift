@@ -196,7 +196,7 @@ extension UICommonComponents
 		func scrollRectToVisible(
 			toBeVisible_frame__absolute: CGRect,
 			atEdge scrollEdge: UICommonComponents.Form.InputScrollEdge,
-			finished_fn: @escaping ((Void) -> Void)
+			finished_fn: @escaping (() -> ())
 		)
 		{
 			let visibleScroll_rect = self.visibleScroll_rect
@@ -788,8 +788,8 @@ extension UICommonComponents
 			let range = NSRange(location: 0, length: text.characters.count)
 			string.addAttributes(
 				[
-					NSForegroundColorAttributeName: UIColor(rgb: 0x6B696B),
-					NSFontAttributeName: UIFont.middlingRegularMonospace // light is too light
+                    NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x6B696B),
+                    NSAttributedStringKey.font: UIFont.middlingRegularMonospace // light is too light
 				],
 				range: range
 			)
@@ -892,7 +892,7 @@ extension UICommonComponents
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
-				NSParagraphStyleAttributeName,
+                NSAttributedStringKey.paragraphStyle,
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.characters.count)
 			)
@@ -945,7 +945,7 @@ extension UICommonComponents
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
-				NSParagraphStyleAttributeName,
+                NSAttributedStringKey.paragraphStyle,
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.characters.count)
 			)

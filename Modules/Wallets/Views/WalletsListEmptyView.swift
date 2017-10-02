@@ -39,12 +39,12 @@ class WalletsListEmptyView: UIView
 	var emptyStateView: UICommonComponents.EmptyStateView!
 	var useExisting_actionButtonView: UICommonComponents.ActionButton!
 	var createNew_actionButtonView: UICommonComponents.ActionButton!
-	var useExisting_tapped_fn: (Void) -> Void
-	var createNew_tapped_fn: (Void) -> Void
+	var useExisting_tapped_fn: () -> ()
+	var createNew_tapped_fn: () -> ()
 	//
 	init(
-		useExisting_tapped_fn: @escaping (Void) -> Void,
-		createNew_tapped_fn: @escaping (Void) -> Void
+		useExisting_tapped_fn: @escaping () -> (),
+		createNew_tapped_fn: @escaping () -> ()
 	)
 	{
 		self.useExisting_tapped_fn = useExisting_tapped_fn

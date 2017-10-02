@@ -192,7 +192,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		let value = self.new_requesteeMessagePlaintextString
 		let value_NSString = value as NSString
-		let attributes: [String: Any] = [:]
+		let attributes: [NSAttributedStringKey : Any] = [:]
 		let attributedString = NSMutableAttributedString(string: value, attributes: attributes)
 		let linkColor = UIColor.white
 		attributedString.addAttributes(

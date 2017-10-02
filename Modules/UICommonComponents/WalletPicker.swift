@@ -45,7 +45,7 @@ extension UICommonComponents
 		static let visual__arrowRightPadding: CGFloat = 16
 		//
 		// Properties
-		var tapped_fn: ((Void) -> Void)?
+		var tapped_fn: (() -> ())?
 		var selectedWallet: Wallet? // weak might be a good idea but strong should be ok here b/c we unpick the selectedWallet when wallets reloads on logged-in runtime teardown
 		var pickerView: WalletPickerView!
 		var picker_inputField: UITextField!
@@ -210,7 +210,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var didSelect_fn: ((_ record: Wallet) -> Void)?
-		var reloaded_fn: ((Void) -> Void)?
+        var reloaded_fn: (() -> ())?
 		//
 		// Lifecycle
 		init()
