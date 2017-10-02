@@ -48,7 +48,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	// Properties - Settable by instantiator
 	var shouldVibrateOnFirstScan = true // possibly have setting to turn this off
 	//
-	var didCancel_fn: ((Void) -> Void)?
+	var didCancel_fn: (() -> ())?
 	var didLocateQRCodeMessageString_fn: ((String) -> Void)?
 	//
 	// Properties - Runtime
@@ -77,41 +77,38 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 		do {
 			self.view.backgroundColor = .black
 		}
-		let captureDevice = AVCaptureDevice.defaultDevice(
-			withMediaType: AVMediaTypeVideo
-		)
-		do {
-			let input = try AVCaptureDeviceInput(device: captureDevice)
-			let session = AVCaptureSession()
-			self.captureSession = session
-			session.addInput(input)
-		} catch let e {
-			self.didFatalErrorOnInit = e as NSError
-			return
-		}
-		do {
-			let output = AVCaptureMetadataOutput()
-			self.captureSession.addOutput(output) // must add first before setting metadataObjectTypes
-			output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-            output.metadataObjectTypes = [ AVMetadataObject.ObjectType.qr ]
-		}
-		do {
-			guard let layer = AVCaptureVideoPreviewLayer(session: captureSession) else {
-				// TODO: error?
-				return
-			}
-			self.videoPreviewLayer = layer
-			layer.videoGravity = AVLayerVideoGravityResizeAspectFill
-			self.view.layer.addSublayer(layer)
-		}
-		do {
-			let view = UIView()
-			self.qrCodeReticleView = view
-			view.layer.borderColor = UIColor.green.cgColor // too faint: UIColor.utilityOrConstructiveLinkColor.cgColor
-			view.layer.borderWidth = 2
-			self.view.addSubview(view)
-			self.view.bringSubview(toFront: view)
-		}
+		if let captureDevice = AVCaptureDevice.default(for: .video)
+        {
+            do {
+                let input = try AVCaptureDeviceInput(device: captureDevice)
+                let session = AVCaptureSession()
+                self.captureSession = session
+                session.addInput(input)
+            } catch let e {
+                self.didFatalErrorOnInit = e as NSError
+                return
+            }
+            do {
+                let output = AVCaptureMetadataOutput()
+                self.captureSession.addOutput(output) // must add first before setting metadataObjectTypes
+                output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+                output.metadataObjectTypes = [ AVMetadataObject.ObjectType.qr ]
+            }
+            do {
+                let layer = AVCaptureVideoPreviewLayer(session: captureSession) // no longer optional no need for Guard
+                self.videoPreviewLayer = layer
+                layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                self.view.layer.addSublayer(layer)
+            }
+            do {
+                let view = UIView()
+                self.qrCodeReticleView = view
+                view.layer.borderColor = UIColor.green.cgColor // too faint: UIColor.utilityOrConstructiveLinkColor.cgColor
+                view.layer.borderWidth = 2
+                self.view.addSubview(view)
+                self.view.bringSubview(toFront: view)
+            }
+        }
 	}
 	func setup_navigation()
 	{

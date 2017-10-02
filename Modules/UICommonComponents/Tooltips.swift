@@ -52,7 +52,7 @@ extension UICommonComponents
 		var tip: PopTip?
 		//
 		var tooltipDirectionFromOrigin: PopTipDirection = .up // settable by instantiator
-		var willPresentTipView_fn: ((Void) -> Void)?
+		var willPresentTipView_fn: (() -> ())?
 		//
 		// Lifecycle - Init
 		init(tooltipText: String) {

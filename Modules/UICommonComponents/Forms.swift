@@ -196,7 +196,7 @@ extension UICommonComponents
 		func scrollRectToVisible(
 			toBeVisible_frame__absolute: CGRect,
 			atEdge scrollEdge: UICommonComponents.Form.InputScrollEdge,
-			finished_fn: @escaping ((Void) -> Void)
+			finished_fn: @escaping (() -> ())
 		)
 		{
 			let visibleScroll_rect = self.visibleScroll_rect

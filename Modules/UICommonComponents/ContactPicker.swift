@@ -77,20 +77,20 @@ extension UICommonComponents.Form
 		//
 		var textFieldDidBeginEditing_fn: ((_ textField: UITextField) -> Void)?
 		var textFieldDidEndEditing_fn: ((_ textField: UITextField) -> Void)?
-		var didFinishTypingInInput_afterMediumDelay_fn: ((Void) -> Void)?
-		var didUpdateHeight_fn: ((Void) -> Void)?
+		var didFinishTypingInInput_afterMediumDelay_fn: (() -> ())?
+		var didUpdateHeight_fn: (() -> ())?
 		//
 		var didPickContact_fn: ((_ contact: Contact, _ doesNeedToResolveItsOAAddress: Bool) -> Void)?
 		//
-		var changedTextContent_fn: ((Void) -> Void)?
-		var clearedTextContent_fn: ((Void) -> Void)?
+		var changedTextContent_fn: (() -> ())?
+		var clearedTextContent_fn: (() -> ())?
 		var isValidatingOrResolvingNonZeroTextInput: Bool = false // internally managed; do not set
 		var hasValidTextInput_moneroAddress = false // internally managed; do not set
 		var hasValidTextInput_resolvedOAAddress = false // internally managed; do not set
-		var willValidateNonZeroTextInput_fn: ((Void) -> Void)?
-		var finishedValidatingTextInput_foundInvalidMoneroAddress_fn: ((Void) -> Void)?
+		var willValidateNonZeroTextInput_fn: (() -> ())?
+		var finishedValidatingTextInput_foundInvalidMoneroAddress_fn: (() -> ())?
 		var finishedValidatingTextInput_foundValidMoneroAddress_fn: ((_ detectedEmbedded_paymentID: MoneroPaymentID?) -> Void)?
-		var willBeginResolvingPossibleOATextInput_fn: ((Void) -> Void)?
+		var willBeginResolvingPossibleOATextInput_fn: (() -> ())?
 		//
 		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
 		var oaResolve__success_fn: ((
@@ -1063,7 +1063,7 @@ extension UICommonComponents.Form
 		//
 		// Properties
 		weak var contact: Contact? // in order to prevent deinit from occurring while property still set
-		var xButton_tapped_fn: ((Void) -> Void)!
+		var xButton_tapped_fn: (() -> ())!
 		//
 		let backgroundImageView = UIImageView(image: UICommonComponents.PushButtonCells.Variant.utility.stretchableImage)
 		var emojiLabel = UILabel()

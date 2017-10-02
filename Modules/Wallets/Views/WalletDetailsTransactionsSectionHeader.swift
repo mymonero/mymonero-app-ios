@@ -53,7 +53,7 @@ extension WalletDetails
 		}
 		//
 		// Properties - Settable after init
-		var importTransactions_tapped_fn: ((Void) -> Void)?
+		var importTransactions_tapped_fn: (() -> ())?
 		//
 		// Properties - Settable via init
 		var mode: Mode

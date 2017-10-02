@@ -48,16 +48,16 @@ extension UICommonComponents
 			case edit
 			case valueDisplayLabel
 		}
-		var tapped_fn: ((Void) -> Void)?
+		var tapped_fn: (() -> ())?
 		convenience init(type: ButtonItemType, target: Any?, action: Selector?)
 		{
 			self.init(type: type, target: target, action: action, title_orNilForDefault: nil)
 		}
-		convenience init(type: ButtonItemType, tapped_fn: @escaping (Void) -> Void)
+		convenience init(type: ButtonItemType, tapped_fn: @escaping () -> ())
 		{
 			self.init(type: type, tapped_fn: tapped_fn, title_orNilForDefault: nil)
 		}
-		init(type: ButtonItemType, tapped_fn: @escaping (Void) -> Void, title_orNilForDefault: String?)
+		init(type: ButtonItemType, tapped_fn: @escaping () -> (), title_orNilForDefault: String?)
 		{
 			super.init()
 			self.tapped_fn = tapped_fn

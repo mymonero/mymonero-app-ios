@@ -51,14 +51,14 @@ extension UICommonComponents
 		let label = UILabel()
 		var closeButton: UIButton?
 		//
-		var didHide: ((Void) -> Void)! // this is so we can route self.closeButton tap directly to clearAndHide() internally
+		var didHide: (() -> ())! // this is so we can route self.closeButton tap directly to clearAndHide() internally
 		//
 		// Lifecycle - Init
-		init(mode: Mode, didHide: ((Void) -> Void)?)
+        init(mode: Mode, didHide: () -> ()?)
 		{
 			self.mode = mode
 			super.init(frame: .zero)
-			self.didHide = didHide ?? {}
+			self.didHide = didHide ?? nil
 			self.setup()
 		}
 		convenience init(mode: Mode) // for .noCloseButton; TODO: improve by limiting to only that mode

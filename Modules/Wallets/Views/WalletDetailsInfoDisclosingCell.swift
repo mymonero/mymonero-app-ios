@@ -336,7 +336,7 @@ extension WalletDetails
 			// II.
 			func configureForJustToggledDisclosureState(animated: Bool)
 			{
-				let configure: (Void) -> Void =
+				let configure: () -> () =
 				{ [unowned self] in
 					do { // arrow
 						let degreesAngle: Double = self.isDisclosed ? 90 : 0

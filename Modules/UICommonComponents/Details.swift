@@ -786,7 +786,7 @@ extension UICommonComponents
 			var titleLabel: FieldLabel!
 			var valueButton: SmallUtilityShareValueButton!
 			var contentImageButton: UIButton!
-			fileprivate var tapped_fn: ((Void) -> Void)?
+			fileprivate var tapped_fn: (() -> ())?
 			//
 			var _bottomMostView: UIView { // overridable
 				return self.contentImageButton
@@ -796,7 +796,7 @@ extension UICommonComponents
 			init(
 				labelVariant: FieldLabel.Variant,
 				title: String,
-				tapped_fn: ((Void) -> Void)?
+				tapped_fn: (() -> Void)?
 			)
 			{
 				self.labelVariant = labelVariant
