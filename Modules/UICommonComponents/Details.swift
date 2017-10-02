@@ -891,7 +891,7 @@ extension UICommonComponents
 			func buttonTapped()
 			{
 				if let fn = self.tapped_fn {
-					fn()
+                    fn()
 				}
 			}
 		}

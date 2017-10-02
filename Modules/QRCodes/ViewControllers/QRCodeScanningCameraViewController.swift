@@ -93,7 +93,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 			let output = AVCaptureMetadataOutput()
 			self.captureSession.addOutput(output) // must add first before setting metadataObjectTypes
 			output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-			output.metadataObjectTypes = [ AVMetadataObjectTypeQRCode ]
+            output.metadataObjectTypes = [ AVMetadataObject.ObjectType.qr ]
 		}
 		do {
 			guard let layer = AVCaptureVideoPreviewLayer(session: captureSession) else {
@@ -185,7 +185,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 			return
 		}
 		let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
-		if metadataObj.type != AVMetadataObjectTypeQRCode {
+        if metadataObj.type != AVMetadataObject.ObjectType.qr {
 			assert(false)
 			return
 		}

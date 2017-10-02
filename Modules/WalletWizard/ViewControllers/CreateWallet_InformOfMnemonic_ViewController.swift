@@ -254,9 +254,9 @@ extension CreateWallet_InformOfMnemonic
 				string: text,
 				attributes:
 				[
-					NSForegroundColorAttributeName: UIColor(rgb: 0x9E9C9E),
-					NSFontAttributeName: UIFont.middlingRegularMonospace,
-					NSParagraphStyleAttributeName: paragraphStyle
+                    NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x9E9C9E),
+                    NSAttributedStringKey.font: UIFont.middlingRegularMonospace,
+                    NSAttributedStringKey.paragraphStyle: paragraphStyle
 				]
 			)
 			self.label.attributedText = attributedString

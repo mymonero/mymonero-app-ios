@@ -321,7 +321,7 @@ open class Popover: UIView {
 		UIView.animate(withDuration: self.animationIn / 3,
 		               delay: 0,
 		               options: .curveLinear,
-		               animations: { _ in
+		               animations: {
 						self.blackOverlay.alpha = 1
 		}, completion: { _ in
 		})
