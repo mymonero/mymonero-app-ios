@@ -405,7 +405,7 @@ class DocumentPersister
 					filename_withExt.endIndex,
 					offsetBy: -1 * filenameSuffix_length
 				)
-				let filename_sansExt = filename_withExt[..<endIndex]
+				let filename_sansExt = String(filename_withExt[..<endIndex])
 				//
 				let fileKey = filename_sansExt // assumption
 				let fileKey_components = fileKey.components(separatedBy: DocumentFileDescription.fileKeyComponentDelimiterString)
