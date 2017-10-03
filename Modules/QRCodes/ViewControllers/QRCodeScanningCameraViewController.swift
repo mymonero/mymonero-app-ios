@@ -77,8 +77,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 		do {
 			self.view.backgroundColor = .black
 		}
-		if let captureDevice = AVCaptureDevice.default(for: .video)
-		{
+		if let captureDevice = AVCaptureDevice.default(for: .video) {
 			do {
 				let input = try AVCaptureDeviceInput(device: captureDevice)
 				let session = AVCaptureSession()
