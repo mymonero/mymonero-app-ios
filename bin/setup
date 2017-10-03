@@ -1,3 +1,7 @@
+echo "🔁  Initializing submodules…";
+git submodule init;
+git submodule update;
+
 echo "🔁  cd Modules/MyMoneroCore/";
 cd Modules/MyMoneroCore/;
 
@@ -7,9 +11,8 @@ bin/setup;
 echo "🔁  cd ../..";
 cd ../..;
 
-echo "🔁  Initializing submodules…";
-git submodule init;
-git submodule update;
+echo "🔁  pod repo update";
+pod repo update;
 
 echo "🔁  pod install";
 pod install;
