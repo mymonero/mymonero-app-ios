@@ -74,39 +74,48 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	}
 	func setup_views()
 	{
+		guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+			self.didFatalErrorOnInit = NSError(
+				domain: "QRCodes",
+				code: -1,
+				userInfo:
+				[
+					NSLocalizedDescriptionKey: NSLocalizedString("Unable to get capture device", comment: "")
+				]
+			)
+			return
+		}
 		do {
 			self.view.backgroundColor = .black
 		}
-		if let captureDevice = AVCaptureDevice.default(for: .video) {
-			do {
-				let input = try AVCaptureDeviceInput(device: captureDevice)
-				let session = AVCaptureSession()
-				self.captureSession = session
-				session.addInput(input)
-			} catch let e {
-				self.didFatalErrorOnInit = e as NSError
-				return
-			}
-			do {
-				let output = AVCaptureMetadataOutput()
-				self.captureSession.addOutput(output) // must add first before setting metadataObjectTypes
-				output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-				output.metadataObjectTypes = [ AVMetadataObject.ObjectType.qr ]
-			}
-			do {
-				let layer = AVCaptureVideoPreviewLayer(session: captureSession) // no longer optional, no need for guard
-				self.videoPreviewLayer = layer
-				layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-				self.view.layer.addSublayer(layer)
-			}
-			do {
-				let view = UIView()
-				self.qrCodeReticleView = view
-				view.layer.borderColor = UIColor.green.cgColor // too faint: UIColor.utilityOrConstructiveLinkColor.cgColor
-				view.layer.borderWidth = 2
-				self.view.addSubview(view)
-				self.view.bringSubview(toFront: view)
-			}
+		do {
+			let input = try AVCaptureDeviceInput(device: captureDevice)
+			let session = AVCaptureSession()
+			self.captureSession = session
+			session.addInput(input)
+		} catch let e {
+			self.didFatalErrorOnInit = e as NSError
+			return
+		}
+		do {
+			let output = AVCaptureMetadataOutput()
+			self.captureSession.addOutput(output) // must add first before setting metadataObjectTypes
+			output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+			output.metadataObjectTypes = [ AVMetadataObject.ObjectType.qr ]
+		}
+		do {
+			let layer = AVCaptureVideoPreviewLayer(session: captureSession) // no longer optional, no need for guard
+			self.videoPreviewLayer = layer
+			layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+			self.view.layer.addSublayer(layer)
+		}
+		do {
+			let view = UIView()
+			self.qrCodeReticleView = view
+			view.layer.borderColor = UIColor.green.cgColor // too faint: UIColor.utilityOrConstructiveLinkColor.cgColor
+			view.layer.borderWidth = 2
+			self.view.addSubview(view)
+			self.view.bringSubview(toFront: view)
 		}
 	}
 	func setup_navigation()
@@ -144,6 +153,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	{
 		super.viewDidLayoutSubviews()
 		//
+		assert(self.videoPreviewLayer != nil)
 		self.videoPreviewLayer.frame = view.layer.bounds		
 	}
 	//
