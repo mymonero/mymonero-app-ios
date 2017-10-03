@@ -45,7 +45,7 @@ extension UICommonComponents
 		static let visual__arrowRightPadding: CGFloat = 16
 		//
 		// Properties
-		var tapped_fn: ((Void) -> Void)?
+		var tapped_fn: (() -> Void)?
 		var selectedWallet: Wallet? // weak might be a good idea but strong should be ok here b/c we unpick the selectedWallet when wallets reloads on logged-in runtime teardown
 		var pickerView: WalletPickerView!
 		var picker_inputField: UITextField!
@@ -187,7 +187,7 @@ extension UICommonComponents
 		//
 		// Delegation - Interactions
 		var popover: EmojiPickerPopoverView?
-		func tapped()
+		@objc func tapped()
 		{
 			// the popover should be guaranteed not to be showing here…
 			if let tapped_fn = self.tapped_fn {
@@ -210,7 +210,7 @@ extension UICommonComponents
 		//
 		// Properties
 		var didSelect_fn: ((_ record: Wallet) -> Void)?
-		var reloaded_fn: ((Void) -> Void)?
+		var reloaded_fn: (() -> Void)?
 		//
 		// Lifecycle
 		init()
@@ -328,7 +328,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Notifications
-		func PersistedObjectListController_Notifications_List_updated()
+		@objc func PersistedObjectListController_Notifications_List_updated()
 		{
 			self.reloadAllComponents()
 			if let fn = self.reloaded_fn {

@@ -148,7 +148,7 @@ class FundsRequestsListViewController: ListViewController
 	}
 	//
 	// Delegation - Interactions
-	func addButton_tapped()
+	@objc func addButton_tapped()
 	{
 		self.presentOrConfigureExistingCreateRequestFormView(
 			withContact: nil,
@@ -157,18 +157,15 @@ class FundsRequestsListViewController: ListViewController
 	}
 	//
 	// Delegation - Notifications
-	func WalletAppContactActionsCoordinator_didTrigger_requestFundsFromContact(_ notification: Notification)
+	@objc func WalletAppContactActionsCoordinator_didTrigger_requestFundsFromContact(_ notification: Notification)
 	{
 		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request details view…
 		// but do not dismiss modals - reconfigure instead
 		let userInfo = notification.userInfo!
 		let contact = userInfo[WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
-		self.presentOrConfigureExistingCreateRequestFormView(
-			withContact: contact,
-			selectedWallet: nil
-		)
+		self.presentOrConfigureExistingCreateRequestFormView(withContact: contact, selectedWallet: nil)
 	}
-	func WalletAppWalletActionsCoordinator_didTrigger_receiveFundsToWallet(_ notification: Notification)
+	@objc func WalletAppWalletActionsCoordinator_didTrigger_receiveFundsToWallet(_ notification: Notification)
 	{
 		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request details view…
 		// but do not dismiss modals - reconfigure instead

@@ -147,7 +147,7 @@ class AboutMyMoneroViewController: UIViewController
 	}
 	//
 	// Delegation - Interactions
-	func viewSourceButton_tapped()
+	@objc func viewSourceButton_tapped()
 	{
 		let url = URL(string: HostedSource.sourceRepository_urlString)!
 		let options: [String: Any] = [:]
@@ -155,7 +155,7 @@ class AboutMyMoneroViewController: UIViewController
 	}
 	//
 	// Delegation - Interactions
-	func swipedDown()
+	@objc func swipedDown()
 	{
 		self.navigationController!.dismiss(animated: true, completion: nil)
 	}

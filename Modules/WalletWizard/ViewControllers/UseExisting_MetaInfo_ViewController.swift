@@ -408,7 +408,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 	}
 	//
 	// Delegation - Interactions
-	func tapped_barButtonItem_cancel()
+	@objc func tapped_barButtonItem_cancel()
 	{
 		self.wizardController._fromScreen_userPickedCancel()
 	}

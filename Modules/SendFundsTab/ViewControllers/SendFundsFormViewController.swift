@@ -955,18 +955,18 @@ extension SendFundsForm
 		}
 		//
 		// Delegation - Interactions
-		func tapped_rightBarButtonItem()
+		@objc func tapped_rightBarButtonItem()
 		{
 			self.aFormSubmissionButtonWasPressed()
 		}
 		//
-		func addPaymentID_tapped()
+		@objc func addPaymentID_tapped()
 		{
 			self.set_addPaymentID_buttonView(isHidden: true)
 			self.set_manualPaymentIDField(isHidden: false)
 		}
 		//
-		func useCamera_tapped()
+		@objc func useCamera_tapped()
 		{
 			let viewController = QRCodeScanningCameraViewController()
 			if let error = viewController.didFatalErrorOnInit {
@@ -1011,7 +1011,7 @@ extension SendFundsForm
 				completion: nil
 			)
 		}
-		func chooseFile_tapped()
+		@objc func chooseFile_tapped()
 		{
 			guard UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) else {
 				let alertController = UIAlertController(
@@ -1230,19 +1230,17 @@ extension SendFundsForm
 		}
 		//
 		// Delegation - Notifications
-		@objc
-		func PasswordController_willDeconstructBootedStateAndClearPassword()
+		@objc func PasswordController_willDeconstructBootedStateAndClearPassword()
 		{
 			self._clearForm()
 			self._tearDownAnyImagePickerController(animated: false)
 			//
 			// should already have popped to root thanks to root tab bar vc
 		}
-		@objc
-		func PasswordController_didDeconstructBootedStateAndClearPassword()
+		@objc func PasswordController_didDeconstructBootedStateAndClearPassword()
 		{
 		}
-		func URLOpening_saysTimeToHandleReceivedMoneroURL(_ notification: Notification)
+		@objc func URLOpening_saysTimeToHandleReceivedMoneroURL(_ notification: Notification)
 		{
 			let userInfo = notification.userInfo!
 			let url = userInfo[URLOpening.NotificationUserInfoKeys.url.key] as! URL
@@ -1255,7 +1253,7 @@ extension SendFundsForm
 			self.__shared_didPick(requestURIStringForAutofill: url.absoluteString)
 		}
 		//
-		func WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_ notification: Notification)
+		@objc func WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_ notification: Notification)
 		{
 			self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // whether we should force-dismiss these (create new contact) is debatable…
 			self.navigationController?.popToRootViewController(animated: false) // now pop pushed stack views - essential for the case they're viewing a transaction
@@ -1270,7 +1268,7 @@ extension SendFundsForm
 			let contact = notification.userInfo![WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
 			self.sendTo_inputView.pick(contact: contact) // simulate user picking the contact
 		}
-		func WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_ notification: Notification)
+		@objc func WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_ notification: Notification)
 		{
 			self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // whether we should force-dismiss these (create new contact) is debatable…
 			self.navigationController?.popToRootViewController(animated: false) // now pop pushed stack views - essential for the case they're viewing a transaction

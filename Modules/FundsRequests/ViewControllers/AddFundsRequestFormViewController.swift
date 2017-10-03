@@ -771,18 +771,18 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	}
 	//
 	// Delegation - Interactions
-	func tapped_rightBarButtonItem()
+	@objc func tapped_rightBarButtonItem()
 	{
 		self.aFormSubmissionButtonWasPressed()
 	}
-	func tapped_barButtonItem_cancel()
+	@objc func tapped_barButtonItem_cancel()
 	{
 		assert(self.navigationController!.presentingViewController != nil)
 		// we always expect self to be presented modally
 		self.navigationController?.dismiss(animated: true, completion: nil)
 	}
 	//
-	func createNewContact_tapped()
+	@objc func createNewContact_tapped()
 	{
 		let viewController = AddContactFromOtherTabFormViewController()
 		viewController.didSave_instance_fn =
@@ -793,7 +793,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		navigationController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
-	func addPaymentID_tapped()
+	@objc func addPaymentID_tapped()
 	{
 		self.set_manualPaymentIDField(isHidden: false)
 		self.addPaymentID_buttonView.isHidden = true

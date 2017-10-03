@@ -77,20 +77,20 @@ extension UICommonComponents.Form
 		//
 		var textFieldDidBeginEditing_fn: ((_ textField: UITextField) -> Void)?
 		var textFieldDidEndEditing_fn: ((_ textField: UITextField) -> Void)?
-		var didFinishTypingInInput_afterMediumDelay_fn: ((Void) -> Void)?
-		var didUpdateHeight_fn: ((Void) -> Void)?
+		var didFinishTypingInInput_afterMediumDelay_fn: (() -> Void)?
+		var didUpdateHeight_fn: (() -> Void)?
 		//
 		var didPickContact_fn: ((_ contact: Contact, _ doesNeedToResolveItsOAAddress: Bool) -> Void)?
 		//
-		var changedTextContent_fn: ((Void) -> Void)?
-		var clearedTextContent_fn: ((Void) -> Void)?
+		var changedTextContent_fn: (() -> Void)?
+		var clearedTextContent_fn: (() -> Void)?
 		var isValidatingOrResolvingNonZeroTextInput: Bool = false // internally managed; do not set
 		var hasValidTextInput_moneroAddress = false // internally managed; do not set
 		var hasValidTextInput_resolvedOAAddress = false // internally managed; do not set
-		var willValidateNonZeroTextInput_fn: ((Void) -> Void)?
-		var finishedValidatingTextInput_foundInvalidMoneroAddress_fn: ((Void) -> Void)?
+		var willValidateNonZeroTextInput_fn: (() -> Void)?
+		var finishedValidatingTextInput_foundInvalidMoneroAddress_fn: (() -> Void)?
 		var finishedValidatingTextInput_foundValidMoneroAddress_fn: ((_ detectedEmbedded_paymentID: MoneroPaymentID?) -> Void)?
-		var willBeginResolvingPossibleOATextInput_fn: ((Void) -> Void)?
+		var willBeginResolvingPossibleOATextInput_fn: (() -> Void)?
 		//
 		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
 		var oaResolve__success_fn: ((
@@ -817,7 +817,7 @@ extension UICommonComponents.Form
 			return true
 		}
 		var mediumDelay_waitingToFinishTypingTimer: Timer?
-		func inputField_editingChanged()
+		@objc func inputField_editingChanged()
 		{
 			do { // zeroing text input state
 				self.hasValidTextInput_moneroAddress = false
@@ -1063,7 +1063,7 @@ extension UICommonComponents.Form
 		//
 		// Properties
 		weak var contact: Contact? // in order to prevent deinit from occurring while property still set
-		var xButton_tapped_fn: ((Void) -> Void)!
+		var xButton_tapped_fn: (() -> Void)!
 		//
 		let backgroundImageView = UIImageView(image: UICommonComponents.PushButtonCells.Variant.utility.stretchableImage)
 		var emojiLabel = UILabel()
@@ -1245,20 +1245,20 @@ extension UICommonComponents.Form
 		}
 		//
 		// Delegation
-		func xButton_tapped()
+		@objc func xButton_tapped()
 		{
 			self.xButton_tapped_fn()
 		}
 		//
-		func willBeDeleted()
+		@objc func willBeDeleted()
 		{
 			self.xButton.sendActions(for: .touchUpInside) // simulate tap to unpick deleted contact - will clear
 		}
-		func willBeDeinitialized()
+		@objc func willBeDeinitialized()
 		{
 			self.xButton.sendActions(for: .touchUpInside) // simulate tap to unpick freed contact - will clear
 		}
-		func infoUpdated()
+		@objc func infoUpdated()
 		{
 			self.configureWithContact()
 		}

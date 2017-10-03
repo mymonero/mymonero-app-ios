@@ -59,7 +59,7 @@ extension SendFundsForm
 			//
 			// Process callbacks
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
-			var preSuccess_passedValidation_willBeginSending: (Void) -> Void
+			var preSuccess_passedValidation_willBeginSending: () -> Void
 			var success_fn: (
 				_ mockedTransaction: MoneroHistoricalTransactionRecord,
 				_ isXMRAddressIntegrated: Bool,

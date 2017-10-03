@@ -71,8 +71,8 @@ class ThemeController
 		UINavigationBar.appearance().isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars
 		UINavigationBar.appearance().titleTextAttributes =
 		[
-			NSFontAttributeName: UIFont.middlingBoldSansSerif,
-			NSForegroundColorAttributeName: UIColor.normalNavigationBarTitleColor
+			NSAttributedStringKey.font: UIFont.middlingBoldSansSerif,
+			NSAttributedStringKey.foregroundColor: UIColor.normalNavigationBarTitleColor
 		]
 		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
@@ -100,8 +100,8 @@ class ThemeController
 		let navigationBar = viewController.navigationController!.navigationBar
 		navigationBar.titleTextAttributes =
 		[
-			NSFontAttributeName: UIFont.middlingBoldSansSerif,
-			NSForegroundColorAttributeName: titleTextColor ?? UIColor.normalNavigationBarTitleColor
+			NSAttributedStringKey.font: UIFont.middlingBoldSansSerif,
+			NSAttributedStringKey.foregroundColor: titleTextColor ?? UIColor.normalNavigationBarTitleColor
 		]
 
 	}
@@ -202,38 +202,38 @@ extension UIFont
 	// Sans Serif - (systemFont should be "San Francisco")
 	static var smallRegularSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightRegular)
+		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.regular)
 	}
 	static var smallSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightSemibold)
+		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.semibold)
 	}
 	static var smallMediumSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightMedium)
+		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.medium)
 	}
 	static var smallBoldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFontWeightBold)
+		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.bold)
 	}
 	static var middlingBoldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightBold)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.bold)
 	}
 	static var middlingMediumSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightMedium)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.medium)
 	}
 	static var middlingSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightSemibold)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.semibold)
 	}
 	static var middlingRegularSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightRegular)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.regular)
 	}
 	static var middlingButtonContentSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFontWeightSemibold)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.semibold)
 	}
 }

@@ -162,8 +162,7 @@ class UserIdle: NSObject
 	}
 	//
 	// Delegation - Notifications
-	@objc
-	fileprivate func MMApplication_didSendEvent(_ notification: Notification)
+	@objc fileprivate func MMApplication_didSendEvent(_ notification: Notification)
 	{
 		self._idleBreakingActionOccurred()
 		// TODO: also detect when app is being controlled w/o touching the screen - e.g. via Simulator keyboard (or perhaps external)…

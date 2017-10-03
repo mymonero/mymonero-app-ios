@@ -103,7 +103,7 @@ class ContactsListViewController: ListViewController
 	}
 	//
 	// Delegation - Interactions
-	func addButton_tapped()
+	@objc func addButton_tapped()
 	{
 		let viewController = AddContactFromContactsTabFormViewController()
 		let modalViewController = UINavigationController(rootViewController: viewController)

@@ -326,7 +326,7 @@ extension WalletDetails
 		}
 		//
 		// Delegation - Interactions
-		func tapped_rightBarButtonItem()
+		@objc func tapped_rightBarButtonItem()
 		{
 			let viewController = EditWallet.ViewController(wallet: self.wallet)
 			let navigationController = UINavigationController(rootViewController: viewController)
@@ -525,15 +525,15 @@ extension WalletDetails
 		}
 		//
 		// Delegation - Notifications
-		func _wallet_loggedIn()
+		@objc func _wallet_loggedIn()
 		{
 			self.tableView.reloadData()
 		}
-		func _wallet_failedToLogIn()
+		@objc func _wallet_failedToLogIn()
 		{
 			self.tableView.reloadData()
 		}
-		func willBeDeleted()
+		@objc func willBeDeleted()
 		{
 			if self.navigationController!.topViewController! != self {
 				assert(false)
@@ -541,7 +541,7 @@ extension WalletDetails
 			}
 			self.navigationController!.popViewController(animated: true)
 		}
-		func infoUpdated()
+		@objc func infoUpdated()
 		{
 			self.set_navigationTitle()
 			self.tableView.reloadData()

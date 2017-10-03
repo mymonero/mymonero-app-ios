@@ -51,10 +51,10 @@ extension UICommonComponents
 		let label = UILabel()
 		var closeButton: UIButton?
 		//
-		var didHide: ((Void) -> Void)! // this is so we can route self.closeButton tap directly to clearAndHide() internally
+		var didHide: (() -> Void)! // this is so we can route self.closeButton tap directly to clearAndHide() internally
 		//
 		// Lifecycle - Init
-		init(mode: Mode, didHide: ((Void) -> Void)?)
+		init(mode: Mode, didHide: (() -> Void)?)
 		{
 			self.mode = mode
 			super.init(frame: .zero)
@@ -179,7 +179,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Interactions
-		func closeButton_tapped()
+		@objc func closeButton_tapped()
 		{
 			self.clearAndHide() // will notify parent/consumer so it can re-lay-itself-out
 		}

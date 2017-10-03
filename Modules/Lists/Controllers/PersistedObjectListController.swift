@@ -75,7 +75,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	var records = [PersistableObject]()
 	// Properties - Runtime
 	var hasBooted = false // can be set from true back to false
-	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
+	var __blocksWaitingForBootToExecute: [() -> Void]?
 	//
 	//
 	// Lifecycle - Init
@@ -288,7 +288,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Imperatives - Deferring execution
 	// NOTE: onceBooted() exists because waiting for a password to be entered by the user must be asynchronous
 	func onceBooted(
-		_ fn: @escaping ((Void) -> Void)
+		_ fn: @escaping (() -> Void)
 	)
 	{
 		if self.hasBooted == true {
@@ -374,8 +374,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	//
 	// Delegation - Notifications - Password Controller
-	@objc
-	func PasswordController_changedPassword()
+	@objc func PasswordController_changedPassword()
 	{
 		if self.hasBooted != true {
 			DDLog.Warn("Lists", "\(self) asked to change password but not yet booted.")
@@ -396,15 +395,13 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 			}
 		}
 	}
-	@objc
-	func PasswordController_willDeconstructBootedStateAndClearPassword()
+	@objc func PasswordController_willDeconstructBootedStateAndClearPassword()
 	{
 		self.records = [] // flash
 		self.hasBooted = false
 		// now we'll wait for the "did" event ---v before emiting anything like list updated, etc
 	}
-	@objc
-	func PasswordController_didDeconstructBootedStateAndClearPassword()
+	@objc func PasswordController_didDeconstructBootedStateAndClearPassword()
 	{
 		self._dispatchAsync_listUpdated_records() // manually emit so that the UI updates to empty list after the pw entry screen is shown
 		self.setup_tryToBoot() // this will re-request the pw and lead to loading records & booting self

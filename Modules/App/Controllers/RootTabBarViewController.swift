@@ -242,23 +242,23 @@ class RootTabBarViewController: UITabBarController
 	{ // if there are 0 wallets we don't want certain buttons to be enabled
 		self.setTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 	}
-	func URLOpening_saysTimeToHandleReceivedMoneroURL(_ notification: Notification)
+	@objc func URLOpening_saysTimeToHandleReceivedMoneroURL(_ notification: Notification)
 	{
 		self.selectTab_sendFunds()
 	}
-	func WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact()
+	@objc func WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact()
 	{
 		self.selectTab_sendFunds()
 	}
-	func WalletAppWalletActionsCoordinator_willTrigger_sendFundsFromWallet()
+	@objc func WalletAppWalletActionsCoordinator_willTrigger_sendFundsFromWallet()
 	{
 		self.selectTab_sendFunds()
 	}
-	func WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact()
+	@objc func WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact()
 	{
 		self.selectTab_fundsRequests()
 	}
-	func WalletAppWalletActionsCoordinator_willTrigger_receiveFundsToWallet()
+	@objc func WalletAppWalletActionsCoordinator_willTrigger_receiveFundsToWallet()
 	{
 		self.selectTab_fundsRequests()
 	}

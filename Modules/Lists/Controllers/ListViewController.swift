@@ -184,7 +184,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
 	}
 	//
 	// Delegation - Notifications
-	func PersistedObjectListController_Notifications_List_updated()
+	@objc func PersistedObjectListController_Notifications_List_updated()
 	{
 		self.configure_navigation_title()
 		self.configure_navigation_barButtonItems()

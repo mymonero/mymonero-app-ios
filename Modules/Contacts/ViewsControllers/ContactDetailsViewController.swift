@@ -192,7 +192,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	}
 	//
 	// Delegation
-	func tapped_rightBarButtonItem()
+	@objc func tapped_rightBarButtonItem()
 	{
 		let viewController = EditContactFormViewController(withContact: self.contact)
 		let presenting_viewController = UINavigationController(rootViewController: viewController)
@@ -200,7 +200,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 		self.navigationController!.present(presenting_viewController, animated: true, completion: nil)
 	}
 	//
-	func willBeDeleted()
+	@objc func willBeDeleted()
 	{
 		if self.navigationController!.topViewController! != self {
 			assert(false)
@@ -208,18 +208,18 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 		}
 		self.navigationController!.popViewController(animated: true)
 	}
-	func infoUpdated()
+	@objc func infoUpdated()
 	{
 		self.set_navigationTitle()
 		self.configureSectionsWithObject()
 	}
 	//
 	// Delegation - Interactions - Action buttons
-	func send_tapped()
+	@objc func send_tapped()
 	{
 		WalletAppContactActionsCoordinator.Trigger_sendFunds(toContact: self.contact)
 	}
-	func request_tapped()
+	@objc func request_tapped()
 	{
 		WalletAppContactActionsCoordinator.Trigger_requestFunds(fromContact: self.contact)
 	}

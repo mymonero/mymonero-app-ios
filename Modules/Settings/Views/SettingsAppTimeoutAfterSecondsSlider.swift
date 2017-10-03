@@ -309,7 +309,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
     }
     //
 	// Delegation - Interactions
-    func valueChanged()
+	@objc func valueChanged()
 	{
 		do { // update local state
 			switch (self.value) { // determine stepping category

@@ -407,19 +407,19 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	{
 		self.aFormSubmissionButtonWasPressed()
 	}
-	func tapped_barButtonItem_about()
+	@objc func tapped_barButtonItem_about()
 	{
 		let viewController = AboutMyMoneroViewController()
 		let navigationController = UINavigationController(rootViewController: viewController)
 		navigationController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
-	}
+	} 
 	//
-	func changePasswordButton_tapped()
+	@objc func changePasswordButton_tapped()
 	{
 		PasswordController.shared.initiateChangePassword()
 	}
-	func deleteButton_tapped()
+	@objc func deleteButton_tapped()
 	{
 		let alertController = UIAlertController(
 			title: NSLocalizedString("Delete everything?", comment: ""),
@@ -450,7 +450,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	}
 	//
 	var _timerToSave_addressEditingChanged: Timer?
-	func address_inputView__editingChanged()
+	@objc func address_inputView__editingChanged()
 	{
 		self.tearDown_timerToSave_addressEditingChanged()
 		//

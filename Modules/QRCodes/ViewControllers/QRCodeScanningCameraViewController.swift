@@ -48,7 +48,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	// Properties - Settable by instantiator
 	var shouldVibrateOnFirstScan = true // possibly have setting to turn this off
 	//
-	var didCancel_fn: ((Void) -> Void)?
+	var didCancel_fn: (() -> Void)?
 	var didLocateQRCodeMessageString_fn: ((String) -> Void)?
 	//
 	// Properties - Runtime
@@ -74,12 +74,20 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	}
 	func setup_views()
 	{
+		guard let captureDevice = AVCaptureDevice.default(for: .video) else {
+			self.didFatalErrorOnInit = NSError(
+				domain: "QRCodes",
+				code: -1,
+				userInfo:
+				[
+					NSLocalizedDescriptionKey: NSLocalizedString("Unable to get capture device", comment: "")
+				]
+			)
+			return
+		}
 		do {
 			self.view.backgroundColor = .black
 		}
-		let captureDevice = AVCaptureDevice.defaultDevice(
-			withMediaType: AVMediaTypeVideo
-		)
 		do {
 			let input = try AVCaptureDeviceInput(device: captureDevice)
 			let session = AVCaptureSession()
@@ -93,15 +101,12 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 			let output = AVCaptureMetadataOutput()
 			self.captureSession.addOutput(output) // must add first before setting metadataObjectTypes
 			output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-			output.metadataObjectTypes = [ AVMetadataObjectTypeQRCode ]
+			output.metadataObjectTypes = [ AVMetadataObject.ObjectType.qr ]
 		}
 		do {
-			guard let layer = AVCaptureVideoPreviewLayer(session: captureSession) else {
-				// TODO: error?
-				return
-			}
+			let layer = AVCaptureVideoPreviewLayer(session: captureSession) // no longer optional, no need for guard
 			self.videoPreviewLayer = layer
-			layer.videoGravity = AVLayerVideoGravityResizeAspectFill
+			layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
 			self.view.layer.addSublayer(layer)
 		}
 		do {
@@ -148,6 +153,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	{
 		super.viewDidLayoutSubviews()
 		//
+		assert(self.videoPreviewLayer != nil)
 		self.videoPreviewLayer.frame = view.layer.bounds		
 	}
 	//
@@ -185,7 +191,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 			return
 		}
 		let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
-		if metadataObj.type != AVMetadataObjectTypeQRCode {
+		if metadataObj.type != AVMetadataObject.ObjectType.qr {
 			assert(false)
 			return
 		}

@@ -118,7 +118,7 @@ class WalletsListViewController: ListViewController
 	}
 	//
 	// Delegation - Interactions
-	func addButton_tapped()
+	@objc func addButton_tapped()
 	{
 		self._presentAddWalletWizard(inTaskMode: .pickCreateOrUseExisting)
 	}

@@ -154,11 +154,11 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 	}
 	//
 	// Delegation - Interactions
-	func swipedDown()
+	@objc func swipedDown()
 	{
 		self.navigationController!.dismiss(animated: true, completion: nil)
 	}
-	func tapped()
+	@objc func tapped()
 	{
 		self.navigationController!.dismiss(animated: true, completion: nil)
 	}
