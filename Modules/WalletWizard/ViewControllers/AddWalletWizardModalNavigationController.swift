@@ -94,7 +94,7 @@ class AddWalletWizardModalNavigationController: UINavigationController
 	var current_wizardTaskMode_stepIdx: Int!
 	//
 	// Properties - Settable by consumer
-	var willDismiss_fn: ((Void) -> Void)?
+	var willDismiss_fn: (() -> Void)?
 	//
 	// Lifecycle - Init
 	init(taskMode: TaskMode)
@@ -222,7 +222,7 @@ class AddWalletWizardModalNavigationController: UINavigationController
 		self.walletCreation_metaInfo_color = color
 		self.proceedToNextStep()
 	}
-	private func __generateWallet(_ fn: @escaping ((Void) -> Void))
+	private func __generateWallet(_ fn: @escaping (() -> Void))
 	{
 		WalletsListController.shared.CreateNewWallet_NoBootNoListAdd
 			{ [unowned self] (err_str, walletInstance) in

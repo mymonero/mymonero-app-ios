@@ -196,7 +196,7 @@ extension UICommonComponents
 		func scrollRectToVisible(
 			toBeVisible_frame__absolute: CGRect,
 			atEdge scrollEdge: UICommonComponents.Form.InputScrollEdge,
-			finished_fn: @escaping ((Void) -> Void)
+			finished_fn: @escaping (() -> Void)
 		)
 		{
 			let visibleScroll_rect = self.visibleScroll_rect
@@ -315,7 +315,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Internal/Convenience - Field interactions
-		func aField_editingChanged()
+		@objc func aField_editingChanged()
 		{
 			self.set_isFormSubmittable_needsUpdate()
 		}
@@ -378,7 +378,7 @@ extension UICommonComponents
 		// Delegation - Notifications - Keyboard
 		var keyboardIsShowing: Bool = false
 		var keyboardHeight: CGFloat?
-		func keyboardWillShow(notification: Notification)
+		@objc func keyboardWillShow(notification: Notification)
 		{
 			let userInfo = notification.userInfo!
 			if self.keyboardIsShowing == true { // this actually happens when the keyboard is already showing and fields are just switched
@@ -392,7 +392,7 @@ extension UICommonComponents
 			// configuration
 			self.configure_scrollView_contentInset()
 		}
-		func keyboardWillHide(notification: Notification)
+		@objc func keyboardWillHide(notification: Notification)
 		{
 			if self.keyboardIsShowing == false { // this actually happens on launch in the Simulator when a text field is shown and focused immediately, e.g. pw entry, but the software keyboard is not to be shown
 				return
@@ -788,8 +788,8 @@ extension UICommonComponents
 			let range = NSRange(location: 0, length: text.characters.count)
 			string.addAttributes(
 				[
-					NSForegroundColorAttributeName: UIColor(rgb: 0x6B696B),
-					NSFontAttributeName: UIFont.middlingRegularMonospace // light is too light
+					NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x6B696B),
+					NSAttributedStringKey.font: UIFont.middlingRegularMonospace // light is too light
 				],
 				range: range
 			)
@@ -892,7 +892,7 @@ extension UICommonComponents
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
-				NSParagraphStyleAttributeName,
+				NSAttributedStringKey.paragraphStyle,
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.characters.count)
 			)
@@ -945,7 +945,7 @@ extension UICommonComponents
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
-				NSParagraphStyleAttributeName,
+				NSAttributedStringKey.paragraphStyle,
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.characters.count)
 			)

@@ -736,10 +736,10 @@ final class PasswordController
 	//
 	// Imperatives - Execution deferment
 	//
-	var __blocksWaitingForBootToExecute: [(Void) -> Void]?
+	var __blocksWaitingForBootToExecute: [() -> Void]?
 	// NOTE: onceBooted() exists because even though init()->setup() is synchronous, we need to be able to tear down and reconstruct the passwordController booted state, e.g. on user idle and delete everything
 	func onceBooted(
-		_ fn: @escaping ((Void) -> Void)
+		_ fn: @escaping (() -> Void)
 	)
 	{
 		if self.hasBooted == true {

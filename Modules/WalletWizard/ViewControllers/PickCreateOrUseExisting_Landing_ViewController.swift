@@ -112,14 +112,14 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 	}
 	//
 	// Delegation - Actions Buttons - Interactions
-	func useExisting_tapped()
+	@objc func useExisting_tapped()
 	{
 		self.wizardController.patchToDifferentWizardTaskMode_byPushingScreen(
 			patchTo_wizardTaskMode: .afterPick_useExisting,
 			atIndex: 1 // first screen after 0 - maintain ability to hit 'back'
 		)
 	}
-	func createNew_tapped()
+	@objc func createNew_tapped()
 	{
 		self.wizardController.patchToDifferentWizardTaskMode_byPushingScreen(
 			patchTo_wizardTaskMode: .afterPick_createWallet,
@@ -128,7 +128,7 @@ class PickCreateOrUseExisting_Landing_ViewController: AddWalletWizardScreen_Base
 	}
 	//
 	// Delegation - Navigation Bar - Interactions
-	func tapped_leftBarButtonItem()
+	@objc func tapped_leftBarButtonItem()
 	{
 		self.wizardController._fromScreen_userPickedCancel()
 	}

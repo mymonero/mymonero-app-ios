@@ -199,15 +199,13 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 	}
 	//
 	// Delegation - Navigation bar buttons
-	@objc
-	func tapped_leftBarButtonItem()
+	@objc func tapped_leftBarButtonItem()
 	{
 		if let cb = self.cancelButtonPressed_cb {
 			cb()
 		}
 	}
-	@objc
-	func tapped_rightBarButtonItem()
+	@objc func tapped_rightBarButtonItem()
 	{
 		self._tryToSubmitForm()
 	}

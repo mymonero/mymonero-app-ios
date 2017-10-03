@@ -190,8 +190,7 @@ class Wallet_HostPollingController
 	//
 	// Delegation
 	// 
-	@objc
-	func __timerFired()
+	@objc func __timerFired()
 	{
 		self.performRequests()
 	}

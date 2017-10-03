@@ -47,7 +47,7 @@ extension EditWallet
 			//
 			// Process callbacks
 //			var preInputValidation_terminal_validationMessage_fn: (_ localizedString: String) -> Void
-//			var passedInputValidation_fn: (Void) -> Void
+//			var passedInputValidation_fn: () -> Void
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void // aka error
 			//
 			var success_fn: (_ instance: Wallet) -> Void

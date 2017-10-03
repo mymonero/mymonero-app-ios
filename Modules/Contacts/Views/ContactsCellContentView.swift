@@ -160,15 +160,15 @@ class ContactCellContentView: UIView
 	}
 	//
 	// Delegation - Notifications
-	func _infoUpdated()
+	@objc func _infoUpdated()
 	{
 		self._configureUI()
 	}
-	func _willBeDeleted()
+	@objc func _willBeDeleted()
 	{
 		self.tearDown_object() // stop observing, release
 	}
-	func _willBeDeinitialized()
+	@objc func _willBeDeinitialized()
 	{
 		self.tearDown_object() // stop observing, release
 	}

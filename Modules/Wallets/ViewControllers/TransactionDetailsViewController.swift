@@ -267,7 +267,7 @@ extension TransactionDetails
 		}
 		//
 		// Delegation - Notifications
-		func wallet_transactionsChanged()
+		@objc func wallet_transactionsChanged()
 		{
 			var updated_transaction: MoneroHistoricalTransactionRecord? // to find
 			do {

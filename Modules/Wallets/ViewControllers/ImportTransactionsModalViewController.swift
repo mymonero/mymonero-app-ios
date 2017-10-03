@@ -554,11 +554,11 @@ extension ImportTransactionsModal
 		}
 		//
 		// Delegation - Interactions
-		func tapped_rightBarButtonItem()
+		@objc func tapped_rightBarButtonItem()
 		{
 			self.aFormSubmissionButtonWasPressed()
 		}
-		func tapped_barButtonItem_cancel()
+		@objc func tapped_barButtonItem_cancel()
 		{
 			assert(self.navigationController!.presentingViewController != nil)
 			// we always expect self to be presented modally

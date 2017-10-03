@@ -84,7 +84,7 @@ class AddWalletWizardScreen_BaseViewController: UICommonComponents.FormViewContr
 	}
 	//
 	// Delegation - Interactions
-	func tapped_nextBarButtonItem()
+	@objc func tapped_nextBarButtonItem()
 	{
 		self.aFormSubmissionButtonWasPressed() 
 	}

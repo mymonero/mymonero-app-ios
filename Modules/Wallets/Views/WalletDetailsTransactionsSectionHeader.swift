@@ -53,7 +53,7 @@ extension WalletDetails
 		}
 		//
 		// Properties - Settable after init
-		var importTransactions_tapped_fn: ((Void) -> Void)?
+		var importTransactions_tapped_fn: (() -> Void)?
 		//
 		// Properties - Settable via init
 		var mode: Mode
@@ -160,7 +160,7 @@ extension WalletDetails
 		}
 		//
 		// Delegation - Interactions
-		func importTransactions_tapped()
+		@objc func importTransactions_tapped()
 		{
 			if let fn = self.importTransactions_tapped_fn {
 				fn()

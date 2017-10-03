@@ -118,13 +118,13 @@ extension WalletDetails
 			}
 			//
 			// Delegation - Interactions
-			func send_tapped()
+			@objc func send_tapped()
 			{
 				let configuration = self.configuration!
 				let wallet = configuration.dataObject as! Wallet
 				WalletAppWalletActionsCoordinator.Trigger_sendFunds(fromWallet: wallet)
 			}
-			func receive_tapped()
+			@objc func receive_tapped()
 			{
 				let configuration = self.configuration!
 				let wallet = configuration.dataObject as! Wallet

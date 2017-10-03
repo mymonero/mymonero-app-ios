@@ -71,7 +71,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation
-		func did_touchUpInside()
+		@objc func did_touchUpInside()
 		{
 		}
 	}

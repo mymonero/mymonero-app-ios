@@ -265,16 +265,16 @@ extension EditWallet
 		}
 		//
 		// Delegation - Interactions
-		func tapped_barButtonItem_cancel()
+		@objc func tapped_barButtonItem_cancel()
 		{
 			self.dismissModal()
 		}
-		func tapped_barButtonItem_save()
+		@objc func tapped_barButtonItem_save()
 		{
 			self.aFormSubmissionButtonWasPressed()
 		}
 		//
-		func deleteButton_tapped()
+		@objc func deleteButton_tapped()
 		{
 			let alertController = UIAlertController(
 				title: NSLocalizedString("Remove this wallet?", comment: ""),

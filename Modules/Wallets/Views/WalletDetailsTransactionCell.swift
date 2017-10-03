@@ -315,7 +315,7 @@ extension WalletDetails
 			}
 			//
 			// Delegation - Notifications
-			func willBeDeinitialized()
+			@objc func willBeDeinitialized()
 			{
 				self.tearDown_object() // stop observing/free
 			}

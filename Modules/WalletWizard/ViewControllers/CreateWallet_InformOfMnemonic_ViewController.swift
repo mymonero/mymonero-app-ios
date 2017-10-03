@@ -254,16 +254,16 @@ extension CreateWallet_InformOfMnemonic
 				string: text,
 				attributes:
 				[
-					NSForegroundColorAttributeName: UIColor(rgb: 0x9E9C9E),
-					NSFontAttributeName: UIFont.middlingRegularMonospace,
-					NSParagraphStyleAttributeName: paragraphStyle
+					NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x9E9C9E),
+					NSAttributedStringKey.font: UIFont.middlingRegularMonospace,
+					NSAttributedStringKey.paragraphStyle: paragraphStyle
 				]
 			)
 			self.label.attributedText = attributedString
 		}
 		//
 		// Delegation - Interactions
-		func did_longPress(_ recognizer: UIGestureRecognizer)
+		@objc func did_longPress(_ recognizer: UIGestureRecognizer)
 		{
 			guard recognizer.state == .began else { // instead of .recognized - so user knows asap that it's long-pressable
 				return

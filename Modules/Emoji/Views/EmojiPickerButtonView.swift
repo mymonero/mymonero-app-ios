@@ -48,7 +48,7 @@ struct EmojiUI
 		static let visual__arrowRightPadding: CGFloat = 8
 		//
 		// Properties
-		var willPresentPopover_fn: ((Void) -> Void)?
+		var willPresentPopover_fn: (() -> Void)?
 		//
 		// Lifecycle - Init
 		init()
@@ -138,7 +138,7 @@ struct EmojiUI
 		//
 		// Delegation - Interactions
 		var popover: EmojiPickerPopoverView?
-		func tapped()
+		@objc func tapped()
 		{
 			assert(self.popover == nil)
 			// the popover should be guaranteed not to be showing here… 
@@ -175,7 +175,7 @@ struct EmojiUI
 		}
 		//
 		// Delegation - Notifications
-		func willDeconstructBootedStateAndClearPassword()
+		@objc func willDeconstructBootedStateAndClearPassword()
 		{ // just in case 
 			if let popover = self.popover {
 				popover.dismiss()

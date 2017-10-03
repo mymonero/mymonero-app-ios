@@ -60,13 +60,13 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		//
 		// Process callbacks
 		var preInputValidation_terminal_validationMessage_fn: (_ localizedString: String) -> Void
-		var passedInputValidation_fn: (Void) -> Void
+		var passedInputValidation_fn: () -> Void
 		var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
 		//
 		var feedBackOverridingPaymentIDValue_fn: (_ overiding_paymentID: MoneroPaymentID?) -> Void // if nil, clear the paymentID
 		//
-		var didBeginResolving_fn: (Void) -> Void
-		var didEndResolving_fn: (Void) -> Void
+		var didBeginResolving_fn: () -> Void
+		var didEndResolving_fn: () -> Void
 		//
 		var success_fn: (_ instance: Contact) -> Void
 	}

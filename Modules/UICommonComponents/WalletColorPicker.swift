@@ -366,7 +366,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Interactions - Gestures
-		func tapped()
+		@objc func tapped()
 		{
 			if self.isEnabled == true {
 				self.tapped_fn(self)

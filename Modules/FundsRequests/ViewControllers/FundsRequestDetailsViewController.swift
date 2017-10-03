@@ -192,18 +192,18 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		let value = self.new_requesteeMessagePlaintextString
 		let value_NSString = value as NSString
-		let attributes: [String: Any] = [:]
+		let attributes: [NSAttributedStringKey : Any] = [:]
 		let attributedString = NSMutableAttributedString(string: value, attributes: attributes)
 		let linkColor = UIColor.white
 		attributedString.addAttributes(
 			[
-				NSForegroundColorAttributeName: linkColor
+				NSAttributedStringKey.foregroundColor: linkColor
 			],
 			range: value_NSString.range(of: self.fundsRequest.new_URI.absoluteString)
 		)
 		attributedString.addAttributes(
 			[
-				NSForegroundColorAttributeName: linkColor
+				NSAttributedStringKey.foregroundColor: linkColor
 			],
 			range: value_NSString.range(of: Homepage.appDownloadLink_fullURL)
 		)
@@ -251,7 +251,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	}
 	//
 	// Delegation
-	func deleteButton_tapped()
+	@objc func deleteButton_tapped()
 	{
 		let alertController = UIAlertController(
 			title: NSLocalizedString("Delete this request?", comment: ""),
@@ -287,7 +287,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	}
 	//
 	// Delegation - Notifications - Object
-	func wasDeleted()
+	@objc func wasDeleted()
 	{ // was instead of willBe b/c willBe is premature and won't let us see a returned deletion error 
 		// but we must perform this method's operations on next tick so as not to prevent delete()'s err_str from being returned before we can perform them
 		DispatchQueue.main.async {

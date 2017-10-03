@@ -347,12 +347,12 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 	}
 	//
 	// Delegation - Interactions
-	func tryAgain_tapped()
+	@objc func tryAgain_tapped()
 	{
 		self.set(hasUserJustSubmittedIncorrectMnemonic: false) // reset
 		self.selectedWordsView.deselectAllWords()
 	}
-	func startOver_tapped()
+	@objc func startOver_tapped()
 	{
 		self.wizardController.regenerateWalletAndPopToInformOfMnemonicScreen()
 	}
@@ -533,7 +533,7 @@ extension CreateWallet_ConfirmMnemonic
 		}
 		//
 		// Delegation - Interactions
-		func tapped()
+		@objc func tapped()
 		{
 			if self.mode == .inSelected_butNotDeselectable {
 				DDLog.Warn("WalletWizard", "WordView tapped but not deselectable.")

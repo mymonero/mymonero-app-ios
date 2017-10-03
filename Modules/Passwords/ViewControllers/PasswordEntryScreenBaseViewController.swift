@@ -40,7 +40,7 @@ class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewControll
 	//
 	// Consumers: set these after init
 	var userSubmittedNonZeroPassword_cb: ((_ password: PasswordController.Password) -> Void)!
-	var cancelButtonPressed_cb: ((Void) -> Void)!
+	var cancelButtonPressed_cb: (() -> Void)!
 	//
 	init(isForChangingPassword: Bool)
 	{

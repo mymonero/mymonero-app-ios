@@ -202,21 +202,21 @@ extension WalletDetails
 						finalized_paddingZeros_string = ""
 					}
 				}
-				let attributes: [String: Any] = [:]
+				let attributes: [NSAttributedStringKey : Any] = [:]
 				let attributedText = NSMutableAttributedString(string: "\(finalized_main_string)\(finalized_paddingZeros_string)", attributes: attributes)
 				let mainSectionColor = self.mainSectionColor(withWallet: wallet)
 				let paddingZeroesSectionColor = self.paddingZeroesSectionColor(withWallet: wallet)
 				do {
 					attributedText.addAttributes(
 						[
-							NSForegroundColorAttributeName: mainSectionColor,
+							NSAttributedStringKey.foregroundColor: mainSectionColor,
 						],
 						range: NSMakeRange(0, finalized_main_string.characters.count)
 					)
 					if finalized_paddingZeros_string.characters.count > 0 {
 						attributedText.addAttributes(
 							[
-								NSForegroundColorAttributeName: paddingZeroesSectionColor,
+								NSAttributedStringKey.foregroundColor: paddingZeroesSectionColor,
 							],
 							range: NSMakeRange(
 								finalized_main_string.characters.count,

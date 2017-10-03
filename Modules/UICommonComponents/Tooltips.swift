@@ -52,7 +52,7 @@ extension UICommonComponents
 		var tip: PopTip?
 		//
 		var tooltipDirectionFromOrigin: PopTipDirection = .up // settable by instantiator
-		var willPresentTipView_fn: ((Void) -> Void)?
+		var willPresentTipView_fn: (() -> Void)?
 		//
 		// Lifecycle - Init
 		init(tooltipText: String) {
@@ -194,7 +194,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Interactions
-		func tapped()
+		@objc func tapped()
 		{
 			if self.tip != nil {
 				self._dismiss(dismissEvenIfCurrentlyAnimating: false) // false b/c else they can tap twice and it'll just appear to cancel animations and instantly disappear
@@ -204,7 +204,7 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Notifications
-		func willDeconstructBootedStateAndClearPassword()
+		@objc func willDeconstructBootedStateAndClearPassword()
 		{
 			self._dismiss(dismissEvenIfCurrentlyAnimating: true) // if necessary
 		}

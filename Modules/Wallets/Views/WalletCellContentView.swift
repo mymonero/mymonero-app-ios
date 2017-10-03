@@ -259,11 +259,11 @@ class WalletCellContentView: UIView
 	{
 		self.__configureUIWithWallet_swatchColor()
 	}
-	func _willBeDeleted()
+	@objc func _willBeDeleted()
 	{
 		self.tearDown_object() // stopObserving/release
 	}
-	func _willBeDeinitialized()
+	@objc func _willBeDeinitialized()
 	{
 		self.tearDown_object() // stopObserving/release
 	}

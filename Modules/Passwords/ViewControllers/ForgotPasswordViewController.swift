@@ -115,11 +115,11 @@ class ForgotPasswordViewController: UIViewController
 	}
 	//
 	// Delegation - Interactions
-	func nevermind_tapped()
+	@objc func nevermind_tapped()
 	{
 		self.navigationController?.popViewController(animated: true)
 	}
-	func deleteEverything_tapped()
+	@objc func deleteEverything_tapped()
 	{
 		let alertController = UIAlertController(
 			title: NSLocalizedString("Delete everything?", comment: ""),
