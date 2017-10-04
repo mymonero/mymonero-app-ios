@@ -21,6 +21,10 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		//
 		// UI tests must launch the application that they test.
 		let app = XCUIApplication()
+		app.launchEnvironment =
+		[
+			AppProcess.EnvironmentKeys.isBeingRunByUIAutomation.key: AppProcess.EnvironmentKeyValues.isBeingRunByUIAutomation_enabled.value // so we can turn off things like autocorrect which mess up our entered values when we do typeText, leading to failed attempt to inject text by way of programmatic copy-paste
+		]
 		setupSnapshot(app)
 		app.launch()
 	}
@@ -33,15 +37,6 @@ class MyMoneroScreenshotsUITests: XCTestCase
 	func tapNext(inApp app: XCUIApplication, atBarTitle barTitle: String)
 	{
 		app.navigationBars[barTitle].buttons["Next"].tap()
-	}
-	func inject(text: String, intoField field: XCUIElement)
-	{
-		let app = XCUIApplication()
-		field.tap()
-		UIPasteboard.general.string = text
-		field.doubleTap()
-		app.menuItems["Paste"].tap()
-
 	}
 	//
 	// Tests - Cases
@@ -86,19 +81,16 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		}
 		do {
 			let secretMnemonicTextArea = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"From your existing wallet").element
-//			secretMnemonicTextArea.tap()
-//			secretMnemonicTextArea.typeText("") // this is error prone as it trips autocorrect
-			self.inject(
-				text: "",
-				intoField: secretMnemonicTextArea
-			)
+			let mnemonicString = MyMoneroScreenshots_Constants.addExistingWallet_mnemonicString
+			assert(mnemonicString != "")
+			secretMnemonicTextArea.tap()
+			secretMnemonicTextArea.typeText(mnemonicString)
 			//
 			let forYourReferenceTextField = app.textFields["For your reference"]
-//			forYourReferenceTextField.tap()
-//			forYourReferenceTextField.typeText("Spending Cash") // this often trips autocorrect to screw up the text
-			self.inject(text: "Spending Cash", intoField: forYourReferenceTextField)
+			forYourReferenceTextField.tap()
+			forYourReferenceTextField.typeText("Spending Cash")
 			//
-			let colorButton = app.otherElements["walletColorOption.blue"]
+			let colorButton = app.buttons["walletColorOption.blue"]
 			colorButton.tap()
 			//
 			self.tapNext(inApp: app, atBarTitle: "Log Into Your Wallet")
@@ -120,7 +112,6 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		//
 		snapshot("02_Lightweight")
 	}
-	
 	func test_03_contacts()
 	{
 		let app = XCUIApplication()
@@ -129,16 +120,20 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		//
 		app.tabBars.children(matching: .button).element(boundBy: 3).tap()
 		app.navigationBars["Contacts"].buttons["addButtonIcon 10"].tap()
-		self.inject(
-			text: "Ric",
-			intoField: app.textFields["Enter name"]
-		)
-		self.inject(
-			text: "ric@spagni.net",
-			intoField: app.scrollViews.otherElements.textViews.staticTexts["Enter address, email, or domain"]
-		)
+		do {
+			let field = app.textFields["Enter name"]
+			field.tap()
+			field.typeText("Ric")
+		}
+		do {
+			let enterAddressEmailOrDomainTextView = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"Enter address, email, or domain").element
+			enterAddressEmailOrDomainTextView.tap()
+			enterAddressEmailOrDomainTextView.tap()
+			enterAddressEmailOrDomainTextView.tap()
+			app.scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .textView).element.typeText("ric@spagni.net")
+		}
 		app.navigationBars["New Contact"].buttons["Save"].tap()
-		
+		//
 		app.cells.element(boundBy: 0).tap() // tap on contacts list cell
 		//
 		snapshot("03_Contacts")
@@ -151,15 +146,20 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		app.navigationBars["Enter Password"].buttons["Next"].tap()
 		//
 		app.tabBars.children(matching: .button).element(boundBy: 3).tap() // tap on Contacts to add monero donation
+		//
 		app.navigationBars["Contacts"].buttons["addButtonIcon 10"].tap()
-		self.inject(
-			text: "The Monero Project",
-			intoField: app.textFields["Enter name"]
-		)
-		self.inject(
-			text: "donate@getmonero.org",
-			intoField: app.scrollViews.otherElements.textViews.staticTexts["Enter address, email, or domain"]
-		)
+		do {
+			let field = app.textFields["Enter name"]
+			field.tap()
+			field.typeText("The Monero Project")
+		}
+		do {
+			let enterAddressEmailOrDomainTextView = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"Enter address, email, or domain").element
+			enterAddressEmailOrDomainTextView.tap()
+			enterAddressEmailOrDomainTextView.tap()
+			enterAddressEmailOrDomainTextView.tap()
+			app.scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .textView).element.typeText("donate@getmonero.org")
+		}
 		app.navigationBars["New Contact"].buttons["Save"].tap()
 		//
 		sleep(3) // wait for DNS resolution to improve failure rate - is there a better way?
@@ -169,9 +169,11 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			field.tap()
 			field.typeText("1")
 		}
-		app.scrollViews.otherElements.textFields["Contact name or address/domain"].tap()
-		app.scrollViews.otherElements.tables.staticTexts["The Monero Project"].tap()
-		sleep(1) // wait for possible DNS resolution again
+		let elementsQuery = app.scrollViews.otherElements
+		elementsQuery.textFields["Contact name or address/domain"].tap()
+		sleep(1) // wait for results to show
+		elementsQuery.tables/*@START_MENU_TOKEN@*/.staticTexts["The Monero Project"]/*[[".cells[\"😀, The Monero Project\"].staticTexts[\"The Monero Project\"]",".cells[\"button.Optional(\\\"The Monero Project\\\")\"].staticTexts[\"The Monero Project\"]",".staticTexts[\"The Monero Project\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+		sleep(3) // wait for possible DNS resolution again
 		//
 		snapshot("04_Send")
 	}

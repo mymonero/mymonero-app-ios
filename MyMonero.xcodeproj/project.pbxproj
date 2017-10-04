@@ -233,6 +233,9 @@
 		9FD354171F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */; };
 		9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */; };
 		9FD70E091F1988FB000FE675 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD70E081F1988FB000FE675 /* Tables.swift */; };
+		9FE199251F846003003BE0DF /* MyMoneroScreenshots_Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */; };
+		9FE199271F848C1E003BE0DF /* AppProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199261F848C1E003BE0DF /* AppProcess.swift */; };
+		9FE199281F848E14003BE0DF /* AppProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199261F848C1E003BE0DF /* AppProcess.swift */; };
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
@@ -486,6 +489,8 @@
 		9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD70E081F1988FB000FE675 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
+		9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshots_Constants.swift; sourceTree = "<group>"; };
+		9FE199261F848C1E003BE0DF /* AppProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProcess.swift; sourceTree = "<group>"; };
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
@@ -811,6 +816,7 @@
 				9F7298BC1F329EE800CD59E1 /* main.swift */,
 				9F7298BA1F329EB900CD59E1 /* MMApplication.swift */,
 				9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */,
+				9FE199261F848C1E003BE0DF /* AppProcess.swift */,
 				9F7ADB031EBD30710073C2BB /* WindowController.swift */,
 				9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */,
 				9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */,
@@ -1321,6 +1327,7 @@
 			isa = PBXGroup;
 			children = (
 				9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */,
+				9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */,
 				9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */,
 				9FF6C9A81F7C919B00B20D40 /* Info.plist */,
 			);
@@ -1680,6 +1687,7 @@
 				9F33E6FD1F200CC000610662 /* TransactionDetailsViewController.swift in Sources */,
 				9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */,
 				9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */,
+				9FE199271F848C1E003BE0DF /* AppProcess.swift in Sources */,
 				9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */,
 				9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */,
 				9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */,
@@ -1724,7 +1732,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FF6C9A71F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift in Sources */,
+				9FE199251F846003003BE0DF /* MyMoneroScreenshots_Constants.swift in Sources */,
 				9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */,
+				9FE199281F848E14003BE0DF /* AppProcess.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

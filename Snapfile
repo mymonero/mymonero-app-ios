@@ -2,11 +2,9 @@
 
 # A list of devices you want to take the screenshots from
 devices([
-  # "iPhone X",
-  # "iPhone 8",
-  # "iPhone 8 Plus",
-  "iPhone 7",
-  # "iPhone 7 Plus",
+  "iPhone2017-C", #"iPhone X",
+  "iPhone2017-A", # "iPhone 8"
+  "iPhone2017-B", # "iPhone 8 Plus"
   "iPhone SE",
   "iPad (5th generation)",
   "iPad Pro (10.5-inch)"
@@ -25,6 +23,7 @@ scheme "MyMonero"
 output_directory "./screenshots"
 
 clear_previous_screenshots true
+concurrent_simulators false # doesn't seem to be able to handle it just yet
 
 workspace "./MyMonero.xcworkspace"
 
