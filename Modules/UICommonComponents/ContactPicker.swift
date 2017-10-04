@@ -1045,6 +1045,10 @@ extension UICommonComponents.Form
 		// Imperatives - Configuration
 		func configure(withContact contact: Contact)
 		{
+			self.isAccessibilityElement = true
+			self.accessibilityTraits = UIAccessibilityTraitButton
+			self.accessibilityIdentifier = "button.\(contact.fullname)" // just going to assume this is unique >_>
+			//
 			self.emojiLabel.text = contact.emoji
 			self.nameLabel.text = contact.fullname
 		}

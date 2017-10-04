@@ -2,7 +2,7 @@
 
 SNAPSHOT_FORCE_DELETE=true fastlane snapshot reset_simulators &&
 
-fastlane snapshot && 
+fastlane snapshot --stop_after_first_error && 
 
 cd ./screenshots && 
 

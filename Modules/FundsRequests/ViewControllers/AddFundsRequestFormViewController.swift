@@ -136,7 +136,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				placeholder: NSLocalizedString("Note about the transaction", comment: "")
 			)
 			let inputField = view
-			inputField.autocorrectionType = .default
+			inputField.autocorrectionType = AppProcess.isBeingRunByUIAutomation ? .no : .default // disabled under UI automation b/c it interferes with .typeText and the known fallback is too fragile
 			inputField.autocapitalizationType = .sentences
 			inputField.delegate = self
 			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
