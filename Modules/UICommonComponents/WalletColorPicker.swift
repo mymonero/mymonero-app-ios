@@ -270,7 +270,6 @@ extension UICommonComponents
 		init(color: Wallet.SwatchColor)
 		{
 			super.init(frame: .zero)
-			self.accessibilityIdentifier = "walletColorOption.\(color.colorName)"
 			self.color = color
 			self.setup()
 		}
@@ -281,6 +280,11 @@ extension UICommonComponents
 		{
 			self.backgroundColor = .contentBackgroundColor
 			self.isOpaque = true
+			//
+			self.isUserInteractionEnabled = true
+			self.isAccessibilityElement = true
+			self.accessibilityTraits = UIAccessibilityTraitButton
+			self.accessibilityIdentifier = "walletColorOption.\(color.colorName)"
 			do {
 				let view = self.iconView
 				view.configure(withSwatchColor: self.color)

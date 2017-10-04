@@ -26,3 +26,4 @@ Podfile.lock
 
 screenshots/en-US/*.png
 screenshots/screenshots.html
+MyMoneroScreenshotsUITests/MyMoneroScreenshots_Constants.swift
