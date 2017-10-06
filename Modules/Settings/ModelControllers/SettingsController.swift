@@ -73,7 +73,7 @@ class SettingsController: DeleteEverythingRegistrant
 	let setForbidden_DictKeys: [DictKey] = [ ._id ]
 	//
 	// Constants - Default values
-	let default_appTimeoutAfterS: TimeInterval = 45 // s …… 30 was a bit short for new users
+	let default_appTimeoutAfterS: TimeInterval = 90 // s …… 30 was a bit short for new users
 	//
 	// Properties - Runtime - Transient
 	var hasBooted = false
