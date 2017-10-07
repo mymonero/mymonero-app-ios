@@ -383,6 +383,17 @@ extension CreateWallet_ConfirmMnemonic
 			return l.uuid == r.uuid
 		}
 	}
+	static let numberOfMnemonicWordsRequiredForVerification = 7
+	static func wordsRequiredForVerification(fromMnemonicWords mnemonicWords: [MnemonicWordHandle]) -> [MnemonicWordHandle]
+	{
+		var requiredWords = [MnemonicWordHandle]()
+		for i in 0..<numberOfMnemonicWordsRequiredForVerification {
+			let word = mnemonicWords[i]
+			requiredWords.append(word)
+		}
+		return requiredWords
+	}
+	//
 	static func layOut(
 		wordViews: [WordView],
 		atXOffset xOffset: CGFloat,
@@ -555,7 +566,7 @@ extension CreateWallet_ConfirmMnemonic
 		var didDeselectWord_fn: ((MnemonicWordHandle) -> Void)!
 		var isEnabled = true
 		//
-		var mnemonicWords: [MnemonicWordHandle]
+		var correctSufficient_mnemonicWords: [MnemonicWordHandle]
 		var ordered_selectedWordViews = [WordView]()
 		//
 		// Lifecycle - Init
@@ -565,7 +576,9 @@ extension CreateWallet_ConfirmMnemonic
 			didDeselectWord_fn: @escaping ((MnemonicWordHandle) -> Void)
 		)
 		{
-			self.mnemonicWords = mnemonicWords
+			self.correctSufficient_mnemonicWords = CreateWallet_ConfirmMnemonic.wordsRequiredForVerification(
+				fromMnemonicWords: mnemonicWords
+			)
 			self.didSelectWord_fn = didSelectWord_fn
 			self.didDeselectWord_fn = didDeselectWord_fn
 			super.init(frame: .zero)
@@ -594,14 +607,14 @@ extension CreateWallet_ConfirmMnemonic
 			return words
 		}
 		var hasUserSelectedAllWords: Bool {
-			return (self.ordered_selectedWordViews.count == self.mnemonicWords.count)
+			return (self.ordered_selectedWordViews.count == self.correctSufficient_mnemonicWords.count)
 		}
 		var hasUserSelectedTheCorrectMnemonicWordOrdering: Bool {
 			if self.hasUserSelectedAllWords == false {
 				return false
 			}
 			for (idx, selectedWordView) in self.ordered_selectedWordViews.enumerated() {
-				let correctWordHandleForIdx = self.mnemonicWords[idx]
+				let correctWordHandleForIdx = self.correctSufficient_mnemonicWords[idx]
 				if correctWordHandleForIdx.word != selectedWordView.wordHandle.word {
 					// here, do not compare wordHandles, since that will check UUID equality, which is not what we want, in case user selects the same word in a different order
 					return false
@@ -692,16 +705,17 @@ extension CreateWallet_ConfirmMnemonic
 	{
 		//
 		// Properties
-		var mnemonicWords: [MnemonicWordHandle]!
-		var shuffled_mnemonicWords: [MnemonicWordHandle]!
+		var shuffled_sufficient_mnemonicWords: [MnemonicWordHandle]!
 		var selectedWordsView: SelectedWordsView!
 		var wordViews = [WordView]()
 		//
 		// Lifecycle - Init
 		init(mnemonicWords: [MnemonicWordHandle], selectedWordsView: SelectedWordsView)
 		{
-			self.mnemonicWords = mnemonicWords
-			self.shuffled_mnemonicWords = mnemonicWords.sorted {
+			let sufficient_mnemonicWords = CreateWallet_ConfirmMnemonic.wordsRequiredForVerification(
+				fromMnemonicWords: mnemonicWords
+			)
+			self.shuffled_sufficient_mnemonicWords = sufficient_mnemonicWords.sorted {
 				$0.word.localizedCaseInsensitiveCompare($1.word) == ComparisonResult.orderedAscending
 			}
 			self.selectedWordsView = selectedWordsView
@@ -718,7 +732,7 @@ extension CreateWallet_ConfirmMnemonic
 				//
 				self.accessibilityIdentifier = "buttonContainer.confirmMnemonic"
 			}
-			for (_, wordHandle) in self.shuffled_mnemonicWords.enumerated() {
+			for (_, wordHandle) in self.shuffled_sufficient_mnemonicWords.enumerated() {
 				let view = CreateWallet_ConfirmMnemonic.WordView(
 					wordHandle: wordHandle,
 					mode: .inSelectable_butNotYetSelected,
