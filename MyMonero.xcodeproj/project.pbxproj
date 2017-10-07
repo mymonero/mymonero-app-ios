@@ -688,16 +688,8 @@
 			children = (
 				9F22B7A61F006E4B0036B02F /* Resources */,
 				9F2119161F5E0EC300B8FA0E /* ViewControllers */,
-				9F2BFEF01EF7373E006B2F7D /* Views */,
 			);
 			path = WalletWizard;
-			sourceTree = "<group>";
-		};
-		9F2BFEF01EF7373E006B2F7D /* Views */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		9F3826621F566A2E00800CA0 /* Headers */ = {
