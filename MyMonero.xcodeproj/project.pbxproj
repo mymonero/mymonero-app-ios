@@ -241,6 +241,7 @@
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
 		9FF6C9A71F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */; };
 		9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */; };
+		A6F43C981F892F9400274134 /* SettingsAppSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F43C971F892F9400274134 /* SettingsAppSwitch.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -499,6 +500,7 @@
 		9FF6C9A81F7C919B00B20D40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.internal.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.internal.xcconfig"; sourceTree = "<group>"; };
+		A6F43C971F892F9400274134 /* SettingsAppSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppSwitch.swift; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 		D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.testing.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.testing.xcconfig"; sourceTree = "<group>"; };
 		F56E327D2325F7E70A93F182 /* Pods-MyMonero.app store.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.app store.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.app store.xcconfig"; sourceTree = "<group>"; };
@@ -1264,6 +1266,7 @@
 		9FCB92731F3FCCBD005852BA /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A6F43C971F892F9400274134 /* SettingsAppSwitch.swift */,
 				9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */,
 			);
 			path = Views;
@@ -1627,6 +1630,7 @@
 				9F33E6FB1F2004DD00610662 /* EditFormSubmissionController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */,
+				A6F43C981F892F9400274134 /* SettingsAppSwitch.swift in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9FCD9D621F4948A7004C0349 /* OpenAliasResolverCenter.swift in Sources */,
 				9F8E30281EED7D7800F89A1D /* EnterNewPasswordViewController.swift in Sources */,
