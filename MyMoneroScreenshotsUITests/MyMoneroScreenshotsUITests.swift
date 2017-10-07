@@ -66,7 +66,7 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			let buttonsContainerQuery = app.scrollViews.otherElements["buttonContainer.confirmMnemonic"]
 			let buttons = buttonsContainerQuery.buttons
 			buttons.element(boundBy: 1).tap()
-			buttons.element(boundBy: 6).tap()
+			buttons.element(boundBy: 3).tap()
 		}
 		//
 		snapshot("01_Bank")
