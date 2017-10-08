@@ -408,11 +408,10 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let formFieldsCustomInsets = self.new__formFieldsCustomInsets
-		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView + formFieldsCustomInsets.top
+		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		//
-		let label_x = CGFloat.form_label_margin_x + formFieldsCustomInsets.left
-		let input_x = CGFloat.form_input_margin_x + formFieldsCustomInsets.left
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
 		let textField_w = self.new__textField_w // already has customInsets subtracted
 		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//
@@ -423,7 +422,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			let visual__nameField_w = textField_w - (nameField_marginRight + self.emoji_inputView.frame.size.width)
 			self.name_label.frame = CGRect(
 				x: label_x,
-				y: ceil(top_yOffset),
+				y: top_yOffset,
 				width: visual__nameField_w,
 				height: self.name_label.frame.size.height
 			).integral
@@ -510,7 +509,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			self.deleteButton_separatorView!.frame = CGRect(
 				x: input_x,
 				y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-				width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
+				width: self.scrollView.frame.size.width - 2 * input_x,
 				height: UICommonComponents.Details.FieldSeparatorView.h
 			)
 			//

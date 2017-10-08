@@ -179,26 +179,29 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let textField_w = self.new__textField_w
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
+		let textField_w = self.new__textField_w // already has customInsets subtracted
+		//
 		let textField_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 		let fieldGroup_h = self.password_label.frame.size.height + textField_topMargin + self.password_inputView.frame.size.height
 		let fieldGroup_y = (self.scrollView.frame.size.height - fieldGroup_h)/2 - self.scrollView.frame.size.height*0.15 // -k to work better on mobile screen
 		//
 		self.password_label.frame = CGRect(
-			x: CGFloat.form_label_margin_x,
+			x: label_x,
 			y: fieldGroup_y,
-			width: self.scrollView.frame.size.width - 2 * CGFloat.form_label_margin_x,
+			width: self.scrollView.frame.size.width - 2 * label_x,
 			height: self.password_label.frame.size.height
 		).integral
 		assert(self.forgot_linkButtonView.frame.size.height > self.password_label.frame.size.height, "self.forgot_linkButtonView.frame.size.height <= self.password_label.frame.size.height")
 		self.forgot_linkButtonView.frame = CGRect(
-			x: CGFloat.form_input_margin_x + textField_w - self.forgot_linkButtonView.frame.size.width - fabs(CGFloat.form_label_margin_x - CGFloat.form_input_margin_x),
+			x: input_x + textField_w - self.forgot_linkButtonView.frame.size.width - fabs(label_x - input_x),
 			y: self.password_label.frame.origin.y - fabs(self.forgot_linkButtonView.frame.size.height - self.password_label.frame.size.height)/2, // since this button is taller than the label, we can't use the same y offset; we have to vertically center the forgot_linkButtonView with the label
 			width: self.forgot_linkButtonView.frame.size.width,
 			height: self.forgot_linkButtonView.frame.size.height
 		).integral
 		self.password_inputView.frame = CGRect(
-			x: CGFloat.form_input_margin_x,
+			x: input_x,
 			y: self.password_label.frame.origin.y + self.password_label.frame.size.height + textField_topMargin,
 			width: textField_w,
 			height: self.password_inputView.frame.size.height

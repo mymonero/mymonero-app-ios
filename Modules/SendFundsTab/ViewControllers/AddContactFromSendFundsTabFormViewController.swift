@@ -150,11 +150,13 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	}
 	//
 	override var new__formFieldsCustomInsets: UIEdgeInsets {
+		let base_insets = super.new__formFieldsCustomInsets
+		// ^- we're expecting these to be 0, or in >= ios 11, the safe area
 		return UIEdgeInsetsMake(
-			UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView/*approx*/,
-			16,
-			0,
-			16
+			base_insets.top + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView/*approx*/,
+			base_insets.left + 16,
+			base_insets.bottom + 0,
+			base_insets.right + 16
 		)
 	}
 	//
@@ -169,7 +171,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 			topFieldView: self.name_label,
 			bottomFieldView: bottomFieldView!,
 			//
-			withContainingWidth: self.view.frame.size.width,
+			withContainingWidth: self.scrollView/*not self.view*/.bounds.size.width,
 			yOffset: top_yOffset
 		)
 	}
@@ -187,8 +189,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 					mostPreviouslyVisibleView = self.address_inputView!
 				}
 			}
-			let formFieldsCustomInsets = self.new__formFieldsCustomInsets
-			let label_x = CGFloat.form_label_margin_x + formFieldsCustomInsets.left
+			let label_x = self.new__label_x
 			let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 			self.detected_iconAndMessageView!.frame = CGRect(
 				x: label_x,

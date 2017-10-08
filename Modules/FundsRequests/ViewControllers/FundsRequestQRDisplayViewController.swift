@@ -133,18 +133,18 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		do { // label
 			let min_marginX: CGFloat = 16
 			let w = min(
-				self.view.frame.size.width - 2*min_marginX,
+				self.scrollView/*not self.view*/.frame.size.width - 2*min_marginX,
 				400
 			)
 			self.informationalLabel.frame = CGRect(
-				x: (self.view.frame.size.width - w)/2,
+				x: (self.scrollView/*not self.view*/.frame.size.width - w)/2,
 				y: top_yOffset,
 				width: w,
 				height: 18
 			).integral
 		}
 		self.imageView.frame = CGRect(
-			x: (self.view.frame.size.width - FundsRequest.QRSize.large.width)/2,
+			x: (self.scrollView/*not self.view*/.frame.size.width - FundsRequest.QRSize.large.width)/2,
 			y: self.informationalLabel.frame.origin.y + self.informationalLabel.frame.size.height + 32,
 			width: FundsRequest.QRSize.large.width,
 			height: FundsRequest.QRSize.large.height

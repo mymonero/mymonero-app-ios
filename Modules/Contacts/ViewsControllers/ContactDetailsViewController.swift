@@ -178,12 +178,20 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
+		let subviewLayoutInsets = self.new_subviewLayoutInsets
+		//
+		let section_x = subviewLayoutInsets.left
+		let section_w = self.scrollView/*not view*/.bounds.size.width - subviewLayoutInsets.left - subviewLayoutInsets.right
+		//
 		self.sectionView.layOut(
-			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
-			withXOffset: 0,
+			withContainingWidth: section_w, // since width may have been updated…
+			withXOffset: section_x,
 			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
-		self.scrollableContentSizeDidChange(withBottomView: self.sectionView, bottomPadding: 0) // btm padding in .contentInset
+		self.scrollableContentSizeDidChange(
+			withBottomView: self.sectionView,
+			bottomPadding: 0
+		) // btm padding (for action btns) in .contentInset
 		//
 		// non-scrolling:
 		let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin

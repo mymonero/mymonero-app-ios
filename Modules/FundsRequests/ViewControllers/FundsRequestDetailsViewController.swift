@@ -222,32 +222,38 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		super.viewDidLayoutSubviews()
 		//
+		let subviewLayoutInsets = self.new_subviewLayoutInsets
+		let label_x = CGFloat.form_label_margin_x + subviewLayoutInsets.left
+		//
+		let section_x = subviewLayoutInsets.left
+		let section_w = self.scrollView/*not view*/.bounds.size.width - subviewLayoutInsets.left - subviewLayoutInsets.right
 		self.sectionView_instanceCell.layOut(
-			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
-			withXOffset: 0,
+			withContainingWidth: section_w, // since width may have been updated…
+			withXOffset: section_x,
 			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
-		//
 		self.sectionView_codeAndLink.layOut(
-			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
-			withXOffset: 0,
+			withContainingWidth: section_w, // since width may have been updated…
+			withXOffset: section_x,
 			andYOffset: self.sectionView_instanceCell.frame.origin.y + self.sectionView_instanceCell.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
 		)
-		//
 		self.sectionView_message.layOut(
-			withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
-			withXOffset: 0,
+			withContainingWidth: section_w, // since width may have been updated…
+			withXOffset: section_x,
 			andYOffset: self.sectionView_codeAndLink.frame.origin.y + self.sectionView_codeAndLink.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
 		)
 		//
 		self.deleteButton.frame = CGRect(
-			x: CGFloat.form_label_margin_x,
+			x: label_x,
 			y: self.sectionView_message.frame.origin.y + self.sectionView_message.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing,
 			width: self.deleteButton.frame.size.width,
 			height: self.deleteButton.frame.size.height
 		)
 		//
-		self.scrollableContentSizeDidChange(withBottomView: self.deleteButton, bottomPadding: 12) // btm padding in .contentInset
+		self.scrollableContentSizeDidChange(
+			withBottomView: self.deleteButton,
+			bottomPadding: 12
+		) // btm padding in .contentInset
 	}
 	//
 	// Delegation

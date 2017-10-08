@@ -101,13 +101,16 @@ class ForgotPasswordViewController: UIViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
+		let safeAreaInsets = self.view.polyfilled_safeAreaInsets
+		let contentAreaFrame = UIEdgeInsetsInsetRect(self.view.bounds, safeAreaInsets)
+		//
 		let margin_h = UICommonComponents.EmptyStateView.default__margin_h
 		let emptyStateView_margin_top: CGFloat = 14
 		self.emptyStateView.frame = CGRect(
-			x: margin_h,
-			y: emptyStateView_margin_top,
-			width: self.view.frame.size.width - 2*margin_h,
-			height: self.view.frame.size.height - emptyStateView_margin_top - UICommonComponents.ActionButton.wholeButtonsContainerHeight
+			x: contentAreaFrame.origin.x + margin_h,
+			y: contentAreaFrame.origin.y + emptyStateView_margin_top,
+			width: contentAreaFrame.size.width - 2 * margin_h,
+			height: contentAreaFrame.size.height - emptyStateView_margin_top - UICommonComponents.ActionButton.wholeButtonsContainerHeight
 		).integral
 		let buttons_y = self.emptyStateView.frame.origin.y + self.emptyStateView.frame.size.height + UICommonComponents.ActionButton.topMargin
 		self.nevermind_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: margin_h)

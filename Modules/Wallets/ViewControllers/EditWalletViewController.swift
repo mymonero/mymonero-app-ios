@@ -208,17 +208,19 @@ extension EditWallet
 			//
 			let topPadding: CGFloat = 13
 			let y: CGFloat = 0
+			let label_x = self.new__label_x
+			let input_x = self.new__input_x
 			let textField_w = self.new__textField_w
 			let fieldset_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // what we would expect for a starting y offset for form fields…
 			do {
 				self.walletLabel_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: y + fieldset_topMargin,
 					width: textField_w,
 					height: self.walletLabel_label.frame.size.height
 				).integral
 				self.walletLabel_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.walletLabel_label.frame.origin.y + self.walletLabel_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.walletLabel_inputView.frame.size.height
@@ -226,13 +228,13 @@ extension EditWallet
 			}
 			do {
 				self.walletColorPicker_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.walletLabel_inputView.frame.origin.y + self.walletLabel_inputView.frame.size.height + fieldset_topMargin,
 					width: textField_w,
 					height: self.walletColorPicker_label.frame.size.height
 				).integral
 				//
-				let colorPicker_x = CGFloat.form_input_margin_x
+				let colorPicker_x = input_x
 				let colorPicker_maxWidth = self.scrollView.frame.size.width - colorPicker_x
 				let colorPicker_height = self.walletColorPicker_inputView.heightThatFits(width: colorPicker_maxWidth)
 				self.walletColorPicker_inputView.frame = CGRect(
@@ -245,14 +247,14 @@ extension EditWallet
 			do {
 				let justPreviousView = self.walletColorPicker_inputView!
 				self.deleteButton_separatorView!.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-					width: self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x,
+					width: self.scrollView.frame.size.width - 2 * input_x,
 					height: UICommonComponents.Details.FieldSeparatorView.h
 				)
 				//
 				self.deleteButton!.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.deleteButton_separatorView!.frame.origin.y + self.deleteButton_separatorView!.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 					width: self.deleteButton!.frame.size.width,
 					height: self.deleteButton!.frame.size.height

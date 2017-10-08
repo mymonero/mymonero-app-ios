@@ -194,7 +194,7 @@ extension TransactionDetails
 			super.viewDidLayoutSubviews()
 			//
 			self.sectionView_details.layOut(
-				withContainingWidth: self.view.bounds.size.width, // since width may have been updated…
+				withContainingWidth: self.scrollView/*not view*/.bounds.size.width, // since width may have been updated…
 				withXOffset: 0,
 				andYOffset: self.yOffsetForViewsBelowValidationMessageView
 			)
