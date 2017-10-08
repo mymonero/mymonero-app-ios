@@ -265,13 +265,12 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let formFieldsCustomInsets = self.new__formFieldsCustomInsets
-		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView + formFieldsCustomInsets.top
+		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		//
 		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16
 		//
-		let label_x = CGFloat.form_label_margin_x + formFieldsCustomInsets.left
-		let input_x = CGFloat.form_input_margin_x + formFieldsCustomInsets.left
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
 		let textField_w = self.new__textField_w // already has customInsets subtracted
 		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//

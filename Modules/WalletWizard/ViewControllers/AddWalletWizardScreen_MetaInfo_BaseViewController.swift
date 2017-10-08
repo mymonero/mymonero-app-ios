@@ -94,17 +94,19 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 		isTopMostInForm: Bool = false
 	)
 	{ // Call this at the end of your layoutSubviews() override
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
 		let textField_w = self.new__textField_w
 		let fieldset_topMargin: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // what we would expect for a starting y offset for form fields…
 		do {
 			self.walletLabel_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: y + fieldset_topMargin,
 				width: textField_w,
 				height: self.walletLabel_label.frame.size.height
 			).integral
 			self.walletLabel_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.walletLabel_label.frame.origin.y + self.walletLabel_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.walletLabel_inputView.frame.size.height
@@ -112,13 +114,13 @@ class AddWalletWizardScreen_MetaInfo_BaseViewController: AddWalletWizardScreen_B
 		}
 		do {
 			self.walletColorPicker_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.walletLabel_inputView.frame.origin.y + self.walletLabel_inputView.frame.size.height + fieldset_topMargin,
 				width: textField_w,
 				height: self.walletColorPicker_label.frame.size.height
 			).integral
 			//
-			let colorPicker_x = CGFloat.form_input_margin_x
+			let colorPicker_x = input_x
 			let colorPicker_maxWidth = self.scrollView.frame.size.width - colorPicker_x
 			let colorPicker_height = self.walletColorPicker_inputView.heightThatFits(width: colorPicker_maxWidth)
 			self.walletColorPicker_inputView.frame = CGRect(

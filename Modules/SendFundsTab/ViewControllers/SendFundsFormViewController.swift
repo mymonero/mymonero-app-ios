@@ -790,18 +790,20 @@ extension SendFundsForm
 			super.viewDidLayoutSubviews()
 			//
 			let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
+			let label_x = self.new__label_x
+			let input_x = self.new__input_x
 			let textField_w = self.new__textField_w
 			let fullWidth_label_w = self.new__fieldLabel_w
 			//
 			do {
 				self.fromWallet_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
-					y: ceil(top_yOffset),
+					x: label_x,
+					y: top_yOffset,
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				self.fromWallet_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
 					height: self.fromWallet_inputView.frame.size.height
@@ -809,19 +811,19 @@ extension SendFundsForm
 			}
 			do {
 				self.amount_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				self.amount_fieldset.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: self.amount_fieldset.frame.size.width,
 					height: self.amount_fieldset.frame.size.height
 				).integral
 				self.feeEstimate_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 					width: fullWidth_label_w,
 					height: 0
@@ -844,7 +846,7 @@ extension SendFundsForm
 			}
 			do {
 				self.sendTo_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.feeEstimate_label.frame.origin.y + self.feeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 					width: 13,
 					height: self.sendTo_label.frame.size.height
@@ -860,7 +862,7 @@ extension SendFundsForm
 					).integral
 				}
 				self.sendTo_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.sendTo_label.frame.origin.y + self.sendTo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.sendTo_inputView.frame.size.height
@@ -871,7 +873,7 @@ extension SendFundsForm
 				assert(self.manualPaymentID_label.isHidden == true)
 				let lastMostVisibleView = self.sendTo_inputView!
 				self.addPaymentID_buttonView!.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 12,
 					width: self.addPaymentID_buttonView!.frame.size.width,
 					height: self.addPaymentID_buttonView!.frame.size.height
@@ -882,13 +884,13 @@ extension SendFundsForm
 				assert(self.addPaymentID_buttonView.isHidden == true)
 				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
 				self.manualPaymentID_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 12,
 					width: fullWidth_label_w,
 					height: self.manualPaymentID_label.frame.size.height
 				).integral
 				self.manualPaymentID_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.manualPaymentID_inputView.frame.size.height

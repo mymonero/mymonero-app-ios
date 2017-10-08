@@ -177,9 +177,11 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
 	{
 		super.viewDidLayoutSubviews()
 		//
-		self.tableView.frame = self.view.bounds
+		let safeAreaInsets = self.view.polyfilled_safeAreaInsets
+		let contentViewFrame = UIEdgeInsetsInsetRect(self.view.bounds, safeAreaInsets)
+		self.tableView.frame = contentViewFrame
 		if let view = self._emptyStateView {
-			view.frame = self.view.bounds
+			view.frame = contentViewFrame
 		}
 	}
 	//

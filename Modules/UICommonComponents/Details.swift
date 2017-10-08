@@ -136,7 +136,7 @@ extension UICommonComponents
 					)
 					contentContainerView_yOffset += view.frame.origin.y + view.frame.size.height + SectionLabel.marginBelowLabelAboveSectionContentContainerView
 				}
-				let sectionContentsContainingWidth = containingWidth - xOffset
+				let sectionContentsContainingWidth = containingWidth
 				let containerView_frame = self.containerView.sizeAndLayOutFieldViewsForDisplay_andReturnMeasuredSelfFrame(
 					withContainingWidth: sectionContentsContainingWidth,
 					andYOffset: contentContainerView_yOffset

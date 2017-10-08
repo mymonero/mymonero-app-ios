@@ -582,19 +582,23 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
+		let subviewLayoutInsets = self.new_subviewLayoutInsets
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
-		let textField_w = self.new__textField_w
-		let fullWidth_label_w = self.new__fieldLabel_w
+		//
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
+		let textField_w = self.new__textField_w // already has customInsets subtracted
+		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//
 		do {
 			self.toWallet_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
-				y: ceil(top_yOffset),
+				x: label_x,
+				y: top_yOffset,
 				width: fullWidth_label_w,
 				height: self.toWallet_label.frame.size.height
 			).integral
 			self.toWallet_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.toWallet_label.frame.origin.y + self.toWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 				width: textField_w,
 				height: self.toWallet_inputView.frame.size.height
@@ -602,13 +606,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			self.amount_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.toWallet_inputView.frame.origin.y + self.toWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.toWallet_label.frame.size.height
 			).integral
 			self.amount_fieldset.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: self.amount_fieldset.frame.size.width,
 				height: self.amount_fieldset.frame.size.height
@@ -616,7 +620,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			self.aboveMemo_separatorView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField, // estimate margin
 				width: textField_w,
 				height: self.aboveMemo_separatorView.frame.size.height
@@ -624,7 +628,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			self.memo_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.aboveMemo_separatorView.frame.origin.y
 					+ ceil(self.aboveMemo_separatorView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
 					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimated margin
@@ -632,13 +636,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				height: self.memo_label.frame.size.height
 			).integral
 			self.memo_accessoryLabel.frame = CGRect(
-				x: CGFloat.form_labelAccessoryLabel_margin_x,
+				x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
 				y: self.memo_label.frame.origin.y,
 				width: fullWidth_label_w,
 				height: self.memo_accessoryLabel.frame.size.height
 			).integral
 			self.memo_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.memo_label.frame.origin.y + self.memo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.memo_inputView.frame.size.height
@@ -646,19 +650,19 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		do {
 			self.requestFrom_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.memo_inputView.frame.origin.y + self.memo_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.requestFrom_label.frame.size.height
 			).integral
 			self.requestFrom_accessoryLabel.frame = CGRect(
-				x: CGFloat.form_labelAccessoryLabel_margin_x,
+				x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
 				y: self.requestFrom_label.frame.origin.y,
 				width: fullWidth_label_w,
 				height: self.requestFrom_accessoryLabel.frame.size.height
 			).integral
 			self.requestFrom_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.requestFrom_label.frame.origin.y + self.requestFrom_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.requestFrom_inputView.frame.size.height
@@ -666,7 +670,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		if self.createNewContact_buttonView.isHidden == false {
 			self.createNewContact_buttonView!.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.requestFrom_inputView.frame.origin.y + self.requestFrom_inputView.frame.size.height + 8,
 				width: self.createNewContact_buttonView!.frame.size.width,
 				height: self.createNewContact_buttonView!.frame.size.height
@@ -682,7 +686,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				}
 			}
 			self.addPaymentID_buttonView!.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
 				width: self.addPaymentID_buttonView!.frame.size.width,
 				height: self.addPaymentID_buttonView!.frame.size.height
@@ -701,19 +705,19 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				}
 			}
 			self.manualPaymentID_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
 				width: fullWidth_label_w,
 				height: self.manualPaymentID_label.frame.size.height
 			).integral
 			self.manualPaymentID_accessoryLabel.frame = CGRect(
-				x: CGFloat.form_labelAccessoryLabel_margin_x,
+				x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
 				y: self.manualPaymentID_label.frame.origin.y,
 				width: fullWidth_label_w,
 				height: self.manualPaymentID_accessoryLabel.frame.size.height
 			).integral
 			self.manualPaymentID_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.manualPaymentID_inputView.frame.size.height

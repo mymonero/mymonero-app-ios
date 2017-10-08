@@ -47,8 +47,19 @@ extension UICommonComponents
 		//
 		// Properties - Derived
 		var new__formFieldsCustomInsets: UIEdgeInsets {
-			return UIEdgeInsetsMake(0, 0, 0, 0)
+			let base = self.new_subviewLayoutInsets
+			return base
 		}
+		var new__label_x: CGFloat {
+			return CGFloat.form_label_margin_x + self.new_subviewLayoutInsets.left
+		}
+		var new__input_x: CGFloat {
+			return CGFloat.form_input_margin_x + self.new_subviewLayoutInsets.left
+		}
+		var new__labelAccessoryLabel_x: CGFloat {
+			return CGFloat.form_labelAccessoryLabel_margin_x + self.new_subviewLayoutInsets.left
+		}
+		//
 		var new__textField_w: CGFloat {
 			let fieldsInsets = self.new__formFieldsCustomInsets
 			return self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
@@ -139,12 +150,13 @@ extension UICommonComponents
 			return self.keyboardIsShowing == true ? self.keyboardHeight! : 0
 		}
 		override func new_contentInset() -> UIEdgeInsets
-		{ // overridable
+		{ // overridable but inheriting safeAreaInsets from super
+			let base = super.new_contentInset()
 			return UIEdgeInsetsMake(
-				0,
-				0,
-				self._new_heightForKeyboardInContentInsetsBottom,
-				0
+				base.top + 0,
+				base.left + 0,
+				base.bottom + self._new_heightForKeyboardInContentInsetsBottom,
+				base.right + 0
 			)
 		}
 		//

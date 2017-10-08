@@ -91,7 +91,7 @@ extension ImportTransactionsModal
 			do {
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: NSLocalizedString(
-						"Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to the server at e.g. \(approximate_importOAAddress).",
+						"Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process places heavy load on the server, import is triggered by sending a fee with the specific payment ID below to the server at e.g. \(approximate_importOAAddress).",
 						comment: ""
 					)
 				)
@@ -427,6 +427,9 @@ extension ImportTransactionsModal
 			super.viewDidLayoutSubviews()
 			//
 			let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
+			let label_x = self.new__label_x
+			let labelAccessoryLabel_x = self.new__labelAccessoryLabel_x
+			let input_x = self.new__input_x
 			let textField_w = self.new__textField_w
 			let fullWidth_label_w = self.new__fieldLabel_w
 			//
@@ -441,8 +444,8 @@ extension ImportTransactionsModal
 				self.informationalLabel.sizeToFit() // for centering
 				let w = self.informationalLabel.frame.size.width
 				self.informationalLabel.frame = CGRect(
-					x: (max_w - w)/2 + CGFloat.form_input_margin_x,
-					y: ceil(top_yOffset),
+					x: (max_w - w)/2 + input_x,
+					y: top_yOffset,
 					width: w,
 					height: self.informationalLabel.frame.size.height // read height
 				).integral
@@ -463,8 +466,8 @@ extension ImportTransactionsModal
 			//
 			do {
 				self.fromWallet_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
-					y: self.informationalLabel.text != nil && self.informationalLabel.text != "" ? self.informationalLabel.frame.origin.y + self.informationalLabel.frame.size.height + 24 : ceil(top_yOffset),
+					x: label_x,
+					y: self.informationalLabel.text != nil && self.informationalLabel.text != "" ? self.informationalLabel.frame.origin.y + self.informationalLabel.frame.size.height + 24 : top_yOffset,
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 				).integral
@@ -485,7 +488,7 @@ extension ImportTransactionsModal
 					).integral
 				}
 				self.fromWallet_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
 					height: self.fromWallet_inputView.frame.size.height
@@ -493,13 +496,13 @@ extension ImportTransactionsModal
 			}
 			do {
 				self.amount_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 					).integral
 				self.amount_fieldset.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: self.amount_fieldset.frame.size.width,
 					height: self.amount_fieldset.frame.size.height
@@ -507,19 +510,19 @@ extension ImportTransactionsModal
 			}
 			do {
 				self.toAddress_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimate margin
 					width: fullWidth_label_w,
 					height: self.toAddress_label.frame.size.height
 				).integral
 				self.toAddress_labelAccessory_copyButton.frame = CGRect(
-					x: CGFloat.form_labelAccessoryLabel_margin_x + fullWidth_label_w - self.toAddress_labelAccessory_copyButton.frame.size.width/2 - self.toAddress_labelAccessory_copyButton.titleLabel!.frame.size.width/2,
+					x: labelAccessoryLabel_x + fullWidth_label_w - self.toAddress_labelAccessory_copyButton.frame.size.width/2 - self.toAddress_labelAccessory_copyButton.titleLabel!.frame.size.width/2,
 					y: self.toAddress_label.frame.origin.y - (self.toAddress_labelAccessory_copyButton.frame.size.height - self.toAddress_label.frame.size.height)/2,
 					width: self.toAddress_labelAccessory_copyButton.frame.size.width,
 					height: self.toAddress_labelAccessory_copyButton.frame.size.height
 				).integral
 				self.toAddress_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.toAddress_label.frame.origin.y + self.toAddress_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.toAddress_inputView.frame.size.height
@@ -527,19 +530,19 @@ extension ImportTransactionsModal
 			}
 			do {
 				self.paymentID_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.toAddress_inputView.frame.origin.y + self.toAddress_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimate margin
 					width: fullWidth_label_w,
 					height: self.paymentID_label.frame.size.height
 				).integral
 				self.paymentID_labelAccessory_copyButton.frame = CGRect(
-					x: CGFloat.form_labelAccessoryLabel_margin_x + fullWidth_label_w - self.paymentID_labelAccessory_copyButton.frame.size.width/2 - self.toAddress_labelAccessory_copyButton.titleLabel!.frame.size.width/2,
+					x: labelAccessoryLabel_x + fullWidth_label_w - self.paymentID_labelAccessory_copyButton.frame.size.width/2 - self.toAddress_labelAccessory_copyButton.titleLabel!.frame.size.width/2,
 					y: self.paymentID_label.frame.origin.y - (self.paymentID_labelAccessory_copyButton.frame.size.height - self.paymentID_label.frame.size.height)/2,
 					width: self.paymentID_labelAccessory_copyButton.frame.size.width,
 					height: self.paymentID_labelAccessory_copyButton.frame.size.height
 				).integral
 				self.paymentID_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.paymentID_label.frame.origin.y + self.paymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.paymentID_inputView.frame.size.height

@@ -568,6 +568,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		super.viewDidLayoutSubviews()
 		//
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
 		let textField_w = self.new__textField_w
 		//
 		var viewAbove_orUse_label: UIView!
@@ -576,7 +578,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				viewAbove_orUse_label = self.walletMnemonic_inputView
 				//
 				self.walletMnemonic_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: top_yOffset,
 					width: textField_w,
 					height: self.walletMnemonic_label.frame.size.height
@@ -598,7 +600,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					).integral
 				}
 				self.walletMnemonic_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.walletMnemonic_label.frame.origin.y + self.walletMnemonic_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.walletMnemonic_inputView.frame.size.height
@@ -608,7 +610,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				viewAbove_orUse_label = self.spendKey_inputView
 				//
 				self.addr_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: top_yOffset,
 					width: textField_w,
 					height: self.addr_label.frame.size.height
@@ -630,14 +632,14 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					).integral
 				}
 				self.addr_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.addr_label.frame.origin.y + self.addr_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.addr_inputView.frame.size.height
 				).integral
 				//
 				self.viewKey_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.addr_inputView.frame.origin.y + self.addr_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: textField_w,
 					height: self.viewKey_label.frame.size.height
@@ -659,14 +661,14 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					).integral
 				}
 				self.viewKey_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.viewKey_label.frame.origin.y + self.viewKey_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.viewKey_inputView.frame.size.height
 				).integral
 				//
 				self.spendKey_label.frame = CGRect(
-					x: CGFloat.form_label_margin_x,
+					x: label_x,
 					y: self.viewKey_inputView.frame.origin.y + self.viewKey_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: textField_w,
 					height: self.spendKey_label.frame.size.height
@@ -688,7 +690,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					).integral
 				}
 				self.spendKey_inputView.frame = CGRect(
-					x: CGFloat.form_input_margin_x,
+					x: input_x,
 					y: self.spendKey_label.frame.origin.y + self.spendKey_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.spendKey_inputView.frame.size.height
@@ -697,7 +699,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 		}
 		do {
 			self.orUse_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: viewAbove_orUse_label.frame.origin.y + viewAbove_orUse_label.frame.size.height - 1, // -1 cause we set height to 24
 				width: 46,
 				height: 24

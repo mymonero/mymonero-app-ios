@@ -128,20 +128,27 @@ extension UICommonComponents
 			return nil // for themeController default 
 		}
 		//
-		func new_contentInset() -> UIEdgeInsets
+		func new_contentInset() -> UIEdgeInsets // NOTE: this is contentInset for the SCROLLVIEW
 		{ // overridable
-			return UIEdgeInsetsMake(
-				0,
-				0,
-				0,
-				0
-			)
+			return UIEdgeInsetsMake(0, 0, 0, 0)
+		}
+		var new_subviewLayoutInsets: UIEdgeInsets
+		{ // overridable
+			return UIEdgeInsetsMake(0, 0, 0, 0)
 		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
-		var yOffsetForViewsBelowValidationMessageView: CGFloat
-		{
-			return UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // chosen in order to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
+		var new__messageView_left: CGFloat {
+			return CGFloat.visual__form_input_margin_x + self.new_subviewLayoutInsets.left // use visual__ instead so we don't get extra img padding
+		}
+		var new__messageView_right: CGFloat {
+			return CGFloat.visual__form_input_margin_x + self.new_subviewLayoutInsets.right
+		}
+		var yOffsetForViewsBelowValidationMessageView: CGFloat {
+			return ceil(
+				self.new_subviewLayoutInsets.top + 
+				UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView // chosen in order to keep consistency in terms of 'minimum required visual y offset - aka margin_y' for auto-scroll-to-input
+			)
 		}
 		//
 		// Runtime - Imperatives - Convenience/Overridable - Validation error
@@ -221,10 +228,11 @@ extension UICommonComponents
 			// we'll allow laying out while hidden, here, for text/button reflow before .show(), etc
 			assert(self.messageView != nil)
 			//
-			let x = CGFloat.visual__form_input_margin_x // use visual__ instead so we don't get extra img padding
-			let w = self.view.frame.size.width - 2*x
+			let left = self.new__messageView_left
+			let right = self.new__messageView_right
+			let w = self.view.frame.size.width - left - right
 			self.messageView!.layOut(
-				atX: x,
+				atX: left,
 				y: 8, // was 16
 				width: w
 			)
@@ -235,17 +243,20 @@ extension UICommonComponents
 		{
 			super.viewWillLayoutSubviews()
 			//
-			var scrollView_top: CGFloat = 0
+			let safeAreaInsets = self.view.polyfilled_safeAreaInsets
+			let contentViewFrame = UIEdgeInsetsInsetRect(self.view.bounds, safeAreaInsets)
+			//
+			var scrollView_top: CGFloat = contentViewFrame.origin.y
 			if let messageView = self.messageView, messageView.isHidden == false {
-				self.layOut_messageView()
+				self.layOut_messageView() // already accounts for safeAreaInsets
 				//
 				scrollView_top = messageView.frame.origin.y + messageView.frame.size.height
 			}
 			self.scrollView.frame = CGRect(
-				x: 0,
+				x: contentViewFrame.origin.x,
 				y: scrollView_top,
-				width: self.view.bounds.size.width,
-				height: self.view.bounds.size.height - scrollView_top
+				width: contentViewFrame.size.width,
+				height: contentViewFrame.size.height - scrollView_top
 			)
 		}
 		//
@@ -253,10 +264,11 @@ extension UICommonComponents
 		func scrollableContentSizeDidChange(withBottomView bottomView: UIView, bottomPadding: CGFloat)
 		{
 			self.scrollView.contentSize = CGSize(
-				width: self.view.frame.size.width,
+				width: self.scrollView/*not self.view*/.frame.size.width,
 				height: bottomView.frame.origin.y + bottomView.frame.size.height + bottomPadding
 			)
-		}		//
+		}
+		//
 		// Delegation - View
 		var hasAppearedBefore = false
 		override func viewDidAppear(_ animated: Bool)
@@ -270,6 +282,16 @@ extension UICommonComponents
 		{
 			super.viewWillAppear(animated)
 			self.configureNavigationBarTitleColor() // for transactions details support plus clearing it for popping vc
+		}
+		override func viewSafeAreaInsetsDidChange()
+		{
+			if #available(iOS 11.0, *) {
+				super.viewSafeAreaInsetsDidChange()
+				//
+				// update according to self.view.safeAreaInsets
+				self.configure_scrollView_contentInset()
+				self.view.setNeedsLayout()
+			}
 		}
 	}
 	

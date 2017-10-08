@@ -221,17 +221,20 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 	{
 		super.viewDidLayoutSubviews()
 		//
+		let label_x = self.new__label_x
+		let input_x = self.new__input_x
+		//
 		let topPadding: CGFloat = 20
-		let textField_w = self.new__textField_w
+		let textField_w = self.new__textField_w // already has customInsets subtracted
 		do {
 			self.password_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: topPadding,
 				width: textField_w,
 				height: self.password_label.frame.size.height
 			).integral
 			self.password_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.password_label.frame.origin.y + self.password_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.password_inputView.frame.size.height
@@ -239,7 +242,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			self.fieldAccessoryMessageLabel.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.password_inputView.frame.origin.y + self.password_inputView.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 				width: textField_w,
 				height: 0
@@ -248,13 +251,13 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			self.confirmPassword_label.frame = CGRect(
-				x: CGFloat.form_label_margin_x,
+				x: label_x,
 				y: self.fieldAccessoryMessageLabel.frame.origin.y + self.fieldAccessoryMessageLabel.frame.size.height + 30,
 				width: textField_w,
 				height: self.confirmPassword_label.frame.size.height
 			).integral
 			self.confirmPassword_inputView.frame = CGRect(
-				x: CGFloat.form_input_margin_x,
+				x: input_x,
 				y: self.confirmPassword_label.frame.origin.y + self.confirmPassword_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 				width: textField_w,
 				height: self.confirmPassword_inputView.frame.size.height
