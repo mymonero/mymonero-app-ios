@@ -46,10 +46,6 @@ extension UICommonComponents
 		// Properties - Cached
 		//
 		// Properties - Derived
-		var new__formFieldsCustomInsets: UIEdgeInsets {
-			let base = self.new_subviewLayoutInsets
-			return base
-		}
 		var new__label_x: CGFloat {
 			return CGFloat.form_label_margin_x + self.new_subviewLayoutInsets.left
 		}
@@ -61,12 +57,12 @@ extension UICommonComponents
 		}
 		//
 		var new__textField_w: CGFloat {
-			let fieldsInsets = self.new__formFieldsCustomInsets
-			return self.scrollView.frame.size.width - 2 * CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
+			let fieldsInsets = self.new_subviewLayoutInsets
+			return self.scrollView/*not view*/.frame.size.width - 2 * CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
 		}
 		var new__fieldLabel_w: CGFloat {
-			let fieldsInsets = self.new__formFieldsCustomInsets
-			return self.scrollView.frame.size.width - /*intentionally not "2*"!*/CGFloat.form_label_margin_x - CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
+			let fieldsInsets = self.new_subviewLayoutInsets
+			return self.scrollView/*not view*/.frame.size.width - /*intentionally not "2*"!*/CGFloat.form_label_margin_x - CGFloat.form_input_margin_x - fieldsInsets.left - fieldsInsets.right
 		}
 		//
 		// Lifecycle - Init
