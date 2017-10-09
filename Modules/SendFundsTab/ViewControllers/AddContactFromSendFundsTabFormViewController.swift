@@ -149,14 +149,13 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		return self.detected_iconAndMessageView ?? super._overridable_bottomMostView
 	}
 	//
-	override var new__formFieldsCustomInsets: UIEdgeInsets {
-		let base_insets = super.new__formFieldsCustomInsets
-		// ^- we're expecting these to be 0, or in >= ios 11, the safe area
+	override var new_subviewLayoutInsets: UIEdgeInsets {
+		let base = super.new_subviewLayoutInsets
 		return UIEdgeInsetsMake(
-			base_insets.top + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView/*approx*/,
-			base_insets.left + 16,
-			base_insets.bottom + 0,
-			base_insets.right + 16
+			base.top + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView/*approx*/,
+			base.left + 16,
+			base.bottom + 0,
+			base.right + 16
 		)
 	}
 	//

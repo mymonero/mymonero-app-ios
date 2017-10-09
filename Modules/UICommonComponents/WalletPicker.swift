@@ -305,7 +305,8 @@ extension UICommonComponents
 		}
 		func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat
 		{
-			let w = pickerView.frame.size.width - 2*CGFloat.form_input_margin_x
+			let safeAreaInsets = pickerView.polyfilled_safeAreaInsets
+			let w = pickerView.frame.size.width - safeAreaInsets.left - safeAreaInsets.right - 2*CGFloat.form_input_margin_x
 			//
 			return w
 		}
