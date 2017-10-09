@@ -792,8 +792,7 @@
 				9F00B8D81EC276C30040F52A /* Swift */,
 				9F7ADAB41EBD2B420073C2BB /* build */,
 			);
-			name = MyMoneroCore;
-			path = MyMoneroJSCore;
+			path = MyMoneroCore;
 			sourceTree = "<group>";
 		};
 		9F7ADAB41EBD2B420073C2BB /* build */ = {
