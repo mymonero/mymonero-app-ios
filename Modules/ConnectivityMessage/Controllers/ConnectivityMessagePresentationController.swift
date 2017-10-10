@@ -104,6 +104,15 @@ class ConnectivityMessagePresentationController
 	}
 	func __present()
 	{
+		if Thread.isMainThread == false {
+			DispatchQueue.main.async { [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.__present()
+			}
+			return
+		}
 		if self.viewController != nil {
 			DDLog.Info("ConnectivityMessage", "Asked to \(#function) but already presented.")
 			return // already presented
@@ -139,6 +148,15 @@ class ConnectivityMessagePresentationController
 	}
 	func __dismiss()
 	{
+		if Thread.isMainThread == false {
+			DispatchQueue.main.async { [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.__present()
+			}
+			return
+		}
 		if self.viewController == nil {
 			DDLog.Info("ConnectivityMessage", "Asked to \(#function) but not presented.")
 			return
