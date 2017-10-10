@@ -152,9 +152,9 @@ class ConnectivityMessageViewController: UIViewController
 		let viewportWidth = UIScreen.main.bounds.size.width // is now (in modern iOS versions) always correct value regardless of statusBarOrientation
 		let final_safeAreaInsets = UIEdgeInsetsMake( // because i just can't seem to get sampling the safeAreaInsets right in this particular case (b/c we want to keep self above any possible child of the rootViewController), I'm just going to opt to hardcode these values. It's actually probably an improvement anyway.
 			44 - 8,
-			44,
+			44 + 8,
 			0,
-			44
+			44 + 8
 		)
 		let frame = CGRect(
 			x: margin.left + final_safeAreaInsets.left,
