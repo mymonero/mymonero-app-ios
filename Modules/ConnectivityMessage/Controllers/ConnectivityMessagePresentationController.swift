@@ -96,7 +96,7 @@ class ConnectivityMessagePresentationController
 	func _configurePresentationWithReachability()
 	{
 		// commented for debug
-		if self.reachability.isReachable { // There is apparently a bug appearing in iOS 10 simulated apps whereby reconnection is not detected ; https://github.com/ashleymills/Reachability.swift/issues/151
+		if self.reachability.isReachable { // There is apparently a bug appearing in iOS 10 simulated apps by which reconnection is not detected ; https://github.com/ashleymills/Reachability.swift/issues/151
 			self.__dismiss()
 		} else {
 			self.__present()
@@ -153,7 +153,7 @@ class ConnectivityMessagePresentationController
 				guard let thisSelf = self else {
 					return
 				}
-				thisSelf.__present()
+				thisSelf.__dismiss()
 			}
 			return
 		}
