@@ -33,6 +33,7 @@
 //
 //
 import UIKit
+import Popover
 
 class EmojiPickerPopoverView: Popover
 {
