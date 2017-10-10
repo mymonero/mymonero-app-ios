@@ -119,7 +119,8 @@ extension ImportTransactionsModal
 						comment: ""
 					)
 				)
-				view.tooltipDirectionFromOrigin = .down // too close to top of screen - .right is another option
+				view.tooltipDirectionFromOrigin = .right // too close to top of screen - and .down does not support iphone X safe areas (in this case) due to width
+				//
 				view.isHidden = true // initially
 				view.willPresentTipView_fn =
 				{ [unowned self] in
