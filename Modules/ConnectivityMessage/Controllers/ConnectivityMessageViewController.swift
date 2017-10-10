@@ -66,6 +66,7 @@ class ConnectivityMessageViewController: UIViewController
 		do {
 			let view = self.containerView
 			view.layer.masksToBounds = true // clip
+			view.autoresizingMask = []
 			view.layer.cornerRadius = 3
 			view.layer.borderWidth = 1/UIScreen.main.scale // single pixel / hairline
 			view.layer.borderColor = UIColor(red: 245/255, green: 230/255, blue: 125/255, alpha: 0.30).cgColor
@@ -141,18 +142,24 @@ class ConnectivityMessageViewController: UIViewController
 		//
 		let statusBarFrame = UIApplication.shared.statusBarFrame
 		let margin = UIEdgeInsetsMake(
-			44/*janky way of approximating nav bar offset*/ - 8/* to move as high as possible to occlude as little as possible */,
+			0,
 			8,
 			0,
 			8
 		)
 		let containerView_padding = UIEdgeInsetsMake(2, 0, 2, 0)
 		let h: CGFloat = containerView_padding.top + 24 + containerView_padding.bottom
-		let viewportWidth = UIScreen.main.bounds.size.width // is now always correct value regardless of statusBarOrientation
+		let viewportWidth = UIScreen.main.bounds.size.width // is now (in modern iOS versions) always correct value regardless of statusBarOrientation
+		let final_safeAreaInsets = UIEdgeInsetsMake( // because i just can't seem to get sampling the safeAreaInsets right in this particular case (b/c we want to keep self above any possible child of the rootViewController), I'm just going to opt to hardcode these values. It's actually probably an improvement anyway.
+			44 - 8,
+			44,
+			0,
+			44
+		)
 		let frame = CGRect(
-			x: margin.left,
-			y: statusBarFrame.origin.y + statusBarFrame.size.height + margin.top,
-			width: viewportWidth - margin.left - margin.right,
+			x: margin.left + final_safeAreaInsets.left,
+			y: statusBarFrame.origin.y + statusBarFrame.size.height + margin.top + final_safeAreaInsets.top,
+			width: viewportWidth - margin.left - margin.right - final_safeAreaInsets.left - final_safeAreaInsets.right,
 			height: h
 		)
 		self.containerView.frame = frame
