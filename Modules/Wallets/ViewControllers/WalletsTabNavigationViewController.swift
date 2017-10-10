@@ -53,6 +53,7 @@ class WalletsTabNavigationViewController: UINavigationController
 				image: UIImage(named: "icon_tabBar_wallets")!.withRenderingMode(.alwaysOriginal),
 				selectedImage: UIImage(named: "icon_tabBar_wallets__active")!.withRenderingMode(.alwaysOriginal)
 			)
+//			self.tabBarItem.landscapeImagePhone = self.tabBarItem.image // can't use this b/c it doesn't support the selectedImage state – is it now required to use tintColor?
 		}
 		do {
 			let viewController = WalletsListViewController()

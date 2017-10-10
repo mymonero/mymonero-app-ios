@@ -140,6 +140,19 @@ class RootTabBarViewController: UITabBarController
 		// TODO: technically, good idea to remove all notification observations
 	}
 	//
+	// Accessors - Overrides
+	// Abandoned attempt
+//	override var traitCollection: UITraitCollection
+//	{
+//		return UITraitCollection(
+//			traitsFrom:
+//			[
+//				super.traitCollection,
+//				UITraitCollection(horizontalSizeClass: .compact)
+//			]
+//		)
+//	}
+	//
 	// Runtime - Imperatives
 	func setTabBarItems(isEnabled: Bool)
 	{
