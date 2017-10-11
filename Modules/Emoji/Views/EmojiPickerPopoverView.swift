@@ -39,6 +39,7 @@ class EmojiPickerPopoverView: Popover
 {
 	//
 	// Properties
+	static let arrowSize = CGSize(width: 19, height: 17)
 	var selectedEmojiCharacter_fn: ((Emoji.EmojiCharacter) -> Void)!
 	//
 	// Lifecycle - Init
@@ -47,7 +48,7 @@ class EmojiPickerPopoverView: Popover
 		let options: [PopoverOption] =
 		[
 			.cornerRadius(5),
-			.arrowSize(CGSize(width: 19, height: 17)),
+			.arrowSize(EmojiPickerPopoverView.arrowSize),
 			//
 			.animationIn(0.46),
 			.animationOut(0.2),
@@ -81,7 +82,6 @@ class EmojiPickerPopoverView: Popover
 		let contentView = self.new_contentView(selecting_emojiCharacter: emojiCharacter)
 		self.show(contentView, fromView: fromView)
 	}
-	
 }
 
 class EmojiPickerCollectionViewCell: UICollectionViewCell
@@ -181,7 +181,11 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 				layout.minimumInteritemSpacing = 0
 				layout.minimumLineSpacing = 0
 			}
-			let view = UICollectionView(frame: self.bounds.insetBy(dx: 1, dy: 1), collectionViewLayout: layout)
+			var base_frame = self.bounds.insetBy(dx: 1, dy: 1)
+			if #available(iOS 11.0, *) { // this is now necessary - this would be improved by feature-detection
+				base_frame.origin.y += EmojiPickerPopoverView.arrowSize.height
+			}
+			let view = UICollectionView(frame: base_frame, collectionViewLayout: layout)
 			self.collectionView = view
 			do {
 				view.contentInset = UIEdgeInsetsMake(8, 8, 8, 8)
