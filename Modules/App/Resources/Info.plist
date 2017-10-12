@@ -36,9 +36,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s camera to scan physical Monero Payment Request QR codes.</string>
+	<string>The MyMonero app uses your device's camera to scan physical Monero Payment Request QR codes.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>The MyMonero app uses your device's photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
+	<string>The MyMonero app uses your device's photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Native-Bold.otf</string>
@@ -66,8 +68,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
