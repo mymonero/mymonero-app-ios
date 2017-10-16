@@ -118,13 +118,21 @@ extension UICommonComponents
 			}
 			var pasteboardItems: [[String: Any]] = []
 			if let value = self.pasteboardItem_value_text {
-				pasteboardItems.append([ (kUTTypeText as String): value ])
+				pasteboardItems.append([ (kUTTypePlainText as String): value ])
 			}
 			if let value = self.pasteboardItem_value_html {
 				pasteboardItems.append([ (kUTTypeHTML as String): value ])
 			}
 			assert(pasteboardItems.count != 0) // not that it would be, with the above assert
-			UIPasteboard.general.setItems(pasteboardItems, options: [:])
+			let tomorrow = Date().addingTimeInterval(60 * 60 * 24)
+			UIPasteboard.general.setItems(
+				pasteboardItems,
+				options:
+				[
+					.localOnly : true,
+					.expirationDate: tomorrow
+				]
+			)
 			//
 			HUD.flash(.label(NSLocalizedString("Copied", comment: "")), delay: 0.05) // would like to be able to modify fade-out duration of HUD
 		}
