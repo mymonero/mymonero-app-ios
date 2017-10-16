@@ -119,6 +119,16 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		self.navigationItem.title = NSLocalizedString("Save Contact", comment: "")
 	}
 	//
+	// Accessors - Internal
+	var new_customFieldsetContainerInsets: UIEdgeInsets {
+		return UIEdgeInsetsMake(
+			0 + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,/*approx*/
+			16,
+			0,
+			16
+		)
+	}
+	//
 	// Accessors - Overrides
 	override var _overridable_wants_paymentIDField: Bool {
 		return self.parameters.sentWith_paymentID != nil || self.parameters.integratedAddressPIDForDisplay_orNil != nil // if we have a pid, show; else just hide
@@ -149,13 +159,23 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		return self.detected_iconAndMessageView ?? super._overridable_bottomMostView
 	}
 	//
+	//
+	// Accessors - Lookups/Derived - Layout metrics
+	override var new__messageView_left: CGFloat {
+		return super.new__messageView_left - self.new_customFieldsetContainerInsets.left // must pad the messageView with the new_customFieldsetContainerInsets b/c super bases it on self.new_subviewLayoutInsets
+	}
+	override var new__messageView_right: CGFloat {
+		return super.new__messageView_right - self.new_customFieldsetContainerInsets.right // must pad the messageView with the new_customFieldsetContainerInsets b/c super bases it on self.new_subviewLayoutInsets
+	}
 	override var new_subviewLayoutInsets: UIEdgeInsets {
 		let base = super.new_subviewLayoutInsets
+		let customFieldsetContainerInsets = self.new_customFieldsetContainerInsets
+		
 		return UIEdgeInsetsMake(
-			base.top + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView/*approx*/,
-			base.left + 16,
-			base.bottom + 0,
-			base.right + 16
+			base.top + customFieldsetContainerInsets.top,
+			base.left + customFieldsetContainerInsets.left,
+			base.bottom + customFieldsetContainerInsets.bottom,
+			base.right + customFieldsetContainerInsets.right
 		)
 	}
 	//
@@ -164,7 +184,8 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	{
 		super.viewDidLayoutSubviews()
 		//
-		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
+		let customFieldsetContainerInsets = self.new_customFieldsetContainerInsets
+		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView - customFieldsetContainerInsets.top
 		let bottomFieldView = self.detected_iconAndMessageView ?? /* no pid accessory label */ self.paymentID_inputView ?? self.address_inputView
 		self.fieldGroupDecorationSectionView.sizeAndLayOutToEncompass(
 			topFieldView: self.name_label,
