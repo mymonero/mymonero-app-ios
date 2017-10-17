@@ -57,7 +57,7 @@ extension SendFundsForm
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
-		var feeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
+		var networkFeeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
 		var feeEstimate_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var sendTo_label: UICommonComponents.Form.FieldLabel!
@@ -121,8 +121,8 @@ extension SendFundsForm
 					text: nil,
 					displayMode: .prominent // slightly brighter here per design; considered merging
 				)
-				self.feeEstimate_label = view
-				self.configure_feeEstimate_label()
+				self.networkFeeEstimate_label = view
+				self.configure_networkFeeEstimate_label()
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -555,11 +555,11 @@ extension SendFundsForm
 		}
 		//
 		// Imperatives - Configuration - Fee estimate label
-		func configure_feeEstimate_label()
+		func configure_networkFeeEstimate_label()
 		{
 			let estimatedFee_formattedString: String = "0.028" // constant for now due to median blocksize difference in fee est algo plus fact that MyMonero fee turned off for now
-			self.feeEstimate_label.text = String(
-				format: NSLocalizedString("+ %@ EST. FEE", comment: ""),
+			self.networkFeeEstimate_label.text = String(
+				format: NSLocalizedString("+ %@ EST. NETWORK FEE", comment: ""),
 				estimatedFee_formattedString
 			)
 		}
@@ -822,23 +822,23 @@ extension SendFundsForm
 					width: self.amount_fieldset.frame.size.width,
 					height: self.amount_fieldset.frame.size.height
 				).integral
-				self.feeEstimate_label.frame = CGRect(
+				self.networkFeeEstimate_label.frame = CGRect(
 					x: label_x,
 					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 					width: fullWidth_label_w,
 					height: 0
 				).integral
 				do {
-					self.feeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
-					var final__feeEstimate_label_frame = self.feeEstimate_label.frame
-					final__feeEstimate_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.feeEstimate_label.frame = final__feeEstimate_label_frame // kinda sucks to set this three times in this method. any alternative?
+					self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__networkFeeEstimate_label_frame = self.networkFeeEstimate_label.frame
+					final__networkFeeEstimate_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.networkFeeEstimate_label.frame = final__networkFeeEstimate_label_frame // kinda sucks to set this three times in this method. any alternative?
 					//
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.feeEstimate_label.frame.origin.x + self.feeEstimate_label.frame.size.width - 4,
-						y: self.feeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.feeEstimate_label.frame.size.height)/2,
+						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - 4,
+						y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
 					).integral
@@ -847,7 +847,7 @@ extension SendFundsForm
 			do {
 				self.sendTo_label.frame = CGRect(
 					x: label_x,
-					y: self.feeEstimate_label.frame.origin.y + self.feeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
+					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
 					width: 13,
 					height: self.sendTo_label.frame.size.height
 				).integral
