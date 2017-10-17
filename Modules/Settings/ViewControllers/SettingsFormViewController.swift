@@ -47,6 +47,10 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var appTimeoutAfterS_inputView: SettingsAppTimeoutAfterSecondsSliderInputView!
 	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
+	var notifyMeWhen_label: UICommonComponents.Form.FieldLabel!
+	var fundsComeIn_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
+	var whenOutgoingTransactionsConfirmed_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
+	//
 	var address_label: UICommonComponents.Form.FieldLabel!
 	var address_inputView: UICommonComponents.FormInputField!
 	var resolving_activityIndicator: UICommonComponents.GraphicAndLabelActivityIndicatorView!
@@ -93,6 +97,30 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				text: "" // this will be set on viewWillAppear
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel = view
+			self.scrollView.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("NOTIFY ME WHEN", comment: "")
+			)
+			self.notifyMeWhen_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.Switches.TitleAndControlField(
+				frame: .zero,
+				title: NSLocalizedString("Funds arrive", comment: "")
+			)
+			self.fundsComeIn_inputView = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.Switches.TitleAndControlField(
+				frame: .zero,
+				title: NSLocalizedString("Outgoing transactions are confirmed", comment: "")
+			)
+			self.whenOutgoingTransactionsConfirmed_inputView = view
 			self.scrollView.addSubview(view)
 		}
 		//
@@ -271,7 +299,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		let label_x = self.new__label_x
 		let input_x = self.new__input_x
+		let edgeFlushInput_x = input_x + UICommonComponents.FormInputCells.imagePadding_x // re-compensate to arrive at value that causes element to actually be visually aligned with inputs and design metrics
 		let textField_w = self.new__textField_w // already has customInsets subtracted
+		let edgeFlushInput_w = textField_w - 2*UICommonComponents.FormInputCells.imagePadding_x // re-compensate to arrive at value that causes element to actually be visually aligned with inputs and design metrics
 		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//
 		do {
@@ -307,9 +337,37 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		}
 		//
 		do {
+			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
+			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
+			self.notifyMeWhen_label.frame = CGRect(
+				x: label_x,
+				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
+				width: fullWidth_label_w,
+				height: self.notifyMeWhen_label.frame.size.height
+			)
+			let switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
+			[
+				self.fundsComeIn_inputView,
+				self.whenOutgoingTransactionsConfirmed_inputView
+			]
+			for (idx, switchView) in switchesToLayOut.enumerated() {
+				let mostPreviousView = idx == 0 ? self.notifyMeWhen_label : switchesToLayOut[idx - 1]
+				switchView.frame = CGRect(
+					x: edgeFlushInput_x,
+					y: mostPreviousView.frame.origin.y + mostPreviousView.frame.size.height
+						+ (idx == 0 ? marginUnderSwitchesFieldsetTitleAboveFirstField : 0)
+					,
+					width: edgeFlushInput_w,
+					height: switchView.fixedHeight
+				)
+			}
+		}
+		//
+		do {
+			let mostPreviousView: UIView = self.whenOutgoingTransactionsConfirmed_inputView!
 			self.address_label.frame = CGRect(
 				x: label_x,
-				y: self.appTimeoutAfterS_fieldAccessoryMessageLabel!.frame.origin.y + self.appTimeoutAfterS_fieldAccessoryMessageLabel!.frame.size.height + spacingBetweenFieldsets,
+				y: mostPreviousView.frame.origin.y + mostPreviousView.frame.size.height + spacingBetweenFieldsets,
 				width: fullWidth_label_w,
 				height: self.address_label.frame.size.height
 			)
