@@ -36,6 +36,7 @@ import UIKit
 //
 //UIColor extension for MyMonero colors
 extension UIColor {
+	// TODO: put these into (or, if specific to this file, derive these from) ThemeController
 	class func myMoneroKnobBlue() -> UIColor {
 		return UIColor(red: 77/255.0, green: 199/255.0, blue: 251/255.0, alpha: 1)
 	}
@@ -51,7 +52,101 @@ extension UIColor {
 }
 extension UICommonComponents.Form
 {
-	class SwitchControl: UIControl
+	struct Switches {}
+}
+extension UICommonComponents.Form.Switches
+{
+	class TitleAndControlField: UIView
+	{
+		//
+		// Metrics
+		var fixedHeight: CGFloat {
+			return 40
+		}
+		//
+		// Properties
+		var touchInterceptingFieldBackgroundView: UIView!
+		var titleLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
+		var switchControl: UICommonComponents.Form.Switches.Control!
+		var separatorView: UICommonComponents.Details.FieldSeparatorView!
+		//
+		// Lifecycle - Init
+		init(frame: CGRect, title: String)
+		{
+			super.init(frame: frame)
+			self.setup(title: title)
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup(title: String)
+		{
+			do {
+				let view = UIView(frame: .zero)
+				self.touchInterceptingFieldBackgroundView = view
+				self.addSubview(view)
+				do {
+					let recognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundView_tapped))
+					view.addGestureRecognizer(recognizer)
+				}
+			}
+			do {
+				let view = UICommonComponents.FormFieldAccessoryMessageLabel(
+					text: title,
+					displayMode: .normal
+				)
+				view.isUserInteractionEnabled = false // so as not to intercept touches
+				self.titleLabel = view
+				self.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.Form.Switches.Control(frame: .zero) // initial frame
+				self.switchControl = view
+				self.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.Details.FieldSeparatorView(
+					mode: .contentBackgroundAccent_subtle
+				)
+				view.isUserInteractionEnabled = false // so as not to intercept touches
+				self.separatorView = view
+				self.addSubview(view)
+			}
+		}
+		//
+		// Overrides - Layout
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			//
+			self.touchInterceptingFieldBackgroundView.frame = self.bounds
+			//
+			let minimumSwitchSectionWidth: CGFloat = 80
+			let switchControl_width: CGFloat = 30 // TODO: place this declaration into the control itself as a derived property - so it can scale with the UI
+			let switchControl_height: CGFloat = 10 // TODO: place this declaration into the control itself as a derived property - so it can scale with the UI
+			//
+			self.titleLabel.frame = CGRect(
+				x: CGFloat.form_label_margin_x - CGFloat.form_input_margin_x, // b/c self is already positioned by the consumer at the properly inset input_x
+				y: 14,
+				width: self.bounds.size.width - minimumSwitchSectionWidth,
+				height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+			).integral
+			self.switchControl.frame = CGRect(
+				x: self.bounds.size.width - switchControl_width - 8/*design insets.right*/ + 1/*for visual alignment*/,
+				y: (self.bounds.size.height - switchControl_height)/2, // or 17 per design
+				width: switchControl_width,
+				height: switchControl_height
+			).integral
+			self.separatorView.frame = CGRect(x: 0, y: self.bounds.size.height - self.separatorView.frame.size.height, width: self.bounds.size.width, height: self.separatorView.frame.size.height)
+		}
+		//
+		// Delegation
+		@objc func backgroundView_tapped()
+		{
+			self.switchControl.toggle()
+		}
+	}
+	class Control: UIControl
 	{
 		fileprivate(set) var isOn = false
 		var switchFeedbackGenerator:UISelectionFeedbackGenerator? = nil
@@ -331,6 +426,10 @@ extension UICommonComponents.Form
 		}
 		
 		
+		// TODO: Is this code here bugged/incomplete?
+		// 1. is setOn() called on init? if not, is it guaranteed that prepareFeedbackGenerator() would have been called for all .enabled=true self? and
+		// 2. should .prepareFeedbackGenerator only be called if animated=true? seems like it would cause a bug
+		//
 		func setOn(_ on: Bool, animated :Bool) {
 			self.isOn = on
 			if (animated) {
@@ -354,6 +453,10 @@ extension UICommonComponents.Form
 					self.knobLayer.borderColor = self.knobOffBorderColor?.cgColor
 				}
 			}
+		}
+		func toggle()
+		{
+			self.setOn(!(self.isOn), animated: true)
 		}
 	}
 

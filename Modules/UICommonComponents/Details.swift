@@ -364,6 +364,7 @@ extension UICommonComponents
 				case detailsSectionFieldDelimiter
 				case contiguousCellContainer
 				case contentBackgroundAccent
+				case contentBackgroundAccent_subtle
 				var color: UIColor {
 					switch self {
 						case .detailsSectionFieldDelimiter:
@@ -372,6 +373,8 @@ extension UICommonComponents
 							return UIColor(rgb: 0x413e40)
 						case .contentBackgroundAccent:
 							return UIColor(rgb: 0x494749) // was 383638 but 494749 looks better
+						case .contentBackgroundAccent_subtle:
+							return UIColor(rgb: 0x383638)
 					}
 				}
 			}
