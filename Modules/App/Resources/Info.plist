@@ -24,7 +24,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.mymonero.mymoneromobile</string>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>monero</string>
@@ -36,11 +36,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>The MyMonero app uses your device's camera to scan physical Monero Payment Request QR codes.</string>
+	<string>The MyMonero app uses your device&apos;s camera to scan physical Monero Payment Request QR codes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>The MyMonero app uses your device's photos album to save and to open Monero Payment Request QR code image files.</string>
+	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The MyMonero app uses your device's photos album to save and to open Monero Payment Request QR code image files.</string>
+	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Native-Bold.otf</string>

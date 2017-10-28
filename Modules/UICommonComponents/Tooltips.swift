@@ -46,6 +46,7 @@ extension UICommonComponents
 		static let tooltip_maxWidth: CGFloat = 230 - 12 // seems to be asking for the text width instead,  -k
 		//		let maxWidth: CGFloat = 230
 		//		appearance.maxWidth = maxWidth
+		static let tooltipLabelSqueezingVisualMarginReductionConstant_x: CGFloat = 4
 		//
 		// Properties
 		var tooltipText: String

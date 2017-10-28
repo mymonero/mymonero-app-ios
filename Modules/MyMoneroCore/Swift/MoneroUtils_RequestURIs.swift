@@ -44,6 +44,7 @@ extension MoneroUtils
 			case description = "tx_description"
 			case paymentID = "tx_payment_id"
 			case message = "tx_message"
+			case amountCurrency = "tx_amount_currency"
 		}
 		struct ParsedRequest
 		{
@@ -52,6 +53,7 @@ extension MoneroUtils
 			let description: String?
 			let paymentID: MoneroPaymentID?
 			let message: String?
+			let amountCurrency: ExchangeRates.CurrencySymbol?
 		}
 		//
 		static func new_URL(
@@ -59,7 +61,8 @@ extension MoneroUtils
 			amount: String?,
 			description: String?,
 			paymentId: MoneroPaymentID?,
-			message: String?
+			message: String?,
+			amountCurrency: ExchangeRates.CurrencySymbol?
 		) -> URL
 		{
 			var urlComponents = URLComponents()
@@ -78,6 +81,12 @@ extension MoneroUtils
 			}
 			if let value = message, value != "" {
 				queryItems.append(URLQueryItem(name: URIQueryItemNames.message.rawValue, value: value))
+			}
+			if let value = amountCurrency,
+				value != "",
+				value != ExchangeRates.Currency.XMR.symbol // b/c we don't want to include it in a monero:// URL… if the scheme changes, maybe
+			{
+				queryItems.append(URLQueryItem(name: URIQueryItemNames.amountCurrency.rawValue, value: value))
 			}
 			if queryItems.count > 0 {
 				urlComponents.queryItems = queryItems // do not set empty or we get superfluous trailing '?'
@@ -114,6 +123,7 @@ extension MoneroUtils
 			var description: String?
 			var paymentID: MoneroPaymentID?
 			var message: String?
+			var amountCurrency: ExchangeRates.CurrencySymbol?
 			if let queryItems = urlComponents.queryItems { // needs to be parsed it seems
 				for (_, queryItem) in queryItems.enumerated() {
 					let queryItem_name = queryItem.name
@@ -127,6 +137,8 @@ extension MoneroUtils
 								paymentID = queryItem_value
 							case URIQueryItemNames.message.rawValue:
 								message = queryItem_value
+							case URIQueryItemNames.amountCurrency.rawValue:
+								amountCurrency = queryItem_value
 							default:
 								break
 						}
@@ -138,7 +150,8 @@ extension MoneroUtils
 				amount: amount,
 				description: description,
 				paymentID: paymentID,
-				message: message
+				message: message,
+				amountCurrency: amountCurrency
 			)
 			//
 			return (err_str: nil, parsedRequest: parsedRequest)

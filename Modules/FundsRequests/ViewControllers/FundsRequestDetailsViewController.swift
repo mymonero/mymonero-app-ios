@@ -166,7 +166,8 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		var numberOfLinesAddedAfterJustPreviousSeparator = 0
 		do {
 			if let amount = self.fundsRequest.amount, amount != "" {
-				value += "\r\n\(amount) XMR"
+				value += "\r\n\(amount) "
+				value += self.fundsRequest.amountCurrency ?? "XMR"
 				numberOfLinesAddedAfterJustPreviousSeparator += 1
 			}
 			if let message = self.fundsRequest.message, message != "" {

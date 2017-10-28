@@ -512,7 +512,7 @@ final class HostedMoneroAPIClient
 			"Content-Type": "application/json",
 		]
 		let url = "\(type(of: self).apiAddress_scheme)://\(self.final_apiAddress_authority)/\(endpoint.rawValue)"
-		DDLog.Net("HostedMonero", "\(url)")
+//		DDLog.Net("HostedMonero", "\(url)")
 		var final_parameters = parameters
 		do { // client metadata
 			if let value = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
@@ -551,7 +551,7 @@ final class HostedMoneroAPIClient
 					fn(error.localizedDescription, nil, nil) // localized description ok here?
 					return
 				case .success:
-					DDLog.Done("HostedMonero", "\(url) \(statusCode)")
+//					DDLog.Done("HostedMonero", "\(url) \(statusCode)")
 					break
 			}
 			guard let result_value = response.result.value else {

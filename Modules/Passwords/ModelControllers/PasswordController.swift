@@ -251,7 +251,7 @@ final class PasswordController
 			//
 			self.hasBooted = true
 			self._callAndFlushAllBlocksWaitingForBootToExecute()
-			DDLog.Done("Passwords", "Booted \(self) and called all waiting blocks. Waiting for unlock.")
+//			DDLog.Done("Passwords", "Booted \(self) and called all waiting blocks. Waiting for unlock.")
 		}
 		if documentJSONs_count == 0 {
 			let fabricated_documentJSON =

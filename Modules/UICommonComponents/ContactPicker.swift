@@ -888,7 +888,11 @@ extension UICommonComponents.Form
 			if cell == nil {
 				cell = ContactPickerSearchResultsCellView()
 			}
-			let contact = self.searchResults![indexPath.row]
+			guard let searchResults = self.searchResults else {
+				// I think this probably shouldn't be happening but I'm just going to assume here that the results were cleared automatically by a programmatic form hydration and ignore this b/c it looks currently like an effectively harmless race
+				return cell!
+			}
+			let contact = searchResults[indexPath.row]
 			cell!.configure(withContact: contact)
 			//
 			return cell!

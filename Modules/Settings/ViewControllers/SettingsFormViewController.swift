@@ -47,6 +47,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var appTimeoutAfterS_inputView: SettingsAppTimeoutAfterSecondsSliderInputView!
 	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
+	var displayCurrency_label: UICommonComponents.Form.FieldLabel!
+	var displayCurrency_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
+	//
 //	var notifyMeWhen_label: UICommonComponents.Form.FieldLabel!
 //	var fundsComeIn_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 //	var whenOutgoingTransactionsConfirmed_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
@@ -97,6 +100,35 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				text: "" // this will be set on viewWillAppear
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel = view
+			self.scrollView.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("DISPLAY CURRENCY", comment: "")
+			)
+			self.displayCurrency_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.StringPicker.PickerButtonView(
+				selectedValue: SettingsController.shared.displayCurrencySymbol,
+				allValues: ExchangeRates.Currency.lazy_allCurrencySymbols
+			)
+			view.selectedValue_fn =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				let final_value = thisSelf.displayCurrency_inputView.selectedValue!
+				let err_str = SettingsController.shared.set(
+					displayCurrencySymbol_nilForDefault: final_value
+				)
+				if err_str != nil {
+					assert(false, "error while setting display currency")
+				}
+			}
+			self.displayCurrency_inputView = view
 			self.scrollView.addSubview(view)
 		}
 		//
@@ -335,9 +367,25 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.sizeToFit()
 		}
+		do {
+			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
+			self.displayCurrency_label.frame = CGRect(
+				x: label_x,
+				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
+				width: fullWidth_label_w,
+				height: self.displayCurrency_label.frame.size.height
+			)
+			let fixed_dropdownWidth: CGFloat = 8*16
+			self.displayCurrency_inputView.frame = CGRect(
+				x: input_x,
+				y: self.displayCurrency_label.frame.origin.y + self.displayCurrency_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+				width: min(textField_w, fixed_dropdownWidth), // obvs the latter
+				height: self.displayCurrency_inputView.frame.size.height
+			)
+		}
 		//
 //		do {
-//			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
+//			let previousSectionBottomView: UIView = self.displayCurrency_inputView!
 //			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
 //			self.notifyMeWhen_label.frame = CGRect(
 //				x: label_x,
@@ -370,7 +418,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		
 		//
 		do {
-			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
+			let previousSectionBottomView: UIView = self.displayCurrency_inputView!
 //			let previousSectionBottomView: UIView = self.whenOutgoingTransactionsConfirmed_inputView!
 			self.address_label.frame = CGRect(
 				x: label_x,

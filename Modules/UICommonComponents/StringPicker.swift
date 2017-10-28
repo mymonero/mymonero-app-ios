@@ -1,9 +1,9 @@
 //
-//  WalletPicker.swift
+//  StringPicker.swift
 //  MyMonero
 //
-//  Created by Paul Shapiro on 7/5/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Created by Paul Shapiro on 10/19/17.
+//  Copyright © 2014-2017 MyMonero. All rights reserved.
 //
 //  All rights reserved.
 //
@@ -34,32 +34,44 @@
 //
 import UIKit
 
-extension UICommonComponents
+extension UICommonComponents.Form
 {
-	class WalletPickerButtonView: UICommonComponents.PushButton
+	struct StringPicker {}
+}
+extension UICommonComponents.Form.StringPicker
+{
+	class PickerButtonView: UICommonComponents.PushButton
 	{
 		//
-		static let visual__h: CGFloat = 66
-		static let h = WalletPickerButtonView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
+		// Interface - Constants
+		static let visual__h: CGFloat = UICommonComponents.FormInputField.visual__height
+		static let h = PickerButtonView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 		//
-		static let visual__arrowRightPadding: CGFloat = 16
+		static let visual__arrowRightPadding: CGFloat = 12
+		static let label_insets_left: CGFloat = 12
 		//
 		// Properties
+		var allValues: [String]
+		//
 		var tapped_fn: (() -> Void)?
-		var selectedWallet: Wallet? // weak might be a good idea but strong should be ok here b/c we unpick the selectedWallet when wallets reloads on logged-in runtime teardown
-		var pickerView: WalletPickerView!
+		var selectedValue_fn: (() -> Void)?
+		
+		var selectedValue: String?
+		var pickerView: UICommonComponents.Form.StringPicker.PickerView!
 		var picker_inputField: UITextField!
-		var contentView = WalletCellContentView(sizeClass: .medium32)
+		var contentView: UILabel!
 		//
 		// Lifecycle - Init
-		init(selectedWallet: Wallet?)
+		init(selectedValue: String?, allValues: [String])
 		{
-//			assert(WalletsListController.shared.records.count > 0) // not actually going to assert this, b/c the Send view will need to be able to have this set up w/o any wallets being available yet
-			if selectedWallet != nil {
-				self.selectedWallet = selectedWallet!
+			self.allValues = allValues
+			//
+			if selectedValue != nil {
+				self.selectedValue = selectedValue!
 			} else {
-				self.selectedWallet = WalletsListController.shared.records.first as? Wallet
+				self.selectedValue = self.allValues.first
 			}
+			//
 			super.init(pushButtonType: .utility)
 		}
 		required init?(coder aDecoder: NSCoder) {
@@ -70,42 +82,48 @@ extension UICommonComponents
 			super.setup()
 			//
 			do {
-				let view = WalletPickerView()
+				let view = PickerView(allValues: self.allValues)
+				if self.selectedValue != nil {
+					view.selectWithoutYielding(value: self.selectedValue!) // initial value
+				}
+				//
 				view.didSelect_fn =
-				{ [unowned self] (wallet) in
+				{ [unowned self] (value) in
 					self.set(
-						selectedWallet: wallet,
-						skipSettingOnPickerView: true // because we got this from the picker view
+						selectedValue: value,
+						skipSettingOnPickerView: true // because we got this from the picker view - avoid inf loop
 					)
 				}
 				view.reloaded_fn =
 				{ [unowned self] in
-					do { // reconfigure /self/ with selected wallet, not picker
-						if let _ = self.selectedWallet {
-							let records = WalletsListController.shared.records
-							if records.count == 0 { // e.g. booted state deconstructed
-								self.selectedWallet = nil
+					do { // reconfigure /self/ with selected value, not picker
+						if let _ = self.selectedValue {
+							let values = self.allValues
+							if values.count == 0 { // e.g. booted state deconstructed
+								self.selectedValue = nil
 								if self.picker_inputField.isFirstResponder {
 									self.picker_inputField.resignFirstResponder()
 								}
-								self.contentView.prepareForReuse()
-								self.contentView.clearFields()
+								//
+								self.contentView.text = ""
+								//
 								return
 							}
 						} else {
-//							DDLog.Info("UICommonComponents.WalletPicker", "Going to check selectedWallet no currently selected wallet")
+							//							DDLog.Info("UICommonComponents.StringPicker", "Going to check selectedValue no currently selected value")
 						}
-						let picker_selectedWallet = self.pickerView.selectedWallet
-						if picker_selectedWallet == nil {
-							self.contentView.prepareForReuse() // might as well call it even though it will have handled
+						let picker_selectedValue = self.pickerView.selectedValue
+						if picker_selectedValue == nil {
+							self.contentView.text = "" // might as well call it even tho it will have been handled
 							return
 						}
-						let selectedWallet = picker_selectedWallet!
-						if self.selectedWallet == nil || self.selectedWallet! != selectedWallet {
-							self.selectedWallet = selectedWallet
-							self.contentView.configure(withObject: selectedWallet)
+						let selectedValue = picker_selectedValue!
+						if self.selectedValue == nil || self.selectedValue! != selectedValue {
+							self.selectedValue = selectedValue
+							//
+							self.contentView.text = selectedValue
 						} else {
-							DDLog.Warn("UICommonComponents.WalletPicker", "reloaded but was same")
+							DDLog.Warn("UICommonComponents.StringPicker", "reloaded but was same")
 						}
 					}
 				}
@@ -118,12 +136,16 @@ extension UICommonComponents
 				self.addSubview(view)
 			}
 			do {
-				let view = self.contentView
+				let view = UILabel(frame: .zero)
+				self.contentView = view
+				view.textColor = UIColor(rgb: 0xFCFBFC)
+				view.font = UIFont.middlingMediumSansSerif
+				view.numberOfLines = 1
 				view.isUserInteractionEnabled = false // pass touches through to self
 				self.addSubview(view)
 			}
-			if self.selectedWallet != nil {
-				self.configure(withRecord: self.selectedWallet!)
+			if self.selectedValue != nil {
+				self.configure(withValue: self.selectedValue!)
 			}
 			//
 			let image = UIImage(named: "dropdown-arrow-down")!
@@ -136,24 +158,24 @@ extension UICommonComponents
 				x: 0,
 				y: 0,
 				width: 0,
-				height: WalletPickerButtonView.h
+				height: PickerButtonView.h
 			)
 			//
 			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
 		}
 		//
-		// Accessors
+		// Internal - Accessors
 		//
 		// Imperatives - Overrides
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
 			//
-			let iconImageColumn_w = self.image(for: .normal)!.size.width + WalletPickerButtonView.visual__arrowRightPadding
+			let iconImageColumn_w = self.image(for: .normal)!.size.width + PickerButtonView.visual__arrowRightPadding
 			self.contentView.frame = CGRect(
-				x: UICommonComponents.PushButtonCells.imagePaddingForShadow_h,
+				x: UICommonComponents.PushButtonCells.imagePaddingForShadow_h + type(of: self).label_insets_left,
 				y: UICommonComponents.PushButtonCells.imagePaddingForShadow_v,
-				width: self.frame.size.width - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w,
+				width: self.frame.size.width - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w - type(of: self).label_insets_left,
 				height: self.frame.size.height - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 			)
 			//
@@ -161,27 +183,29 @@ extension UICommonComponents
 				1,
 				self.frame.size.width - UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w,
 				0,
-				WalletPickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
+				PickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
 			)
 		}
 		//
 		// Imperatives - Config
 		func set(
-			selectedWallet wallet: Wallet,
+			selectedValue value: String,
 			skipSettingOnPickerView: Bool = false // leave as false if you're setting from anywhere but the PickerView
 		)
 		{
-			self.selectedWallet = wallet
-			self.configure(withRecord: wallet)
+			self.selectedValue = value
+			self.configure(withValue: value)
 			if skipSettingOnPickerView == false {
-				self.pickerView.selectWithoutYielding(wallet: wallet)
+				self.pickerView.selectWithoutYielding(value: value)
 			}
-			// TODO/NOTE: bubble if necessary
+			if let fn = self.selectedValue_fn {
+				fn()
+			}
 		}
 		//
-		func configure(withRecord record: Wallet)
+		func configure(withValue value: String)
 		{
-			self.contentView.configure(withObject: record)
+			self.contentView.text = value
 		}
 		//
 		// Delegation - Interactions
@@ -199,20 +223,22 @@ extension UICommonComponents
 		}
 	}
 	//
-	class WalletPickerView: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource
+	class PickerView: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource
 	{
 		//
 		// Constants
-		static let listController = WalletsListController.shared
-		static let records = listController.records // array instance never changes, but is mutated
+		
 		//
 		// Properties
-		var didSelect_fn: ((_ record: Wallet) -> Void)?
+		let allValues: [String] // immutable
+		//
+		var didSelect_fn: ((_ value: String) -> Void)?
 		var reloaded_fn: (() -> Void)?
 		//
 		// Lifecycle
-		init()
+		init(allValues: [String])
 		{
+			self.allValues = allValues
 			super.init(frame: .zero)
 			self.setup()
 		}
@@ -229,12 +255,6 @@ extension UICommonComponents
 		}
 		func startObserving()
 		{
-			NotificationCenter.default.addObserver(
-				self,
-				selector: #selector(PersistedObjectListController_Notifications_List_updated),
-				name: PersistedObjectListController.Notifications_List.updated.notificationName,
-				object: WalletPickerView.listController
-			)
 		}
 		//
 		deinit
@@ -247,38 +267,34 @@ extension UICommonComponents
 		}
 		func stopObserving()
 		{
-			NotificationCenter.default.removeObserver(
-				self,
-				name: PersistedObjectListController.Notifications_List.updated.notificationName,
-				object: WalletPickerView.listController
-			)
 		}
 		//
 		// Accessors
-		var selectedWallet: Wallet? {
+		var label_insets_left: CGFloat = 8
+		var selectedValue: String? {
 			let selectedIndex = self.selectedRow(inComponent: 0)
 			if selectedIndex == -1 {
 				return nil
 			}
-			let records = WalletsListController.shared.records
-			if records.count <= selectedIndex {
-				DDLog.Warn("UICommonComponents", "WalletPicker has non -1 selectedIndex but too few records for the selectedIndex to be correct. Returning nil.")
+			let values = self.allValues
+			if values.count <= selectedIndex {
+				DDLog.Warn("UICommonComponents", "StringPicker has non -1 selectedIndex but too few strings for the selectedIndex to be correct. Returning nil.")
 				return nil
 			}
-			return records[selectedIndex] as? Wallet
+			return values[selectedIndex]
 		}
 		//
-		// Imperatives - Interface - Setting wallet externally
-		func selectWithoutYielding(wallet: Wallet)
+		// Imperatives - Interface - Setting value externally
+		func selectWithoutYielding(value: String)
 		{
-			let row = WalletsListController.shared.records.index(of: wallet)!
-			self.selectRow(row, inComponent: 0, animated: false) // not pickWallet(atRow:) b/c that will merely notify
+			let row = self.allValues.index(of: value)!
+			self.selectRow(row, inComponent: 0, animated: false) // not pickValue(atRow:) b/c that will merely notify
 		}
 		//
 		// Delegation - Yielding
-		func didPickWallet(atRow row: Int)
+		func didPickValue(atRow row: Int)
 		{
-			let record = WalletsListController.shared.records[row] as! Wallet
+			let record = self.allValues[row]
 			if let fn = self.didSelect_fn {
 				fn(record)
 			}
@@ -291,20 +307,20 @@ extension UICommonComponents
 		}
 		func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
 		{
-			return WalletsListController.shared.records.count
+			return self.allValues.count
 		}
 		func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat
 		{
-			return WalletPickerButtonView.h - 6 // i dunno where the 6 is coming from
+			return PickerCellView.h
 		}
 		func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
 		{
-			self.didPickWallet(atRow: row)
+			self.didPickValue(atRow: row)
 		}
 		func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat
 		{
 			let safeAreaInsets = pickerView.polyfilled_safeAreaInsets
-			let w = pickerView.frame.size.width - safeAreaInsets.left - safeAreaInsets.right - 2*CGFloat.form_input_margin_x
+			let w = pickerView.frame.size.width - safeAreaInsets.left - safeAreaInsets.right - 2*CGFloat.form_input_margin_x - self.label_insets_left
 			//
 			return w
 		}
@@ -317,11 +333,11 @@ extension UICommonComponents
 		{
 			var mutable_view: UIView? = view
 			if mutable_view == nil {
-				mutable_view = WalletCellContentView(sizeClass: .medium32)
+				mutable_view = PickerCellView()
 			}
-			let cellView = mutable_view as! WalletCellContentView
-			let record = WalletsListController.shared.records[row] as! Wallet
-			cellView.configure(withObject: record)
+			let cellView = mutable_view as! PickerCellView
+			let value = self.allValues[row]
+			cellView.configure(withValue: value)
 			//
 			return cellView
 		}
@@ -333,6 +349,56 @@ extension UICommonComponents
 			if let fn = self.reloaded_fn {
 				fn()
 			}
+		}
+	}
+	//
+	//
+	class PickerCellView: UIView
+	{
+		//
+		// Interface - Constants
+		static let h: CGFloat = 42
+		//
+		// Internal - Properties
+		var label = UILabel()
+		//
+		// Interface - Init
+		init()
+		{
+			super.init(frame: .zero)
+			//
+			self.setup()
+		}
+		//
+		// Internal - Init
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			do {
+				let view = UILabel(frame: .zero)
+				self.label = view
+				view.textColor = UIColor(rgb: 0xFCFBFC)
+				view.font = UIFont.keyboardContentSemiboldSansSerif
+				view.numberOfLines = 1
+				view.textAlignment = .center
+				self.addSubview(view)
+			}
+		}
+		//
+		// Interface - Imperatives
+		func configure(withValue value: String)
+		{
+			self.label.text = value
+		}
+		//
+		// Overrides - Imperatives
+		override func layoutSubviews()
+		{
+			super.layoutSubviews()
+			//
+			self.label.frame = self.bounds
 		}
 	}
 }

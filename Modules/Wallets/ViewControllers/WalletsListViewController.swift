@@ -100,6 +100,10 @@ class WalletsListViewController: ListViewController
 		if cell == nil {
 			cell = WalletsListViewCell()
 		}
+		if self.listController.records.count == 0 {
+			// oddly, this occurs on 'delete everything' in ios 11
+			return cell!
+		}
 		let object = self.listController.records[indexPath.row] as! Wallet
 		cell!.configure(withObject: object)
 		//

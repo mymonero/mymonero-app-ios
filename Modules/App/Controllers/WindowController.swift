@@ -43,9 +43,6 @@ class WindowController
 	}
 	static var windowController: WindowController? {
 		guard let windowController = appDelegate.windowController else {
-			let err_str = "WindowController.presentModalsInViewController called but windowController not yet initialized and set on appDelegate."
-			DDLog.Warn("App", err_str)
-			//			assert(false, err_str)
 			return nil
 		}
 		return windowController

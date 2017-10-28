@@ -39,6 +39,13 @@ struct SendFundsForm {}
 //
 extension SendFundsForm
 {
+	enum UsageGateState_PlainStorage_Keys: String
+	{ // IMPORTANT NOTE: Do not use this to store personally identifying information unless you do a security analysis…. Also note: these are (or probably ought to be) cleared on a DeleteEverything
+		case hasAgreedToTermsOfCalculatedEffectiveMoneroAmount = "SendFundsForm.UsageGateState_PlainStorage_Keys.hasAgreedToTermsOfCalculatedEffectiveMoneroAmount"
+		//
+		var key: String { return self.rawValue }
+	}
+	//
 	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant, UIImagePickerControllerDelegate, UINavigationControllerDelegate
 	{
 		//
@@ -56,7 +63,7 @@ extension SendFundsForm
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
-		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
+		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
 		var networkFeeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
 		var feeEstimate_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
@@ -108,11 +115,31 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.Form.AmountInputFieldsetView()
+				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
+					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
+					effectiveAmountTooltipText_orNil: String(
+						format: NSLocalizedString(
+							"Currency selector for display purposes only. The app will send %@.\n\nRate via '%@'.",
+							comment:""
+						),
+						ExchangeRates.Currency.XMR.symbol,
+						Temporary_RateAPIPolling.Client.shared.domain // not .authority - don't need subdomain
+						// TODO: ^--- obtain this from constant once server provides matrix
+					)
+				)
 				let inputField = view.inputField
 				inputField.delegate = self
 				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				inputField.returnKeyType = .next
+				view.didUpdateValueAvailability_fn =
+				{ [weak self] in
+					// this will be called when the exchange rate changes and when the selected currency changes
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.set_isFormSubmittable_needsUpdate() // wait for exchange rate to come in from what ever is supplying it
+					// TODO: do we need to update anything else here?
+				}
 				self.amount_fieldset = view
 				self.scrollView.addSubview(view)
 			}
@@ -393,6 +420,18 @@ extension SendFundsForm
 				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
 				object: PasswordController.shared
 			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(ExchangeRates_didUpdateAvailabilityOfRates),
+				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				object: nil
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(SettingsController__NotificationNames_Changed__displayCurrencySymbol),
+				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
+				object: nil
+			)
 		}
 		//
 		override func tearDown()
@@ -419,6 +458,17 @@ extension SendFundsForm
 				self,
 				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
 				object: PasswordController.shared
+			)
+			//
+			NotificationCenter.default.removeObserver(
+				self,
+				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				object: nil
+			)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
+				object: nil
 			)
 		}
 		func _tearDownAnyImagePickerController(animated: Bool)
@@ -457,7 +507,10 @@ extension SendFundsForm
 			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
 				return false
 			}
-			if self.amount_fieldset.inputField.submittableAmount_orNil == nil { // amount is required
+			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
+				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
+			)
+			if submittableMoneroAmountDouble_orNil == nil { // amount is required
 				return false
 			}
 			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
@@ -514,9 +567,6 @@ extension SendFundsForm
 		var sanitizedInputValue__fromWallet: Wallet {
 			return self.fromWallet_inputView.selectedWallet! // we are never expecting this modal to be visible when no wallets exist, so a crash is/ought to be ok
 		}
-		var sanitizedInputValue__amount: MoneroAmount? {
-			return self.amount_fieldset.inputField.submittableAmount_orNil
-		}
 		var sanitizedInputValue__selectedContact: Contact? {
 			return self.sendTo_inputView.selectedContact
 		}
@@ -557,11 +607,32 @@ extension SendFundsForm
 		// Imperatives - Configuration - Fee estimate label
 		func configure_networkFeeEstimate_label()
 		{
-			let estimatedFee_formattedString: String = "0.028" // constant for now due to median blocksize difference in fee est algo plus fact that MyMonero fee turned off for now
-			self.networkFeeEstimate_label.text = String(
-				format: NSLocalizedString("+ %@ EST. NETWORK FEE", comment: ""),
-				estimatedFee_formattedString
+			let estNetworkFee_monero_amountDouble: Double = 0.028 // constant for now due to median blocksize difference in fee est algo plus fact that MyMonero fee turned off for now
+			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
+			var finalizable_amountDouble = estNetworkFee_monero_amountDouble // to finalize…
+			do {
+				if finalizable_displayCurrency != .XMR {
+					let moneroAmount = MoneroAmount.new(
+						withDouble: estNetworkFee_monero_amountDouble
+					)
+					if let converted_amountDouble = finalizable_displayCurrency.displayUnitsRounded_amountInCurrency(
+						fromMoneroAmount: moneroAmount
+					) {
+						finalizable_amountDouble = converted_amountDouble // use converted, non-xmr amount
+					} else {
+						assert(finalizable_displayCurrency != .XMR)
+						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on exchange wait
+					}
+				}
+			}
+			let final_amountDouble = finalizable_amountDouble
+			let final_displayCurrency = finalizable_displayCurrency
+			let text = String(
+				format: NSLocalizedString("+ %@ %@ EST. NETWORK FEE", comment: ""),
+				"\(final_amountDouble)",
+				final_displayCurrency.symbol
 			)
+			self.networkFeeEstimate_label.text = text
 		}
 		//
 		// Imperatives - Contact picker, contact picking
@@ -581,7 +652,7 @@ extension SendFundsForm
 		}
 		public func reconfigureFormAtRuntime_havingElsewhereSelected(sendToContact contact: Contact)
 		{
-			self.amount_fieldset.inputField.text = "" // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
+			self.amount_fieldset.clear() // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
 			//
 			self.sendTo_inputView.pick(contact: contact)
 		}
@@ -594,7 +665,10 @@ extension SendFundsForm
 //			self.scrollView.isScrollEnabled = false
 			//
 			self.fromWallet_inputView.isEnabled = false
+			
 			self.amount_fieldset.inputField.isEnabled = false
+			self.amount_fieldset.currencyPickerButton.isEnabled = false
+			
 			self.sendTo_inputView.inputField.isEnabled = false
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
 				pillView.xButton.isEnabled = true
@@ -613,7 +687,10 @@ extension SendFundsForm
 //			self.scrollView.isScrollEnabled = true
 			//
 			self.fromWallet_inputView.isEnabled = true
+			
 			self.amount_fieldset.inputField.isEnabled = true
+			self.amount_fieldset.currencyPickerButton.isEnabled = true
+			
 			self.sendTo_inputView.inputField.isEnabled = true
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
 				pillView.xButton.isEnabled = true
@@ -632,7 +709,9 @@ extension SendFundsForm
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
 			//
 			let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
-			let amount_submittableDouble = self.amount_fieldset.inputField.submittableDouble_orNil
+			let amount_submittableDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
+				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
+			)
 			do {
 				assert(amount_submittableDouble != nil && amountText != nil && amountText != "")
 				if amount_submittableDouble == nil {
@@ -645,125 +724,192 @@ extension SendFundsForm
 				return
 			}
 			//
-			self.disableForm() // optimistic
-			//
-			let selectedContact = self.sendTo_inputView.selectedContact
-			let enteredAddressValue = self.sendTo_inputView.inputField.text
-			//
-			let resolvedAddress = self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text
-			let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
-			//
-			let manuallyEnteredPaymentID = self.manualPaymentID_inputView.text
-			let manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentID_inputView.isHidden == false
-			//
-			let resolvedPaymentID = self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? ""
-			let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
-			//
-			//
-			let parameters = SendFundsForm.SubmissionController.Parameters(
-				fromWallet: fromWallet,
-				amount_submittableDouble: amount_submittableDouble!,
+			let selectedCurrency = self.amount_fieldset.currencyPickerButton.selectedCurrency
+			func __proceedTo_disableFormAndExecute()
+			{
+				self.disableForm() // optimistic
 				//
-				selectedContact: selectedContact,
-				enteredAddressValue: enteredAddressValue,
+				let selectedContact = self.sendTo_inputView.selectedContact
+				let enteredAddressValue = self.sendTo_inputView.inputField.text
 				//
-				resolvedAddress: resolvedAddress,
-				resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
+				let resolvedAddress = self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text
+				let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
 				//
-				manuallyEnteredPaymentID: manuallyEnteredPaymentID,
-				manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
-				resolvedPaymentID: resolvedPaymentID,
-				resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible,
+				let manuallyEnteredPaymentID = self.manualPaymentID_inputView.text
+				let manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentID_inputView.isHidden == false
 				//
-				preSuccess_terminal_validationMessage_fn:
-				{ [unowned self] (localizedString) in
-					self.set(
-						validationMessage: localizedString,
-						wantsXButton: true
-					)
-					self.formSubmissionController = nil // must free as this is a terminal callback
-					self.set_isFormSubmittable_needsUpdate()
-					self.reEnableForm() // b/c we disabled it
-				},
-				preSuccess_passedValidation_willBeginSending:
-				{ [unowned self] in
-					self.set(
-						validationMessage: String(
-							format: NSLocalizedString("Sending %@ XMR…", comment: ""),
-							self.amount_fieldset.inputField.submittableAmount_orNil!.humanReadableString
-						),
-						wantsXButton: false
-					)
-				},
-				success_fn:
-				{ [unowned self] (
-					mockedTransaction,
-					isXMRAddressIntegrated,
-					integratedAddressPIDForDisplay_orNil
-				) in
-					self.formSubmissionController = nil // must free as this is a terminal callback
-					// will re-enable form shortly (after presentation)
+				let resolvedPaymentID = self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? ""
+				let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
+				//
+				let parameters = SendFundsForm.SubmissionController.Parameters(
+					fromWallet: fromWallet,
+					amount_submittableDouble: amount_submittableDouble!,
 					//
-					do {
-						let viewController = TransactionDetails.ViewController(
-							transaction: mockedTransaction,
-							inWallet: fromWallet
+					selectedContact: selectedContact,
+					enteredAddressValue: enteredAddressValue,
+					//
+					resolvedAddress: resolvedAddress,
+					resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
+					//
+					manuallyEnteredPaymentID: manuallyEnteredPaymentID,
+					manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
+					resolvedPaymentID: resolvedPaymentID,
+					resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible,
+					//
+					preSuccess_terminal_validationMessage_fn:
+					{ [unowned self] (localizedString) in
+						self.set(
+							validationMessage: localizedString,
+							wantsXButton: true
 						)
-						self.navigationController!.pushViewController(
-							viewController,
-							animated: true
+						self.formSubmissionController = nil // must free as this is a terminal callback
+						self.set_isFormSubmittable_needsUpdate()
+						self.reEnableForm() // b/c we disabled it
+					},
+					preSuccess_passedValidation_willBeginSending:
+					{ [unowned self] in
+						let moneroAmountDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
+							selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
+						)!
+						let moneroAmount = MoneroAmount.new(
+							withDouble: moneroAmountDouble
 						)
-					}
-					do { // and after a delay, present AddContactFromSendTabView
-						if selectedContact == nil { // so they went with a text input address
+						self.set(
+							validationMessage: String(
+								format: NSLocalizedString("Sending %@ XMR…", comment: ""),
+								moneroAmount.humanReadableString
+							),
+							wantsXButton: false
+						)
+					},
+					success_fn:
+					{ [unowned self] (
+						mockedTransaction,
+						isXMRAddressIntegrated,
+						integratedAddressPIDForDisplay_orNil
+					) in
+						self.formSubmissionController = nil // must free as this is a terminal callback
+						// will re-enable form shortly (after presentation)
+						//
+						do {
+							let viewController = TransactionDetails.ViewController(
+								transaction: mockedTransaction,
+								inWallet: fromWallet
+							)
+							self.navigationController!.pushViewController(
+								viewController,
+								animated: true
+							)
+						}
+						do { // and after a delay, present AddContactFromSendTabView
+							if selectedContact == nil { // so they went with a text input address
+								DispatchQueue.main.asyncAfter(
+									deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+									execute:
+									{ [unowned self] in
+										let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
+											enteredAddressValue: enteredAddressValue!, // ! b/c selected contact was nil
+											isXMRAddressIntegrated: isXMRAddressIntegrated,
+											integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
+											resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
+											sentWith_paymentID: mockedTransaction.paymentId
+										)
+										let viewController = AddContactFromSendFundsTabFormViewController(
+											parameters: parameters
+										)
+										let navigationController = UINavigationController(rootViewController: viewController)
+										navigationController.modalPresentationStyle = .formSheet
+										self.navigationController!.present(navigationController, animated: true, completion: nil)
+									}
+								)
+							}
+						}
+						do { // finally, clean up form
 							DispatchQueue.main.asyncAfter(
-								deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+								deadline: .now() + 0.5, // after the navigation transition just above has taken place
 								execute:
 								{ [unowned self] in
-									let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
-										enteredAddressValue: enteredAddressValue!, // ! b/c selected contact was nil
-										isXMRAddressIntegrated: isXMRAddressIntegrated,
-										integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
-										resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
-										sentWith_paymentID: mockedTransaction.paymentId
-									)
-									let viewController = AddContactFromSendFundsTabFormViewController(
-										parameters: parameters
-									)
-									let navigationController = UINavigationController(rootViewController: viewController)
-									navigationController.modalPresentationStyle = .formSheet
-									self.navigationController!.present(navigationController, animated: true, completion: nil)
+									self._clearForm()
+									// and lastly, importantly, re-enable everything
+									self.reEnableForm()
 								}
 							)
 						}
 					}
-					do { // finally, clean up form
-						DispatchQueue.main.asyncAfter(
-							deadline: .now() + 0.5, // after the navigation transition just above has taken place
-							execute:
-							{ [unowned self] in
-								self._clearForm()
-								// and lastly, importantly, re-enable everything
-								self.reEnableForm()
-							}
-						)
-					}
+				)
+				let controller = SendFundsForm.SubmissionController(parameters: parameters)
+				self.formSubmissionController = controller
+				do {
+					self.disableForm()
+					self.set_isFormSubmittable_needsUpdate() // update submittability; after setting self.submissionController
 				}
-			)
-			let controller = SendFundsForm.SubmissionController(parameters: parameters)
-			self.formSubmissionController = controller
-			do {
-				self.disableForm()
-				self.set_isFormSubmittable_needsUpdate() // update submittability; after setting self.submissionController
+				controller.handle()
 			}
-			controller.handle()
+			//
+			// now if using alternate display currency, be sure to ask for terms agreement before doing send
+			if selectedCurrency != .XMR {
+				let hasAgreedToUsageGateTerms = UserDefaults.standard.bool(
+					forKey: UsageGateState_PlainStorage_Keys.hasAgreedToTermsOfCalculatedEffectiveMoneroAmount.key
+				)
+				if hasAgreedToUsageGateTerms == false {
+					// show alert… iff user agrees, write user has agreed to terms and proceed to branch, else bail
+					let alertController = UIAlertController(
+						title: NSLocalizedString("Important", comment: ""),
+						message: String(
+							format: NSLocalizedString(
+								"Though %@ is selected, the app will send %@. (This is not an exchange.)\n\nRate provided by %@. Neither accuracy nor favorability guaranteed. Use at your own risk. Not responsible for losses.",
+								comment: ""
+							),
+							selectedCurrency.symbol,
+							ExchangeRates.Currency.XMR.symbol,
+							Temporary_RateAPIPolling.Client.shared.domain // not .authority - don't need subdomain
+							// TODO: ^--- obtain this from constant once server provides matrix
+						),
+						preferredStyle: .alert
+					)
+					alertController.addAction(
+						UIAlertAction(
+							title: String(
+								format: NSLocalizedString("Agree and Send %@ %@", comment: ""),
+								"\(amount_submittableDouble!)",
+								ExchangeRates.Currency.XMR.symbol
+							),
+							style: .destructive // or is red negative b/c the action is also constructive? (use .default)
+							)
+						{ (result: UIAlertAction) -> Void in
+							// must be sure to save state so alert is now not required until a DeleteEverything
+							UserDefaults.standard.set(
+								true,
+								forKey: UsageGateState_PlainStorage_Keys.hasAgreedToTermsOfCalculatedEffectiveMoneroAmount.key
+							)
+							// and of course proceed
+							__proceedTo_disableFormAndExecute()
+						}
+					)
+					alertController.addAction(
+						UIAlertAction(
+							title: NSLocalizedString("Cancel", comment: ""),
+							style: .default
+							)
+						{ (result: UIAlertAction) -> Void in
+							// bail
+							// shouldn't need to re-enable form b/c we did alert branch/check before disabling form
+						}
+					)
+					self.navigationController!.present(alertController, animated: true, completion: nil)
+					return // early return pending alert result
+				}
+				// fall through
+			}
+			// fall through
+			__proceedTo_disableFormAndExecute()
 		}
 		//
 		// Impertives - Clearing form
 		func _clearForm()
 		{
 			self.clearValidationMessage()
-			self.amount_fieldset.inputField.text = ""
+			self.amount_fieldset.clear()
 			self.sendTo_inputView.clearAndReset()
 			do {
 				self.hideAndClear_manualPaymentIDField()
@@ -819,8 +965,8 @@ extension SendFundsForm
 				self.amount_fieldset.frame = CGRect(
 					x: input_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-					width: self.amount_fieldset.frame.size.width,
-					height: self.amount_fieldset.frame.size.height
+					width: textField_w, // full-size width
+					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
 				).integral
 				self.networkFeeEstimate_label.frame = CGRect(
 					x: label_x,
@@ -837,7 +983,7 @@ extension SendFundsForm
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - 4,
+						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -855,7 +1001,7 @@ extension SendFundsForm
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.sendTo_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.sendTo_label.frame.origin.x + self.sendTo_label.frame.size.width - 4,
+						x: self.sendTo_label.frame.origin.x + self.sendTo_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: self.sendTo_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.sendTo_label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -939,7 +1085,7 @@ extension SendFundsForm
 			self.sendTo_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
 		}
 		//
-		// Delegation - AmountInputField UITextField shunt
+		// Delegation - Amounts.InputField UITextField shunt
 		func textField(
 			_ textField: UITextField,
 			shouldChangeCharactersIn range: NSRange,
@@ -1130,8 +1276,33 @@ extension SendFundsForm
 				return
 			}
 			let requestPayload = optl_requestPayload!
+			var currencyToSelect: ExchangeRates.Currency = .XMR // the default; to be finalized as follows…
+			if let amountCurrencySymbol = requestPayload.amountCurrency,
+				amountCurrencySymbol != ""
+			{
+				let currency = ExchangeRates.CurrencySymbol.currency(
+					fromSymbol: amountCurrencySymbol
+				)
+				if currency == nil {
+					self.set(
+						validationMessage: NSLocalizedString(
+							"Unrecognized currency on funds request",
+							comment: ""
+						),
+						wantsXButton: true
+					)
+					return
+				}
+				currencyToSelect = currency!
+			}
+			self.amount_fieldset.currencyPickerButton.set( // set no matter what, jic different
+				selectedCurrency: currencyToSelect,
+				skipSettingOnPickerView: false
+			)
+			// as long as currency was valid…
 			if let amountString = requestPayload.amount, amountString != "" {
 				self.amount_fieldset.inputField.text = amountString
+				self.amount_fieldset.configure_effectiveMoneroAmountLabel() // b/c we just manually changed the text - would be nice to have an abstraction to do all this :P
 			}
 			do {
 				let target_address = requestPayload.address
@@ -1224,6 +1395,11 @@ extension SendFundsForm
 			{ [unowned self] in
 				self._clearForm()
 				self._tearDownAnyImagePickerController(animated: false)
+				do { // special:
+					UserDefaults.standard.removeObject(
+						forKey: UsageGateState_PlainStorage_Keys.hasAgreedToTermsOfCalculatedEffectiveMoneroAmount.key
+					)
+				}
 				//
 				// should already have popped to root thanks to root tab bar vc
 			}
@@ -1284,6 +1460,15 @@ extension SendFundsForm
 			self._clearForm() // figure that since this method is called when user is trying to initiate a new request we should clear the form
 			let wallet = notification.userInfo![WalletAppWalletActionsCoordinator.NotificationUserInfoKeys.wallet.key] as! Wallet
 			self.fromWallet_inputView.set(selectedWallet: wallet)
+		}
+		//
+		@objc func ExchangeRates_didUpdateAvailabilityOfRates()
+		{
+			self.configure_networkFeeEstimate_label() // the amount field takes care of observing this for itself but the estimate label doesn't…… could be factored……
+		}
+		@objc func SettingsController__NotificationNames_Changed__displayCurrencySymbol()
+		{
+			self.configure_networkFeeEstimate_label()
 		}
 	}
 }

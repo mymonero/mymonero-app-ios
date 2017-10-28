@@ -176,7 +176,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 	}
 	//
 	static let duration__min: SliderSecondsValue = 5
-	static let duration__max: SliderSecondsValue = 1500 // aka 'Never'
+	static let duration__max: SliderSecondsValue = 60 * 10 // aka 'Never'; lower on mobile… but maybe we should change this based on whether we're plugged in? possible todo
 	static let duration__never = SettingsAppTimeoutAfterSecondsSlider.duration__max
 	//
 	// Properties

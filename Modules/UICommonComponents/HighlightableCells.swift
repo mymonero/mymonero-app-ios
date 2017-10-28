@@ -53,13 +53,10 @@ extension UICommonComponents
 			case highlighted = "_highlighted"
 			case disabled = "_disabled"
 			//
-			var suffix: String
-			{
+			var suffix: String {
 				return self.rawValue
 			}
-			//
-			var stretchableImage: UIImage
-			{ // todo: lazily cache these at this accessor? would otherwise have made them static
+			var stretchableImage: UIImage { // todo: lazily cache these at this accessor? would otherwise have made them static
 				let capSize = UICommonComponents.HighlightableCells.capSize
 				return UIImage(
 					named: "highlightableCellBG\(self.suffix)"
@@ -67,6 +64,16 @@ extension UICommonComponents
 					withLeftCapWidth: capSize,
 					topCapHeight: capSize
 				)
+			}
+			var contentBackgroundColor: UIColor {
+				switch self {
+					case .normal:
+						return UIColor(rgb: 0x383638)
+					case .highlighted:
+						return UIColor(rgb: 0x3F3E3F)
+					case .disabled:
+						return UIColor(rgb: 0x373637)
+				}
 			}
 		}
 	}

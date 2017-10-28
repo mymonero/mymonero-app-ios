@@ -158,7 +158,7 @@ class ConnectivityMessagePresentationController
 			return
 		}
 		if self.viewController == nil {
-			DDLog.Info("ConnectivityMessage", "Asked to \(#function) but not presented.")
+//			DDLog.Info("ConnectivityMessage", "Asked to \(#function) but not presented.")
 			return
 		}
 		if self._isTransitioningPresentation {

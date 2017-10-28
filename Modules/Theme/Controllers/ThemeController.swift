@@ -194,6 +194,14 @@ extension UIFont
 	{
 		return UIFont(name: self.regularMonospaceFontName, size: 13)!
 	}
+	static var subMiddlingRegularMonospace: UIFont
+	{ // still not 100% sold on this… it's not in the mds MVP design
+		return UIFont(name: self.regularMonospaceFontName, size: 12)!
+	}
+	static var subMiddlingBoldMonospace: UIFont
+	{ // still not 100% sold on this… it's not in the mds MVP design
+		return UIFont(name: self.boldMonospaceFontName, size: 12)!
+	}
 	static var middlingBoldMonospace: UIFont
 	{
 		return UIFont(name: self.boldMonospaceFontName, size: 13)!
@@ -235,5 +243,9 @@ extension UIFont
 	static var middlingButtonContentSemiboldSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.semibold)
+	}
+	static var keyboardContentSemiboldSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.semibold)
 	}
 }

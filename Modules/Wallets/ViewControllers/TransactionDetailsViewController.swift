@@ -235,7 +235,10 @@ extension TransactionDetails
 				// TODO: array of multivaluefieldrowdescriptions w/clr etc for amount and two fees
 				let floatAmount = self.transaction.approxFloatAmount
 				let value = "\(floatAmount)"
-				self.amountsFeesTotals__fieldView.set(text: value, color: floatAmount < 0 ? UIColor(rgb: 0xF97777) : nil)
+				self.amountsFeesTotals__fieldView.set(
+					text: value,
+					color: floatAmount < 0 ? UIColor(rgb: 0xF97777) : nil
+				)
 			}
 			do {
 				let value = "\(self.transaction.mixin + 1)" // ringsize is mixin + 1

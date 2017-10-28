@@ -45,6 +45,7 @@ class AddFundsRequestFormSubmissionController
 		var amount: String?
 		var optl__memo: String? // TODO: is this message, or really description?
 //		var description: String? // no support yet
+		var amountCurrency: ExchangeRates.CurrencySymbol? // must be able to be nil
 		//
 		var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
 		var success_fn: (_ instance: FundsRequest) -> Void
@@ -63,7 +64,8 @@ class AddFundsRequestFormSubmissionController
 			payment_id: self.parameters.paymentID,
 			amount: self.parameters.amount,
 			message: self.parameters.optl__memo,
-			description: nil // self.parameters.message //
+			description: nil, // self.parameters.message //
+			amountCurrency: self.parameters.amountCurrency
 		)
 		{ (err_str, instance) in
 			if err_str != nil {

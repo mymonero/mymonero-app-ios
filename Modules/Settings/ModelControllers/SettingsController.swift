@@ -40,6 +40,7 @@ class SettingsController: DeleteEverythingRegistrant
 	{
 		case specificAPIAddressURLAuthority = "SettingsController_NotificationNames_Changed_specificAPIAddressURLAuthority"
 		case appTimeoutAfterS_nilForDefault_orNeverValue = "SettingsController_NotificationNames_Changed_appTimeoutAfterS_nilForDefault_orNeverValue"
+		case displayCurrencySymbol = "SettingsController_NotificationNames_Changed_displayCurrencySymbol"
 		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
@@ -55,6 +56,7 @@ class SettingsController: DeleteEverythingRegistrant
 		case _id = "_id"
 		case specificAPIAddressURLAuthority = "specificAPIAddressURLAuthority"
 		case appTimeoutAfterS_nilForDefault_orNeverValue = "appTimeoutAfterS_nilForDefault_orNeverValue"
+		case displayCurrencySymbol = "displayCurrencySymbol"
 		//
 		var changed_notificationName: NSNotification.Name?
 		{
@@ -63,6 +65,8 @@ class SettingsController: DeleteEverythingRegistrant
 					return NotificationNames_Changed.specificAPIAddressURLAuthority.notificationName
 				case .appTimeoutAfterS_nilForDefault_orNeverValue:
 					return NotificationNames_Changed.appTimeoutAfterS_nilForDefault_orNeverValue.notificationName
+				case .displayCurrencySymbol:
+					return NotificationNames_Changed.displayCurrencySymbol.notificationName
 				case ._id:
 					assert(false)
 					// _id is not to be updated
@@ -74,6 +78,9 @@ class SettingsController: DeleteEverythingRegistrant
 	//
 	// Constants - Default values
 	let default_appTimeoutAfterS: TimeInterval = 90 // s …… 30 was a bit short for new users
+	var default_displayCurrencySymbol: ExchangeRates.CurrencySymbol {
+		return ExchangeRates.Currency.XMR.symbol // for now...? mayyyybe detect by locale and try to guess? but that could end up being too inaccurate. language es could appear in Venezualan users and i wouldn't think MXN would be super helpful there - but i have no data on it
+	}
 	//
 	// Properties - Runtime - Transient
 	var hasBooted = false
@@ -86,6 +93,10 @@ class SettingsController: DeleteEverythingRegistrant
 	var _id: DocumentPersister.DocumentId?
 	var specificAPIAddressURLAuthority: String?
 	var appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval?
+	var displayCurrencySymbol: ExchangeRates.CurrencySymbol!
+	var displayCurrency: ExchangeRates.Currency {
+		return ExchangeRates.CurrencySymbol.currency(fromSymbol: self.displayCurrencySymbol)!
+	}
 	//
 	// Lifecycle - Singleton Init
 	static let shared = SettingsController()
@@ -111,7 +122,8 @@ class SettingsController: DeleteEverythingRegistrant
 			self._setup_loadState(
 				_id: nil,
 				specificAPIAddressURLAuthority: nil,
-				appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS
+				appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS,
+				displayCurrencySymbol: self.default_displayCurrencySymbol
 			)
 			return
 		}
@@ -119,17 +131,25 @@ class SettingsController: DeleteEverythingRegistrant
 		let _id = jsonDict[DictKey._id.rawValue] as! DocumentPersister.DocumentId
 		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
 		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval
-		self._setup_loadState(_id: _id, specificAPIAddressURLAuthority: specificAPIAddressURLAuthority, appTimeoutAfterS_nilForDefault_orNeverValue: appTimeoutAfterS_nilForDefault_orNeverValue)
+		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as! ExchangeRates.CurrencySymbol
+		self._setup_loadState(
+			_id: _id,
+			specificAPIAddressURLAuthority: specificAPIAddressURLAuthority,
+			appTimeoutAfterS_nilForDefault_orNeverValue: appTimeoutAfterS_nilForDefault_orNeverValue,
+			displayCurrencySymbol: displayCurrencySymbol
+		)
 	}
 	func _setup_loadState(
 		_id: DocumentPersister.DocumentId?,
 		specificAPIAddressURLAuthority: String?,
-		appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval
+		appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval,
+		displayCurrencySymbol: ExchangeRates.CurrencySymbol
 	)
 	{
 		self._id = _id
 		self.specificAPIAddressURLAuthority = specificAPIAddressURLAuthority
 		self.appTimeoutAfterS_nilForDefault_orNeverValue = appTimeoutAfterS_nilForDefault_orNeverValue
+		self.displayCurrencySymbol = displayCurrencySymbol
 		//
 		self.hasBooted = true
 	}
@@ -196,6 +216,9 @@ class SettingsController: DeleteEverythingRegistrant
 			case .appTimeoutAfterS_nilForDefault_orNeverValue:
 				self.appTimeoutAfterS_nilForDefault_orNeverValue = value as? TimeInterval // nil means 'use default idle time' and -1 means 'disable idle timer'; luckily TimeInterval can be negative
 				break
+			case .displayCurrencySymbol:
+				self.displayCurrencySymbol = value as? ExchangeRates.CurrencySymbol // validate?
+				break
 			case .specificAPIAddressURLAuthority:
 				self.specificAPIAddressURLAuthority = value as? String
 				break
@@ -210,6 +233,10 @@ class SettingsController: DeleteEverythingRegistrant
 	func set(appTimeoutAfterS_nilForDefault_orNeverValue value: TimeInterval?) -> String? // err_str; use nil for 'never', not for resetting to default
 	{
 		return self.set(valuesByDictKey: [ DictKey.appTimeoutAfterS_nilForDefault_orNeverValue: value as Any ])
+	}
+	func set(displayCurrencySymbol_nilForDefault value: ExchangeRates.CurrencySymbol?) -> String? // err_str; use nil for default
+	{
+		return self.set(valuesByDictKey: [ DictKey.displayCurrencySymbol: value as Any ])
 	}
 	//
 	// Accessors - Persistence
@@ -226,6 +253,9 @@ class SettingsController: DeleteEverythingRegistrant
 		}
 		if let value = self.appTimeoutAfterS_nilForDefault_orNeverValue {
 			dict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] = value
+		}
+		if let value = self.displayCurrencySymbol {
+			dict[DictKey.displayCurrencySymbol.rawValue] = value
 		}
 		//
 		// Note: Override this method and add data you would like encrypted – but call on super
@@ -286,7 +316,8 @@ class SettingsController: DeleteEverythingRegistrant
 		let defaults_valuesByKey: [DictKey: Any] =
 		[
 			.specificAPIAddressURLAuthority: "",
-			.appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS
+			.appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS,
+			.displayCurrencySymbol: self.default_displayCurrencySymbol
 		]
 		let err_str = self.set(valuesByDictKey: defaults_valuesByKey)
 		//

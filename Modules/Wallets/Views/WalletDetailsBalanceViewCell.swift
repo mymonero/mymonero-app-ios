@@ -135,14 +135,14 @@ extension WalletDetails
 			}
 			//
 			// Accessors
-			func mainSectionColor(withWallet wallet: Wallet) -> UIColor {
+			func mainSectionTextColor(withWallet wallet: Wallet) -> UIColor {
 				if wallet.swatchColor.isADarkColor {
 					return UIColor(rgb: 0xF8F7F8) // so use light text
 				} else {
 					return UIColor(rgb: 0x161416) // so use dark text
 				}
 			}
-			func paddingZeroesSectionColor(withWallet wallet: Wallet) -> UIColor {
+			func secondarySectionTextColor(withWallet wallet: Wallet) -> UIColor {
 				if wallet.swatchColor.isADarkColor {
 					return UIColor(red: 248/255, green: 247/255, blue: 248/255, alpha: 0.2)
 				} else {
@@ -176,25 +176,42 @@ extension WalletDetails
 				}
 				var finalized_main_string = ""
 				var finalized_paddingZeros_string = ""
+				var displayCurrency = SettingsController.shared.displayCurrency
 				do {
-					let raw_balanceString = wallet.balance_formattedString
-					let coinUnitPlaces = MoneroConstants.currency_unitPlaces
+					let moneroBalanceAmount = wallet.balanceAmount
+					var raw_balanceString: String
+					if displayCurrency == .XMR {
+						raw_balanceString = moneroBalanceAmount.humanReadableString
+					} else {
+						let convertedAmount = displayCurrency.displayUnitsRounded_amountInCurrency(
+							fromMoneroAmount: moneroBalanceAmount
+						)
+						if convertedAmount != nil {
+							raw_balanceString = "\(convertedAmount!)"
+						} else {
+							raw_balanceString = moneroBalanceAmount.humanReadableString
+							displayCurrency = .XMR // display XMR until rate is ready? or maybe just show 'LOADING…'?
+						}
+					}
+					let display_coinUnitPlaces = displayCurrency.unitsForDisplay
+					//
+					// TODO: the following should probably be factored and placed into something like an/the Amounts class
 					let raw_balanceString__components = raw_balanceString.components(separatedBy: ".")
 					if raw_balanceString__components.count == 1 {
 						let balance_aspect_integer = raw_balanceString__components[0]
 						if balance_aspect_integer == "0" {
 							finalized_main_string = ""
-							finalized_paddingZeros_string = "00." + String(repeating: "0", count: coinUnitPlaces)
+							finalized_paddingZeros_string = "00." + String(repeating: "0", count: display_coinUnitPlaces)
 						} else {
 							finalized_main_string = balance_aspect_integer + "."
-							finalized_paddingZeros_string = String(repeating: "0", count: coinUnitPlaces)
+							finalized_paddingZeros_string = String(repeating: "0", count: display_coinUnitPlaces)
 						}
 					} else if raw_balanceString__components.count == 2 {
 						finalized_main_string = raw_balanceString
 						let decimalComponent = raw_balanceString__components[1]
 						let decimalComponent_length = decimalComponent.characters.count
-						if decimalComponent_length < coinUnitPlaces + 2 {
-							finalized_paddingZeros_string = String(repeating: "0", count: coinUnitPlaces - decimalComponent_length + 2)
+						if decimalComponent_length < display_coinUnitPlaces {
+							finalized_paddingZeros_string = String(repeating: "0", count: display_coinUnitPlaces - decimalComponent_length)
 						}
 					} else {
 						assert(false, "Couldn't parse formatted balance string.")
@@ -204,34 +221,55 @@ extension WalletDetails
 				}
 				let attributes: [NSAttributedStringKey : Any] = [:]
 				let attributedText = NSMutableAttributedString(string: "\(finalized_main_string)\(finalized_paddingZeros_string)", attributes: attributes)
-				let mainSectionColor = self.mainSectionColor(withWallet: wallet)
-				let paddingZeroesSectionColor = self.paddingZeroesSectionColor(withWallet: wallet)
+				let mainSectionTextColor = self.mainSectionTextColor(withWallet: wallet)
+				let secondarySectionTextColor = self.secondarySectionTextColor(withWallet: wallet)
+				let displayCurrency_hasAtomicUnits = displayCurrency.hasAtomicUnits
 				do {
+					var finalizable_rangeLength = finalized_main_string.characters.count
+					if displayCurrency_hasAtomicUnits == false {
+						finalizable_rangeLength += finalized_paddingZeros_string.characters.count
+					}
+					let final_rangeLength = finalizable_rangeLength
 					attributedText.addAttributes(
 						[
-							NSAttributedStringKey.foregroundColor: mainSectionColor,
+							NSAttributedStringKey.foregroundColor: mainSectionTextColor,
 						],
-						range: NSMakeRange(0, finalized_main_string.characters.count)
+						range: NSMakeRange(0, final_rangeLength)
 					)
-					if finalized_paddingZeros_string.characters.count > 0 {
-						attributedText.addAttributes(
-							[
-								NSAttributedStringKey.foregroundColor: paddingZeroesSectionColor,
-							],
-							range: NSMakeRange(
-								finalized_main_string.characters.count,
-								attributedText.string.characters.count - finalized_main_string.characters.count
+					if displayCurrency_hasAtomicUnits {
+						if finalized_paddingZeros_string.characters.count > 0 {
+							attributedText.addAttributes(
+								[
+									NSAttributedStringKey.foregroundColor: secondarySectionTextColor,
+								],
+								range: NSMakeRange(
+									finalized_main_string.characters.count,
+									attributedText.string.characters.count - finalized_main_string.characters.count
+								)
 							)
+						}
+					}
+					//
+					// currency suffix
+					if displayCurrency != .XMR {
+						let string = " " + displayCurrency.symbol
+						let attrString = NSAttributedString(
+							string: string,
+							attributes:
+							[
+								NSAttributedStringKey.foregroundColor: secondarySectionTextColor // secondary to annotate value itself
+							]
 						)
+						attributedText.append(attrString)
 					}
 				}
-				self.label.textColor = paddingZeroesSectionColor // for the '…' during truncation
+				self.label.textColor = secondarySectionTextColor // for the '…' during truncation
 				self.label.attributedText = attributedText
 				self._configureBackgroundColor(withWallet: wallet)
 			}
 			func set(utilityText text: String, withWallet wallet: Wallet)
 			{
-				self.label.textColor = self.mainSectionColor(withWallet: wallet)
+				self.label.textColor = self.mainSectionTextColor(withWallet: wallet)
 				self.label.text = text
 				self._configureBackgroundColor(withWallet: wallet)
 			}

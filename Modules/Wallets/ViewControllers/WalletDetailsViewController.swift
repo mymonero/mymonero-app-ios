@@ -174,6 +174,18 @@ extension WalletDetails
 				name: Wallet.NotificationNames.transactionsChanged.notificationName,
 				object: self.wallet
 			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(ExchangeRates_didUpdateAvailabilityOfRates),
+				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				object: nil
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(SettingsController__NotificationNames_Changed__displayCurrencySymbol),
+				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
+				object: nil
+			)
 		}
 		override func stopObserving()
 		{
@@ -188,6 +200,16 @@ extension WalletDetails
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.spentOutputsChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.transactionsChanged.notificationName, object: self.wallet)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				object: nil
+			)
+			NotificationCenter.default.removeObserver(
+				self,
+				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
+				object: nil
+			)
 		}
 		//
 		// Accessors
@@ -545,6 +567,14 @@ extension WalletDetails
 		{
 			self.set_navigationTitle()
 			self.tableView.reloadData()
+		}
+		@objc func ExchangeRates_didUpdateAvailabilityOfRates()
+		{
+			self.tableView.reloadData() // want balance label update
+		}
+		@objc func SettingsController__NotificationNames_Changed__displayCurrencySymbol()
+		{
+			self.tableView.reloadData() // want balance label update
 		}
 		//
 		// Delegation - View lifecycle

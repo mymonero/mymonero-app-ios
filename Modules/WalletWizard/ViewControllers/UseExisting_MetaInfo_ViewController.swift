@@ -593,7 +593,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.walletMnemonic_tooltipSpawn_buttonView.frame = CGRect(
-						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						x: final__label_frame.origin.x + final__label_frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -625,7 +625,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.addr_tooltipSpawn_buttonView.frame = CGRect(
-						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						x: final__label_frame.origin.x + final__label_frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -654,7 +654,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.viewKey_tooltipSpawn_buttonView.frame = CGRect(
-						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						x: final__label_frame.origin.x + final__label_frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -683,7 +683,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.spendKey_tooltipSpawn_buttonView.frame = CGRect(
-						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						x: final__label_frame.origin.x + final__label_frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h

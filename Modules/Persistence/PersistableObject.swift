@@ -60,6 +60,12 @@ class PersistableObject: Equatable
 			return NSNotification.Name(self.rawValue)
 		}
 	}
+	enum NotificationUserInfoKeys: String
+	{
+		case object = "PersistableObject_NotificationUserInfoKeys_object"
+		//
+		var key: String { return self.rawValue }
+	}
 	//
 	func collectionName() -> String
 	{
@@ -112,7 +118,15 @@ class PersistableObject: Equatable
 	func teardown()
 	{
 		DDLog.TearingDown("Persistence", "Tearing down a \(self).")
-		NotificationCenter.default.post(name: NotificationNames.willBeDeinitialized.notificationName, object: self)
+		let userInfo: [String: Any] =
+		[
+			NotificationUserInfoKeys.object.key: self // the reason I'm sending self along is that it will be nil at any references of consumers by the time anyone hears of the following notification! So if they try to stopObserving by using willBeDeinitialized, they won't be able to!
+		]
+		NotificationCenter.default.post(
+			name: NotificationNames.willBeDeinitialized.notificationName,
+			object: self,
+			userInfo: userInfo
+		)
 	}
 	//
 	// Accessors - Persistence state
@@ -184,7 +198,7 @@ class PersistableObject: Equatable
 			if err_str != nil {
 				DDLog.Error("Persistence", "Error while saving update to object: \(err_str!)")
 			} else {
-				DDLog.Done("Persistence", "Saved update to \(self).")
+//				DDLog.Done("Persistence", "Saved update to \(self).")
 			}
 			return err_str
 		} catch let e {

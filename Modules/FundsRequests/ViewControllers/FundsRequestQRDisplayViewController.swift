@@ -65,7 +65,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			var text: String
 			if hasAmount {
 				text = String(
-					format: NSLocalizedString("Scan this code to send %@ XMR to %@.", comment: ""),
+					format: NSLocalizedString("Scan this code to send %@ \(self.fundsRequest.amountCurrency ?? "XMR") to %@.", comment: ""),
 					self.fundsRequest.amount!,
 					to_address
 				)

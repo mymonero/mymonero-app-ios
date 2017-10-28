@@ -42,7 +42,7 @@ class FundsRequest: PersistableObject
 	// Types/Constants
 	enum NotificationNames: String
 	{
-		case infoUpdated		= "FundsRequest_NotificationNames_infoUpdated"
+		case infoUpdated = "FundsRequest_NotificationNames_infoUpdated"
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
@@ -56,6 +56,7 @@ class FundsRequest: PersistableObject
 		case amount = "amount"
 		case message = "message"
 		case description = "description"
+		case amountCurrency = "amountCurrency"
 	}
 	enum QRSize: CGFloat
 	{
@@ -82,6 +83,7 @@ class FundsRequest: PersistableObject
 	var amount: String?
 	var message: String?
 	var description: String?
+	var amountCurrency: ExchangeRates.CurrencySymbol? // nil if no amount
 	//
 	// Properties - Transient
 	var qrCode_cgImage: CGImage!
@@ -109,6 +111,9 @@ class FundsRequest: PersistableObject
 			if let value = self.description {
 				dict[DictKey.description.rawValue] = value
 			}
+			if let value = self.amountCurrency {
+				dict[DictKey.amountCurrency.rawValue] = value
+			}
 		}
 		return dict
 	}
@@ -129,6 +134,8 @@ class FundsRequest: PersistableObject
 		self.amount = dictRepresentation[DictKey.amount.rawValue] as? String
 		self.message = dictRepresentation[DictKey.message.rawValue] as? String
 		self.description = dictRepresentation[DictKey.description.rawValue] as? String
+		self.amountCurrency = dictRepresentation[DictKey.amountCurrency.rawValue] as? ExchangeRates.CurrencySymbol
+		//
 		self.setup()
 	}
 	//
@@ -144,7 +151,8 @@ class FundsRequest: PersistableObject
 		payment_id: MoneroPaymentID?,
 		amount: String?,
 		message: String?,
-		description: String?
+		description: String?,
+		amountCurrency: ExchangeRates.CurrencySymbol?
 	)
 	{
 		self.init()
@@ -155,6 +163,7 @@ class FundsRequest: PersistableObject
 		self.amount = amount
 		self.message = message
 		self.description = description
+		self.amountCurrency = amountCurrency
 		self.setup()
 	}
 	func setup()
@@ -224,7 +233,8 @@ class FundsRequest: PersistableObject
 			amount: self.amount,
 			description: self.description,
 			paymentId: self.payment_id,
-			message: self.message
+			message: self.message,
+			amountCurrency: self.amountCurrency
 		)
 	}
 }

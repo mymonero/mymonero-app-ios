@@ -671,18 +671,15 @@ class Wallet: PersistableObject
 		return pct
 	}
 	//
-	var balance_formattedString: String
-	{
+	var balanceAmount: MoneroAmount {
 		let balanceAmount = (self.totalReceived ?? MoneroAmount(0)) - (self.totalSent ?? MoneroAmount(0))
 		//
-		return balanceAmount.humanReadableString
+		return balanceAmount
 	}
-	var lockedBalance_formattedString: String
-	{
-		return (self.lockedBalance ?? MoneroAmount(0)).humanReadableString
+	var lockedBalanceAmount: MoneroAmount {
+		return (self.lockedBalance ?? MoneroAmount(0))
 	}
-	var hasLockedFunds: Bool
-	{
+	var hasLockedFunds: Bool {
 		if self.lockedBalance == nil {
 			return false
 		}
@@ -725,7 +722,7 @@ class Wallet: PersistableObject
 	{
 		func __proceed_havingActuallyBooted()
 		{
-			DDLog.Done("Wallets", "Successfully booted \(self)")
+//			DDLog.Done("Wallets", "Successfully booted \(self)")
 			self.isBooted = true
 			DispatchQueue.main.async
 			{ [weak self] in

@@ -202,7 +202,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	func _setup_didBoot()
 	{
-		DDLog.Done("Lists", "\(self) booted.")
+//		DDLog.Done("Lists", "\(self) booted.")
 		self.hasBooted = true // all done!
 		self._callAndFlushAllBlocksWaitingForBootToExecute() // after hasBooted=true
 		DispatchQueue.main.async

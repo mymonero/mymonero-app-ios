@@ -38,6 +38,26 @@ import BigInt
 typealias HumanUnderstandableCurrencyAmountDouble = Double // e.g. -0.5 for -0.5 XMR
 // TODO: ^-- improve name? must be a proper term for this
 //
+struct MoneyAmount
+{
+	static let _formatter = NumberFormatter()
+	static var __hasConfigured_formatter = false
+	static func newDouble(withUserInputAmountString string: String) -> Double?
+	{
+		if __hasConfigured_formatter == false {
+			MoneyAmount._formatter.numberStyle = .decimal
+			__hasConfigured_formatter = true
+		}
+		let number = MoneyAmount._formatter.number(from: string)
+		if number == nil {
+			return nil
+		}
+		let double = number!.doubleValue
+		
+		return double
+	}
+}
+//
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
 extension MoneroAmount
 {
@@ -55,25 +75,9 @@ extension MoneroAmount
 	{
 		return new(withBigIntString: "\(doubleValue)")
 	}
-	static let _formatter = NumberFormatter()
-	static var __hasConfigured_formatter = false
-	static func newDouble(withUserInputAmountString string: String) -> Double?
-	{
-		if __hasConfigured_formatter == false {
-			MoneroAmount._formatter.numberStyle = .decimal
-			__hasConfigured_formatter = true
-		}
-		let number = MoneroAmount._formatter.number(from: string)
-		if number == nil {
-			return nil
-		}
-		let double = number!.doubleValue
-		
-		return double
-	}
 	static func new(withUserInputAmountString string: String) -> MoneroAmount?
 	{
-		guard let double = self.newDouble(withUserInputAmountString: string) else {
+		guard let double = MoneyAmount.newDouble(withUserInputAmountString: string) else {
 			return nil
 		}
 		let amount = self.new(withDouble: double)

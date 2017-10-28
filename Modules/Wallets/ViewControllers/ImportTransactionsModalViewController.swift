@@ -54,7 +54,7 @@ extension ImportTransactionsModal
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
-		var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
+		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
 		//
 		var toAddress_label: UICommonComponents.Form.FieldLabel!
 		var toAddress_labelAccessory_copyButton: UICommonComponents.SmallUtilityCopyValueButton!
@@ -144,10 +144,17 @@ extension ImportTransactionsModal
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.Form.AmountInputFieldsetView()
+				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
+					effectiveAmountLabelBehavior: .undefined // .none b/c we never display anything but .XMR here so far
+				)
 				let inputField = view.inputField
 				inputField.isEnabled = false
 				inputField.isImmutable = true
+				view.currencyPickerButton.isEnabled = false
+				view.currencyPickerButton.set(
+					selectedCurrency: .XMR,
+					skipSettingOnPickerView: false/*ofc*/
+				)
 				self.amount_fieldset = view
 				self.scrollView.addSubview(view)
 			}
@@ -327,6 +334,10 @@ extension ImportTransactionsModal
 					amountStr = "0" + amountStr
 				}
 				self.amount_fieldset.inputField.text = amountStr
+				self.amount_fieldset.currencyPickerButton.set( // just to be explicit
+					selectedCurrency: .XMR,
+					skipSettingOnPickerView: false
+				)
 			}
 			//
 			self.view.setNeedsLayout() // important
@@ -457,7 +468,7 @@ extension ImportTransactionsModal
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.informationalLabel_tooltipSpawn_buttonView.frame = CGRect(
-						x: label.frame.origin.x + label.frame.size.width - 4,
+						x: label.frame.origin.x + label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: label.frame.origin.y - (tooltipSpawn_buttonView_h - label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -482,7 +493,7 @@ extension ImportTransactionsModal
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
-						x: final__label_frame.origin.x + final__label_frame.size.width - 4,
+						x: final__label_frame.origin.x + final__label_frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: final__label_frame.origin.y - (tooltipSpawn_buttonView_h - final__label_frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
@@ -505,8 +516,8 @@ extension ImportTransactionsModal
 				self.amount_fieldset.frame = CGRect(
 					x: input_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-					width: self.amount_fieldset.frame.size.width,
-					height: self.amount_fieldset.frame.size.height
+					width: textField_w, // full-size width
+					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
 					).integral
 			}
 			do {

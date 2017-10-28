@@ -90,7 +90,7 @@ class ContactsListViewCell: UITableViewCell
 	}
 	//
 	// Imperatives - Configuration
-	var object: Contact?
+	weak var object: Contact? // weak to prevent self from preventing .willBeDeinitialized from being received
 	var cellPosition: UICommonComponents.CellPosition?
 	func configure(withObject object: Contact, cellPosition: UICommonComponents.CellPosition)
 	{

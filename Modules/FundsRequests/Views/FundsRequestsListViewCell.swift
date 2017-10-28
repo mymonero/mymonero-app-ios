@@ -92,7 +92,7 @@ class FundsRequestsListViewCell: UITableViewCell
 	}
 	//
 	// Imperatives - Configuration
-	var object: FundsRequest?
+	weak var object: FundsRequest? // weak to prevent self from preventing .willBeDeinitialized from being received
 	var cellPosition: UICommonComponents.CellPosition?
 	func configure(withObject object: FundsRequest, cellPosition: UICommonComponents.CellPosition)
 	{

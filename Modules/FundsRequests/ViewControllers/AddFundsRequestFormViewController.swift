@@ -42,7 +42,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var toWallet_inputView: UICommonComponents.WalletPickerButtonView!
 	//
 	var amount_label: UICommonComponents.Form.FieldLabel!
-	var amount_fieldset: UICommonComponents.Form.AmountInputFieldsetView!
+	var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
 	//
 	var aboveMemo_separatorView: UICommonComponents.Details.FieldSeparatorView!
 	//
@@ -104,7 +104,18 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.Form.AmountInputFieldsetView()
+			let view = UICommonComponents.Form.Amounts.InputFieldsetView(
+				effectiveAmountLabelBehavior: .yieldingRawUserInputParsedDouble // different from SendFunds
+			)
+			view.didUpdateValueAvailability_fn =
+			{ [weak self] in
+				// this will be called when the exchange rate changes and when the selected currency changes
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.set_isFormSubmittable_needsUpdate() // wait for exchange rate to come in from what ever is supplying it
+				// TODO: do we need to update anything else here?
+			}
 			let inputField = view.inputField
 			inputField.delegate = self
 			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
@@ -337,7 +348,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if self.requestFrom_inputView.isResolving {
 			return false
 		}
-		if self.amount_fieldset.inputField.hasInputButIsNotSubmittable {
+		// NOTE: here we need to allow empty amounts
+		let hasInputButDoubleFormatIsNotSubmittable = self.amount_fieldset.inputField.hasInputButDoubleFormatIsNotSubmittable
+		if hasInputButDoubleFormatIsNotSubmittable {
 			return false // for ex if they just put in "."
 		}
 		return true
@@ -383,9 +396,6 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	// Accessors
 	var sanitizedInputValue__toWallet: Wallet {
 		return self.toWallet_inputView.selectedWallet! // we are never expecting this modal to be visible when no wallets exist, so a crash is/ought to be ok 
-	}
-	var sanitizedInputValue__amount: MoneroAmount? {
-		return self.amount_fieldset.inputField.submittableAmount_orNil
 	}
 	var sanitizedInputValue__selectedContact: Contact? {
 		return self.requestFrom_inputView.selectedContact
@@ -439,7 +449,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		receiveToWallet wallet: Wallet?
 	)
 	{
-		self.amount_fieldset.inputField.text = "" // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
+		self.amount_fieldset.clear() // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
 		//
 		if contact != nil {
 			self.requestFrom_inputView.pick(contact: contact!)
@@ -460,7 +470,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		self.scrollView.isScrollEnabled = false
 		//
 		self.toWallet_inputView.isEnabled = false
+		
 		self.amount_fieldset.inputField.isEnabled = false
+		self.amount_fieldset.currencyPickerButton.isEnabled = false
+		
 		self.memo_inputView.isEnabled = false
 		self.requestFrom_inputView.inputField.isEnabled = false
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
@@ -475,7 +488,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		self.scrollView.isScrollEnabled = true
 		//
 		self.toWallet_inputView.isEnabled = true
+		
 		self.amount_fieldset.inputField.isEnabled = true
+		self.amount_fieldset.currencyPickerButton.isEnabled = true
+		
 		self.memo_inputView.isEnabled = true
 		self.requestFrom_inputView.inputField.isEnabled = true
 		if let pillView = self.requestFrom_inputView.selectedContactPillView {
@@ -499,7 +515,8 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		//
 		let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
-		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableDouble_orNil
+		
+		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableAmountRawDouble_orNil
 		do {
 			assert(submittableDoubleAmount != nil || amount == nil || amount == "")
 			if submittableDoubleAmount == nil && (amount != nil && amount != "") { // something entered but not usable
@@ -519,6 +536,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				submittableAmountFinalString = amount!
 			}
 		}
+		let submittable_amountCurrency: ExchangeRates.CurrencySymbol? = submittableAmountFinalString != nil && submittableAmountFinalString! != "" ? self.amount_fieldset.currencyPickerButton.selectedCurrency.symbol : nil
 		//
 		let selectedContact = self.requestFrom_inputView.selectedContact
 		let hasPickedAContact = selectedContact != nil
@@ -540,6 +558,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			paymentID: paymentID,
 			amount: submittableAmountFinalString, // rather than using amount directly
 			optl__memo: memoString,
+			amountCurrency: submittable_amountCurrency,
 			//
 			preSuccess_terminal_validationMessage_fn:
 			{ [unowned self] (localizedString) in
@@ -614,8 +633,8 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.amount_fieldset.frame = CGRect(
 				x: input_x,
 				y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-				width: self.amount_fieldset.frame.size.width,
-				height: self.amount_fieldset.frame.size.height
+				width: textField_w, // full-size width
+				height: UICommonComponents.Form.Amounts.InputFieldsetView.h
 			).integral
 		}
 		do {
@@ -757,7 +776,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 	}
 	//
-	// Delegation - AmountInputField UITextField shunt
+	// Delegation - Amounts.InputField UITextField shunt
 	func textField(
 		_ textField: UITextField,
 		shouldChangeCharactersIn range: NSRange,

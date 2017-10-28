@@ -70,6 +70,7 @@ class FundsRequestsListController: PersistedObjectListController
 		amount: String?,
 		message: String?,
 		description: String?,
+		amountCurrency: ExchangeRates.CurrencySymbol?, // needs to be nil if amt is nil
 		_ fn: @escaping (_ err_str: String?, _ instance: FundsRequest?) -> Void
 	)
 	{
@@ -83,7 +84,8 @@ class FundsRequestsListController: PersistedObjectListController
 						payment_id: payment_id,
 						amount: amount,
 						message: message,
-						description: description
+						description: description,
+						amountCurrency: amountCurrency
 					)
 					if let err_str = instance.saveToDisk() { // now we must save (insert) manually
 						fn(err_str, nil)
