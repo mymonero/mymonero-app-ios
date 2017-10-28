@@ -160,32 +160,71 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	// Accessors - Factories
 	var new_requesteeMessagePlaintextString: String
 	{
+		let hasAmount = self.fundsRequest.amount != nil && self.fundsRequest.amount != ""
+		//
+		//
 		var value = "" // must use \r\n instead of \n for Windows
-		value += "Someone wants some Monero."
-		value += "\r\n------------"
-		var numberOfLinesAddedAfterJustPreviousSeparator = 0
+		if hasAmount == false {
+			value += String(
+				format: NSLocalizedString(
+					"Someone has requested a %@ payment.",
+					comment: ""
+				),
+				MoneroConstants.currency_name
+			)
+		} else {
+			value += String(
+				format: NSLocalizedString(
+					"Someone has requested a %@ payment of %@ %@.",
+					comment: ""
+				),
+				MoneroConstants.currency_name,
+				self.fundsRequest.amount!,
+				(self.fundsRequest.amountCurrency ?? MoneroConstants.currency_symbol)
+			)
+		}
+		var numberOfLinesAddedInSection = 0
 		do {
-			if let amount = self.fundsRequest.amount, amount != "" {
-				value += "\r\n\(amount) "
-				value += self.fundsRequest.amountCurrency ?? "XMR"
-				numberOfLinesAddedAfterJustPreviousSeparator += 1
-			}
 			if let message = self.fundsRequest.message, message != "" {
-				value += "\r\n\(message)"
-				numberOfLinesAddedAfterJustPreviousSeparator += 1
+				value += "\r\n" // spacer
+				value += "\r\n" // linebreak
+				value += String(
+					format: NSLocalizedString(
+						"Memo: \"%@\"",
+						comment: ""
+					),
+					message
+				)
+				numberOfLinesAddedInSection += 1
 			}
 			if let description = self.fundsRequest.description, description != "" {
-				value += "\r\n\(description)"
-				numberOfLinesAddedAfterJustPreviousSeparator += 1
+				value += "\r\n" // spacer
+				value += "\r\n" // linebreak
+				value += String(
+					format: NSLocalizedString(
+						"Description: \"%@\"",
+						comment: ""
+					),
+					description
+				)
+				numberOfLinesAddedInSection += 1
 			}
 		}
 		value += "\r\n" // spacer
-		if numberOfLinesAddedAfterJustPreviousSeparator > 0 {
-			value += "\r\n------------"
-		}
-		value += "\r\nIf you have MyMonero installed, use this link to send the funds: \(self.fundsRequest.new_URI.absoluteString)"
+		value += "\r\n" // linebreak
+		value += "------------"
+		value += "\r\n" // linebreak
+		value += NSLocalizedString("If you have MyMonero installed, use this link to send the funds: ", comment: "")
+		value += self.fundsRequest.new_URI.absoluteString
 		value += "\r\n" // spacer
-		value += "\r\nIf you don't have MyMonero installed, download it from \(Homepage.appDownloadLink_fullURL)"
+		value += "\r\n" // linebreak
+		value += String(format:
+			NSLocalizedString(
+				"If you don't have MyMonero installed, download it from %@",
+				comment: ""
+			),
+			Homepage.appDownloadLink_fullURL
+		)
 		//
 		return value
 	}
