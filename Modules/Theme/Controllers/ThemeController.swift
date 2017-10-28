@@ -68,7 +68,7 @@ class ThemeController
 	{
 		UINavigationBar.appearance().barTintColor = UIColor.contentBackgroundColor
 		UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
-		UINavigationBar.appearance().isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars
+		UINavigationBar.appearance().isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars - TODO: possible to deprecate this for future proofing w/o too-significant UI overhaul?
 		UINavigationBar.appearance().titleTextAttributes =
 		[
 			NSAttributedStringKey.font: UIFont.middlingBoldSansSerif,

@@ -54,6 +54,7 @@ class AboutMyMoneroViewController: UIViewController
 	func setup()
 	{
 		self.view.backgroundColor = .contentBackgroundColor
+		self.automaticallyAdjustsScrollViewInsets = false // to fix apparent visual bug of vertical transit on nav push/pop
 		//
 		self.view.addSubview(self.logo_imageView)
 		do {

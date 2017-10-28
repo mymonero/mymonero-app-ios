@@ -68,6 +68,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
 	func setup_views()
 	{
 		self.view.backgroundColor = .contentBackgroundColor
+		self.automaticallyAdjustsScrollViewInsets = false // to fix apparent visual bug of vertical transit on nav push/pop
 		//
 		self.setup_tableView()
 		//
@@ -82,6 +83,12 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
 		view.indicatorStyle = .white // TODO: configure via theme controller
 		self.tableView = view
 		self.view.addSubview(tableView)
+		do {
+			self.automaticallyAdjustsScrollViewInsets = false // to fix apparent visual bug of vertical transit on nav push/pop
+			if #available(iOS 11.0, *) {
+				view.contentInsetAdjustmentBehavior = .never
+			}
+		}
 	}
 	func startObserving()
 	{

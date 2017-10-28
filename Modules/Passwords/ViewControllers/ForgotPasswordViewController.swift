@@ -57,6 +57,7 @@ class ForgotPasswordViewController: UIViewController
 	{
 		do {
 			self.view.backgroundColor = UIColor.contentBackgroundColor
+			self.automaticallyAdjustsScrollViewInsets = false // to fix apparent visual bug of vertical transit on nav push/pop
 		}
 		do {
 			let view = UICommonComponents.EmptyStateView(

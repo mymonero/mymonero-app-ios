@@ -131,12 +131,12 @@ class SettingsController: DeleteEverythingRegistrant
 		let _id = jsonDict[DictKey._id.rawValue] as! DocumentPersister.DocumentId
 		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
 		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval
-		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as! ExchangeRates.CurrencySymbol
+		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as? ExchangeRates.CurrencySymbol
 		self._setup_loadState(
 			_id: _id,
 			specificAPIAddressURLAuthority: specificAPIAddressURLAuthority,
 			appTimeoutAfterS_nilForDefault_orNeverValue: appTimeoutAfterS_nilForDefault_orNeverValue,
-			displayCurrencySymbol: displayCurrencySymbol
+			displayCurrencySymbol: displayCurrencySymbol ?? default_displayCurrencySymbol /*legacy/prerelease dict*/
 		)
 	}
 	func _setup_loadState(

@@ -87,6 +87,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 		}
 		do {
 			self.view.backgroundColor = .black
+			self.automaticallyAdjustsScrollViewInsets = false // to fix apparent visual bug of vertical transit on nav push/pop
 		}
 		do {
 			let input = try AVCaptureDeviceInput(device: captureDevice)
