@@ -44,7 +44,7 @@ extension MoneroUtils
 			case description = "tx_description"
 			case paymentID = "tx_payment_id"
 			case message = "tx_message"
-			case amountCurrency = "tx_amount_currency"
+			case amountCurrency = "tx_amount_ccy"
 		}
 		struct ParsedRequest
 		{
