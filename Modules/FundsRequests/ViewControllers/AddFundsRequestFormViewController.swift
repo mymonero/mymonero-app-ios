@@ -432,17 +432,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	// Imperatives - Contact picker, contact picking
 	func scrollToVisible_requestFrom()
 	{
-		let toBeVisible_frame__absolute = CGRect(
-			x: 0,
-			y: self.requestFrom_label.frame.origin.y,
-			width: self.requestFrom_inputView.frame.size.width,
-			height: (self.requestFrom_inputView.frame.origin.y - self.requestFrom_label.frame.origin.y) + self.requestFrom_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField
-		)
-		self.scrollRectToVisible(
-			toBeVisible_frame__absolute: toBeVisible_frame__absolute,
-			atEdge: .top,
-			finished_fn: {}
-		)
+		self.scrollInputViewToVisible(self.requestFrom_inputView)
 	}
 	public func reconfigureFormAtRuntime_havingElsewhereSelected(
 		requestFromContact contact: Contact?,
@@ -755,7 +745,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				bottomMostView = self.requestFrom_inputView
 			}
 		}
-		let bottomPadding: CGFloat = 18 + (self.requestFrom_inputView.inputField.isFirstResponder ? 300/*prevent height disparity when view not large enough to stay scrolled to top*/ : 0)
+		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView,
 			bottomPadding: bottomPadding

@@ -36,11 +36,14 @@ import UIKit
 
 extension UICommonComponents.Form
 {
-	class ContactAndAddressPickerView: UIView, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource
+	class ContactAndAddressPickerView: UIView,
+		UITextFieldDelegate,
+		UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 	{
+
 		//
 		// Constants
-//		static let maxHeight: CGFloat = UICommonComponents.FormInputField.height + ContactPickerSearchResultsInlinePopoverView.maxHeight
+		static let maxHeight: CGFloat = UICommonComponents.FormInputField.height
 		//
 		// Types
 		enum InputMode
@@ -64,9 +67,11 @@ extension UICommonComponents.Form
 		var inputField = UICommonComponents.FormInputField(
 			placeholder: NSLocalizedString("Enter contact name", comment: "")
 		)
+		var autocompleteResults_inputAccessoryView: ContactPickerSearchResultsInputAccessoryView!
+		//
 		var selectedContactPillView: SelectedContactPillView?
-		var autocompleteResultsView: ContactPickerSearchResultsInlinePopoverView!
 		var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
+		//
 		//
 		// optl
 		var resolvedXMRAddr_label: UICommonComponents.Form.FieldLabel?
@@ -138,12 +143,13 @@ extension UICommonComponents.Form
 				self.addSubview(view)
 			}
 			do {
-				let view = ContactPickerSearchResultsInlinePopoverView()
-				view.tableView.delegate = self
-				view.tableView.dataSource = self
-				view.isHidden = true
-				self.autocompleteResultsView = view
-				self.addSubview(view)
+				let view = ContactPickerSearchResultsInputAccessoryView()
+				view.collectionView.delegate = self
+				view.collectionView.dataSource = self
+				view.frame = .zero
+				self.autocompleteResults_inputAccessoryView = view
+				self.inputField.inputAccessoryView = view
+				self.inputField.reloadInputViews() // necessary? shouldn't currently be first responder…
 			}
 			do {
 				let view = UICommonComponents.ResolvingActivityIndicatorView()
@@ -218,9 +224,6 @@ extension UICommonComponents.Form
 				}
 			}
 			if self.selectedContact == nil {
-				if self.autocompleteResultsView.isHidden == false {
-					return self.autocompleteResultsView.frame.origin.y + self.autocompleteResultsView.frame.size.height
-				}
 				return self.inputField.frame.origin.y + self.inputField.frame.size.height
 			}
 			let pillView = self.selectedContactPillView!
@@ -289,22 +292,26 @@ extension UICommonComponents.Form
 		func _searchForAndDisplaySearchResults()
 		{
 			self.searchResults = self.new_searchResults
-			self.autocompleteResultsView.tableView.reloadData()
+			self.autocompleteResults_inputAccessoryView.collectionView.reloadData()
 			//
 			assert(self.searchResults != nil)
 			if self.searchResults!.count == 0 {
 				self.__removeAllAndHideSearchResults() // to 'remove' them is slightly redundant but not wrong here
-				self.updateBounds()
 				return
 			}
 			//
-			self.autocompleteResultsView.isHidden = false
-			self.updateBounds()
+			self.autocompleteResults_inputAccessoryView.bounds = CGRect(
+				x: 0,
+				y: 0,
+				width: self.autocompleteResults_inputAccessoryView.bounds.size.width,
+				height: ContactPickerSearchResultsInputAccessoryView.h
+			)
+			self.autocompleteResults_inputAccessoryView.isHidden = false
 		}
 		func __removeAllAndHideSearchResults()
 		{
 			self.searchResults = nil
-			self.autocompleteResultsView.isHidden = true
+			self.autocompleteResults_inputAccessoryView.isHidden = true
 			self.updateBounds()
 		}
 		func __clearAndHideInputLayer()
@@ -562,26 +569,7 @@ extension UICommonComponents.Form
 					width: self.frame.size.width, // size to width
 					height: self.inputField.frame.size.height
 				)
-				if self.autocompleteResultsView.isHidden == false {
-					var h: CGFloat
-					do {
-						let numRows = self.searchResults != nil ? self.searchResults!.count : 0
-						if numRows == 0 {
-							h = ContactPickerSearchResultsInlinePopoverView.maxHeight
-						} else {
-							h = ContactPickerSearchResultsInlinePopoverView.height(withNumRows: numRows)
-						}
-					}
-					self.autocompleteResultsView.frame = CGRect(
-						x: UICommonComponents.FormInputCells.imagePadding_x,
-						y: (self.inputField.frame.origin.y - UICommonComponents.FormInputCells.imagePadding_y) + (self.inputField.frame.size.height - UICommonComponents.FormInputCells.imagePadding_y),
-						width: self.frame.size.width - 2*UICommonComponents.FormInputCells.imagePadding_x,
-						height: h
-					)
-					bottomMostView_beforeAccessoryAndResolvingViews = self.autocompleteResultsView
-				} else {
-					bottomMostView_beforeAccessoryAndResolvingViews = self.inputField
-				}
+				bottomMostView_beforeAccessoryAndResolvingViews = self.inputField
 			} else {
 				guard let pillView = self.selectedContactPillView else {
 					assert(false)
@@ -868,23 +856,42 @@ extension UICommonComponents.Form
 			}
 		}
 		//
-		// Delegation - Table
-		func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+		// Delegation - CollectionView
+		func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
 		{
 			return self.searchResults != nil ? self.searchResults!.count : 0
 		}
-		func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+		func collectionView(
+			_ collectionView: UICollectionView,
+			layout collectionViewLayout: UICollectionViewLayout,
+			sizeForItemAt indexPath: IndexPath
+		) -> CGSize
 		{
-			let contact = self.searchResults![indexPath.row]
-			self.pick(contact: contact)
+			guard let searchResults = self.searchResults else {
+				// I think this probably shouldn't be happening but I'm just going to assume here that the results were cleared automatically by a programmatic form hydration and ignore this b/c it looks currently like an effectively harmless race
+				return .zero
+			}
+			let contact = searchResults[indexPath.row]
+			let w = ContactPickerSearchResultsCellView.widthOfSelf(withContact: contact)
+			let h = ContactPickerSearchResultsCellView.h
+			//
+			return CGSize(width: w, height: h)
 		}
-		func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+		func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
 		{
-			return ContactPickerSearchResultsCellView.h
+			return 0
 		}
-		func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+		func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
 		{
-			var cell = tableView.dequeueReusableCell(withIdentifier: ContactPickerSearchResultsCellView.reuseIdentifier) as? ContactPickerSearchResultsCellView
+			return 1
+		}
+		func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+		{
+			let dequeued_cell = collectionView.dequeueReusableCell(
+				withReuseIdentifier: ContactPickerSearchResultsCellView.reuseIdentifier,
+				for: indexPath
+			)
+			var cell = dequeued_cell as? ContactPickerSearchResultsCellView
 			if cell == nil {
 				cell = ContactPickerSearchResultsCellView()
 			}
@@ -893,9 +900,17 @@ extension UICommonComponents.Form
 				return cell!
 			}
 			let contact = searchResults[indexPath.row]
-			cell!.configure(withContact: contact)
+			cell!.configure(
+				withContact: contact,
+				isLast: (indexPath.row == searchResults.count - 1)
+			)
 			//
 			return cell!
+		}
+		func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+		{
+			let contact = self.searchResults![indexPath.row]
+			self.pick(contact: contact)
 		}
 		//
 		// Delegation - Scrolling
@@ -913,24 +928,14 @@ extension UICommonComponents.Form
 		}
 	}
 	//
-	class ContactPickerSearchResultsInlinePopoverView: UIView
+	class ContactPickerSearchResultsInputAccessoryView: UIView
 	{
 		//
 		// Constants/Static
-		static let cornerRadius: CGFloat = 4
-		//
-		static let maxVisibleRows: CGFloat = 3.5
-		static let maxHeight: CGFloat = ContactPickerSearchResultsCellView.h * maxVisibleRows
-		static func height(withNumRows numRows: Int) -> CGFloat
-		{
-			return ContactPickerSearchResultsCellView.h * min(
-				CGFloat(numRows),
-				maxVisibleRows
-			)
-		}
+		static let h: CGFloat = ContactPickerSearchResultsCellView.h
 		//
 		// Properties
-		var tableView: UITableView!
+		var collectionView: UICollectionView!
 		//
 		// Lifecycle - Init
 		init()
@@ -944,25 +949,22 @@ extension UICommonComponents.Form
 		func setup()
 		{
 			do {
-				let layer = self.layer
-				layer.masksToBounds = false
-				layer.cornerRadius = ContactPickerSearchResultsInlinePopoverView.cornerRadius
-				layer.shadowColor = UIColor(white: 0, alpha: 0.1).cgColor
-				layer.shadowOffset = .zero
-				layer.shadowOpacity = 0.5
-				layer.shadowRadius = 4
+				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 0.9)
 			}
 			do {
-				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 1)
-			}
-			do {
-				let view = UITableView(frame: .zero, style: .plain)
-				view.layer.cornerRadius = ContactPickerSearchResultsInlinePopoverView.cornerRadius
+				let layout = UICollectionViewFlowLayout()
+				layout.scrollDirection = .horizontal
+				//
+				let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+				view.contentInset = UIEdgeInsetsMake(0, 1, 0, 1)
+				view.showsHorizontalScrollIndicator = false
 				view.layer.masksToBounds = true
 				view.backgroundColor = self.backgroundColor
-				view.separatorColor = UIColor(rgb: 0xDFDEDF)
-				view.separatorInset = UIEdgeInsets(top: 0, left: 49, bottom: 0, right: 0)
-				self.tableView = view
+				view.register(
+					ContactPickerSearchResultsCellView.self,
+					forCellWithReuseIdentifier: ContactPickerSearchResultsCellView.reuseIdentifier
+				)
+				self.collectionView = view
 				self.addSubview(view)
 			}
 		}
@@ -980,24 +982,50 @@ extension UICommonComponents.Form
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
-			self.tableView.frame = self.bounds
+			self.collectionView.frame = self.bounds
 		}
 	}
-	class ContactPickerSearchResultsCellView: UITableViewCell
+	class ContactPickerSearchResultsCellView: UICollectionViewCell
 	{
 		//
 		// Constants
 		static let reuseIdentifier = "ContactPickerSearchResultsCellView"
-		static let h: CGFloat = 32
+		static let h: CGFloat = 8 * 5
+		static let max_w: CGFloat = 180
+		static let emojiLabel_x: CGFloat = 0
+		static let emojiLabel_w: CGFloat = 46
+		static let titleLabel_x_relativeToEmojiLabel: CGFloat = -3
+		static let padding_right: CGFloat = 12 - titleLabel_x_relativeToEmojiLabel
+		static let titleFont: UIFont = UIFont.middlingSemiboldSansSerif
+		static func widthOfSelf(withContact contact: Contact) -> CGFloat
+		{
+			let string = contact.fullname!
+			let constraintRect = CGSize(
+				width: ContactPickerSearchResultsCellView.max_w,
+				height: h
+			)
+			let boundingBox = string.boundingRect(
+				with: constraintRect,
+				options: .usesLineFragmentOrigin,
+				attributes: [
+					.font: ContactPickerSearchResultsCellView.titleFont
+				],
+				context: nil
+			)
+			let titleString_w = ceil(boundingBox.width)
+			NSLog("\(string) titleString_w \(titleString_w)")
+			//
+			return emojiLabel_w + ContactPickerSearchResultsCellView.titleLabel_x_relativeToEmojiLabel + titleString_w + padding_right
+		}
 		//
 		// Properties
 		var emojiLabel = UILabel()
 		var nameLabel = UILabel()
 		//
 		// Lifecycle - Init
-		init()
+		override init(frame: CGRect)
 		{
-			super.init(style: .default, reuseIdentifier: ContactPickerSearchResultsCellView.reuseIdentifier)
+			super.init(frame: frame)
 			self.setup()
 		}
 		required init?(coder aDecoder: NSCoder) {
@@ -1007,23 +1035,23 @@ extension UICommonComponents.Form
 		{
 			do {
 				self.isOpaque = true // performance
-				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 1)
+				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 0.9)
 			}
 			do {
 				let view = UIView()
-				view.backgroundColor = UIColor(red: 223/255, green: 222/255, blue: 223/255, alpha: 1)
+				view.backgroundColor = UIColor(red: 223/255, green: 222/255, blue: 223/255, alpha: 0.9)
 				self.selectedBackgroundView = view
 			}
 			do {
 				let view = self.emojiLabel
-				view.font = UIFont.systemFont(ofSize: 13)
+				view.font = UIFont.systemFont(ofSize: 16)
 				view.numberOfLines = 1
 				view.textAlignment = .center
 				self.addSubview(view)
 			}
 			do {
 				let view = self.nameLabel
-				view.font = UIFont.middlingMediumSansSerif
+				view.font = type(of: self).titleFont
 				view.textAlignment = .left
 				view.numberOfLines = 1
 				view.lineBreakMode = .byTruncatingTail
@@ -1037,17 +1065,22 @@ extension UICommonComponents.Form
 		{
 			super.layoutSubviews()
 			do {
-				let w: CGFloat = 50
-				self.emojiLabel.frame = CGRect(x: 0, y: 0, width: w, height: self.frame.size.height)
+				let w: CGFloat = type(of: self).emojiLabel_w
+				self.emojiLabel.frame = CGRect(x: type(of: self).emojiLabel_x, y: 0, width: w, height: self.frame.size.height)
 			}
 			do {
-				let x = self.emojiLabel.frame.origin.x + self.emojiLabel.frame.size.width
-				self.nameLabel.frame = CGRect(x: x, y: 0, width: self.frame.size.width - x - 8, height: self.frame.size.height)
+				let x = self.emojiLabel.frame.origin.x + self.emojiLabel.frame.size.width + type(of: self).titleLabel_x_relativeToEmojiLabel
+				self.nameLabel.frame = CGRect(
+					x: x,
+					y: 0,
+					width: self.frame.size.width - x - type(of: self).padding_right,
+					height: self.frame.size.height
+				)
 			}
 		}
 		//
 		// Imperatives - Configuration
-		func configure(withContact contact: Contact)
+		func configure(withContact contact: Contact, isLast: Bool)
 		{
 			self.isAccessibilityElement = true
 			self.accessibilityTraits = UIAccessibilityTraitButton
