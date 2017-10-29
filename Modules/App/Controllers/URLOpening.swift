@@ -134,9 +134,15 @@ class URLOpening: DeleteEverythingRegistrant
 			return false
 		}
 		if self.isAllowedToReceiveURLs == false { // then defer this til we are ready (as gracefully as we can)
+			let hasAPasswordBeenSaved = PasswordController.shared.hasUserSavedAPassword
+			if hasAPasswordBeenSaved == false {
+				// app is blank - no wallets have been created, password hasn't been entered…… ignore so as not to cause a superfluous password entry request
+				return false
+				// NOTE: returning before self.requestURLToOpen_pendingFromDisallowedFromOpening set - at least for now, b/c otherwise _yieldThatTimeToHandleReceivedMoneroURL would never be called unless code further enhanced to avoid call to OnceBootedAndPasswordObtained when hasAPasswordBeenSaved=false
+			}
 			let hadExistingPendingURL = self.requestURLToOpen_pendingFromDisallowedFromOpening != nil ? true : false
 			self.requestURLToOpen_pendingFromDisallowedFromOpening = url // we will clear this either on the app going back into the background (considered a cancellation or failed attempt to unlock), the requestURL is processed after unlock, or
-			DDLog.Warn("URLOpening", "Not allowed to perform URL opening ops yet. Hanging onto requestURLToOpen until app unlocked.")
+			DDLog.Warn("URLOpening", "Not allowed to perform URL opening ops yet but a password has been saved. Hanging onto requestURLToOpen until app unlocked.")
 			if hadExistingPendingURL == false { // so we don't make duplicative requests for pw entry notification
 				PasswordController.shared.OnceBootedAndPasswordObtained(
 					{ (password, passwordType) in // it might be slightly more rigorous to observe the contact list controller for its next boot to do this but then we have to worry about whether that is waiting for all the information we would end up actually needing… so I'm opting for the somewhat more janky but probably safer option of using a delay to wait for things to load
