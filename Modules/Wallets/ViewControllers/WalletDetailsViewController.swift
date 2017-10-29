@@ -105,6 +105,12 @@ extension WalletDetails
 				view.separatorStyle = .none
 				view.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude)) // prevent undesired visual top padding
 			}
+			do { // to fix apparent visual bug of vertical transit on nav push/pop
+				self.automaticallyAdjustsScrollViewInsets = false // NOTE: This is redundant since we inherit from ScrollableInfoVC
+				if #available(iOS 11.0, *) {
+					view.contentInsetAdjustmentBehavior = .never
+				}
+			}
 			view.delegate = self
 			view.dataSource = self
 			self.scrollView = view

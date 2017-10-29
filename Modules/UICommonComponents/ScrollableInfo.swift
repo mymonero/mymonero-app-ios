@@ -75,8 +75,8 @@ extension UICommonComponents
 			self.view.addSubview(view)
 			self.scrollView = view
 			self.configure_scrollView_contentInset()
-			do {
-				self.automaticallyAdjustsScrollViewInsets = false // to fix apparent visual bug of vertical transit on nav push/pop
+			do { // to fix apparent visual bug of vertical transit on nav push/pop
+				self.automaticallyAdjustsScrollViewInsets = false
 				if #available(iOS 11.0, *) {
 					view.contentInsetAdjustmentBehavior = .never
 				}
