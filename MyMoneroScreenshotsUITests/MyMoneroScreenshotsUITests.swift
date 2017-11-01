@@ -171,8 +171,8 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		}
 		let elementsQuery = app.scrollViews.otherElements
 		elementsQuery.textFields["Contact name or address/domain"].tap()
-		sleep(1) // wait for results to show
-		elementsQuery.tables/*@START_MENU_TOKEN@*/.staticTexts["The Monero Project"]/*[[".cells[\"😀, The Monero Project\"].staticTexts[\"The Monero Project\"]",".cells[\"button.Optional(\\\"The Monero Project\\\")\"].staticTexts[\"The Monero Project\"]",".staticTexts[\"The Monero Project\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+		sleep(1) // wait for results / keyboard to show
+		app.collectionViews.cells["button.The Monero Project"].tap()
 		sleep(3) // wait for possible DNS resolution again
 		//
 		snapshot("04_Send")

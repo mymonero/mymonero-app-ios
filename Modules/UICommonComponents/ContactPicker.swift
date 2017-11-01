@@ -1084,10 +1084,10 @@ extension UICommonComponents.Form
 		{
 			self.isAccessibilityElement = true
 			self.accessibilityTraits = UIAccessibilityTraitButton
-			self.accessibilityIdentifier = "button.\(contact.fullname)" // just going to assume this is unique >_>
+			self.accessibilityIdentifier = "button.\(contact.fullname!)" // just going to assume this is unique >_>
 			//
-			self.emojiLabel.text = contact.emoji
-			self.nameLabel.text = contact.fullname
+			self.emojiLabel.text = contact.emoji!
+			self.nameLabel.text = contact.fullname!
 		}
 	}
 	//
@@ -1215,8 +1215,8 @@ extension UICommonComponents.Form
 		func configureWithContact()
 		{
 			let contact = self.contact!
-			self.nameLabel.text = contact.fullname
-			self.emojiLabel.text = contact.emoji
+			self.nameLabel.text = contact.fullname!
+			self.emojiLabel.text = contact.emoji!
 			self.setNeedsLayout()
 		}
 		//
