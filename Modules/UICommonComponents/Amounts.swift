@@ -212,6 +212,13 @@ extension UICommonComponents.Form.Amounts
 				//
 				self.setNeedsLayout()
 			}
+			func __convenience_setLoadingTextAndHideTooltip()
+			{
+				__setTextOnAmountUI(
+					title: NSLocalizedString("LOADING…", comment: ""),
+					shouldHide_tooltipButton: true
+				)
+			}
 			if self.inputField.isEmptyOrHasIncompleteNumber { // hide; reflow
 				__hideEffectiveAmountUI()
 				return
@@ -227,10 +234,7 @@ extension UICommonComponents.Form.Amounts
 			if xmrAmountDouble_orNil == nil {
 				// but not empty … should have an amount… must be a non-XMR currency
 				assert(selectedCurrency != .XMR)
-				__setTextOnAmountUI(
-					title: NSLocalizedString("LOADING…", comment: ""),
-					shouldHide_tooltipButton: true
-				)
+				__convenience_setLoadingTextAndHideTooltip()
 				return
 			}
 			let moneroAmount = MoneroAmount.new(withDouble: xmrAmountDouble_orNil!)
@@ -241,10 +245,7 @@ extension UICommonComponents.Form.Amounts
 					fromXMRToCurrency: displayCurrency
 				)
 				if isRateReady == false {
-					__setTextOnAmountUI(
-						title: NSLocalizedString("LOADING…", comment: ""),
-						shouldHide_tooltipButton: true
-					)
+					__convenience_setLoadingTextAndHideTooltip()
 					return
 				}
 				let displayCurrencyAmount = displayCurrency.displayUnitsRounded_amountInCurrency(
