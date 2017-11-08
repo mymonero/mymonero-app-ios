@@ -847,7 +847,7 @@ extension SendFundsForm
 						title: NSLocalizedString("Important", comment: ""),
 						message: String(
 							format: NSLocalizedString(
-								"Though %@ is selected, the app will send %@. (This is not an exchange.)\n\nRate provided by %@. Neither accuracy nor favorability guaranteed. Use at your own risk. Not responsible for losses.",
+								"Though %@ is selected, the app will send %@. (This is not an exchange.)\n\nRate provided by '%@'. Neither accuracy nor favorability guaranteed. Use at your own risk. Not responsible for losses.",
 								comment: ""
 							),
 							selectedCurrency.symbol,
@@ -1385,6 +1385,7 @@ extension SendFundsForm
 			{ [unowned self] in
 				self._clearForm()
 				self._tearDownAnyImagePickerController(animated: false)
+				// TODO/NOTE: This actually may be much better implemented as a property on the Settings controller as in the JS app
 				do { // special:
 					UserDefaults.standard.removeObject(
 						forKey: UsageGateState_PlainStorage_Keys.hasAgreedToTermsOfCalculatedEffectiveMoneroAmount.key
