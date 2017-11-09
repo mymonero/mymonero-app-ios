@@ -89,7 +89,9 @@ extension CcyConversionRates
 			return self.rawValue
 		}
 		var fullTitleDescription: String {
-			return "TODO" // e.g. something like 'Monero (XMR)', 'US dollars (USD)', 'Pound sterling (GBP)', 'Yuan (CNY)', etc…
+			fatalError("Not implemented")
+			// e.g. something like 'Monero (XMR)', 'US dollars (USD)', 'Pound sterling (GBP)', 'Yuan (CNY)', etc…
+//			return "TODO"
 		}
 		var uid: CurrencyUID {
 			if self == .none {
