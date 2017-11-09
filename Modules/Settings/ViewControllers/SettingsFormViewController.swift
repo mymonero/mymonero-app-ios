@@ -113,7 +113,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			let view = UICommonComponents.Form.StringPicker.PickerButtonView(
 				selectedValue: SettingsController.shared.displayCurrencySymbol,
-				allValues: ExchangeRates.Currency.lazy_allCurrencySymbols
+				allValues: CcyConversionRates.Currency.lazy_allCurrencySymbols
 			)
 			view.selectedValue_fn =
 			{ [weak self] in

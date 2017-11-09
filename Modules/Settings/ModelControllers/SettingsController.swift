@@ -78,8 +78,8 @@ class SettingsController: DeleteEverythingRegistrant
 	//
 	// Constants - Default values
 	let default_appTimeoutAfterS: TimeInterval = 90 // s …… 30 was a bit short for new users
-	var default_displayCurrencySymbol: ExchangeRates.CurrencySymbol {
-		return ExchangeRates.Currency.XMR.symbol // for now...? mayyyybe detect by locale and try to guess? but that could end up being too inaccurate. language es could appear in Venezualan users and i wouldn't think MXN would be super helpful there - but i have no data on it
+	var default_displayCurrencySymbol: CcyConversionRates.CurrencySymbol {
+		return CcyConversionRates.Currency.XMR.symbol // for now...? mayyyybe detect by locale and try to guess? but that could end up being too inaccurate. language es could appear in Venezualan users and i wouldn't think MXN would be super helpful there - but i have no data on it
 	}
 	//
 	// Properties - Runtime - Transient
@@ -93,9 +93,9 @@ class SettingsController: DeleteEverythingRegistrant
 	var _id: DocumentPersister.DocumentId?
 	var specificAPIAddressURLAuthority: String?
 	var appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval?
-	var displayCurrencySymbol: ExchangeRates.CurrencySymbol!
-	var displayCurrency: ExchangeRates.Currency {
-		return ExchangeRates.CurrencySymbol.currency(fromSymbol: self.displayCurrencySymbol)!
+	var displayCurrencySymbol: CcyConversionRates.CurrencySymbol!
+	var displayCurrency: CcyConversionRates.Currency {
+		return CcyConversionRates.CurrencySymbol.currency(fromSymbol: self.displayCurrencySymbol)!
 	}
 	//
 	// Lifecycle - Singleton Init
@@ -131,7 +131,7 @@ class SettingsController: DeleteEverythingRegistrant
 		let _id = jsonDict[DictKey._id.rawValue] as! DocumentPersister.DocumentId
 		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
 		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval
-		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as? ExchangeRates.CurrencySymbol
+		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as? CcyConversionRates.CurrencySymbol
 		self._setup_loadState(
 			_id: _id,
 			specificAPIAddressURLAuthority: specificAPIAddressURLAuthority,
@@ -143,7 +143,7 @@ class SettingsController: DeleteEverythingRegistrant
 		_id: DocumentPersister.DocumentId?,
 		specificAPIAddressURLAuthority: String?,
 		appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval,
-		displayCurrencySymbol: ExchangeRates.CurrencySymbol
+		displayCurrencySymbol: CcyConversionRates.CurrencySymbol
 	)
 	{
 		self._id = _id
@@ -217,7 +217,7 @@ class SettingsController: DeleteEverythingRegistrant
 				self.appTimeoutAfterS_nilForDefault_orNeverValue = value as? TimeInterval // nil means 'use default idle time' and -1 means 'disable idle timer'; luckily TimeInterval can be negative
 				break
 			case .displayCurrencySymbol:
-				self.displayCurrencySymbol = value as? ExchangeRates.CurrencySymbol // validate?
+				self.displayCurrencySymbol = value as? CcyConversionRates.CurrencySymbol // validate?
 				break
 			case .specificAPIAddressURLAuthority:
 				self.specificAPIAddressURLAuthority = value as? String
@@ -234,7 +234,7 @@ class SettingsController: DeleteEverythingRegistrant
 	{
 		return self.set(valuesByDictKey: [ DictKey.appTimeoutAfterS_nilForDefault_orNeverValue: value as Any ])
 	}
-	func set(displayCurrencySymbol_nilForDefault value: ExchangeRates.CurrencySymbol?) -> String? // err_str; use nil for default
+	func set(displayCurrencySymbol_nilForDefault value: CcyConversionRates.CurrencySymbol?) -> String? // err_str; use nil for default
 	{
 		return self.set(valuesByDictKey: [ DictKey.displayCurrencySymbol: value as Any ])
 	}

@@ -1,5 +1,5 @@
 //
-//  ExchangeRates.swift
+//  CcyConversionRates.swift
 //  MyMonero
 //
 //  Created by Paul Shapiro on 10/18/17.
@@ -36,7 +36,7 @@ import Foundation
 //
 // Namespace
 //
-struct ExchangeRates
+struct CcyConversionRates
 {
 	//
 	// Interface - Typealiases
@@ -53,7 +53,7 @@ struct ExchangeRates
 //
 // Currencies
 //
-extension ExchangeRates
+extension CcyConversionRates
 {
 	//
 	// Interface - Enums
@@ -107,8 +107,8 @@ extension ExchangeRates
 			return 2
 		}
 		static var lazy_allCurrencies: [Currency] {
-			if ExchangeRates._cached_allCurrencies == nil {
-				ExchangeRates._cached_allCurrencies =
+			if CcyConversionRates._cached_allCurrencies == nil {
+				CcyConversionRates._cached_allCurrencies =
 				[ // TODO: is there really no way to enumerate an enum…? sort of ironic. the following is too fragile
 					//
 					// intentionally not including .none… it's not a currency
@@ -136,22 +136,22 @@ extension ExchangeRates
 					.ZAR,
 				]
 			}
-			return ExchangeRates._cached_allCurrencies
+			return CcyConversionRates._cached_allCurrencies
 		}
 		static var lazy_allCurrencySymbols: [CurrencySymbol] {
-			if ExchangeRates._cached_allCurrencySymbols == nil {
-				ExchangeRates._cached_allCurrencySymbols = self.lazy_allCurrencies.map(
+			if CcyConversionRates._cached_allCurrencySymbols == nil {
+				CcyConversionRates._cached_allCurrencySymbols = self.lazy_allCurrencies.map(
 					{ (currency) -> CurrencySymbol in
 						return currency.symbol
 					}
 				)
 			}
-			return ExchangeRates._cached_allCurrencySymbols
+			return CcyConversionRates._cached_allCurrencySymbols
 		}
 	}
 }
 //
-extension ExchangeRates.Currency
+extension CcyConversionRates.Currency
 {
 	func nonAtomicCurrency_formattedString( // is nonAtomic-unit'd currency a good enough way to categorize these? 
 		final_amountDouble: Double
@@ -185,29 +185,29 @@ extension ExchangeRates.Currency
 	}
 }
 //
-extension ExchangeRates.Currency
+extension CcyConversionRates.Currency
 { // Amount conversion
-	static func rounded_exchangeRateCalculated_moneroAmountDouble(
+	static func rounded_ccyConversionRateCalculated_moneroAmountDouble(
 		fromUserInputAmountDouble userInputAmountDouble: Double,
-		fromCurrency selectedCurrency: ExchangeRates.Currency
-	) -> Double? // may return nil if exchange rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
+		fromCurrency selectedCurrency: CcyConversionRates.Currency
+	) -> Double? // may return nil if ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
 	{
 		if selectedCurrency == .none {
 			fatalError("Selected currency unexpectedly .none") // TODO: should this be a throw instead?
 		}
-		let xmrToCurrencyRate = ExchangeRates.Controller.shared.rateFromXMR_orNilIfNotReady(
+		let xmrToCurrencyRate = CcyConversionRates.Controller.shared.rateFromXMR_orNilIfNotReady(
 			toCurrency: selectedCurrency
 		)
 		if xmrToCurrencyRate == nil {
-			return nil // exchange rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
+			return nil // ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
 		}
 		// conversion:
 		// currencyAmt = xmrAmt * xmrToCurrencyRate;
 		// xmrAmt = currencyAmt / xmrToCurrencyRate.
-		// I figure it's better to apply the rounding here rather than only at the display level so that what is actually sent corresponds to what the user saw, even if greater exchange precision /could/ be accomplished..
-		let raw_exchangeRateApplied_amount = userInputAmountDouble * (1 / xmrToCurrencyRate!)
+		// I figure it's better to apply the rounding here rather than only at the display level so that what is actually sent corresponds to what the user saw, even if greater ccyConversion precision /could/ be accomplished..
+		let raw_ccyConversionRateApplied_amount = userInputAmountDouble * (1 / xmrToCurrencyRate!)
 		let roundingMultiplier = Double(10 * 10 * 10 * 10) // 4 rather than, say, 2, b/c it's relatively more unlikely that fiat amts will be over 10-100 xmr - and b/c some currencies require it for xmr value not to be 0 - and 5 places is a bit excessive
-		let truncated_amount = Double(round(roundingMultiplier * raw_exchangeRateApplied_amount) / roundingMultiplier) // must be truncated for display purposes
+		let truncated_amount = Double(round(roundingMultiplier * raw_ccyConversionRateApplied_amount) / roundingMultiplier) // must be truncated for display purposes
 		//
 		return truncated_amount
 	}
@@ -222,24 +222,24 @@ extension ExchangeRates.Currency
 		if self == .XMR {
 			return moneroAmountDouble // no conversion necessary
 		}
-		let xmrToCurrencyRate = ExchangeRates.Controller.shared.rateFromXMR_orNilIfNotReady(
+		let xmrToCurrencyRate = CcyConversionRates.Controller.shared.rateFromXMR_orNilIfNotReady(
 			toCurrency: self
 		)
 		if xmrToCurrencyRate == nil {
-			return nil // exchange rate unavailable - consumers will try again
+			return nil // ccyConversion rate unavailable - consumers will try again
 		}
-		let raw_exchangeRateApplied_amount = moneroAmountDouble * xmrToCurrencyRate!
+		let raw_ccyConversionRateApplied_amount = moneroAmountDouble * xmrToCurrencyRate!
 		let roundingMultiplier = pow(Double(10), Double(self.unitsForDisplay))
-		let truncated_amount = Double(round(roundingMultiplier * raw_exchangeRateApplied_amount) / roundingMultiplier)
+		let truncated_amount = Double(round(roundingMultiplier * raw_ccyConversionRateApplied_amount) / roundingMultiplier)
 		//
 		return truncated_amount
 	}
 }
-extension ExchangeRates.CurrencySymbol
+extension CcyConversionRates.CurrencySymbol
 {
-	static func currency(fromSymbol symbol: ExchangeRates.CurrencySymbol) -> ExchangeRates.Currency?
+	static func currency(fromSymbol symbol: CcyConversionRates.CurrencySymbol) -> CcyConversionRates.Currency?
 	{ // TODO: it would be great to do this w/ some sort of cached reverse lookup table… should be easy
-		for (_, currency) in ExchangeRates.Currency.lazy_allCurrencies.enumerated() {
+		for (_, currency) in CcyConversionRates.Currency.lazy_allCurrencies.enumerated() {
 			if currency.symbol == symbol {
 				return currency
 			}
@@ -251,7 +251,7 @@ extension ExchangeRates.CurrencySymbol
 //
 // Controller
 //
-extension ExchangeRates
+extension CcyConversionRates
 {
 	class Controller
 	{
@@ -259,7 +259,7 @@ extension ExchangeRates
 		// Constants
 		enum NotificationNames: String
 		{
-			case didUpdateAvailabilityOfRates = "ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates"
+			case didUpdateAvailabilityOfRates = "CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates"
 			//
 			var notificationName: NSNotification.Name {
 				return NSNotification.Name(self.rawValue)
@@ -318,7 +318,7 @@ extension ExchangeRates
 		}
 		func ifBatched_notifyOf_set_XMRToCurrencyRate()
 		{
-			DDLog.Info("ExchangeRates", "Received updates: \(self.xmrToCurrencyRatesByCurrencyUID)")
+			DDLog.Info("CcyConversionRates", "Received updates: \(self.xmrToCurrencyRatesByCurrencyUID)")
 			self._notifyOf_updateTo_XMRToCurrencyRate()
 		}
 		//

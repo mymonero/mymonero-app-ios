@@ -83,7 +83,7 @@ class FundsRequest: PersistableObject
 	var amount: String?
 	var message: String?
 	var description: String?
-	var amountCurrency: ExchangeRates.CurrencySymbol? // nil if no amount
+	var amountCurrency: CcyConversionRates.CurrencySymbol? // nil if no amount
 	//
 	// Properties - Transient
 	var qrCode_cgImage: CGImage!
@@ -134,7 +134,7 @@ class FundsRequest: PersistableObject
 		self.amount = dictRepresentation[DictKey.amount.rawValue] as? String
 		self.message = dictRepresentation[DictKey.message.rawValue] as? String
 		self.description = dictRepresentation[DictKey.description.rawValue] as? String
-		self.amountCurrency = dictRepresentation[DictKey.amountCurrency.rawValue] as? ExchangeRates.CurrencySymbol
+		self.amountCurrency = dictRepresentation[DictKey.amountCurrency.rawValue] as? CcyConversionRates.CurrencySymbol
 		//
 		self.setup()
 	}
@@ -152,7 +152,7 @@ class FundsRequest: PersistableObject
 		amount: String?,
 		message: String?,
 		description: String?,
-		amountCurrency: ExchangeRates.CurrencySymbol?
+		amountCurrency: CcyConversionRates.CurrencySymbol?
 	)
 	{
 		self.init()

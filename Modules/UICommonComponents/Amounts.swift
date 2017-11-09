@@ -60,7 +60,7 @@ extension UICommonComponents.Form.Amounts
 		}
 		//
 		// Interface - Properties
-		var didUpdateValueAvailability_fn: (() -> Void)? // settable by consumers; this will be called when the exchange rate changes and when the selected currency changes; to be observed by consumers, to provide hook for call to update e.g. the embedding form's submittability
+		var didUpdateValueAvailability_fn: (() -> Void)? // settable by consumers; this will be called when the ccyConversion rate changes and when the selected currency changes; to be observed by consumers, to provide hook for call to update e.g. the embedding form's submittability
 		//
 		// Internal - Properties
 		let inputField = InputField()
@@ -141,8 +141,8 @@ extension UICommonComponents.Form.Amounts
 		{
 			NotificationCenter.default.addObserver(
 				self,
-				selector: #selector(ExchangeRates_Controller_didUpdateAvailabilityOfRates),
-				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				selector: #selector(CcyConversionRates_Controller_didUpdateAvailabilityOfRates),
+				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
 			NotificationCenter.default.addObserver(
@@ -166,7 +166,7 @@ extension UICommonComponents.Form.Amounts
 		{
 			NotificationCenter.default.removeObserver(
 				self,
-				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
 			NotificationCenter.default.removeObserver(
@@ -241,7 +241,7 @@ extension UICommonComponents.Form.Amounts
 			var finalizable_text: String
 			if selectedCurrency == .XMR {
 				assert(displayCurrency != .XMR)
-				let isRateReady = ExchangeRates.Controller.shared.isRateReady(
+				let isRateReady = CcyConversionRates.Controller.shared.isRateReady(
 					fromXMRToCurrency: displayCurrency
 				)
 				if isRateReady == false {
@@ -266,7 +266,7 @@ extension UICommonComponents.Form.Amounts
 						comment: ""
 					),
 					moneroAmount.humanReadableString,
-					ExchangeRates.Currency.XMR.symbol
+					CcyConversionRates.Currency.XMR.symbol
 				)
 			}
 			let final_text = finalizable_text
@@ -339,13 +339,13 @@ extension UICommonComponents.Form.Amounts
 		{
 			self.configure_effectiveMoneroAmountLabel()
 			//
-			if let fn = self.didUpdateValueAvailability_fn { // also call this, b/c exchange rate needs to be recalculated, and therefore, submittability of form may be updated
+			if let fn = self.didUpdateValueAvailability_fn { // also call this, b/c ccyConversion rate needs to be recalculated, and therefore, submittability of form may be updated
 				fn()
 			}
 		}
 		//
 		// Delegation - Notifications
-		@objc func ExchangeRates_Controller_didUpdateAvailabilityOfRates()
+		@objc func CcyConversionRates_Controller_didUpdateAvailabilityOfRates()
 		{
 			self.configure_effectiveMoneroAmountLabel()
 			if let fn = self.didUpdateValueAvailability_fn { // relatively self-explanatory
@@ -440,7 +440,7 @@ extension UICommonComponents.Form.Amounts
 			return false
 		}
 		func hasInputButMoneroAmountIsNotSubmittable(
-			selectedCurrency: ExchangeRates.Currency
+			selectedCurrency: CcyConversionRates.Currency
 		) -> Bool
 		{
 			if self.isEmpty {
@@ -474,16 +474,16 @@ extension UICommonComponents.Form.Amounts
 			return userInputAmountDouble
 		}
 		func submittableMoneroAmountDouble_orNil(
-			selectedCurrency: ExchangeRates.Currency
+			selectedCurrency: CcyConversionRates.Currency
 		) -> Double?
-		{ // exchange approximation will be performed from user input
+		{ // ccyConversion approximation will be performed from user input
 			guard let userInputAmountDouble = self.submittableAmountRawDouble_orNil else {
 				return nil
 			}
 			if selectedCurrency == .XMR {
 				return userInputAmountDouble // identity rate - NOTE: this is also the RAW non-truncated amount
 			}
-			let xmrAmountDouble = ExchangeRates.Currency.rounded_exchangeRateCalculated_moneroAmountDouble(
+			let xmrAmountDouble = CcyConversionRates.Currency.rounded_ccyConversionRateCalculated_moneroAmountDouble(
 				fromUserInputAmountDouble: userInputAmountDouble,
 				fromCurrency: selectedCurrency
 			)

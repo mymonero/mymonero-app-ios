@@ -70,7 +70,7 @@ class FundsRequestsListController: PersistedObjectListController
 		amount: String?,
 		message: String?,
 		description: String?,
-		amountCurrency: ExchangeRates.CurrencySymbol?, // needs to be nil if amt is nil
+		amountCurrency: CcyConversionRates.CurrencySymbol?, // needs to be nil if amt is nil
 		_ fn: @escaping (_ err_str: String?, _ instance: FundsRequest?) -> Void
 	)
 	{

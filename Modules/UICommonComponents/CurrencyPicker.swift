@@ -48,7 +48,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		static let fixedWidth: CGFloat = 38
 		//
 		// Interface - Properties
-		var selectedCurrency: ExchangeRates.Currency = SettingsController.shared.displayCurrency
+		var selectedCurrency: CcyConversionRates.Currency = SettingsController.shared.displayCurrency
 		var didUpdateSelection_fn: (() -> Void)?
 		//
 		// Internal - Properties
@@ -160,7 +160,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		//
 		// Imperatives - Config
 		func set(
-			selectedCurrency currency: ExchangeRates.Currency,
+			selectedCurrency currency: CcyConversionRates.Currency,
 			skipSettingOnPickerView: Bool = false // leave as false if you're setting from anywhere but the PickerView
 		)
 		{
@@ -192,7 +192,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 	{
 		//
 		// Properties
-		var didSelect_fn: ((_ value: ExchangeRates.Currency) -> Void)?
+		var didSelect_fn: ((_ value: CcyConversionRates.Currency) -> Void)?
 		//
 		// Lifecycle
 		init()
@@ -229,7 +229,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		}
 		//
 		// Accessors
-		var selectedCurrency: ExchangeRates.Currency { // always expecting a selection b/c list is predecided
+		var selectedCurrency: CcyConversionRates.Currency { // always expecting a selection b/c list is predecided
 			let selectedIndex = self.selectedRow(inComponent: 0)
 			if selectedIndex == -1 {
 				fatalError("CurrencyPicker selectedRow unexpectedly -1")
@@ -238,17 +238,17 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 			if records.count <= selectedIndex {
 				fatalError("CurrencyPicker.PickerView has non -1 selectedIndex but too few records for the selectedIndex to be correct.")
 			}
-			let selectedCurrencySymbol = records[selectedIndex] as ExchangeRates.CurrencySymbol
-			let selectedCurrency = ExchangeRates.CurrencySymbol.currency(fromSymbol: selectedCurrencySymbol)! // we assume this is always correct b/c we got the symbols straight from the code, not external input
+			let selectedCurrencySymbol = records[selectedIndex] as CcyConversionRates.CurrencySymbol
+			let selectedCurrency = CcyConversionRates.CurrencySymbol.currency(fromSymbol: selectedCurrencySymbol)! // we assume this is always correct b/c we got the symbols straight from the code, not external input
 			//
 			return selectedCurrency
 		}
-		var rowValues: [ExchangeRates.CurrencySymbol] {
-			return ExchangeRates.Currency.lazy_allCurrencySymbols // b/c using allCurrencies and converting to raw values might be less efficient
+		var rowValues: [CcyConversionRates.CurrencySymbol] {
+			return CcyConversionRates.Currency.lazy_allCurrencySymbols // b/c using allCurrencies and converting to raw values might be less efficient
 		}
 		//
 		// Imperatives - Interface - Setting wallet externally
-		func selectWithoutYielding(currencySymbol: ExchangeRates.CurrencySymbol)
+		func selectWithoutYielding(currencySymbol: CcyConversionRates.CurrencySymbol)
 		{
 			let rowIndex = self.rowValues.index(
 				of: currencySymbol
@@ -263,9 +263,9 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		// Delegation - Yielding
 		func didPick(rowAtIndex rowIndex: Int)
 		{
-			let record = self.rowValues[rowIndex] as ExchangeRates.CurrencySymbol
+			let record = self.rowValues[rowIndex] as CcyConversionRates.CurrencySymbol
 			if let fn = self.didSelect_fn {
-				let selectedCurrency = ExchangeRates.CurrencySymbol.currency(fromSymbol: record)!
+				let selectedCurrency = CcyConversionRates.CurrencySymbol.currency(fromSymbol: record)!
 				fn(selectedCurrency)
 			}
 		}
@@ -277,7 +277,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		}
 		func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
 		{
-			return ExchangeRates.Currency.lazy_allCurrencies.count
+			return CcyConversionRates.Currency.lazy_allCurrencies.count
 		}
 		func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat
 		{
@@ -306,7 +306,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 				mutable_view = PickerCellContentView()
 			}
 			let cellView = mutable_view as! PickerCellContentView
-			let record = self.rowValues[row] as ExchangeRates.CurrencySymbol
+			let record = self.rowValues[row] as CcyConversionRates.CurrencySymbol
 			cellView.configure(withObject: record)
 			//
 			return cellView
@@ -353,7 +353,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		}
 		//
 		// Interface - Imperatives
-		func configure(withObject object: ExchangeRates.CurrencySymbol)
+		func configure(withObject object: CcyConversionRates.CurrencySymbol)
 		{
 			self.label.text = object
 		}

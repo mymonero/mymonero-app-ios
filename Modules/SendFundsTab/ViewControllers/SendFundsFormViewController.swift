@@ -122,7 +122,7 @@ extension SendFundsForm
 							"Currency selector for display purposes only. The app will send %@.\n\nRate via '%@'.",
 							comment:""
 						),
-						ExchangeRates.Currency.XMR.symbol,
+						CcyConversionRates.Currency.XMR.symbol,
 						Temporary_RateAPIPolling.Client.shared.domain // not .authority - don't need subdomain
 						// TODO: ^--- obtain this from constant once server provides matrix
 					)
@@ -133,11 +133,11 @@ extension SendFundsForm
 				inputField.returnKeyType = .next
 				view.didUpdateValueAvailability_fn =
 				{ [weak self] in
-					// this will be called when the exchange rate changes and when the selected currency changes
+					// this will be called when the ccyConversion rate changes and when the selected currency changes
 					guard let thisSelf = self else {
 						return
 					}
-					thisSelf.set_isFormSubmittable_needsUpdate() // wait for exchange rate to come in from what ever is supplying it
+					thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
 					// TODO: do we need to update anything else here?
 				}
 				self.amount_fieldset = view
@@ -422,8 +422,8 @@ extension SendFundsForm
 			)
 			NotificationCenter.default.addObserver(
 				self,
-				selector: #selector(ExchangeRates_didUpdateAvailabilityOfRates),
-				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				selector: #selector(CcyConversionRates_didUpdateAvailabilityOfRates),
+				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
 			NotificationCenter.default.addObserver(
@@ -462,7 +462,7 @@ extension SendFundsForm
 			//
 			NotificationCenter.default.removeObserver(
 				self,
-				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
 			NotificationCenter.default.removeObserver(
@@ -621,7 +621,7 @@ extension SendFundsForm
 						finalizable_amountDouble = converted_amountDouble // use converted, non-xmr amount
 					} else {
 						assert(finalizable_displayCurrency != .XMR)
-						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on exchange wait
+						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
 					}
 				}
 			}
@@ -851,7 +851,7 @@ extension SendFundsForm
 								comment: ""
 							),
 							selectedCurrency.symbol,
-							ExchangeRates.Currency.XMR.symbol,
+							CcyConversionRates.Currency.XMR.symbol,
 							Temporary_RateAPIPolling.Client.shared.domain // not .authority - don't need subdomain
 							// TODO: ^--- obtain this from constant once server provides matrix
 						),
@@ -862,7 +862,7 @@ extension SendFundsForm
 							title: String(
 								format: NSLocalizedString("Agree and Send %@ %@", comment: ""),
 								"\(amount_submittableDouble!)",
-								ExchangeRates.Currency.XMR.symbol
+								CcyConversionRates.Currency.XMR.symbol
 							),
 							style: .destructive // or is red negative b/c the action is also constructive? (use .default)
 							)
@@ -1266,11 +1266,11 @@ extension SendFundsForm
 				return
 			}
 			let requestPayload = optl_requestPayload!
-			var currencyToSelect: ExchangeRates.Currency = .XMR // the default; to be finalized as follows…
+			var currencyToSelect: CcyConversionRates.Currency = .XMR // the default; to be finalized as follows…
 			if let amountCurrencySymbol = requestPayload.amountCurrency,
 				amountCurrencySymbol != ""
 			{
-				let currency = ExchangeRates.CurrencySymbol.currency(
+				let currency = CcyConversionRates.CurrencySymbol.currency(
 					fromSymbol: amountCurrencySymbol
 				)
 				if currency == nil {
@@ -1453,7 +1453,7 @@ extension SendFundsForm
 			self.fromWallet_inputView.set(selectedWallet: wallet)
 		}
 		//
-		@objc func ExchangeRates_didUpdateAvailabilityOfRates()
+		@objc func CcyConversionRates_didUpdateAvailabilityOfRates()
 		{
 			self.configure_networkFeeEstimate_label() // the amount field takes care of observing this for itself but the estimate label doesn't…… could be factored……
 		}

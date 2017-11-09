@@ -182,8 +182,8 @@ extension WalletDetails
 			)
 			NotificationCenter.default.addObserver(
 				self,
-				selector: #selector(ExchangeRates_didUpdateAvailabilityOfRates),
-				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				selector: #selector(CcyConversionRates_didUpdateAvailabilityOfRates),
+				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
 			NotificationCenter.default.addObserver(
@@ -208,7 +208,7 @@ extension WalletDetails
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.transactionsChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(
 				self,
-				name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
 			NotificationCenter.default.removeObserver(
@@ -574,7 +574,7 @@ extension WalletDetails
 			self.set_navigationTitle()
 			self.tableView.reloadData()
 		}
-		@objc func ExchangeRates_didUpdateAvailabilityOfRates()
+		@objc func CcyConversionRates_didUpdateAvailabilityOfRates()
 		{
 			self.tableView.reloadData() // want balance label update
 		}

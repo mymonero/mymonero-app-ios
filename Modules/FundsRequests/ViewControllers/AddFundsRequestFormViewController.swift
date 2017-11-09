@@ -109,11 +109,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			)
 			view.didUpdateValueAvailability_fn =
 			{ [weak self] in
-				// this will be called when the exchange rate changes and when the selected currency changes
+				// this will be called when the ccyConversion rate changes and when the selected currency changes
 				guard let thisSelf = self else {
 					return
 				}
-				thisSelf.set_isFormSubmittable_needsUpdate() // wait for exchange rate to come in from what ever is supplying it
+				thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
 				// TODO: do we need to update anything else here?
 			}
 			let inputField = view.inputField
@@ -526,7 +526,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				submittableAmountFinalString = amount!
 			}
 		}
-		let submittable_amountCurrency: ExchangeRates.CurrencySymbol? = submittableAmountFinalString != nil && submittableAmountFinalString! != "" ? self.amount_fieldset.currencyPickerButton.selectedCurrency.symbol : nil
+		let submittable_amountCurrency: CcyConversionRates.CurrencySymbol? = submittableAmountFinalString != nil && submittableAmountFinalString! != "" ? self.amount_fieldset.currencyPickerButton.selectedCurrency.symbol : nil
 		//
 		let selectedContact = self.requestFrom_inputView.selectedContact
 		let hasPickedAContact = selectedContact != nil

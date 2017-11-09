@@ -45,7 +45,7 @@ class AddFundsRequestFormSubmissionController
 		var amount: String?
 		var optl__memo: String? // TODO: is this message, or really description?
 //		var description: String? // no support yet
-		var amountCurrency: ExchangeRates.CurrencySymbol? // must be able to be nil
+		var amountCurrency: CcyConversionRates.CurrencySymbol? // must be able to be nil
 		//
 		var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
 		var success_fn: (_ instance: FundsRequest) -> Void

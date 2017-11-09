@@ -125,7 +125,7 @@ class WalletCellContentView: UIView
 		//
 		NotificationCenter.default.removeObserver(
 			self,
-			name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+			name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 			object: nil
 		)
 		NotificationCenter.default.removeObserver(
@@ -231,7 +231,7 @@ class WalletCellContentView: UIView
 					} else {
 						assert(converted_balanceAmountDouble == nil)
 						assert(finalizable_displayCurrency != .XMR)
-						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on exchange wait
+						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
 					}
 				}
 				//
@@ -294,8 +294,8 @@ class WalletCellContentView: UIView
 		//
 		NotificationCenter.default.addObserver(
 			self,
-			selector: #selector(ExchangeRates_didUpdateAvailabilityOfRates),
-			name: ExchangeRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+			selector: #selector(CcyConversionRates_didUpdateAvailabilityOfRates),
+			name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 			object: nil
 		)
 		NotificationCenter.default.addObserver(
@@ -366,7 +366,7 @@ class WalletCellContentView: UIView
 		)
 	}
 	//
-	@objc func ExchangeRates_didUpdateAvailabilityOfRates()
+	@objc func CcyConversionRates_didUpdateAvailabilityOfRates()
 	{
 		self.__configureUIWithWallet_labels()
 	}

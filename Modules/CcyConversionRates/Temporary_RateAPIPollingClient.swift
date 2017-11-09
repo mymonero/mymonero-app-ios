@@ -63,12 +63,12 @@ extension Temporary_RateAPIPolling
 			string += self._path_plusArgs_sansCurrenciesCSV
 			var currenciesCSV: String
 			do {
-				let allCurrencies = ExchangeRates.Currency.lazy_allCurrencies
+				let allCurrencies = CcyConversionRates.Currency.lazy_allCurrencies
 				// strip .XMR
 				let filtered_currencies = allCurrencies.filter({ (currency) -> Bool in
 					return currency != .XMR
 				})
-				let filtered_currencySymbols = filtered_currencies.map({ (currency) -> ExchangeRates.CurrencySymbol in return currency.symbol })
+				let filtered_currencySymbols = filtered_currencies.map({ (currency) -> CcyConversionRates.CurrencySymbol in return currency.symbol })
 				currenciesCSV = filtered_currencySymbols.joined(separator: ",")
 			}
 			string += currenciesCSV
@@ -146,10 +146,10 @@ extension Temporary_RateAPIPolling
 					var wasAnyRateChanged = false
 					let rateDoublesByCurrencySymbolStrings = response_jsonDict as! [String: Double]
 					for (_, pair) in rateDoublesByCurrencySymbolStrings.enumerated() {
-						let currencySymbol = pair.key as ExchangeRates.CurrencySymbol // no validation
-						let currency = ExchangeRates.CurrencySymbol.currency(fromSymbol: currencySymbol)! // we'll just assume it's valid or we'll see a crash in development
+						let currencySymbol = pair.key as CcyConversionRates.CurrencySymbol // no validation
+						let currency = CcyConversionRates.CurrencySymbol.currency(fromSymbol: currencySymbol)! // we'll just assume it's valid or we'll see a crash in development
 						let rateDouble: Double = pair.value
-						let wasSetValueDifferent = ExchangeRates.Controller.shared.set(
+						let wasSetValueDifferent = CcyConversionRates.Controller.shared.set(
 							XMRToCurrencyRate: rateDouble,
 							forCurrency: currency,
 							isPartOfBatch: true // defer notification til end
@@ -159,7 +159,7 @@ extension Temporary_RateAPIPolling
 						}
 					}
 					if wasAnyRateChanged {
-						ExchangeRates.Controller.shared.ifBatched_notifyOf_set_XMRToCurrencyRate() // finally, notify
+						CcyConversionRates.Controller.shared.ifBatched_notifyOf_set_XMRToCurrencyRate() // finally, notify
 					} else {
 						DDLog.Warn("Temporary_RateAPIPolling", "No different rate values received in rates matrix")
 					}
@@ -230,11 +230,11 @@ extension Temporary_RateAPIPolling
 						break
 				}
 				guard let result_value = response.result.value else {
-					fn("Unable to find data in response from ExchangeRate API server.", nil, nil)
+					fn("Unable to find data in response from CcyConversionRate API server.", nil, nil)
 					return
 				}
 				guard let JSON = result_value as? [String: Any] else {
-					fn("Unable to find JSON in response from ExchangeRate API server.", nil, nil)
+					fn("Unable to find JSON in response from CcyConversionRate API server.", nil, nil)
 					return
 				}
 				fn(nil, response.data, JSON)
