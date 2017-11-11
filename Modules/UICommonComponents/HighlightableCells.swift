@@ -75,6 +75,16 @@ extension UICommonComponents
 						return UIColor(rgb: 0x373637)
 				}
 			}
+			var visualEquivalentSemiOpaque_contentBackgroundColor: UIColor {
+				switch self {
+					case .normal:
+						return UIColor(red: 80/255, green: 74/255, blue: 80/255, alpha: 0.55)
+					case .highlighted:
+						return UIColor(rgb: 0x3F3E3F) // TODO
+					case .disabled:
+						return UIColor(rgb: 0x373637)
+				}
+			}
 		}
 	}
 	struct GroupedHighlightableCells

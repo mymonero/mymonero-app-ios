@@ -125,7 +125,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		}
 		//
 		// Internal - Accessors/Constants
-		let backgroundColor_normal = UICommonComponents.HighlightableCells.Variant.normal.contentBackgroundColor
+		let backgroundColor_normal = UICommonComponents.HighlightableCells.Variant.normal.visualEquivalentSemiOpaque_contentBackgroundColor
 		let backgroundColor_highlighted = UICommonComponents.HighlightableCells.Variant.highlighted.contentBackgroundColor
 		let backgroundColor_disabled = UICommonComponents.HighlightableCells.Variant.disabled.contentBackgroundColor
 		//

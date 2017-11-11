@@ -528,7 +528,7 @@ extension UICommonComponents
 		static var background_outlineVisualThickness_h: CGFloat = 1/UIScreen.main.scale // hm; unsure
 		static var background_outlineVisualThickness_v: CGFloat = 1/UIScreen.main.scale // hm; unsure
 		//
-		static var background_outlineInternal_cornerRadius: Int { return 2 }
+		static var background_outlineInternal_cornerRadius: Int { return 3 }
 		//
 		var stretchableImage: UIImage
 		{
