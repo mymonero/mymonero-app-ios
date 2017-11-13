@@ -73,7 +73,7 @@ extension MoneroAmount
 	//
 	static func new(withDouble doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
 	{
-		return new(withBigIntString: "\(doubleValue)")
+		return new(withMoneyAmountDoubleString: "\(doubleValue)")
 	}
 	static func new(withUserInputAmountString string: String) -> MoneroAmount?
 	{
@@ -84,7 +84,7 @@ extension MoneroAmount
 		//
 		return amount
 	}
-	static func new(withBigIntString string: String) -> MoneroAmount
+	static func new(withMoneyAmountDoubleString string: String) -> MoneroAmount
 	{ // aka monero_utils.parseMoney
 		if string == "" {
 			return MoneroAmount(0)
