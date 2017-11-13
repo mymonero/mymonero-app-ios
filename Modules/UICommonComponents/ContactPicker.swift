@@ -356,7 +356,7 @@ extension UICommonComponents.Form
 			//
 			self.selectedContact = contact
 			self._display(pickedContact: contact)
-			//			
+			//
 			self.set(resolvingIndicatorIsVisible: !skipOAResolve && doesNeedToResolve)
 			if doesNeedToResolve {
 				if skipOAResolve != true {

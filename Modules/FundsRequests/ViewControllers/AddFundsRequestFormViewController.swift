@@ -71,7 +71,16 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		super.init()
 		// ^ this will call setup (synchronously)
 		if contact != nil {
-			self.requestFrom_inputView.pick(contact: contact!)
+			DispatchQueue.main.asyncAfter( // wait or else animation on resolving indicator will fail
+				deadline: .now() + 0.2,
+				execute:
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.requestFrom_inputView.pick(contact: contact!)
+				}
+			)
 		}
 		if selectedWallet != nil {
 			self.toWallet_inputView.set(selectedWallet: selectedWallet!)
