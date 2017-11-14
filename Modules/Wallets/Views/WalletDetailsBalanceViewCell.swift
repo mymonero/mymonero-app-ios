@@ -209,7 +209,7 @@ extension WalletDetails
 					} else if raw_balanceString__components.count == 2 {
 						finalized_main_string = raw_balanceString
 						let decimalComponent = raw_balanceString__components[1]
-						let decimalComponent_length = decimalComponent.characters.count
+						let decimalComponent_length = decimalComponent.count
 						if decimalComponent_length < display_coinUnitPlaces {
 							finalized_paddingZeros_string = String(repeating: "0", count: display_coinUnitPlaces - decimalComponent_length)
 						}
@@ -225,9 +225,9 @@ extension WalletDetails
 				let secondarySectionTextColor = self.secondarySectionTextColor(withWallet: wallet)
 				let displayCurrency_hasAtomicUnits = displayCurrency.hasAtomicUnits
 				do {
-					var finalizable_rangeLength = finalized_main_string.characters.count
+					var finalizable_rangeLength = finalized_main_string.count
 					if displayCurrency_hasAtomicUnits == false {
-						finalizable_rangeLength += finalized_paddingZeros_string.characters.count
+						finalizable_rangeLength += finalized_paddingZeros_string.count
 					}
 					let final_rangeLength = finalizable_rangeLength
 					attributedText.addAttributes(
@@ -237,14 +237,14 @@ extension WalletDetails
 						range: NSMakeRange(0, final_rangeLength)
 					)
 					if displayCurrency_hasAtomicUnits {
-						if finalized_paddingZeros_string.characters.count > 0 {
+						if finalized_paddingZeros_string.count > 0 {
 							attributedText.addAttributes(
 								[
 									NSAttributedStringKey.foregroundColor: secondarySectionTextColor,
 								],
 								range: NSMakeRange(
-									finalized_main_string.characters.count,
-									attributedText.string.characters.count - finalized_main_string.characters.count
+									finalized_main_string.count,
+									attributedText.string.count - finalized_main_string.count
 								)
 							)
 						}

@@ -529,10 +529,12 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		var submittableAmountFinalString: String?
 		if submittableDoubleAmount != nil {
-			if amount!.characters.last == "." {
-				submittableAmountFinalString = amount! + "0"
-			} else {
-				submittableAmountFinalString = amount!
+			submittableAmountFinalString = amount!
+			if amount!.first! == "." {
+				submittableAmountFinalString = "0" + submittableAmountFinalString!
+			}
+			if submittableAmountFinalString!.last! == "." {
+				submittableAmountFinalString! += "0"
 			}
 		}
 		let submittable_amountCurrency: CcyConversionRates.CurrencySymbol? = submittableAmountFinalString != nil && submittableAmountFinalString! != "" ? self.amount_fieldset.currencyPickerButton.selectedCurrency.symbol : nil

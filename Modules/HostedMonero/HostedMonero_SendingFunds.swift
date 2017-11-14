@@ -432,7 +432,7 @@ extension HostedMoneroAPIClient
 				let tx_hash = tx_hash!
 				//
 				// work out per-kb fee for transaction and verify that it's enough
-				let txBlobBytes = Double(serialized_signedTx.characters.count) / 2.0
+				let txBlobBytes = Double(serialized_signedTx.count) / 2.0
 				var numKB = Int(floor(txBlobBytes / 1024.0))
 				if txBlobBytes.truncatingRemainder(dividingBy: 1024) != 0 { // TODO: AUDIT: != 0 correct here? note: truncatingRemainder is % operator
 					numKB += 1

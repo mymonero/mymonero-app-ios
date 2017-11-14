@@ -237,7 +237,7 @@ struct OpenAliasDNSLookups
 	{
 		let oaPrefix = OpenAlias.txtRecord_oaPrefix
 		let tokenForCurrency = currency.txtRecordPrefixTokenForCurrency
-		let range = NSMakeRange(0, oaPrefix.characters.count + 1 + tokenForCurrency.characters.count + 1) // trailing +1 for space - extra validation
+		let range = NSMakeRange(0, oaPrefix.count + 1 + tokenForCurrency.count + 1) // trailing +1 for space - extra validation
 		let record_prefixString = (record as NSString).substring(with: range)
 		let expected_prefixString = "\(oaPrefix):\(tokenForCurrency) "
 		if record_prefixString != expected_prefixString {
@@ -262,7 +262,7 @@ struct OpenAliasDNSLookups
 		}
 		func parsed_paramValueWithName(_ valueName: String) -> String?
 		{
-			let valueName_length = valueName.characters.count
+			let valueName_length = valueName.count
 			let record_NSString = recordString as NSString
 			let record_length = record_NSString.length
 			let rangeOfValueNameKeyDeclaration = record_NSString.range(of: "\(valueName)=")

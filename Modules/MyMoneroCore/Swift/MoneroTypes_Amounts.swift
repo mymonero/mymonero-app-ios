@@ -132,15 +132,15 @@ struct MoneroAmounts
 	static func trimRight(_ str: String, _ char: Character) -> String
 	{
 		var retStr = str
-		while retStr.characters.last == char {
-			retStr.characters.removeLast()
+		while retStr.last == char {
+			retStr.removeLast()
 		}
 		return retStr
 	}
 	static func padLeft(_ str: String, _ len: Int, _ char: Character) -> String
 	{
 		var retStr = str
-		while retStr.characters.count < len {
+		while retStr.count < len {
 			retStr = String(char) + retStr
 		}
 		return retStr

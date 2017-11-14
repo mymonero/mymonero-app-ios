@@ -94,7 +94,7 @@ extension UICommonComponents
 			var attributedString: NSMutableAttributedString!
 			do {
 				let string = self.message!
-				let range = NSRange(location: 0, length: string.characters.count)
+				let range = NSRange(location: 0, length: string.count)
 				attributedString = NSMutableAttributedString(string: string)
 				let paragraphStyle = NSMutableParagraphStyle()
 				paragraphStyle.lineSpacing = 4

@@ -735,7 +735,7 @@ extension UICommonComponents
 		@objc func textViewDidChange()
 		{
 			if let placeholderLabel = self.placeholderLabel {
-				placeholderLabel.isHidden = self.text.characters.count > 0
+				placeholderLabel.isHidden = self.text.count > 0
 			}
 		}
 	}
@@ -813,7 +813,7 @@ extension UICommonComponents
 		func set(placeholder text: String)
 		{
 			let string = NSMutableAttributedString(string: text)
-			let range = NSRange(location: 0, length: text.characters.count)
+			let range = NSRange(location: 0, length: text.count)
 			string.addAttributes(
 				[
 					NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x6B696B),
@@ -922,7 +922,7 @@ extension UICommonComponents
 			string.addAttribute(
 				NSAttributedStringKey.paragraphStyle,
 				value: paragraphStyle,
-				range: NSRange(location: 0, length: text.characters.count)
+				range: NSRange(location: 0, length: text.count)
 			)
 			
 			self.attributedText = string
@@ -975,7 +975,7 @@ extension UICommonComponents
 			string.addAttribute(
 				NSAttributedStringKey.paragraphStyle,
 				value: paragraphStyle,
-				range: NSRange(location: 0, length: text.characters.count)
+				range: NSRange(location: 0, length: text.count)
 			)
 			self.attributedText = string
 		}

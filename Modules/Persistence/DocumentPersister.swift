@@ -394,7 +394,7 @@ class DocumentPersister
 			)
 			// filtering to what should be JSON doc files
 			let filenameSuffix = ("."+DocumentFileDescription.filenameExt)
-			let filenameSuffix_length = filenameSuffix.characters.count
+			let filenameSuffix_length = filenameSuffix.count
 			let dbDocumentFileURLs = directoryContents.filter{
 				return $0.lastPathComponent.hasSuffix(filenameSuffix)
 			}

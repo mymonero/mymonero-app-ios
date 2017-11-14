@@ -104,17 +104,16 @@ final class PasswordController
 		}
 		var capitalized_humanReadableString: String
 		{ // this is done instead of calling .capitalize as that will convert the remainder to lowercase characters
-			let characters = self.humanReadableString.characters
-			let prefix = String(characters.prefix(1)).capitalized
-			let remainder = String(characters.dropFirst())
-			return prefix + remainder
+			let string = self.humanReadableString
+			let capitalizingFirstLetter = string.prefix(1).capitalized
+			let remainder = string.dropFirst()
+			return capitalizingFirstLetter + remainder
 		}
 		static func new(detectedFromPassword password: Password) -> PasswordType
 		{
-			let characters = password.characters
-			if characters.count == PasswordType.lengthOfPIN { // if is 6 chars…
-				let numbers: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-				if Set(characters).isSubset(of: numbers) { // and contains only numbers
+			if password.count == PasswordType.lengthOfPIN { // if is 6 chars…
+				let numbers = CharacterSet(charactersIn: "0123456789")
+				if password.trimmingCharacters(in: numbers) == "" { // and contains only numbers
 					return .PIN
 				}
 			}
@@ -639,7 +638,7 @@ final class PasswordController
 			//
 			// I. Validate features of pw before trying and accepting
 			if userSelectedTypeOfPassword == .PIN {
-				if obtainedPasswordString!.characters.count != 6 { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
+				if obtainedPasswordString!.count != 6 { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 					self.unguard_getNewOrExistingPassword()
 					let err_str = "Please enter a 6-digit PIN."
 					NotificationCenter.default.post(
@@ -652,7 +651,7 @@ final class PasswordController
 				// TODO: check if all numbers
 				// TODO: check that numbers are not all just one number
 			} else if userSelectedTypeOfPassword == .password {
-				if obtainedPasswordString!.characters.count < 6 { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
+				if obtainedPasswordString!.count < 6 { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 					self.unguard_getNewOrExistingPassword()
 					let err_str = "Please enter a longer password."
 					NotificationCenter.default.post(
@@ -696,7 +695,7 @@ final class PasswordController
 			}
 			//
 			// II. hang onto new pw, pw type, and state(s)
-			DDLog.Info("Passwords", "Obtained \(userSelectedTypeOfPassword!) \(obtainedPasswordString!.characters.count) chars long")
+			DDLog.Info("Passwords", "Obtained \(userSelectedTypeOfPassword!) \(obtainedPasswordString!.count) chars long")
 			self._didObtainPassword(password: obtainedPasswordString!)
 			self.passwordType = userSelectedTypeOfPassword!
 			//

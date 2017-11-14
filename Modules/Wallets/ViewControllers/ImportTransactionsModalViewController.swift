@@ -330,7 +330,7 @@ extension ImportTransactionsModal
 				if amountStr.contains(".") == false {
 					amountStr += ".00"
 				}
-				if amountStr.characters.first != "0" { // checking, in case amountStr < 1.0
+				if amountStr.first == "." { // checking, in case amountStr < 1.0
 					amountStr = "0" + amountStr
 				}
 				self.amount_fieldset.inputField.text = amountStr

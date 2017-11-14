@@ -159,7 +159,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			self.setValidationMessage("Oops, that doesn't match")
 			return
 		}
-		if confirmationPassword.characters.count < 6 {
+		if confirmationPassword.count < 6 {
 			self.setValidationMessage("Please enter more than 6 characters")
 			return
 		}

@@ -515,7 +515,7 @@ extension UICommonComponents.Form.Amounts
 			}
 			do { // disallow input which is toooo long. some values are out of spec
 				if let text = textField.text {
-					let newLength = text.characters.count + string.characters.count - range.length
+					let newLength = text.count + string.count - range.length
 					if newLength >= MoneroConstants.currency_unitPlaces + 2 + 1 { // I figure 14 numerals is a pretty good upper bound guess for inputs no matter what the currency… I might be wrong…
 						return false
 					}

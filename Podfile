@@ -3,7 +3,7 @@ platform :ios, '10.0'
 use_frameworks!
 
 def common_pods
-	pod 'BigInt', '~> 3.0.0'
+	pod 'BigInt', '~> 3.0.1'
 	pod 'SwiftDate', '~> 4.4.1'
 	pod 'Alamofire', '~> 4.5.1'
 	pod 'RNCryptor', '~> 5.0.1'
