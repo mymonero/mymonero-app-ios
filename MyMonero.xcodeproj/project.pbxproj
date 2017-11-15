@@ -23,6 +23,7 @@
 		9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D002F1EE345E500A4B3A5 /* Details.swift */; };
 		9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */; };
 		9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */; };
+		9F1F16E21FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F1F16E11FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png */; };
 		9F2119211F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2119171F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift */; };
 		9F2119221F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2119181F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift */; };
 		9F2119231F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2119191F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */; };
@@ -278,6 +279,7 @@
 		9F1D002F1EE345E500A4B3A5 /* Details.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Details.swift; sourceTree = "<group>"; };
 		9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkButtonView.swift; sourceTree = "<group>"; };
 		9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBarButtons.swift; sourceTree = "<group>"; };
+		9F1F16E11FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smallSelect_disclosureArrow@3x.png"; sourceTree = "<group>"; };
 		9F2119171F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardModalNavigationController.swift; sourceTree = "<group>"; };
 		9F2119181F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardScreen_BaseViewController.swift; sourceTree = "<group>"; };
 		9F2119191F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddWalletWizardScreen_MetaInfo_BaseViewController.swift; sourceTree = "<group>"; };
@@ -888,6 +890,7 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9F1F16E11FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png */,
 				9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */,
 				9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */,
 				9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */,
@@ -1484,6 +1487,7 @@
 				9F9C59FF1F0D8C11003B9266 /* dropdown-arrow-down@3x.png in Resources */,
 				9F2BFE811EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png in Resources */,
 				9F8E2FF31EE978DF00F89A1D /* icon_tabBar_settings@3x.png in Resources */,
+				9F1F16E21FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png in Resources */,
 				9F9C59E01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png in Resources */,
 				9F2BFE871EF08ABA006B2F7D /* pushButtonBG_destructive@3x.png in Resources */,
 				9F8E2FEB1EE978B700F89A1D /* actionButton_iconImage__chooseFile@3x.png in Resources */,

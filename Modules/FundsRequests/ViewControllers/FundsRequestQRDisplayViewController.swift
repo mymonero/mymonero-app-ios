@@ -64,11 +64,23 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			let to_address = self.fundsRequest.to_address!
 			var text: String
 			if hasAmount {
-				text = String(
-					format: NSLocalizedString("Scan this code to send %@ \(self.fundsRequest.amountCurrency ?? "XMR") to %@.", comment: ""),
-					self.fundsRequest.amount!,
-					to_address
-				)
+				let xmrSymbol = CcyConversionRates.Currency.XMR.symbol
+				let ccySymbol = self.fundsRequest.amountCurrency ?? xmrSymbol // handles nil default
+				if ccySymbol == xmrSymbol {
+					text = String(
+						format: NSLocalizedString("Scan this code to send %@ %@ to %@.", comment: ""),
+						self.fundsRequest.amount!,
+						CcyConversionRates.Currency.XMR.symbol,
+						to_address
+					)
+				} else {
+					text = String(
+						format: NSLocalizedString("Scan this code to send %@ %@ in Monero to %@.", comment: ""),
+						self.fundsRequest.amount!,
+						self.fundsRequest.amountCurrency!, // actually the symbol
+						to_address
+					)
+				}
 			} else {
 				text = String(
 					format: NSLocalizedString("Scan this code to send Monero to %@.", comment: ""),

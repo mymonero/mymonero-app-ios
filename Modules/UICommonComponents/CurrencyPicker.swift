@@ -45,7 +45,13 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 	{
 		//
 		// Common - Constants
-		static let fixedWidth: CGFloat = 38
+		static let disclosureArrow_w: CGFloat = 8
+		static let disclosureArrow_margin_right: CGFloat = 5
+		static let disclosureArrow_margin_left: CGFloat = 6
+		static let selectText_margin_left: CGFloat = 8
+		static let selectText_w: CGFloat = 25
+		static let fixedWidth: CGFloat
+			= selectText_margin_left + selectText_w + disclosureArrow_margin_left + disclosureArrow_w + disclosureArrow_margin_right
 		//
 		// Interface - Properties
 		var selectedCurrency: CcyConversionRates.Currency = SettingsController.shared.displayCurrency
@@ -71,11 +77,30 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		{
 			self.setup_layerMask()
 			//
+			self.titleEdgeInsets = UIEdgeInsetsMake(
+				0,
+				-PickerButton.selectText_w + 4,
+				0,
+				0//PickerButton.disclosureArrow_margin_left + PickerButton.disclosureArrow_w + PickerButton.disclosureArrow_margin_right
+					//+ 4 // not sure why this is necessary - basically a difference to JS/HTML
+			)
 			self.titleLabel!.font = UIFont.smallSemiboldSansSerif
 			self.setTitleColor(
 				UIColor(rgb: 0xDFDEDF), // or 0x989698; TODO: obtain from theme controller / UIColor + listen
 				for: .normal
 			)
+			//
+			self.setImage(
+				UIImage(named: "smallSelect_disclosureArrow")!,
+				for: .normal
+			)
+			self.imageEdgeInsets = UIEdgeInsetsMake(
+				0,
+				PickerButton.selectText_margin_left + PickerButton.selectText_w + PickerButton.disclosureArrow_margin_left,
+				0,
+				0
+			)
+			//
 			self.configureBackgroundColor()
 			//
 			do {
