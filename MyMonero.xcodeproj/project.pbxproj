@@ -218,7 +218,6 @@
 		9FAA18AB1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */; };
 		9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */; };
 		9FAF95241FB4F4FD00ECE0A6 /* CcyConversionRates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */; };
-		9FAF95251FB4F4FD00ECE0A6 /* Temporary_RateAPIPollingClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAF95231FB4F4FD00ECE0A6 /* Temporary_RateAPIPollingClient.swift */; };
 		9FB603081F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603061F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift */; };
 		9FB603091F4F6B6B00951175 /* ConnectivityMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603071F4F6B6B00951175 /* ConnectivityMessageViewController.swift */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
@@ -481,7 +480,6 @@
 		9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graphicActivityIndicator_decoration@3x.png"; sourceTree = "<group>"; };
 		9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormSubmissionController.swift; sourceTree = "<group>"; };
 		9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CcyConversionRates.swift; sourceTree = "<group>"; };
-		9FAF95231FB4F4FD00ECE0A6 /* Temporary_RateAPIPollingClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Temporary_RateAPIPollingClient.swift; sourceTree = "<group>"; };
 		9FB603061F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessagePresentationController.swift; sourceTree = "<group>"; };
 		9FB603071F4F6B6B00951175 /* ConnectivityMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessageViewController.swift; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -1232,7 +1230,6 @@
 			isa = PBXGroup;
 			children = (
 				9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */,
-				9FAF95231FB4F4FD00ECE0A6 /* Temporary_RateAPIPollingClient.swift */,
 			);
 			path = CcyConversionRates;
 			sourceTree = "<group>";
@@ -1667,7 +1664,6 @@
 				9F2BFEE01EF382BD006B2F7D /* ContactsListViewCell.swift in Sources */,
 				9FA734051F05AF4E00C674D6 /* Wallet_HostPollingController.swift in Sources */,
 				9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */,
-				9FAF95251FB4F4FD00ECE0A6 /* Temporary_RateAPIPollingClient.swift in Sources */,
 				9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */,
 				9F9D776B1F958F6B0005CFFD /* Switches.swift in Sources */,
 				9F8587FA1F8A98B700E0F38F /* UIView+SafeArea.swift in Sources */,

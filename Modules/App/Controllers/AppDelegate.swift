@@ -121,7 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 
 	func applicationDidBecomeActive(_ application: UIApplication)
 	{
-		Temporary_RateAPIPolling.Client.shared.ApplicationDidBecomeActive()
+		// TODO: use this to cause wallet polling controller to immediately request?
 	}
 
 	func applicationWillTerminate(_ application: UIApplication) {

@@ -264,7 +264,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 				fatalError("CurrencyPicker.PickerView has non -1 selectedIndex but too few records for the selectedIndex to be correct.")
 			}
 			let selectedCurrencySymbol = records[selectedIndex] as CcyConversionRates.CurrencySymbol
-			let selectedCurrency = CcyConversionRates.CurrencySymbol.currency(fromSymbol: selectedCurrencySymbol)! // we assume this is always correct b/c we got the symbols straight from the code, not external input
+			let selectedCurrency = CcyConversionRates.Currency(rawValue: selectedCurrencySymbol)! // we assume this is always correct b/c we got the symbols straight from the code, not external input
 			//
 			return selectedCurrency
 		}
@@ -290,7 +290,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		{
 			let record = self.rowValues[rowIndex] as CcyConversionRates.CurrencySymbol
 			if let fn = self.didSelect_fn {
-				let selectedCurrency = CcyConversionRates.CurrencySymbol.currency(fromSymbol: record)!
+				let selectedCurrency = CcyConversionRates.Currency(rawValue: record)!
 				fn(selectedCurrency)
 			}
 		}

@@ -46,9 +46,5 @@ class AppRuntimeController
 		let _ = URLOpening.shared // "
 		//
 		let _ = MyMoneroCore.shared // we want to be able to detect a failure to load this on boot
-		//
-		//
-		// NOTE: THIS IS TEMPORARY: CcyConversionRates are to be supplied through the server - possibly wallets
-		let _ = Temporary_RateAPIPolling.Client.shared
 	}
 }

@@ -57,6 +57,8 @@ struct HostedMoneroAPIClient_Parsing
 		let blockchain_height: Int
 		//
 		let spentOutputs: [MoneroSpentOutputDescription] // these have a different format than MoneroOutputDescriptions (whose type's name needs to be made more precise)
+		//
+		let xmrToCcyRatesByCcy: [CcyConversionRates.Currency: Double]
 	}
 	struct ParsedResult_AddressTransactions
 	{
@@ -635,16 +637,30 @@ extension MyMoneroCoreJS // for Parsing
 			let blockchain_height = returnValuesByKey["blockchain_height"] as? Int
 			//
 			var final_spentOutputs: [MoneroSpentOutputDescription] = []
-			do {
+			do { // finalize
 				if let spentOutputs = returnValuesByKey["spent_outputs"] as? [[String: Any]] {
-					do { // finalize
-						for (_, dict) in spentOutputs.enumerated() {
-							let outputDescription = MoneroSpentOutputDescription.new(withCoreParsed_jsonDict: dict)
-							final_spentOutputs.append(outputDescription)
-						}
+					for (_, dict) in spentOutputs.enumerated() {
+						let outputDescription = MoneroSpentOutputDescription.new(withCoreParsed_jsonDict: dict)
+						final_spentOutputs.append(outputDescription)
 					}
 				}
 			}
+			//
+			var final_xmrToCcyRatesByCcy: [CcyConversionRates.Currency: Double] = [:]
+			do {
+				if let xmrToCcyRatesByCcySymbol = returnValuesByKey["ratesBySymbol"] as? [String: Double] {
+					for (_, keyAndValueTuple) in xmrToCcyRatesByCcySymbol.enumerated() {
+						let ccySymbol = keyAndValueTuple.key
+						let xmrToCcyRate = keyAndValueTuple.value
+						guard let ccy = CcyConversionRates.Currency(rawValue: ccySymbol) else {
+							DDLog.Warn("HostedMoneroAPIClient", "Unrecognized currency \(ccySymbol) in rates matrix")
+							continue
+						}
+						final_xmrToCcyRatesByCcy[ccy] = xmrToCcyRate
+					}
+				}
+			}
+			//
 			let result = HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo(
 				totalReceived: totalReceived_Amount,
 				totalSent: totalSent_Amount,
@@ -656,7 +672,9 @@ extension MyMoneroCoreJS // for Parsing
 				transaction_height: transaction_height ?? 0,
 				blockchain_height: blockchain_height ?? 0,
 				//
-				spentOutputs: final_spentOutputs
+				spentOutputs: final_spentOutputs,
+				//
+				xmrToCcyRatesByCcy: final_xmrToCcyRatesByCcy
 			)
 			fn(nil, result)
 		}

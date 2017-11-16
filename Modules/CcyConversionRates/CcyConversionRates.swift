@@ -237,18 +237,6 @@ extension CcyConversionRates.Currency
 		return truncated_amount
 	}
 }
-extension CcyConversionRates.CurrencySymbol
-{
-	static func currency(fromSymbol symbol: CcyConversionRates.CurrencySymbol) -> CcyConversionRates.Currency?
-	{ // TODO: it would be great to do this w/ some sort of cached reverse lookup table… should be easy
-		for (_, currency) in CcyConversionRates.Currency.lazy_allCurrencies.enumerated() {
-			if currency.symbol == symbol {
-				return currency
-			}
-		}
-		return nil
-	}
-}
 //
 //
 // Controller
@@ -322,6 +310,26 @@ extension CcyConversionRates
 		{
 			DDLog.Info("CcyConversionRates", "Received updates: \(self.xmrToCurrencyRatesByCurrencyUID)")
 			self._notifyOf_updateTo_XMRToCurrencyRate()
+		}
+		//
+		func set_xmrToCcyRatesByCcy(
+			_ xmrToCcyRatesByCcy: [Currency: Double]
+		)
+		{
+			var wasAnyRateChanged = false
+			for (_, keyAndValue) in xmrToCcyRatesByCcy.enumerated() {
+				let wasSetValueDifferent = self.set(
+					XMRToCurrencyRate: keyAndValue.value,
+					forCurrency: keyAndValue.key,
+					isPartOfBatch: true // defer notification til end
+				)
+				if wasSetValueDifferent {
+					wasAnyRateChanged = true
+				}
+			}
+			if wasAnyRateChanged {
+				self.ifBatched_notifyOf_set_XMRToCurrencyRate() // finally, notify
+			}
 		}
 		//
 		// Internal - Imperatives

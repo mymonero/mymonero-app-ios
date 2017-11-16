@@ -35,7 +35,10 @@
 import UIKit
 import ImageIO
 //
-struct SendFundsForm {}
+struct SendFundsForm
+{
+	static let rateAPI_domain = "cryptocompare.com"
+}
 //
 extension SendFundsForm
 {
@@ -123,8 +126,7 @@ extension SendFundsForm
 							comment:""
 						),
 						CcyConversionRates.Currency.XMR.symbol,
-						Temporary_RateAPIPolling.Client.shared.domain // not .authority - don't need subdomain
-						// TODO: ^--- obtain this from constant once server provides matrix
+						SendFundsForm.rateAPI_domain // not .authority - don't need subdomain
 					)
 				)
 				let inputField = view.inputField
@@ -852,8 +854,7 @@ extension SendFundsForm
 							),
 							selectedCurrency.symbol,
 							CcyConversionRates.Currency.XMR.symbol,
-							Temporary_RateAPIPolling.Client.shared.domain // not .authority - don't need subdomain
-							// TODO: ^--- obtain this from constant once server provides matrix
+							SendFundsForm.rateAPI_domain // not .authority - don't need subdomain
 						),
 						preferredStyle: .alert
 					)
@@ -1270,8 +1271,8 @@ extension SendFundsForm
 			if let amountCurrencySymbol = requestPayload.amountCurrency,
 				amountCurrencySymbol != ""
 			{
-				let currency = CcyConversionRates.CurrencySymbol.currency(
-					fromSymbol: amountCurrencySymbol
+				let currency = CcyConversionRates.Currency(
+					rawValue: amountCurrencySymbol
 				)
 				if currency == nil {
 					self.set(

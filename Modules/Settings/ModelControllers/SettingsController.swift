@@ -95,7 +95,7 @@ class SettingsController: DeleteEverythingRegistrant
 	var appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval?
 	var displayCurrencySymbol: CcyConversionRates.CurrencySymbol!
 	var displayCurrency: CcyConversionRates.Currency {
-		return CcyConversionRates.CurrencySymbol.currency(fromSymbol: self.displayCurrencySymbol)!
+		return CcyConversionRates.Currency(rawValue: self.displayCurrencySymbol)!
 	}
 	//
 	// Lifecycle - Singleton Init

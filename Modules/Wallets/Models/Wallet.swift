@@ -952,6 +952,14 @@ class Wallet: PersistableObject
 		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo
 	) -> Void
 	{
+		//
+		let xmrToCcyRatesByCcy = parsedResult.xmrToCcyRatesByCcy
+		DispatchQueue.main.async { // just to let wallet stuff finish first
+			CcyConversionRates.Controller.shared.set_xmrToCcyRatesByCcy(
+				xmrToCcyRatesByCcy
+			)
+		}
+		//
 		let existing_totalReceived = self.totalReceived
 		let existing_totalSent = self.totalSent
 		let existing_lockedBalance = self.lockedBalance
