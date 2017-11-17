@@ -4,7 +4,7 @@ use_frameworks!
 
 def common_pods
 	pod 'BigInt', '~> 3.0.1'
-	pod 'SwiftDate', '~> 4.4.1'
+	pod 'SwiftDate', '~> 4.4.2'
 	pod 'Alamofire', '~> 4.5.1'
 	pod 'RNCryptor', '~> 5.0.1'
 	pod 'ReachabilitySwift', '~> 3.0'
