@@ -635,6 +635,8 @@ extension SendFundsForm
 				final_displayCurrency.symbol
 			)
 			self.networkFeeEstimate_label.text = text
+			//
+			self.view.setNeedsLayout() // we must reflow the tooltip's x
 		}
 		//
 		// Imperatives - Contact picker, contact picking
