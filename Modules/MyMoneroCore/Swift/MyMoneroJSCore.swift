@@ -41,7 +41,6 @@ enum MyMoneroCoreJS_ModuleName: String
 {
 	case core = "monero_utils"
 	case wallet = "monero_wallet_utils"
-	case walletLocale = "monero_wallet_locale"
 	case paymentID = "monero_paymentID_utils"
 	case responseParser = "api_response_parser_utils"
 }
