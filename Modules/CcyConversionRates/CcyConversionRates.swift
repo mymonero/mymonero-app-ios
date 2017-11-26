@@ -57,7 +57,7 @@ extension CcyConversionRates
 {
 	//
 	// Interface - Enums
-	enum Currency: String
+	enum Currency: MoneroConvertableCurrencySymbol // aka String
 	{
 		case none = "" // included for completeness / convenience / API
 		case XMR = "XMR" // included for completeness / convenience / API

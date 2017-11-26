@@ -53,7 +53,7 @@ extension MoneroUtils
 			let description: String?
 			let paymentID: MoneroPaymentID?
 			let message: String?
-			let amountCurrency: CcyConversionRates.CurrencySymbol?
+			let amountCurrency: MoneroConvertableCurrencySymbol?
 		}
 		//
 		static func new_URL(
@@ -62,7 +62,7 @@ extension MoneroUtils
 			description: String?,
 			paymentId: MoneroPaymentID?,
 			message: String?,
-			amountCurrency: CcyConversionRates.CurrencySymbol?
+			amountCurrency: MoneroConvertableCurrencySymbol?
 		) -> URL
 		{
 			var urlComponents = URLComponents()
@@ -84,7 +84,7 @@ extension MoneroUtils
 			}
 			if let value = amountCurrency,
 				value != "",
-				value != CcyConversionRates.Currency.XMR.symbol // b/c we don't want to include it in a monero:// URL… if the scheme changes, maybe
+				value != MoneroConvertableCurrencySymbol_for_XMR // b/c we don't want to include it in a monero:// URL… if the scheme changes, maybe
 			{
 				queryItems.append(URLQueryItem(name: URIQueryItemNames.amountCurrency.rawValue, value: value))
 			}
@@ -123,7 +123,7 @@ extension MoneroUtils
 			var description: String?
 			var paymentID: MoneroPaymentID?
 			var message: String?
-			var amountCurrency: CcyConversionRates.CurrencySymbol?
+			var amountCurrency: MoneroConvertableCurrencySymbol?
 			if let queryItems = urlComponents.queryItems { // needs to be parsed it seems
 				for (_, queryItem) in queryItems.enumerated() {
 					let queryItem_name = queryItem.name

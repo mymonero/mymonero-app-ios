@@ -42,7 +42,7 @@ let MoneroJSON_dateFormatter = ISO8601DateFormatter() // we can use this new bui
 struct MoneroConstants
 {
 	static let currency_name = "Monero"
-	static let currency_symbol = "XMR"
+	static let currency_symbol = MoneroConvertableCurrencySymbol_for_XMR
 	static let currency_requestURIPrefix = "monero:"
 	static let currency_requestURIPrefix_sansColon = "monero"
 	static let currency_openAliasPrefix = "xmr" // OpenAlias prefix
@@ -59,6 +59,8 @@ struct MoneroConstants
 	static let feePerKB = MoneroAmount("2000000000")! // 0.002 XMR; Network per kb fee in atomic units
 	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 }
+//
+let MoneroConvertableCurrencySymbol_for_XMR: MoneroConvertableCurrencySymbol = "XMR"
 //
 // Types
 typealias MoneroTypeString = String // a type to, so far, provide some JSON serialization conveniences
@@ -82,6 +84,7 @@ typealias MoneroTransactionPubKey = MoneroTypeString
 typealias MoneroTransactionPrefixHash = MoneroTypeString
 typealias MoneroKeyImage = MoneroTypeString
 typealias MoneroKey = MoneroTypeString
+typealias MoneroConvertableCurrencySymbol = MoneroTypeString
 //
 struct MoneroDecodedAddressComponents
 {
