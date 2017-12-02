@@ -150,7 +150,7 @@ extension SendFundsForm
 						return
 					}
 					xmrAddress_toDecode = self.parameters.resolvedAddress!
-					paymentID_toUseOrToNilIfIntegrated = self.parameters.resolvedPaymentID_fieldIsVisible ? self.parameters.resolvedPaymentID : nil
+					paymentID_toUseOrToNilIfIntegrated = self.parameters.resolvedPaymentID_fieldIsVisible ? self.parameters.resolvedPaymentID : canUseManualPaymentID ? self.parameters.manuallyEnteredPaymentID : nil
 				} else { // then it's an XMR address
 					xmrAddress_toDecode = enteredAddressValue
 					// we don't care whether it's an integrated address or not here since we're not going to use its payment id
@@ -207,7 +207,7 @@ extension SendFundsForm
 					)
 				}
 			)
-					}
+		}
 		func _proceedTo_generateSendTransaction(
 			withTargetAddress target_address: MoneroAddress,
 			payment_id: MoneroPaymentID?,
