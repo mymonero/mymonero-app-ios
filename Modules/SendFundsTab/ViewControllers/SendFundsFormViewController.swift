@@ -1013,7 +1013,7 @@ extension SendFundsForm
 				let lastMostVisibleView = self.sendTo_inputView!
 				self.addPaymentID_buttonView!.frame = CGRect(
 					x: label_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 12,
+					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: self.addPaymentID_buttonView!.frame.size.width,
 					height: self.addPaymentID_buttonView!.frame.size.height
 				)
@@ -1024,7 +1024,7 @@ extension SendFundsForm
 				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
 				self.manualPaymentID_label.frame = CGRect(
 					x: label_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 12,
+					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 					width: fullWidth_label_w,
 					height: self.manualPaymentID_label.frame.size.height
 				).integral
