@@ -42,7 +42,7 @@ let MoneroJSON_dateFormatter = ISO8601DateFormatter() // we can use this new bui
 struct MoneroConstants
 {
 	static let currency_name = "Monero"
-	static let currency_symbol = MoneroConvertableCurrencySymbol_for_XMR
+	static let currency_symbol = "XMR"
 	static let currency_requestURIPrefix = "monero:"
 	static let currency_requestURIPrefix_sansColon = "monero"
 	static let currency_openAliasPrefix = "xmr" // OpenAlias prefix
@@ -60,56 +60,70 @@ struct MoneroConstants
 	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 }
 //
-let MoneroConvertableCurrencySymbol_for_XMR: MoneroConvertableCurrencySymbol = "XMR"
-//
 // Types
 typealias MoneroTypeString = String // a type to, so far, provide some JSON serialization conveniences
 extension MoneroTypeString
 {
-	static func jsArrayString(_ array: [MoneroTypeString]) -> String
+	static func jsArrayString(
+		_ array: [MoneroTypeString]
+		) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
 	}
-	var jsRepresentationString: String
-	{
+	var jsRepresentationString: String {
 		return "\"\(self)\"" // wrap in quotes, cause it's a string
 	}
+	var objcSerialized: String {
+		return self
+	}
+	
 }
 typealias MoneroSeed = MoneroTypeString
 typealias MoneroSeedAsMnemonic = MoneroTypeString
 typealias MoneroAddress = MoneroTypeString
 typealias MoneroPaymentID = MoneroTypeString
+typealias MoneroLongPaymentID = MoneroPaymentID // 32
+typealias MoneroShortPaymentID = MoneroPaymentID // 8
 typealias MoneroTransactionHash = MoneroTypeString
 typealias MoneroTransactionPubKey = MoneroTypeString
 typealias MoneroTransactionPrefixHash = MoneroTypeString
 typealias MoneroKeyImage = MoneroTypeString
 typealias MoneroKey = MoneroTypeString
-typealias MoneroConvertableCurrencySymbol = MoneroTypeString
+//
+typealias MoneroConvertableCurrencySymbol = String
+let MoneroConvertableCurrencySymbol_for_XMR = "XMR"
 //
 struct MoneroDecodedAddressComponents
 {
 	var publicKeys: MoneroKeyDuo
 	var intPaymentId: MoneroPaymentID? // would be encrypted, i.e. an integrated address
 }
-struct MoneroKeyDuo
+@objc class MoneroKeyDuo: NSObject // heavier-weight than I'd like but too useful for ObjC bridge
 {
 	var view: MoneroKey
 	var spend: MoneroKey
 	//
-	var jsRepresentationString: String
-	{
+	init(
+		view: MoneroKey,
+		spend: MoneroKey
+	) {
+		self.view = view
+		self.spend = spend
+	}
+	//
+	var jsRepresentationString: String {
 		return "{\"view\":\"\(view)\",\"spend\":\"\(spend)\"}"
 	}
-	var jsonRepresentation: [String: Any]
-	{
+	var jsonRepresentation: [String: Any] {
 		return [
 			"view": view,
 			"spend": spend
 		]
 	}
-	static func new(fromJSONRepresentation jsonRepresentation: [String: Any]) -> MoneroKeyDuo
-	{
-		return self.init(
+	class func new(
+		fromJSONRepresentation jsonRepresentation: [String: Any]
+	) -> MoneroKeyDuo {
+		return MoneroKeyDuo(
 			view: jsonRepresentation["view"] as! MoneroKey,
 			spend: jsonRepresentation["spend"] as! MoneroKey
 		)
@@ -125,13 +139,13 @@ struct MoneroWalletDescription
 }
 struct MoneroVerifiedComponentsForLogIn
 {
-	var seed: MoneroSeed
+	var seed: MoneroSeed?
 	var publicAddress: MoneroAddress
 	var publicKeys: MoneroKeyDuo
 	var privateKeys: MoneroKeyDuo
 	var isInViewOnlyMode: Bool
 }
-typealias MoneroMnemonicWordsetName = MoneroUtils.Mnemonics.MNWords.WordsetName // TODO: so, MoneroUtils_Mnemonics is vendored… is that ok for long-term? 
+typealias MoneroMnemonicWordsetName = MoneroUtils.Mnemonics.MNWords.WordsetName // TODO: so, MoneroUtils_Mnemonics is vendored… is that ok for long-term?
 //
 class MoneroHistoricalTransactionRecord: Equatable
 {
@@ -221,7 +235,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func isConfirmed(
 		givenTransactionHeight height: Int,
 		andWalletBlockchainHeight blockchain_height: Int
-	) -> Bool
+		) -> Bool
 	{
 		let differenceInHeight = blockchain_height - height
 		//
@@ -230,7 +244,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func isUnlocked(
 		givenTransactionUnlockTime unlock_time: Double,
 		andWalletBlockchainHeight blockchain_height: Int
-	) -> Bool
+		) -> Bool
 	{
 		if unlock_time < Double(MoneroConstants.maxBlockNumber) { // then unlock time is block height
 			return Double(blockchain_height) >= unlock_time
@@ -242,7 +256,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func lockedReason(
 		givenTransactionUnlockTime unlock_time: Double,
 		andWalletBlockchainHeight blockchain_height: Int
-	) -> String
+		) -> String
 	{
 		func colloquiallyFormattedDate(_ date: Date) -> String
 		{
@@ -481,8 +495,7 @@ struct MoneroSpentOutputDescription: Equatable
 	static func ==(
 		l: MoneroSpentOutputDescription,
 		r: MoneroSpentOutputDescription
-		) -> Bool
-	{
+		) -> Bool {
 		if l.amount != r.amount {
 			return false
 		}
@@ -543,13 +556,14 @@ struct MoneroSpentOutputDescription: Equatable
 			out_index: jsonRepresentation["out_index"] as! Int
 		)
 	}
-	static func newArray(fromJSONRepresentations array: [[String: Any]]) -> [MoneroSpentOutputDescription]
-	{
+	static func newArray(
+		fromJSONRepresentations array: [[String: Any]]
+		) -> [MoneroSpentOutputDescription] {
 		return array.map{ MoneroSpentOutputDescription.new(fromJSONRepresentation: $0) }
 	}
 }
 //
-struct MoneroOutputDescription
+@objc class MoneroOutputDescription: NSObject // so that it can be used from ObjC(pp)
 { // TODO: would be good to make this name more precise, like Monero/Unspent/Unused/Usable/Random/…OutputDescription
 	let amount: MoneroAmount
 	let public_key: String
@@ -564,7 +578,35 @@ struct MoneroOutputDescription
 	let timestamp: Date
 	let height: Int
 	//
-	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroOutputDescription
+	init(
+		amount: MoneroAmount,
+		public_key: String,
+		index: Int,
+		globalIndex: Int,
+		rct: String?,
+		tx_id: Int,
+		tx_hash: MoneroTransactionHash,
+		tx_pub_key: MoneroTransactionPubKey,
+		tx_prefix_hash: MoneroTransactionPrefixHash,
+		spend_key_images: [MoneroKeyImage],
+		timestamp: Date,
+		height: Int
+		) {
+		self.amount = amount
+		self.public_key = public_key
+		self.index = index
+		self.globalIndex = globalIndex
+		self.rct = rct
+		self.tx_id = tx_id
+		self.tx_hash = tx_hash
+		self.tx_pub_key = tx_pub_key
+		self.tx_prefix_hash = tx_prefix_hash
+		self.spend_key_images = spend_key_images
+		self.timestamp = timestamp
+		self.height = height
+	}
+	//
+	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroOutputDescription
 	{
 		let outputDescription = MoneroOutputDescription(
 			amount: MoneroAmount("\(dict["amount"] as! String)")!,
@@ -582,7 +624,7 @@ struct MoneroOutputDescription
 		)
 		return outputDescription
 	}
-	static func jsArrayString(_ array: [MoneroOutputDescription]) -> String
+	class func jsArrayString(_ array: [MoneroOutputDescription]) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
 	}
@@ -610,12 +652,20 @@ struct MoneroOutputDescription
 		return prefix + keysAndValuesString + suffix
 	}
 }
-struct MoneroRandomAmountAndOutputs
+@objc class MoneroRandomAmountAndOutputs: NSObject
 {
 	let amount: MoneroAmount
 	let outputs: [MoneroRandomOutputDescription]
 	//
-	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomAmountAndOutputs
+	init(
+		amount: MoneroAmount,
+		outputs: [MoneroRandomOutputDescription]
+		) {
+		self.amount = amount
+		self.outputs = outputs
+	}
+	//
+	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomAmountAndOutputs
 	{
 		let dict_outputs = dict["outputs"] as! [[String: Any]]
 		let outputs = MoneroRandomOutputDescription.newArray(withCoreParsed_jsonDicts: dict_outputs)
@@ -625,7 +675,7 @@ struct MoneroRandomAmountAndOutputs
 		)
 		return amountAndOutputs
 	}
-	static func jsArrayString(_ array: [MoneroRandomAmountAndOutputs]) -> String
+	class func jsArrayString(_ array: [MoneroRandomAmountAndOutputs]) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
 	}
@@ -634,17 +684,27 @@ struct MoneroRandomAmountAndOutputs
 		return "{ \"amount\": \(amount.jsRepresentationString), \"outputs\": \(MoneroRandomOutputDescription.jsArrayString(outputs)) }" // amount.jsRepresentationString will become a "new JSBigInt…"
 	}
 }
-struct MoneroRandomOutputDescription
+@objc class MoneroRandomOutputDescription: NSObject
 {
 	let globalIndex: String // seems to be a string in this case - just calling that out here so no parsing mistakes are made
 	let public_key: MoneroTransactionPubKey
 	let rct: String?
 	//
-	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroRandomOutputDescription]
+	init(
+		globalIndex: String,
+		public_key: MoneroTransactionPubKey,
+		rct: String?
+		) {
+		self.globalIndex = globalIndex
+		self.public_key = public_key
+		self.rct = rct
+	}
+	//
+	class func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroRandomOutputDescription]
 	{
 		return dicts.map{ new(withCoreParsed_jsonDict: $0) }
 	}
-	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomOutputDescription
+	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomOutputDescription
 	{
 		let outputDescription = MoneroRandomOutputDescription(
 			globalIndex: dict["global_index"] as! String,
@@ -653,12 +713,11 @@ struct MoneroRandomOutputDescription
 		)
 		return outputDescription
 	}
-	static func jsArrayString(_ array: [MoneroRandomOutputDescription]) -> String
+	class func jsArrayString(_ array: [MoneroRandomOutputDescription]) -> String
 	{
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
 	}
-	var jsRepresentationString: String
-	{
+	var jsRepresentationString: String {
 		let prefix = "{"
 		let suffix = "}"
 		var keysAndValuesString = ""
@@ -671,19 +730,28 @@ struct MoneroRandomOutputDescription
 		return prefix + keysAndValuesString + suffix
 	}
 }
-struct SendFundsTargetDescription
+@objc class SendFundsTargetDescription: NSObject
 { // TODO: namespace
 	let address: MoneroAddress
 	let amount: MoneroAmount
 	//
-	static func jsArrayString(_ array: [SendFundsTargetDescription]) -> String
-	{
+	init(
+		address: MoneroAddress,
+		amount: MoneroAmount
+		) {
+		self.address = address
+		self.amount = amount
+	}
+	//
+	class func jsArrayString(
+		_ array: [SendFundsTargetDescription]
+		) -> String {
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
 	}
-	var jsRepresentationString: String
-	{
+	var jsRepresentationString: String {
 		return "{ \"address\": \"\(address)\", \"amount\": \(amount.jsRepresentationString) }" // amount.jsRepresentationString will become a "new JSBigInt…"
 	}
 }
 typealias MoneroSignedTransaction = [String: Any]
 typealias MoneroSerializedSignedTransaction = String
+

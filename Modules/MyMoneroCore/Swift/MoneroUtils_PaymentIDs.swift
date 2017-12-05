@@ -38,15 +38,36 @@ struct MoneroUtils
 {
 	struct PaymentIDs
 	{
+		enum Variant: Int
+		{
+			case long = 64
+			case short = 16
+			//
+			var charLength: Int {
+				return self.rawValue
+			}
+		}
 		static func isAValidOrNotA(paymentId: String?) -> Bool
 		{
-			if let paymentId = paymentId, paymentId != "" {
-				let pattern = "^[0-9a-fA-F]{64}$"
-				if paymentId.count != 64 || paymentId.range(of: pattern, options: .regularExpression) == nil { // not a valid 64 char pid
-					return false // then not valid
-				}
+			guard let paymentId = paymentId, paymentId != "" else {
+				return true
 			}
-			return true // then either no pid or is a valid one
+			if self.isAValid(paymentId: paymentId, ofVariant: .long) {
+				return true
+			}
+			if self.isAValid(paymentId: paymentId, ofVariant: .short) {
+				return true
+			}
+			return false // not a match but not empty/nil either
+		}
+		static func isAValid(paymentId: String, ofVariant variant: Variant) -> Bool
+		{
+			let length = variant.charLength
+			let pattern = "^[0-9a-fA-F]{\(length)}$"
+			if paymentId.count == length && paymentId.range(of: pattern, options: .regularExpression) != nil { // not a valid 64 char pid
+				return true // then is valid
+			}
+			return false
 		}
 	}
 }

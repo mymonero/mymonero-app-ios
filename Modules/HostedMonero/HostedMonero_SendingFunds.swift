@@ -157,10 +157,22 @@ extension HostedMoneroAPIClient
 			if decodedAddressComponents.intPaymentId != nil {
 				final__payment_id = decodedAddressComponents.intPaymentId
 				final__pid_encrypt = true // we do want to encrypt if using an integrated address
+				assert(
+					MoneroUtils.PaymentIDs.isAValid(
+						paymentId: final__payment_id!,
+						ofVariant: .short
+					)
+				)
 			} else {
 				if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
 					__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
 					return
+				}
+				if final__payment_id != nil {
+					final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(
+						paymentId: final__payment_id!,
+						ofVariant: .short // if it's a short pid, encrypt
+					)
 				}
 			}
 			_proceedTo_getUnspentOutsUsableForMixin()
@@ -387,7 +399,10 @@ extension HostedMoneroAPIClient
 			realDestViewKey: MoneroKey?
 		)
 		{
-			assert(final__pid_encrypt == false || realDestViewKey != nil)
+			assert(
+				final__pid_encrypt == false
+				|| (realDestViewKey != nil && MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
+			)
 			mymoneroCore.CreateTransaction(
 				wallet__public_keys: wallet__public_keys,
 				wallet__private_keys: wallet__private_keys,
@@ -401,9 +416,7 @@ extension HostedMoneroAPIClient
 				ifPIDEncrypt_realDestViewKey: realDestViewKey,
 				unlock_time: 0,
 				isRingCT: true
-			)
-			{ (err_str, signedTx) in
-				
+			) { (err_str, signedTx) in
 				if let err_str = err_str {
 					__trampolineFor_err_withStr(err_str: err_str)
 					return
