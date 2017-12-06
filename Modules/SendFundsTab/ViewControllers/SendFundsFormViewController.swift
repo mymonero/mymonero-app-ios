@@ -66,6 +66,7 @@ extension SendFundsForm
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
+		var amount_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
 		var networkFeeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
 		var feeEstimate_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
@@ -118,11 +119,28 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: String(
+						format: NSLocalizedString(
+							"Monero makes transactions with your\n\"available outputs\", so part of your\nbalance will be briefly locked and\nthen returned as change.\n\nMonero ringsize value set to %d.",
+							comment: ""
+						),
+						MyMoneroCore.fixedMixin+1
+					)
+				)
+				view.willPresentTipView_fn =
+					{ [unowned self] in
+						self.view.resignCurrentFirstResponder() // if any
+				}
+				self.amount_tooltipSpawn_buttonView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
 				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
 					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
 					effectiveAmountTooltipText_orNil: String(
 						format: NSLocalizedString(
-							"Currency selector for display purposes only. The app will send %@.\n\nRate via sources such as '%@'.",
+							"Currency selector for display\npurposes only. The app will\nsend %@.\n\nRate sources include\n'%@'.",
 							comment:""
 						),
 						CcyConversionRates.Currency.XMR.symbol,
@@ -158,10 +176,9 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Monero makes transactions with your \"available outputs\", so part of your balance will be briefly locked and then returned as change.\n\nMonero ringsize value set to %d.",
+							"Based on Monero network\npriority fee estimate (not final).\n\nMyMonero adds no transaction fee.",
 							comment: ""
-						),
-						MyMoneroCore.fixedMixin+1
+						)
 					)
 				)
 				view.willPresentTipView_fn =
@@ -627,11 +644,12 @@ extension SendFundsForm
 					}
 				}
 			}
-			let final_amountDouble = finalizable_amountDouble
 			let final_displayCurrency = finalizable_displayCurrency
+			let final_amountDouble = finalizable_amountDouble
+			let final_amount_formattedString = final_displayCurrency == .XMR ? "\(final_amountDouble)" : final_displayCurrency.nonAtomicCurrency_formattedString(final_amountDouble: final_amountDouble)
 			let text = String(
 				format: NSLocalizedString("+ %@ %@ EST. NETWORK FEE", comment: ""),
-				"\(final_amountDouble)",
+				final_amount_formattedString,
 				final_displayCurrency.symbol
 			)
 			self.networkFeeEstimate_label.text = text
@@ -955,6 +973,21 @@ extension SendFundsForm
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 				).integral
+				do {
+					self.amount_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__amount_label_frame = self.amount_label.frame
+					final__amount_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.amount_label.frame = final__amount_label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.amount_tooltipSpawn_buttonView.frame = CGRect(
+						x: self.amount_label.frame.origin.x + self.amount_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+						y: self.amount_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.amount_label.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.amount_fieldset.frame = CGRect(
 					x: input_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
