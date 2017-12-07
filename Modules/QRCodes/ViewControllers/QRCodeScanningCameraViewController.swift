@@ -181,13 +181,12 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 	//
 	// Delegation - AVCapture
 	var hasAlreadyOutputMetadataObject = false
-	func captureOutput(
-		_ captureOutput: AVCaptureOutput!,
-		didOutputMetadataObjects metadataObjects: [Any]!,
-		from connection: AVCaptureConnection!
-	)
-	{
-		if metadataObjects == nil || metadataObjects.count == 0 {
+	func metadataOutput(
+		_ output: AVCaptureMetadataOutput,
+		didOutput metadataObjects: [AVMetadataObject],
+		from connection: AVCaptureConnection
+	) {
+		if metadataObjects.count == 0 {
 			self.qrCodeReticleView.frame = .zero
 			return
 		}
