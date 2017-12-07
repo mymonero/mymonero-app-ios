@@ -121,7 +121,8 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				let view = UICommonComponents.FormTextViewContainerView(
 					placeholder: NSLocalizedString("From your existing wallet", comment: "")
 				)
-				view.textView.autocorrectionType = AppProcess.isBeingRunByUIAutomation ? .no : .yes // disabled under UI automation b/c it interferes with .typeText and the known fallback is too fragile
+				view.textView.isSecureTextEntry = true // prevent snooping
+				view.textView.autocorrectionType = .no // turned off because it gets disabled when enabling isSecureTextEntry in any case…… instead of: "AppProcess.isBeingRunByUIAutomation ? .no : .yes // disabled under UI automation b/c it interferes with .typeText and the known fallback is too fragile"
  				view.textView.autocapitalizationType = .none
 				view.textView.spellCheckingType = .no
 				view.textView.returnKeyType = .next
