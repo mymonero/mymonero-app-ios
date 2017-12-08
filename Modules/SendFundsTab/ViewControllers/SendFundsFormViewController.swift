@@ -270,7 +270,6 @@ extension SendFundsForm
 					if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
 						// contact picker will show its own resolving indicator while we look up the paymentID again
 						self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
-						//
 						return
 					}
 					//

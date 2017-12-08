@@ -405,7 +405,10 @@ extension UICommonComponents.Form
 					)
 					let resolver = ContactPickerOpenAliasResolverRequestMaker(parameters: parameters)
 					self.oaResolverRequestMaker = resolver
-					resolver.resolve()
+					DispatchQueue.main.async
+					{ // placing this on "next tick" so as to allow self.didPickContact_fn not to race with a failure to resolve due to no connection
+						resolver.resolve()
+					}
 				}
 			} else {
 				if self.displayMode == .paymentIds_andResolvedAddrs {
