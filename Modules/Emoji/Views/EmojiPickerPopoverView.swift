@@ -90,8 +90,8 @@ class EmojiPickerCollectionViewCell: UICollectionViewCell
 	// Types/Constants
 	static let reuseIdentifier = "EmojiPickerCollectionViewCell"
 	static let itemSize = CGSize(width: EmojiPickerCollectionViewCell.w, height: EmojiPickerCollectionViewCell.h)
-	static let w: CGFloat = 34
-	static let h: CGFloat = 30
+	static let w: CGFloat = 46
+	static let h: CGFloat = 40
 	static let selected_backgroundImage = UIImage(named: "emojiPickerPopover_cell_selectedBG_stretchable")!.stretchableImage(withLeftCapWidth: 4, topCapHeight: 4)
 	//
 	// Properties
@@ -113,7 +113,7 @@ class EmojiPickerCollectionViewCell: UICollectionViewCell
 		self.backgroundColor = .clear // unfortunately. b/c background of collection view is not a solid color
 		//
 		let view = self.label
-		view.font = UIFont.systemFont(ofSize: 15)
+		view.font = UIFont.systemFont(ofSize: 24)
 		view.textAlignment = .center
 		self.addSubview(view)
 	}
