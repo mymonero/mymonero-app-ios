@@ -134,6 +134,10 @@ extension UICommonComponents
 				]
 			)
 			//
+			let generator = UINotificationFeedbackGenerator()
+			generator.prepare()
+			generator.notificationOccurred(.success)
+			//
 			HUD.flash(.label(NSLocalizedString("Copied", comment: "")), delay: 0.05) // would like to be able to modify fade-out duration of HUD
 		}
 		//

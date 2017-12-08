@@ -71,6 +71,10 @@ class EditContactFormViewController: ContactFormViewController
 	// Overrides - Delegation
 	override func deleteButton_tapped()
 	{
+		let generator = UINotificationFeedbackGenerator()
+		generator.prepare()
+		generator.notificationOccurred(.warning)
+		//
 		let alertController = UIAlertController(
 			title: NSLocalizedString("Delete this contact?", comment: ""),
 			message: NSLocalizedString(

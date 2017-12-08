@@ -173,8 +173,13 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 	// Delegation - Interactions
 	@objc func agreeCheckboxButton_tapped()
 	{
-		self.agreeCheckboxButton.isSelected = !self.agreeCheckboxButton.isSelected
-		self.set_isFormSubmittable_needsUpdate()
+		let generator = UISelectionFeedbackGenerator()
+		generator.prepare()
+		do {
+			self.agreeCheckboxButton.isSelected = !self.agreeCheckboxButton.isSelected
+			self.set_isFormSubmittable_needsUpdate()
+		}
+		generator.selectionChanged()
 	}
 	//
 	// Delegation - Overrides - Layout

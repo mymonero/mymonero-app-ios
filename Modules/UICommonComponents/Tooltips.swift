@@ -155,6 +155,11 @@ extension UICommonComponents
 				inViewController = inViewController.presentedViewController!
 			}
 			let inView = inViewController.view!
+			//
+			let generator = UINotificationFeedbackGenerator()
+			generator.prepare()
+			generator.notificationOccurred(.warning) // TODO: are these feedback generator and note type appropriate?
+			//
 			tip.show(
 				text: self.tooltipText,
 				direction: self.tooltipDirectionFromOrigin,

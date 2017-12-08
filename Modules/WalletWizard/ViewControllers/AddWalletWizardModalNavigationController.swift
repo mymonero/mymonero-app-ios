@@ -204,7 +204,13 @@ class AddWalletWizardModalNavigationController: UINavigationController
 	{
 		assert((!userCanceled || !didTaskFinish) && (userCanceled || didTaskFinish), "Unrecognized args config")
 		self._willDismissWizardModal()
-		NSLog("dismiss!")
+		if didTaskFinish {
+			assert(userCanceled == false)
+			//
+			let generator = UINotificationFeedbackGenerator()
+			generator.prepare()
+			generator.notificationOccurred(.success)
+		}
 		self.dismiss(animated: true) {}
 	}
 	//
@@ -228,6 +234,10 @@ class AddWalletWizardModalNavigationController: UINavigationController
 			{ [unowned self] (err_str, walletInstance) in
 				if err_str != nil {
 					assert(false)
+					let generator = UINotificationFeedbackGenerator()
+					generator.prepare()
+					generator.notificationOccurred(.warning)
+					//
 					let alertController = UIAlertController(
 						title: NSLocalizedString("Error", comment: ""),
 						message: NSLocalizedString(

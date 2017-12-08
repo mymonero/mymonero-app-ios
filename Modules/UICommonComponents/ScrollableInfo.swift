@@ -172,7 +172,11 @@ extension UICommonComponents
 				timer.invalidate() // always prevent an existing 'close' timer from stomping on a more recent 'show'
 				self._validationMessageDismissing_clearAndShowDebounceTimer = nil
 			}
-			let view = self.messageView! // this ! is not necessary according to the var's optionality but there seems to be a compiler bug
+			let generator = UINotificationFeedbackGenerator()
+			generator.prepare()
+			generator.notificationOccurred(.warning) // TODO: set based on level of msg
+			//
+			let view = self.messageView!
 			view.set(text: message)
 			view.set(mode: wantsXButton ? .withCloseButton : .noCloseButton)
 			self.layOut_messageView() // this can be slightly redundant, but it is called here so we lay out before showing (and so contents reflow if wantsXButton changed). maybe rework this so it doesn't require laying out twice and checking visibility. maybe a flag saying "ought to be showing". maybe.

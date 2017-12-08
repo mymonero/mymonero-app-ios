@@ -533,6 +533,10 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	}
 	@objc func deleteButton_tapped()
 	{
+		let generator = UINotificationFeedbackGenerator()
+		generator.prepare()
+		generator.notificationOccurred(.warning)
+		//
 		let alertController = UIAlertController(
 			title: NSLocalizedString("Delete everything?", comment: ""),
 			message: NSLocalizedString(

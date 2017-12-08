@@ -208,6 +208,8 @@ extension WalletDetails
 			var isDisclosed = false
 			let arrowIconView = UIImageView(image: UIImage(named: "disclosureArrow_icon")!)
 			//
+			var infoDisclosing_impactFeedbackGenerator: UIImpactFeedbackGenerator? = nil
+			//
 			let truncated__fieldView_address = InfoDisclosing_Truncated_CopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Address", comment: ""),
@@ -315,6 +317,11 @@ extension WalletDetails
 				isHiding: Bool
 			)
 			{
+				if (self.infoDisclosing_impactFeedbackGenerator == nil) {
+					self.infoDisclosing_impactFeedbackGenerator = UIImpactFeedbackGenerator()
+				}
+				self.infoDisclosing_impactFeedbackGenerator!.prepare()
+				//
 				let isHiding = self.isDisclosed
 				self.isDisclosed = !self.isDisclosed
 				var selfFrame: CGRect
@@ -367,6 +374,9 @@ extension WalletDetails
 			}
 			func hasFinishedCellToggleAnimation(isHiding: Bool)
 			{
+				self.infoDisclosing_impactFeedbackGenerator!.impactOccurred()
+				self.infoDisclosing_impactFeedbackGenerator = nil
+				//
 				if isHiding == true { // this was deferred until here for visual effect
 					self.regenerateArrayOfFieldViews()
 					let _/*no need for selfFrame here*/ = self.sizeAndLayOutSubviews_returningSelfFrame() // or we could just size only the separatorViews (after having established an interface method to pair with having only initially measured the subviews, of course) if we wanted a slight optimization

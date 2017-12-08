@@ -125,6 +125,10 @@ class ForgotPasswordViewController: UIViewController
 	}
 	@objc func deleteEverything_tapped()
 	{
+		let generator = UINotificationFeedbackGenerator()
+		generator.prepare()
+		generator.notificationOccurred(.warning)
+		//
 		let alertController = UIAlertController(
 			title: NSLocalizedString("Delete everything?", comment: ""),
 			message: NSLocalizedString(

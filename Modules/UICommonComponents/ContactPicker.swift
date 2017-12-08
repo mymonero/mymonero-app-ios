@@ -382,6 +382,10 @@ extension UICommonComponents.Form
 							self.oaResolverRequestMaker = nil // must free, and before call-back
 							do {
 								if self.displayMode == .paymentIds_andResolvedAddrs {
+									let generator = UINotificationFeedbackGenerator()
+									generator.prepare()
+									generator.notificationOccurred(.success)
+									//
 									self._display(resolved_XMRAddress: resolved_xmr_address)
 									if useContactPaymentID {
 										if payment_id != nil && payment_id != "" {
@@ -435,6 +439,9 @@ extension UICommonComponents.Form
 						self._hide_resolved_paymentID()
 					}
 				}
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.success)
 			}
 			// making sure to call this callback /after/ having set self.oaResolverRequestMaker so that isResolving will be true if consumer asks for it
 			if let fn = self.didPickContact_fn {
