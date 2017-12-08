@@ -122,7 +122,7 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Monero makes transactions with your\n\"available outputs\", so part of your\nbalance will be briefly locked and\nthen returned as change.\n\nMonero ringsize value set to %d.",
+							"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.\n\nMonero ringsize value set\nto %d.",
 							comment: ""
 						),
 						MyMoneroCore.fixedMixin+1
@@ -200,7 +200,7 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Please double-check the accuracy of your recipient information as Monero transactions are irreversible.",
+							"Please double-check the accuracy\nof your recipient information as\nMonero transfers are irreversible.",
 							comment: ""
 						)
 					)
