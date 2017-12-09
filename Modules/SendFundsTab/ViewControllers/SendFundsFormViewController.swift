@@ -176,7 +176,7 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Based on Monero network\npriority fee estimate (not final).\n\nMyMonero adds no transaction fee.",
+							"Based on Monero network\nfee estimate (not final).\n\nMyMonero does not charge\nany transfer fees.",
 							comment: ""
 						)
 					)
