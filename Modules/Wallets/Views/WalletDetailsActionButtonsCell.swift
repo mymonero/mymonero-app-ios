@@ -48,7 +48,8 @@ extension WalletDetails
 			}
 			override class func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
 			{
-				return UICommonComponents.ActionButton.topMargin + UICommonComponents.ActionButton.buttonHeight // no .bottomMargin because the section-to-follow supplies its header margin
+				//
+				return UICommonComponents.ActionButton.topMargin + UICommonComponents.ActionButton.buttonHeight + 6
 			}
 			//
 			// Properties
