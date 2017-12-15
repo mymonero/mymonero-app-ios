@@ -1464,7 +1464,7 @@ extension SendFundsForm
 			//
 			if self.isFormEnabled == false {
 				DDLog.Warn("SendFunds", "Triggered send funds from contact while submit btn disabled. Beep.")
-				// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+				// TODO: is a .failure haptic appropriate here?
 				// TODO: mayyybe alert tx in progress
 				return
 			}
@@ -1479,7 +1479,7 @@ extension SendFundsForm
 			//
 			if self.isFormEnabled == false {
 				DDLog.Warn("SendFunds", "Triggered send funds from wallet while submit btn disabled. Beep.")
-				// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+				// TODO: is a .failure haptic appropriate here?
 				// TODO: mayyybe alert tx in progress
 				return
 			}

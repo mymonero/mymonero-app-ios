@@ -34,7 +34,7 @@
 //
 import UIKit
 //
-class AppRuntimeController
+class AppSingletonsController
 {
 	init()
 	{

@@ -56,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	// Properties
 	var window: UIWindow?
 	var windowController: WindowController!
-	var appRuntimeController: AppRuntimeController!
+	var appSingletonsController: AppSingletonsController!
 	//
 	// Overrides - Imperatives
 
@@ -69,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	{
 		self.windowController = WindowController() // the window must be initialized after app finishes launching or nested UITabBarControllers will
 		self.window = self.windowController.window // setting this as early as possible
-		self.appRuntimeController = AppRuntimeController() // TODO: this contains some services - some of which request pw controller, like UserIdle - maybe this should be refactored or renamed. 'app runtime' too vague
+		self.appSingletonsController = AppSingletonsController()
 		do { // the posting of these notifications should remain synchronous
 			NotificationCenter.default.post(
 				name: NotificationNames.didSetUpWindowAndRuntime_willMakeWindowKeyAndVisible.notificationName,

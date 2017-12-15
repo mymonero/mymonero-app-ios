@@ -127,7 +127,7 @@ class SettingsController: DeleteEverythingRegistrant
 			)
 			return
 		}
-		let jsonDict = documentJSONs![0] // TODO: decrypt?
+		let jsonDict = documentJSONs![0]
 		let _id = jsonDict[DictKey._id.rawValue] as! DocumentPersister.DocumentId
 		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
 		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval

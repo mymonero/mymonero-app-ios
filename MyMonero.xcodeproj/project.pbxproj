@@ -113,7 +113,7 @@
 		9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF41EBD2C1C0073C2BB /* AppDelegate.swift */; };
 		9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */; };
 		9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */; };
-		9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */; };
+		9F7ADB021EBD30330073C2BB /* AppSingletonsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB011EBD30330073C2BB /* AppSingletonsController.swift */; };
 		9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ADB031EBD30710073C2BB /* WindowController.swift */; };
 		9F7E51711EC6156C001EAB3F /* HostedMoneroAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */; };
 		9F7E51731EC6156C001EAB3F /* HostedMonero_SendingFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */; };
@@ -375,7 +375,7 @@
 		9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		9F7ADAF81EBD2C1C0073C2BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F7ADAFD1EBD2CAF0073C2BB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppRuntimeController.swift; sourceTree = "<group>"; };
+		9F7ADB011EBD30330073C2BB /* AppSingletonsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSingletonsController.swift; sourceTree = "<group>"; };
 		9F7ADB031EBD30710073C2BB /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		9F7E516E1EC6156C001EAB3F /* HostedMoneroAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMoneroAPIClient.swift; sourceTree = "<group>"; };
 		9F7E51701EC6156C001EAB3F /* HostedMonero_SendingFunds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostedMonero_SendingFunds.swift; sourceTree = "<group>"; };
@@ -829,7 +829,7 @@
 				9F7ADB031EBD30710073C2BB /* WindowController.swift */,
 				9F7ADAF51EBD2C1C0073C2BB /* RootViewController.swift */,
 				9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */,
-				9F7ADB011EBD30330073C2BB /* AppRuntimeController.swift */,
+				9F7ADB011EBD30330073C2BB /* AppSingletonsController.swift */,
 				9F0801431F188A690074B35A /* Homepage.swift */,
 				9F8673891F2C396C00F89EAB /* URLOpening.swift */,
 				9F7298B81F329D8400CD59E1 /* UserIdle.swift */,
@@ -1761,7 +1761,7 @@
 				9F33E6EF1F1ABDE300610662 /* WalletDetailsBalanceViewCell.swift in Sources */,
 				9FA734261F07610E00C674D6 /* UIView+Debug.swift in Sources */,
 				9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */,
-				9F7ADB021EBD30330073C2BB /* AppRuntimeController.swift in Sources */,
+				9F7ADB021EBD30330073C2BB /* AppSingletonsController.swift in Sources */,
 				9FA734171F05AFAB00C674D6 /* ContactsListViewController.swift in Sources */,
 				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
 				9FAF95241FB4F4FD00ECE0A6 /* CcyConversionRates.swift in Sources */,

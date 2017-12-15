@@ -144,7 +144,6 @@ final class HostedMoneroAPIClient
 	//
 	// Instance - Properties
 	var manager: SessionManager!
-	var mymoneroCore = MyMoneroCore.shared // TODO: probably can remove this property
 	//
 	// Lifecycle - Singleton Init
 	private init()
@@ -288,7 +287,7 @@ final class HostedMoneroAPIClient
 				return
 			}
 			let response_jsonDict = response_jsonDict!
-			self.mymoneroCore.Parsed_AddressInfo(
+			MyMoneroCore.shared.Parsed_AddressInfo(
 				response_jsonDict: response_jsonDict,
 				address: address,
 				view_key__private: view_key__private,
@@ -327,7 +326,7 @@ final class HostedMoneroAPIClient
 				return
 			}
 			let response_jsonDict = response_jsonDict!
-			self.mymoneroCore.Parsed_AddressTransactions(
+			MyMoneroCore.shared.Parsed_AddressTransactions(
 				response_jsonDict: response_jsonDict,
 				address: address,
 				view_key__private: view_key__private,
@@ -404,7 +403,7 @@ final class HostedMoneroAPIClient
 				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
-			self.mymoneroCore.Parsed_UnspentOuts(
+			MyMoneroCore.shared.Parsed_UnspentOuts(
 				response_jsonDict: response_jsonDict!,
 				address: address,
 				view_key__private: view_key__private,

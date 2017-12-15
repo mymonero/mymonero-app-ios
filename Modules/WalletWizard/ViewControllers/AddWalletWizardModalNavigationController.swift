@@ -264,15 +264,15 @@ class AddWalletWizardModalNavigationController: UINavigationController
 	func createWalletInstanceAndProceedToNextStep()
 	{
 		self.__generateWallet
-			{ [unowned self] in
-				self.proceedToNextStep()
+		{ [unowned self] in
+			self.proceedToNextStep()
 		}
 	}
 	func regenerateWalletAndPopToInformOfMnemonicScreen()
 	{ // TODO: maybe assert that this is being called from the correct screen
 		self.__generateWallet
-			{ [unowned self] in
-				self.popViewController(animated: true)
+		{ [unowned self] in
+			self.popViewController(animated: true)
 		}
 	}
 	//

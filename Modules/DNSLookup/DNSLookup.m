@@ -276,7 +276,7 @@ static void DNSSD_API queryRecordHandler(
 	//
 	DNSLookup *lookup = (__bridge DNSLookup *)context;
 	assert([lookup isKindOfClass:[DNSLookup class]]);
-	assert(sdref == lookup->_dnsServiceRef); // TODO: this won't compile…
+	assert(sdref == lookup->_dnsServiceRef);
 	//
 	if (lookup->_hasTornDown) {
 		DDLogWarn(@"DNSLookup/queryRecordHandler: Already torn down. Ignoring.");
