@@ -247,6 +247,7 @@
 		9FEFDD6A1F991B83001C3CFD /* CurrencyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEFDD691F991B83001C3CFD /* CurrencyPicker.swift */; };
 		9FF6C9A71F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */; };
 		9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */; };
+		9FFC7F911FE37BBF009033BD /* emoji-20171214.json in Resources */ = {isa = PBXBuildFile; fileRef = 9FFC7F901FE37BBF009033BD /* emoji-20171214.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -510,6 +511,7 @@
 		9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshotsUITests.swift; sourceTree = "<group>"; };
 		9FF6C9A81F7C919B00B20D40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
+		9FFC7F901FE37BBF009033BD /* emoji-20171214.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "emoji-20171214.json"; sourceTree = "<group>"; };
 		A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.internal.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.internal.xcconfig"; sourceTree = "<group>"; };
 		B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.debug.xcconfig"; sourceTree = "<group>"; };
 		D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.testing.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.testing.xcconfig"; sourceTree = "<group>"; };
@@ -1222,6 +1224,7 @@
 				9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */,
 				9FA734351F077EA100C674D6 /* popoverBG@3x.png */,
 				9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */,
+				9FFC7F901FE37BBF009033BD /* emoji-20171214.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1475,6 +1478,7 @@
 				9FD354171F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png in Resources */,
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F9C59E31F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_bottom@3x.png in Resources */,
+				9FFC7F911FE37BBF009033BD /* emoji-20171214.json in Resources */,
 				9F7ADAFE1EBD2CAF0073C2BB /* LaunchScreen.storyboard in Resources */,
 				9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */,
 				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,

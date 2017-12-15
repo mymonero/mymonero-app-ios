@@ -203,7 +203,7 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 			self.addSubview(view)
 		}
 		do { // initial selection
-			let index = Emoji.allOrdered.index(of: self.initial_selected_emojiCharacter)!
+			let index = Emoji.lazy_allOrdered.index(of: self.initial_selected_emojiCharacter)!
 			let indexPath = IndexPath(row: index, section: 0)
 			self.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
 		}
@@ -220,7 +220,7 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 			optl_cell = EmojiPickerCollectionViewCell()
 		}
 		let cell = optl_cell!
-		let emojiCharacter = Emoji.allOrdered[indexPath.row]
+		let emojiCharacter = Emoji.lazy_allOrdered[indexPath.row]
 		cell.configure(withEmoji: emojiCharacter)
 		//
 		return cell
@@ -237,7 +237,7 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 		if let cell = self.collectionView.cellForItem(at: indexPath) {
 			cell.setNeedsDisplay()
 		}
-		let emojiCharacter = Emoji.allOrdered[indexPath.row]
+		let emojiCharacter = Emoji.lazy_allOrdered[indexPath.row]
 		self.selectedEmojiCharacter_fn(emojiCharacter)
 	}
 	func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath)
