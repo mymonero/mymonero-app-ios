@@ -371,7 +371,7 @@ extension UICommonComponents.Form.Amounts
 	{
 		//
 		// Constants
-		static let visual__w: CGFloat = 104 + UICommonComponents.Form.Amounts.CurrencyPicker.PickerButton.fixedWidth
+		static let visual__w: CGFloat = 8*12 + UICommonComponents.Form.Amounts.CurrencyPicker.PickerButton.fixedWidth
 		static let w: CGFloat = visual__w + 2*UICommonComponents.FormInputCells.imagePadding_x
 		//
 		// Properties - Interface
