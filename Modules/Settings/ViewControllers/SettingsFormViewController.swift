@@ -375,7 +375,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				width: fullWidth_label_w,
 				height: self.displayCurrency_label.frame.size.height
 			)
-			let fixed_dropdownWidth: CGFloat = 8*16
+			let fixed_dropdownWidth: CGFloat = 8*17 + 1 // disclosure arrow visual alignment with change pw content right edge
 			self.displayCurrency_inputView.frame = CGRect(
 				x: input_x,
 				y: self.displayCurrency_label.frame.origin.y + self.displayCurrency_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
