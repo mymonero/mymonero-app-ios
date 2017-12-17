@@ -81,6 +81,8 @@ extension MoneroTypeString
 typealias MoneroSeed = MoneroTypeString
 typealias MoneroSeedAsMnemonic = MoneroTypeString
 typealias MoneroAddress = MoneroTypeString
+typealias MoneroStandardAddress = MoneroAddress
+typealias MoneroIntegratedAddress = MoneroAddress
 typealias MoneroPaymentID = MoneroTypeString
 typealias MoneroLongPaymentID = MoneroPaymentID // 32
 typealias MoneroShortPaymentID = MoneroPaymentID // 8

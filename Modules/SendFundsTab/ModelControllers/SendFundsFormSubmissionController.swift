@@ -199,6 +199,34 @@ extension SendFundsForm
 						)
 						return
 					}
+					do { // short pid / integrated address coersion
+						if paymentID_orNil != nil {
+							if paymentID_orNil!.count == MoneroUtils.PaymentIDs.Variant.short.charLength { // a short one
+								MyMoneroCore.shared.New_IntegratedAddress( // construct integrated address
+									fromStandardAddress: xmrAddress_toDecode as MoneroStandardAddress, // the monero one
+									shortPaymentID: paymentID_orNil! as MoneroShortPaymentID, // short pid
+									{ [unowned self] (err_str, fabricated_integratedAddress) in
+										if err_str != nil {
+											self.parameters.preSuccess_terminal_validationMessage_fn(
+												NSLocalizedString(
+													String(format: "Couldn't construct integrated address with short payment ID."),
+													comment: ""
+												)
+											)
+											return
+										}
+										self._proceedTo_generateSendTransaction(
+											withTargetAddress: fabricated_integratedAddress!,
+											payment_id: nil, // must now zero this or Send will throw a "pid must be blank with integrated addr"
+											isXMRAddressIntegrated: true,
+											integratedAddressPIDForDisplay_orNil: paymentID_orNil! // a short pid
+										)
+									}
+								)
+								return // return early to prevent fall-through to non-short or zero pid case
+							}
+						}
+					}
 					self._proceedTo_generateSendTransaction(
 						withTargetAddress: xmrAddress_toDecode, // therefore, non-integrated normal XMR address
 						payment_id: paymentID_toUseOrToNilIfIntegrated, // may still be nil
