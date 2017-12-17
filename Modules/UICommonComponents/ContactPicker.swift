@@ -1023,7 +1023,6 @@ extension UICommonComponents.Form
 				context: nil
 			)
 			let titleString_w = ceil(boundingBox.width)
-			NSLog("\(string) titleString_w \(titleString_w)")
 			//
 			return emojiLabel_w + ContactPickerSearchResultsCellView.titleLabel_x_relativeToEmojiLabel + titleString_w + padding_right
 		}
