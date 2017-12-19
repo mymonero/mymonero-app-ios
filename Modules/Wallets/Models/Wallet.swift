@@ -487,7 +487,7 @@ class Wallet: PersistableObject
 		self._boot_byLoggingIn(
 			address: generatedOnInit_walletDescription.publicAddress,
 			view_key__private: generatedOnInit_walletDescription.privateKeys.view,
-			spend_key_orNilForViewOnly: generatedOnInit_walletDescription.privateKeys.spend,
+			spend_key__private: generatedOnInit_walletDescription.privateKeys.spend,
 			seed_orNil: generatedOnInit_walletDescription.seed,
 			wasAGeneratedWallet: true, // in this case
 			persistEvenIfLoginFailed_forServerChange: false, // always, in this case
@@ -526,7 +526,7 @@ class Wallet: PersistableObject
 				self._boot_byLoggingIn(
 					address: walletDescription!.publicAddress,
 					view_key__private: walletDescription!.privateKeys.view,
-					spend_key_orNilForViewOnly: walletDescription!.privateKeys.spend,
+					spend_key__private: walletDescription!.privateKeys.spend,
 					seed_orNil: walletDescription!.seed,
 					wasAGeneratedWallet: false,
 					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
@@ -550,7 +550,7 @@ class Wallet: PersistableObject
 		self._boot_byLoggingIn(
 			address: address,
 			view_key__private: privateKeys.view,
-			spend_key_orNilForViewOnly: privateKeys.spend,
+			spend_key__private: privateKeys.spend,
 			seed_orNil: nil,
 			wasAGeneratedWallet: false,
 			persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
@@ -774,7 +774,7 @@ class Wallet: PersistableObject
 	func _boot_byLoggingIn(
 		address: MoneroAddress,
 		view_key__private: MoneroKey,
-		spend_key_orNilForViewOnly: MoneroKey?,
+		spend_key__private: MoneroKey,
 		seed_orNil: MoneroSeed?,
 		wasAGeneratedWallet: Bool,
 		persistEvenIfLoginFailed_forServerChange: Bool,
@@ -786,7 +786,7 @@ class Wallet: PersistableObject
 		MyMoneroCore.shared.New_VerifiedComponentsForLogIn(
 			address,
 			view_key__private,
-			spend_key_orNilForViewOnly: spend_key_orNilForViewOnly,
+			spend_key: spend_key__private,
 			seed_orNil: seed_orNil,
 			wasAGeneratedWallet: wasAGeneratedWallet
 		)
@@ -928,7 +928,6 @@ class Wallet: PersistableObject
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			mymoneroCore: MyMoneroCore.shared,
 			hostedMoneroAPIClient: HostedMoneroAPIClient.shared,
 			payment_id: payment_id,
 			success_fn:

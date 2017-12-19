@@ -87,7 +87,6 @@ extension HostedMoneroAPIClient
 		wallet__public_address: MoneroAddress,
 		wallet__private_keys: MoneroKeyDuo,
 		wallet__public_keys: MoneroKeyDuo,
-		mymoneroCore: MyMoneroCore,
 		hostedMoneroAPIClient: HostedMoneroAPIClient,
 		payment_id: MoneroPaymentID?,
 //		preSuccess_obtainedSubmitTransactionRequestHandle: @escaping (
@@ -140,7 +139,7 @@ extension HostedMoneroAPIClient
 		}
 		var final__payment_id = payment_id == "" ? nil : payment_id
 		var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
-		mymoneroCore.DecodeAddress(target_address)
+		MyMoneroCore.shared.DecodeAddress(target_address)
 		{ (err_str, decodedAddressComponents) in
 			if let _ = err_str {
 				__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
@@ -295,29 +294,16 @@ extension HostedMoneroAPIClient
 						amount: changeAmount
 					)
 				)
-				___proceed()
-				//
-				return
-			}
-			if usingOutsAmount == totalAmountWithoutFee {
+			} else if usingOutsAmount == totalAmountWithoutFee {
 				// because isRingCT=true, create random destination to keep 2 outputs always in case of 0 change
 				// TODO: would be nice to avoid this asynchrony so ___proceed() can be dispensed with
-				mymoneroCore.New_FakeAddressForRCTTx({ (err_str, fakeAddress) in
-					DDLog.Info("HostedMonero", "Sending 0 XMR to a fake address to keep tx uniform (no change exists): \(fakeAddress.debugDescription)")
-					if let err_str = err_str {
-						__trampolineFor_err_withStr(err_str: err_str)
-						return
-					}
-					fundTransferDescriptions.append(
-						SendFundsTargetDescription(
-							address: fakeAddress!,
-							amount: 0
-						)
+				let fakeAddress = MyMoneroCore.shared.New_FakeAddressForRCTTx
+				fundTransferDescriptions.append(
+					SendFundsTargetDescription(
+						address: fakeAddress,
+						amount: 0
 					)
-					___proceed()
-				})
-				//
-				return
+				)
 			}
 			___proceed()
 		}
@@ -372,7 +358,7 @@ extension HostedMoneroAPIClient
 				)
 			}
 			if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
-				mymoneroCore.DecodeAddress(target_address)
+				MyMoneroCore.shared.DecodeAddress(target_address)
 				{ (err_str, decodedAddressComponents) in
 					if let _ = err_str {
 						__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
@@ -403,7 +389,7 @@ extension HostedMoneroAPIClient
 				final__pid_encrypt == false
 				|| (realDestViewKey != nil && MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
 			)
-			mymoneroCore.CreateTransaction(
+			MyMoneroCore_JS.shared.CreateTransaction(
 				wallet__public_keys: wallet__public_keys,
 				wallet__private_keys: wallet__private_keys,
 				splitDestinations: fundTransferDescriptions, // in RingCT=true, splitDestinations can equal fundTransferDescriptions
@@ -435,7 +421,7 @@ extension HostedMoneroAPIClient
 			signedTx: MoneroSignedTransaction
 		)
 		{
-			mymoneroCore.SerializeTransaction(signedTx: signedTx)
+			MyMoneroCore_JS.shared.SerializeTransaction(signedTx: signedTx)
 			{ (err_str, serialized_signedTx, tx_hash) in
 				if let err_str = err_str {
 					__trampolineFor_err_withStr(err_str: err_str)

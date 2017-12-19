@@ -1,5 +1,5 @@
 //
-//  MyMoneroJSCore.swift
+//  MyMoneroCore_JS.swift
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/5/17.
@@ -40,18 +40,25 @@ import WebKit
 enum MyMoneroCoreJS_ModuleName: String
 {
 	case core = "monero_utils"
-	case wallet = "monero_wallet_utils"
-	case paymentID = "monero_paymentID_utils"
 	case responseParser = "api_response_parser_utils"
 }
 //
 // Principal type
-class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
+class MyMoneroCore_JS : NSObject, WKScriptMessageHandler
 {
+	// Interface - Singleton
+	static let shared = MyMoneroCore_JS()
+	//
+	// Internal - Properties
 	let window: UIWindow!
 	var webView: WKWebView!
 	var hasBooted = false
 	//
+	// Lifecycle - Init
+	private convenience override init()
+	{
+		self.init(window: UIApplication.shared.delegate!.window!!)
+	}
 	init(window: UIWindow)
 	{
 		self.window = window
@@ -106,190 +113,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		}
 	}
 	//
-	//
-	// Interface - Accessors
-	//
-	func NewlyCreatedWallet(_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void)
-	{
-		let wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
-		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
-		{ [unowned self] (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			let dict = any as! [String: AnyObject]
-			let description = self._new_moneroWalletDescription_byParsing_dict(dict, nil)
-			fn(nil, description)
-		}
-	}
-	func MnemonicStringFromSeed(
-		_ account_seed: String,
-		_ wordsetName: MoneroMnemonicWordsetName,
-		_ fn: @escaping (_ err_str: String?, MoneroSeedAsMnemonic?) -> Void
-	)
-	{
-		self._callSync(.wallet, "MnemonicStringFromSeed", [ "\"\(account_seed)\"", "\"\(wordsetName.rawValue)\"" ])
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			let mnemonicString = any as! MoneroSeedAsMnemonic
-			fn(nil, mnemonicString)
-		}
-	}
-	func WalletDescriptionFromMnemonicSeed(
-		_ mnemonicString: MoneroSeedAsMnemonic,
-		_ wordsetName: MoneroMnemonicWordsetName,
-		_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void
-	)
-	{
-		self._callSync(.wallet, "SeedAndKeysFromMnemonic_sync", [ "\"\(mnemonicString)\"", "\"\(wordsetName.rawValue)\"" ])
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			guard let dict = any as? [String: AnyObject] else {
-				// return err?
-				DDLog.Error("MyMoneroCore", "Couldn't cast return value as [String: AnyObject]")
-				return
-			}
-			if let dict_err_str = dict["err_str"] {
-				guard let _ = dict_err_str as? NSNull else {
-					fn(dict_err_str as? String, nil)
-					return
-				}
-			}
-			let description = self._new_moneroWalletDescription_byParsing_dict(dict, mnemonicString)
-			assert(description.seed != "")
-			fn(nil, description)
-		}
-	}
-	func DecodeAddress(
-		_ address: String,
-		_ fn: @escaping (_ err_str: String?, _ decodedAddressComponents: MoneroDecodedAddressComponents?) -> Void
-	)
-	{
-		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			let dict = any as! [String: AnyObject]
-			let view = dict["view"] as! MoneroKey
-			let spend = dict["spend"] as! MoneroKey
-			var intPaymentId = dict["intPaymentId"] as? MoneroPaymentID
-			if intPaymentId == "" { // normalize
-				intPaymentId = nil
-			}
-			let keypair = MoneroKeyDuo(view: view, spend: spend)
-			let components = MoneroDecodedAddressComponents(
-				publicKeys: keypair,
-				intPaymentId: intPaymentId
-			)
-			fn(nil, components)
-		}
-	}
-	func New_VerifiedComponentsForLogIn(
-		_ address: MoneroAddress,
-		_ view_key: MoneroKey,
-		spend_key_orNilForViewOnly: MoneroKey?,
-		seed_orNil: MoneroSeed?,
-		wasAGeneratedWallet: Bool,
-		_ fn: @escaping (_ err_str: String?, MoneroVerifiedComponentsForLogIn?) -> Void
-	)
-	{
-		let args =
-		[
-			"\"\(address)\"",
-			"\"\(view_key)\"",
-			"\(spend_key_orNilForViewOnly != nil ? "\"\(spend_key_orNilForViewOnly!)\"" : "undefined")",
-			"\(seed_orNil != nil ? "\"\(seed_orNil!)\"" : "undefined")",
-			"\(wasAGeneratedWallet)"
-		]
-		self._callSync(.wallet, "VerifiedComponentsForLogIn_sync", args)
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			let dict = any as! [String: AnyObject]
-			if let dict_err_str = dict["err_str"] {
-				guard let _ = dict_err_str as? NSNull else {
-					fn(dict_err_str as? String, nil)
-					return
-				}
-			}
-			let seed = dict["account_seed"] as! MoneroSeed
-			let publicAddress = dict["address"] as! MoneroAddress
-			let public_keys = dict["public_keys"] as! [String: AnyObject]
-			let private_keys = dict["private_keys"] as! [String: AnyObject]
-			let publicKeys = MoneroKeyDuo(
-				view: public_keys["view"] as! MoneroKey,
-				spend: public_keys["spend"] as! MoneroKey
-			)
-			let privateKeys = MoneroKeyDuo(
-				view: private_keys["view"] as! MoneroKey,
-				spend: private_keys["spend"] as! MoneroKey
-			)
-			let isInViewOnlyMode = dict["isInViewOnlyMode"] as! Bool
-			let components = MoneroVerifiedComponentsForLogIn(
-				seed: seed,
-				publicAddress: publicAddress,
-				publicKeys: publicKeys,
-				privateKeys: privateKeys,
-				isInViewOnlyMode: isInViewOnlyMode
-			)
-			fn(nil, components)
-		}
-	}
-	func New_PaymentID(_ fn: @escaping (_ err_str: String?, _ paymentId: MoneroPaymentID?) -> Void)
-	{
-		self._callSync(.paymentID, "New_Short_TransactionID", nil)
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			let paymentID = any as! MoneroPaymentID
-			fn(nil, paymentID)
-		}
-	}
-	func New_FakeAddressForRCTTx(
-		_ fn: @escaping (_ err_str: String?, _ address: MoneroAddress?) -> Void
-	)
-	{
-		self._callSync(.core, "random_scalar", [])
-		{ [unowned self] (err_str, any) in
-			if let err_str = err_str {
-				fn("Error generating random scalar: \(err_str)", nil)
-				return
-			}
-			guard let scalar = any as? String else {
-				fn("No result of public_addr found on result of random_scalar.", nil)
-				return
-			}
-			self._callSync(.core, "create_address", [ scalar ])
-			{ (err_str, any) in
-				if let err_str = err_str {
-					fn("Error creating address with random scalar: \(err_str)", nil)
-					return
-				}
-				guard let dict = any as? [String: AnyObject] else {
-					fn("No result of create_address found", nil)
-					return
-				}
-				guard let address = dict["public_addr"] as? MoneroAddress else {
-					fn("No result of public_addr found on result of create_address.", nil)
-					return
-				}
-				fn(nil, address)
-			}
-		}
-	}
+	// Interface
 	func CreateTransaction(
 		wallet__public_keys: MoneroKeyDuo,
 		wallet__private_keys: MoneroKeyDuo,
@@ -367,65 +191,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 			fn(nil, serialized_signedTx, tx_hash)
 		}
-	}
-	func New_IntegratedAddress(
-		fromStandardAddress standardAddress: MoneroStandardAddress,
-		shortPaymentID: MoneroShortPaymentID,
-		_ fn: @escaping (
-			_ err_str: String?,
-			_ fabricated_integratedAddress: MoneroIntegratedAddress?
-		) -> Void
-	) -> Void
-	{
-		// Serialize all arguments into good inputs to .core.create_transaction
-		let args: [String] =
-		[
-			standardAddress.jsRepresentationString,
-			shortPaymentID.jsRepresentationString
-		]
-		// might be nice to assert arg length here or centrally via some fn name -> length map
-		self._callSync(.core, "new__int_addr_from_addr_and_short_pid", args)
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn("Error creating integrated address: \(err_str)", nil)
-				return
-			}
-			guard let fabricated_integratedAddress = any as? MoneroIntegratedAddress else {
-				fn("Couldn't create integrated address from standard address and short payment ID", nil)
-				return
-			}
-			fn(nil, fabricated_integratedAddress)
-		}
-	}
-	//
-	//
-	// Internal - Accessors - Parsing/Factories
-	//
-	func _new_moneroWalletDescription_byParsing_dict(_ dict: [String: AnyObject], _ optl_passThrough_mnemonicString: MoneroSeedAsMnemonic?) -> MoneroWalletDescription
-	{
-		let mnemonicString = optl_passThrough_mnemonicString ?? dict["mnemonicString"] as! MoneroSeedAsMnemonic
-		let seed = dict["seed"] as! MoneroSeed
-		assert(seed != "")
-		let keys = dict["keys"] as! [String: AnyObject]
-		let spendKeys = keys["spend"] as! [String: AnyObject]
-		let viewKeys = keys["view"] as! [String: AnyObject]
-		let publicAddress = keys["public_addr"] as! MoneroAddress
-		let publicKeys = MoneroKeyDuo(
-			view: viewKeys["pub"] as! MoneroKey,
-			spend: spendKeys["pub"] as! MoneroKey
-		)
-		let privateKeys = MoneroKeyDuo(
-			view: viewKeys["sec"] as! MoneroKey,
-			spend: spendKeys["sec"] as! MoneroKey
-		)
-		let description = MoneroWalletDescription(
-			mnemonic: mnemonicString,
-			seed: seed,
-			publicAddress: publicAddress,
-			publicKeys: publicKeys,
-			privateKeys: privateKeys
-		)
-		return description
 	}
 	//
 	//

@@ -287,7 +287,7 @@ final class HostedMoneroAPIClient
 				return
 			}
 			let response_jsonDict = response_jsonDict!
-			MyMoneroCore.shared.Parsed_AddressInfo(
+			MyMoneroCore_JS.shared.Parsed_AddressInfo(
 				response_jsonDict: response_jsonDict,
 				address: address,
 				view_key__private: view_key__private,
@@ -326,7 +326,7 @@ final class HostedMoneroAPIClient
 				return
 			}
 			let response_jsonDict = response_jsonDict!
-			MyMoneroCore.shared.Parsed_AddressTransactions(
+			MyMoneroCore_JS.shared.Parsed_AddressTransactions(
 				response_jsonDict: response_jsonDict,
 				address: address,
 				view_key__private: view_key__private,
@@ -403,7 +403,7 @@ final class HostedMoneroAPIClient
 				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 				return
 			}
-			MyMoneroCore.shared.Parsed_UnspentOuts(
+			MyMoneroCore_JS.shared.Parsed_UnspentOuts(
 				response_jsonDict: response_jsonDict!,
 				address: address,
 				view_key__private: view_key__private,
@@ -576,7 +576,7 @@ final class HostedMoneroAPIClient
 	}
 }
 //
-extension MyMoneroCoreJS // for Parsing
+extension MyMoneroCore_JS // for Parsing
 {
 	func Parsed_AddressInfo(
 		response_jsonDict: [String: Any],

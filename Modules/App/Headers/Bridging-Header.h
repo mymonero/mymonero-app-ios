@@ -32,4 +32,12 @@
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //
+
+#ifndef MyMonero_BridgingHeader_h
+#define MyMonero_BridgingHeader_h
+
 #import "DNSLookup.h"
+#import "MyMoneroCore_ObjCpp.h"
+
+#endif /* MyMonero_BridgingHeader_h */
+

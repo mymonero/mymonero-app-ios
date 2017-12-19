@@ -1,3 +1,6 @@
 [submodule "Modules/MyMoneroCore/sub_modules/mymonero_core_js"]
 	path = Modules/MyMoneroCore/sub_modules/mymonero_core_js
 	url = https://github.com/mymonero/mymonero-core-js
+[submodule "Modules/mymonero-core-swift"]
+	path = Modules/mymonero-core-swift
+	url = git@github.com:mymonero/mymonero-core-swift.git
