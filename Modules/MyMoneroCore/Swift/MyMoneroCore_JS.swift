@@ -128,8 +128,7 @@ class MyMoneroCore_JS : NSObject, WKScriptMessageHandler
 		unlock_time: Int,
 		isRingCT: Bool? = true,
 		_ fn: @escaping (_ err_str: String?, _ signedTxDescription_dict: MoneroSignedTransaction?) -> Void
-	) -> Void
-	{
+	) -> Void {
 		// Serialize all arguments into good inputs to .core.create_transaction
 		let args: [String] =
 		[
@@ -167,8 +166,7 @@ class MyMoneroCore_JS : NSObject, WKScriptMessageHandler
 			_ serialized_signedTx: MoneroSerializedSignedTransaction?,
 			_ tx_hash: String?
 		) -> Void
-	) -> Void
-	{
+	) -> Void {
 		let json_String = __jsonStringForArg(fromJSONDict: signedTx)
 		self._callSync(.core, "serialize_rct_tx_with_hash", [ json_String ])
 		{ (err_str, any) in
@@ -203,10 +201,8 @@ class MyMoneroCore_JS : NSObject, WKScriptMessageHandler
 		_ completionHandler: ((
 			_ err_str: String?,
 			_ returnedValue: Any?
-		
 		) -> Void)?
-	)
-	{
+	) {
 		let args = argsAsJSFormattedStrings ?? []
 		let joined_args = args.joined(separator: ",")
 		let argsAreaString = joined_args
