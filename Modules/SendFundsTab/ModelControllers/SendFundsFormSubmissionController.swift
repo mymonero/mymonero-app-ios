@@ -170,68 +170,65 @@ extension SendFundsForm
 			}
 			assert(xmrAddress_toDecode != nil)
 			//
-			MyMoneroCore.shared.DecodeAddress(
-				xmrAddress_toDecode,
-				{ [unowned self] (err_str, decodedAddressComponents) in
-					if err_str != nil {
-						self.parameters.preSuccess_terminal_validationMessage_fn(
-							NSLocalizedString(
-								String(format: "Couldn't validate destination Monero address of %@.", xmrAddress_toDecode),
-								comment: ""
-							)
-						)
-						return
-					}
-					if decodedAddressComponents!.intPaymentId != nil { // is integrated address!
-						self._proceedTo_generateSendTransaction(
-							withTargetAddress: xmrAddress_toDecode, // for integrated addrs, we don't want to extract the payment id and then use the integrated addr as well (TODO: unless we use fluffy's patch?)
-							payment_id: nil,
-							isXMRAddressIntegrated: true,
-							integratedAddressPIDForDisplay_orNil: decodedAddressComponents!.intPaymentId
-						)
-						return
-					}
-					let paymentID_orNil = paymentID_toUseOrToNilIfIntegrated
-					// since we may have a payment ID here (which may also have been entered manually), validate
-					if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: paymentID_orNil) == false { // convenience function - will be true if nil pid
-						self.parameters.preSuccess_terminal_validationMessage_fn(
-							NSLocalizedString("Please enter a valid payment ID.", comment: "")
-						)
-						return
-					}
-					do { // short pid / integrated address coersion
-						if paymentID_orNil != nil {
-							if paymentID_orNil!.count == MoneroUtils.PaymentIDs.Variant.short.charLength { // a short one
-								// construct integrated address
-								guard let fabricated_integratedAddress = MyMoneroCore.shared.New_IntegratedAddress(
-									fromStandardAddress: xmrAddress_toDecode as MoneroStandardAddress, // the monero one
-									short_paymentID: paymentID_orNil! as MoneroShortPaymentID // short pid
-								) else {
-									self.parameters.preSuccess_terminal_validationMessage_fn(
-										NSLocalizedString(
-											String(format: "Couldn't construct integrated address with short payment ID."),
-											comment: ""
-										)
-									)
-									return
-								}
-								self._proceedTo_generateSendTransaction(
-									withTargetAddress: fabricated_integratedAddress,
-									payment_id: nil, // must now zero this or Send will throw a "pid must be blank with integrated addr"
-									isXMRAddressIntegrated: true,
-									integratedAddressPIDForDisplay_orNil: paymentID_orNil! // a short pid
-								)
-								return // return early to prevent fall-through to non-short or zero pid case
-							}
-						}
-					}
-					self._proceedTo_generateSendTransaction(
-						withTargetAddress: xmrAddress_toDecode, // therefore, non-integrated normal XMR address
-						payment_id: paymentID_toUseOrToNilIfIntegrated, // may still be nil
-						isXMRAddressIntegrated: false,
-						integratedAddressPIDForDisplay_orNil: nil
+			let (err_str, decodedAddressComponents_orNil) = MyMoneroCore.shared.decoded(address: xmrAddress_toDecode)
+			if err_str != nil {
+				self.parameters.preSuccess_terminal_validationMessage_fn(
+					NSLocalizedString(
+						String(format: "Couldn't validate destination Monero address of %@.", xmrAddress_toDecode),
+						comment: ""
 					)
+				)
+				return
+			}
+			let decodedAddressComponents = decodedAddressComponents_orNil!
+			if decodedAddressComponents.intPaymentId != nil { // is integrated address!
+				self._proceedTo_generateSendTransaction(
+					withTargetAddress: xmrAddress_toDecode, // for integrated addrs, we don't want to extract the payment id and then use the integrated addr as well (TODO: unless we use fluffy's patch?)
+					payment_id: nil,
+					isXMRAddressIntegrated: true,
+					integratedAddressPIDForDisplay_orNil: decodedAddressComponents.intPaymentId
+				)
+				return
+			}
+			let paymentID_orNil = paymentID_toUseOrToNilIfIntegrated
+			// since we may have a payment ID here (which may also have been entered manually), validate
+			if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: paymentID_orNil) == false { // convenience function - will be true if nil pid
+				self.parameters.preSuccess_terminal_validationMessage_fn(
+					NSLocalizedString("Please enter a valid payment ID.", comment: "")
+				)
+				return
+			}
+			do { // short pid / integrated address coersion
+				if paymentID_orNil != nil {
+					if paymentID_orNil!.count == MoneroUtils.PaymentIDs.Variant.short.charLength { // a short one
+						// construct integrated address
+						guard let fabricated_integratedAddress = MyMoneroCore.shared.New_IntegratedAddress(
+							fromStandardAddress: xmrAddress_toDecode as MoneroStandardAddress, // the monero one
+							short_paymentID: paymentID_orNil! as MoneroShortPaymentID // short pid
+							) else {
+								self.parameters.preSuccess_terminal_validationMessage_fn(
+									NSLocalizedString(
+										String(format: "Couldn't construct integrated address with short payment ID."),
+										comment: ""
+									)
+								)
+								return
+						}
+						self._proceedTo_generateSendTransaction(
+							withTargetAddress: fabricated_integratedAddress,
+							payment_id: nil, // must now zero this or Send will throw a "pid must be blank with integrated addr"
+							isXMRAddressIntegrated: true,
+							integratedAddressPIDForDisplay_orNil: paymentID_orNil! // a short pid
+						)
+						return // return early to prevent fall-through to non-short or zero pid case
+					}
 				}
+			}
+			self._proceedTo_generateSendTransaction(
+				withTargetAddress: xmrAddress_toDecode, // therefore, non-integrated normal XMR address
+				payment_id: paymentID_toUseOrToNilIfIntegrated, // may still be nil
+				isXMRAddressIntegrated: false,
+				integratedAddressPIDForDisplay_orNil: nil
 			)
 		}
 		func _proceedTo_generateSendTransaction(

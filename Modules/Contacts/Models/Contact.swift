@@ -59,6 +59,34 @@ class Contact: PersistableObject
 	var payment_id: MoneroPaymentID?
 	var emoji: Emoji.EmojiCharacter!
 	var cached_OAResolved_XMR_address: MoneroAddress?
+	var cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid: MoneroIntegratedAddress?
+	var new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid: MoneroIntegratedAddress? {
+		let payment_id: MoneroPaymentID? = self.payment_id
+		if payment_id == nil || payment_id == "" {
+			return nil // no possible derived int address
+		}
+		if MoneroUtils.PaymentIDs.isAValid(paymentId: payment_id!, ofVariant: .short) == false {
+			return nil // must be a long payment ID
+		}
+		if self.hasIntegratedAddress {
+			return nil // b/c we don't want to show a derived int addr if we already have it!
+		}
+		var address: MoneroIntegratedAddress?
+		if self.hasOpenAliasAddress {
+			address = self.cached_OAResolved_XMR_address!
+		} else {
+			address = self.address
+		}
+		if address == nil || address == "" {
+			return nil // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
+		}
+		// now we know we have a std xmr addr and a short pid
+		let int_addr = MyMoneroCore.shared.New_IntegratedAddress(
+			fromStandardAddress: address!,
+			short_paymentID: payment_id!
+		)
+		return int_addr
+	}
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -96,6 +124,8 @@ class Contact: PersistableObject
 		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
 		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! Emoji.EmojiCharacter
 		self.cached_OAResolved_XMR_address = dictRepresentation[DictKey.cached_OAResolved_XMR_address.rawValue] as? String
+		//
+		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid
 	}
 	//
 	// Lifecycle - Init - For adding new
@@ -117,11 +147,23 @@ class Contact: PersistableObject
 		self.payment_id = payment_id
 		self.emoji = emoji
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
+		//
+		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid
 	}
 	//
 	// Interface - Runtime - Accessors/Properties - Convenience
 	var hasOpenAliasAddress: Bool {
 		return OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.address)
+	}
+	var hasIntegratedAddress: Bool {
+		let (err_str, decodedAddress) = MyMoneroCore.shared.decoded(address: self.address)
+		if err_str != nil {
+			return false
+		}
+		guard let paymentId = decodedAddress!.intPaymentId, paymentId != "" else {
+			return false
+		}
+		return true
 	}
 
 	//
@@ -143,6 +185,10 @@ class Contact: PersistableObject
 			self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
 		}
 		self.payment_id = payment_id
+		//
+		// v---- This is not persisted, but this is a good time to generate it
+		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid
+		//
 		let err_str = self.saveToDisk()
 		if err_str != nil {
 			return err_str
@@ -160,6 +206,10 @@ class Contact: PersistableObject
 	{
 		self.payment_id = payment_id
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
+		//
+		// v---- This is not persisted, but this is a good time to generate it
+		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid
+		//
 		let err_str = self.saveToDisk()
 		if err_str != nil {
 			return err_str

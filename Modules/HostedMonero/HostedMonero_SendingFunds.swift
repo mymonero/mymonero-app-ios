@@ -139,62 +139,57 @@ extension HostedMoneroAPIClient
 		}
 		var final__payment_id = payment_id == "" ? nil : payment_id
 		var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
-		MyMoneroCore.shared.DecodeAddress(target_address)
-		{ (err_str, decodedAddressComponents) in
-			if let _ = err_str {
-				__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
-				return
-			}
-			guard let decodedAddressComponents = decodedAddressComponents else {
-				__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components.")
-				return
-			}
-			if decodedAddressComponents.intPaymentId != nil && payment_id != nil {
-				__trampolineFor_err_withStr(err_str: "Payment ID field must be blank when using an Integrated Address")
-				return
-			}
-			if decodedAddressComponents.intPaymentId != nil {
-				final__payment_id = decodedAddressComponents.intPaymentId
-				final__pid_encrypt = true // we do want to encrypt if using an integrated address
-				assert(
-					MoneroUtils.PaymentIDs.isAValid(
-						paymentId: final__payment_id!,
-						ofVariant: .short
-					)
+		let (err_str, decodedAddressComponents_orNil) = MyMoneroCore.shared.decoded(address: target_address)
+		if err_str != nil {
+			__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
+			return
+		}
+		guard let decodedAddressComponents = decodedAddressComponents_orNil else {
+			__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components.")
+			return
+		}
+		if decodedAddressComponents.intPaymentId != nil && payment_id != nil {
+			__trampolineFor_err_withStr(err_str: "Payment ID field must be blank when using an Integrated Address")
+			return
+		}
+		if decodedAddressComponents.intPaymentId != nil {
+			final__payment_id = decodedAddressComponents.intPaymentId
+			final__pid_encrypt = true // we do want to encrypt if using an integrated address
+			assert(
+				MoneroUtils.PaymentIDs.isAValid(
+					paymentId: final__payment_id!,
+					ofVariant: .short
 				)
-			} else {
-				if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
-					__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
+			)
+		} else {
+			if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
+				__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
+				return
+			}
+			if final__payment_id != nil {
+				final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(
+					paymentId: final__payment_id!,
+					ofVariant: .short // if it's a short pid, encrypt
+				)
+			}
+		}
+		let _ = hostedMoneroAPIClient.UnspentOuts(
+			address: wallet__public_address,
+			view_key__private: wallet__private_keys.view,
+			spend_key__public: wallet__public_keys.spend,
+			spend_key__private: wallet__private_keys.spend,
+			mixinNumber: final__mixin,
+			{ (err_str, result) in
+				if let err_str = err_str {
+					__trampolineFor_err_withStr(err_str: err_str)
 					return
 				}
-				if final__payment_id != nil {
-					final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(
-						paymentId: final__payment_id!,
-						ofVariant: .short // if it's a short pid, encrypt
-					)
-				}
+				_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
+					original_unusedOuts: result!.unusedOutputs
+				)
 			}
-			_proceedTo_getUnspentOutsUsableForMixin()
-		}
-		func _proceedTo_getUnspentOutsUsableForMixin()
-		{
-			let _ = hostedMoneroAPIClient.UnspentOuts(
-				address: wallet__public_address,
-				view_key__private: wallet__private_keys.view,
-				spend_key__public: wallet__public_keys.spend,
-				spend_key__private: wallet__private_keys.spend,
-				mixinNumber: final__mixin,
-				{ (err_str, result) in
-					if let err_str = err_str {
-						__trampolineFor_err_withStr(err_str: err_str)
-						return
-					}
-					_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-						original_unusedOuts: result!.unusedOutputs
-					)
-				}
-			)
-		}
+		)
+		//
 		func _proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
 			original_unusedOuts: [MoneroOutputDescription]
 		)
@@ -274,15 +269,6 @@ extension HostedMoneroAPIClient
 			//             amount: hostingService_chargeAmount
 			// })
 			// III. some amount of the total outputs will likely need to be returned to the user as "change":
-			func ___proceed()
-			{
-				__proceedTo__getRandomOutsAndCreateTx(
-					original_unusedOuts: original_unusedOuts,
-					fundTransferDescriptions: fundTransferDescriptions,
-					passedIn_attemptAt_network_minimumFee: attemptAt_network_minimumFee, // note: using actual local attemptAt_network_minimumFee
-					usingOuts: usingOuts
-				)
-			}
 			if usingOutsAmount > totalAmountIncludingFees {
 				let changeAmount = usingOutsAmount - totalAmountIncludingFees
 				DDLog.Info("HostedMonero", "changeAmount \(changeAmount)")
@@ -305,7 +291,12 @@ extension HostedMoneroAPIClient
 					)
 				)
 			}
-			___proceed()
+			__proceedTo__getRandomOutsAndCreateTx(
+				original_unusedOuts: original_unusedOuts,
+				fundTransferDescriptions: fundTransferDescriptions,
+				passedIn_attemptAt_network_minimumFee: attemptAt_network_minimumFee, // note: using actual local attemptAt_network_minimumFee
+				usingOuts: usingOuts
+			)
 		}
 		func __proceedTo__getRandomOutsAndCreateTx(
 			original_unusedOuts: [MoneroOutputDescription],
@@ -344,37 +335,31 @@ extension HostedMoneroAPIClient
 		{
 			// Implementation note: per advice, in RingCT txs, decompose_tx_destinations should no longer necessary
 			//
-			func ___proceed(
-				realDestViewKey: MoneroKey?
-			)
-			{
-				__proceedTo_createTxAndAttemptToSend(
-					original_unusedOuts: original_unusedOuts,
-					fundTransferDescriptions: fundTransferDescriptions,
-					passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
-					usingOuts: usingOuts,
-					mix_outs: mix_outs,
-					realDestViewKey: realDestViewKey
-				)
-			}
-			if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
-				MyMoneroCore.shared.DecodeAddress(target_address)
-				{ (err_str, decodedAddressComponents) in
-					if let _ = err_str {
+			var realDestViewKey: MoneroKey? = nil
+			do {
+				if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
+					let (err_str, decodedAddressComponents_orNil) = MyMoneroCore.shared.decoded(address: target_address)
+					if err_str != nil {
 						__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
 						return
 					}
-					guard let decodedAddressComponents = decodedAddressComponents else {
+					guard let decodedAddressComponents = decodedAddressComponents_orNil else {
 						__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components while creating transaction.")
 						return
 					}
-					let realDestViewKey = decodedAddressComponents.publicKeys.view
+					realDestViewKey = decodedAddressComponents.publicKeys.view
 					DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
-					___proceed(realDestViewKey: realDestViewKey)
 				}
-				return
 			}
-			___proceed(realDestViewKey: nil)
+			__proceedTo_createTxAndAttemptToSend(
+				original_unusedOuts: original_unusedOuts,
+				fundTransferDescriptions: fundTransferDescriptions,
+				passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
+				usingOuts: usingOuts,
+				mix_outs: mix_outs,
+				realDestViewKey: realDestViewKey
+			)
+
 		}
 		func __proceedTo_createTxAndAttemptToSend(
 			original_unusedOuts: [MoneroOutputDescription],

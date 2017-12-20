@@ -47,6 +47,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	//
 	var address__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	var cached_OAResolved_XMR_address__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
+	var derived__integratedXMRAddress__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	var paymentID__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	//
 	var send_actionButtonView: UICommonComponents.ActionButton!
@@ -80,10 +81,19 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 			do {
 				let view = UICommonComponents.Details.CopyableLongStringFieldView(
 					labelVariant: self.fieldLabels_variant,
-					title: NSLocalizedString("Resolved Address (XMR)", comment: ""),
+					title: NSLocalizedString("XMR Address (cached)", comment: ""),
 					valueToDisplayIfZero: NSLocalizedString("N/A", comment: "")
 				)
 				self.cached_OAResolved_XMR_address__fieldView = view
+				sectionView.add(fieldView: view)
+			}
+			do {
+				let view = UICommonComponents.Details.CopyableLongStringFieldView(
+					labelVariant: self.fieldLabels_variant,
+					title: NSLocalizedString("Integrated Address (derived)", comment: ""),
+					valueToDisplayIfZero: NSLocalizedString("N/A", comment: "")
+				)
+				self.derived__integratedXMRAddress__fieldView = view
 				sectionView.add(fieldView: view)
 			}
 			do {
@@ -162,12 +172,21 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	func configureSectionsWithObject()
 	{
 		self.address__fieldView.set(text: self.contact.address)
+		//
 		if let value = self.contact.cached_OAResolved_XMR_address {
 			self.cached_OAResolved_XMR_address__fieldView.set(text: value)
 			self.cached_OAResolved_XMR_address__fieldView.isHidden = false
 		} else {
 			self.cached_OAResolved_XMR_address__fieldView.isHidden = true
 		}
+		//
+		if let value = self.contact.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid {
+			self.derived__integratedXMRAddress__fieldView.set(text: value)
+			self.derived__integratedXMRAddress__fieldView.isHidden = false
+		} else {
+			self.derived__integratedXMRAddress__fieldView.isHidden = true
+		}
+		//
 		self.paymentID__fieldView.set(text: self.contact.payment_id)
 		//
 		self.view.setNeedsLayout()

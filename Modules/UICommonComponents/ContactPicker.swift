@@ -420,22 +420,25 @@ extension UICommonComponents.Form
 							// TODO: check if this is an integrated address. if it is, decode it, and display resolved
 							self._hide_resolved_paymentID() // just in case - and so we don't have to make sure to hide it later
 							// TODO: assert we think this is a monero addr first?
-							MyMoneroCore.shared.DecodeAddress(contact.address)
-							{ [unowned self] (err_str, decodedAddressComponents) in
-								if let _ = err_str {
-									DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode CONTACT's non-OA address as a Monero address!")
-									assert(false) // We're never expecting this here
-									// TODO: implement something like this: (but named discretely obvs)
-//									if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
-//										fn()
-//									}
-									return // just return silently
-								}
-								let integratedAddress_paymentId = decodedAddressComponents!.intPaymentId
-								let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
-								if isIntegratedAddress {
-									self._display(resolved_paymentID: integratedAddress_paymentId!) // just for display - Send is smart enough to ignore/nil
-								}
+							//
+							let (err_str, decodedAddressComponents_orNil) = MyMoneroCore.shared.decoded(address: contact.address)
+							if err_str != nil {
+								DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode CONTACT's non-OA address as a Monero address!")
+								assert(false) // We're never expecting this here
+								// TODO: implement something like this: (but named discretely obvs)
+								//									if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+								//										fn()
+								//									}
+								return // just return silently
+							}
+							guard let decodedAddressComponents = decodedAddressComponents_orNil else {
+								assert(false) // never expecting this
+								return
+							}
+							let integratedAddress_paymentId = decodedAddressComponents.intPaymentId
+							let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
+							if isIntegratedAddress {
+								self._display(resolved_paymentID: integratedAddress_paymentId!) // just for display - Send is smart enough to ignore/nil
 							}
 						}
 					} else {
@@ -712,30 +715,29 @@ extension UICommonComponents.Form
 			//
 			let couldBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
 			if couldBeOAAddress == false {
-				MyMoneroCore.shared.DecodeAddress(possibleAddress)
-				{ [unowned self] (err_str, decodedAddressComponents) in
-					if let _ = err_str {
-						DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode as a Monero address.")
-						self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
-						if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
-							fn()
-						}
-						return // just return silently
-					}
-					let integratedAddress_paymentId = decodedAddressComponents!.intPaymentId
-					let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
-					var returning_paymentID: MoneroPaymentID?
-					if isIntegratedAddress {
-						returning_paymentID = integratedAddress_paymentId // use this one instead
-//						self._display(resolved_XMRAddress: decodedAddressComponents!.decodedAddress) // would be super cool to do this here
-						self._display(resolved_paymentID: returning_paymentID!)
-					}
+				let (err_str, decodedAddressComponents_orNil) = MyMoneroCore.shared.decoded(address: possibleAddress)
+				if err_str != nil {
+					DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode as a Monero address.")
 					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
-					self.hasValidTextInput_moneroAddress = true // IS valid; isValidOA is already false
-					if let fn = self.finishedValidatingTextInput_foundValidMoneroAddress_fn {
-						// consumer can display yielded payment id
-						fn(returning_paymentID)
+					if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+						fn()
 					}
+					return // just return silently
+				}
+				let decodedAddressComponents = decodedAddressComponents_orNil!
+				let integratedAddress_paymentId = decodedAddressComponents.intPaymentId
+				let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
+				var returning_paymentID: MoneroPaymentID?
+				if isIntegratedAddress {
+					returning_paymentID = integratedAddress_paymentId // use this one instead
+					//						self._display(resolved_XMRAddress: decodedAddressComponents!.decodedAddress) // would be super cool to do this here
+					self._display(resolved_paymentID: returning_paymentID!)
+				}
+				self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
+				self.hasValidTextInput_moneroAddress = true // IS valid; isValidOA is already false
+				if let fn = self.finishedValidatingTextInput_foundValidMoneroAddress_fn {
+					// consumer can display yielded payment id
+					fn(returning_paymentID)
 				}
 				return
 			}
