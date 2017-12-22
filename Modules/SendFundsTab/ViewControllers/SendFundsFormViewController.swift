@@ -125,7 +125,7 @@ extension SendFundsForm
 							"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.\n\nMonero ringsize value set\nto %d.",
 							comment: ""
 						),
-						MyMoneroCore.fixedMixin+1
+						MyMoneroCore.shared.fixedRingsize
 					)
 				)
 				view.willPresentTipView_fn =

@@ -380,20 +380,20 @@ final class HostedMoneroAPIClient
 		view_key__private: MoneroKey,
 		spend_key__public: MoneroKey,
 		spend_key__private: MoneroKey,
-		mixinNumber: Int,
 		_ fn: @escaping (
 			_ err_str: String?,
 			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_UnspentOuts?
 		) -> Void
 	) -> RequestHandle?
 	{
+		let mixinSize = MyMoneroCore.shared.fixedMixinsize
 		let parameters: [String: Any] =
 		[
 			"address": address,
 			"view_key": view_key__private,
 			"amount": "0",
-			"mixin": mixinNumber,
-			"use_dust": mixinNumber == 0, // Use dust outputs only when we are using no mixins
+			"mixin": mixinSize,
+			"use_dust": mixinSize == 0, // Use dust outputs only when we are using no mixins
 			"dust_threshold": String(MoneroConstants.dustThreshold, radix: 10)
 		]
 		let endpoint = HostedMoneroAPI_Endpoint.UnspentOuts
@@ -418,18 +418,12 @@ final class HostedMoneroAPIClient
 	}
 	func RandomOuts(
 		using_outs: [MoneroOutputDescription],
-		mixin: Int,
 		_ fn: @escaping (
 			_ err_str: String?,
 			_ result: HostedMoneroAPIClient_Parsing.ParsedResult_RandomOuts?
 		) -> Void
 	) -> RequestHandle?
 	{
-		if (mixin < 0) {
-			fn("Invalid mixin - must be >= 0", nil)
-			return nil
-		}
-		//
 		var amounts = [String]()
 		for (_, using_out_desc) in using_outs.enumerated() {
 			amounts.append(using_out_desc.rct != nil ? "0" : String(using_out_desc.amount))
@@ -437,7 +431,7 @@ final class HostedMoneroAPIClient
 		let parameters: [String: Any] =
 		[
 			"amounts": amounts,
-			"count": mixin + 1 // Add one to mixin so we can skip real output key if necessary
+			"count": MyMoneroCore.shared.fixedRingsize  // Add one to mixin so we can skip real output key if necessary
 		]
 		let endpoint = HostedMoneroAPI_Endpoint.RandomOuts
 		let requestHandle = self._request(endpoint, parameters)
@@ -480,6 +474,7 @@ final class HostedMoneroAPIClient
 				return nil
 			#endif
 		#endif
+		DDLog.Do("HostedMonero", "Submitting transaction…")
 		// TODO: would be nice to find a way around the 'code after return won't be executed' warning
 		let parameters: [String: Any] =
 		[

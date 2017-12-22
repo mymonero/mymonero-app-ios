@@ -120,7 +120,6 @@ class MyMoneroCore_JS : NSObject, WKScriptMessageHandler
 		splitDestinations: [SendFundsTargetDescription], // in RingCT=true, splitDestinations can equal fundTransferDescriptions
 		usingOuts: [MoneroOutputDescription],
 		mix_outs: [MoneroRandomAmountAndOutputs],
-		fake_outputs_count: Int,
 		fee_amount: MoneroAmount,
 		payment_id: MoneroPaymentID?,
 		pid_encrypt: Bool? = false,
@@ -137,7 +136,7 @@ class MyMoneroCore_JS : NSObject, WKScriptMessageHandler
 			SendFundsTargetDescription.jsArrayString(splitDestinations),
 			MoneroOutputDescription.jsArrayString(usingOuts),
 			MoneroRandomAmountAndOutputs.jsArrayString(mix_outs),
-			"\(fake_outputs_count)",
+			"\(MyMoneroCore.shared.fixedMixinsize)",
 			fee_amount.jsRepresentationString,
 			payment_id != nil ? payment_id!.jsRepresentationString : "undefined", // undefined rather than "undefined"
 			"\(pid_encrypt != nil ? pid_encrypt! : false)",

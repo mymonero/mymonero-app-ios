@@ -39,37 +39,35 @@ struct HostedMonero_SendFunds
 {
 	static func estimatedRingCTSize(
 		_ numberOfInputs: Int,
-		_ mixin: Int,
 		_ numberOfOutputs: Int
 	) -> Int
 	{
+		let Int__ringsize = Int(MyMoneroCore.shared.fixedRingsize)
 		var size = 0
 		size += numberOfOutputs * 6306
-		size += ((mixin + 1) * 4 + 32 + 8) * numberOfInputs //key offsets + key image + amount
-		size += 64 * (mixin + 1) * numberOfInputs + 64 * numberOfInputs //signature + pseudoOuts/cc
+		size += (Int__ringsize * 4 + 32 + 8) * numberOfInputs //key offsets + key image + amount
+		size += 64 * Int__ringsize * numberOfInputs + 64 * numberOfInputs //signature + pseudoOuts/cc
 		size += 74 //extra + whatever, assume long payment ID
 		//
 		return size
 	}
 	static func estimatedRingCTSize_numKB(
 		_ numberOfInputs: Int,
-		_ mixin: Int,
 		_ numberOfOutputs: Int
 	) -> Int
 	{
 		let numKB = Int(ceil(
-			Double(estimatedRingCTSize(numberOfInputs, mixin, numberOfOutputs)) / 1024.0
+			Double(estimatedRingCTSize(numberOfInputs, numberOfOutputs)) / 1024.0
 		))
 		//
 		return numKB
 	}
 	static func estimatedRingCT_neededNetworkFee(
 		_ numberOfInputs: Int,
-		_ mixin: Int,
 		_ numberOfOutputs: Int
 	) -> MoneroAmount
 	{
-		let est_numKB = estimatedRingCTSize_numKB(numberOfInputs, mixin, numberOfOutputs)
+		let est_numKB = estimatedRingCTSize_numKB(numberOfInputs, numberOfOutputs)
 		let est_amount = MoneroAmount("\(est_numKB)")! * MoneroConstants.feePerKB
 		//
 		return est_amount
@@ -132,11 +130,6 @@ extension HostedMoneroAPIClient
 		DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
 		//
 		// Derive/finalize some values…
-		let final__mixin = MyMoneroCore.fixedMixin
-		if final__mixin < 0 {
-			__trampolineFor_err_withStr(err_str: "Invalid mixin")
-			return
-		}
 		var final__payment_id = payment_id == "" ? nil : payment_id
 		var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
 		let (err_str, decodedAddressComponents_orNil) = MyMoneroCore.shared.decoded(address: target_address)
@@ -178,7 +171,6 @@ extension HostedMoneroAPIClient
 			view_key__private: wallet__private_keys.view,
 			spend_key__public: wallet__public_keys.spend,
 			spend_key__private: wallet__private_keys.spend,
-			mixinNumber: final__mixin,
 			{ (err_str, result) in
 				if let err_str = err_str {
 					__trampolineFor_err_withStr(err_str: err_str)
@@ -227,7 +219,7 @@ extension HostedMoneroAPIClient
 			var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
 			var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
 			if usingOuts.count > 1 {
-				var newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+				var newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, 2)
 				totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
 				// add outputs 1 at a time till we either have them all or can meet the fee
 				while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
@@ -239,7 +231,7 @@ extension HostedMoneroAPIClient
 					usingOuts.append(out)
 					usingOutsAmount = usingOutsAmount + out.amount
 					DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
-					newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+					newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, 2)
 					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
 				}
 				DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
@@ -306,10 +298,8 @@ extension HostedMoneroAPIClient
 		)
 		{
 			DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
-			// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
 			let _ = hostedMoneroAPIClient.RandomOuts(
 				using_outs: usingOuts,
-				mixin: final__mixin,
 				{ (err_str, result) in
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)
@@ -380,7 +370,6 @@ extension HostedMoneroAPIClient
 				splitDestinations: fundTransferDescriptions, // in RingCT=true, splitDestinations can equal fundTransferDescriptions
 				usingOuts: usingOuts,
 				mix_outs: mix_outs,
-				fake_outputs_count: final__mixin,
 				fee_amount: passedIn_attemptAt_network_minimumFee,
 				payment_id: final__payment_id,
 				pid_encrypt: final__pid_encrypt,
