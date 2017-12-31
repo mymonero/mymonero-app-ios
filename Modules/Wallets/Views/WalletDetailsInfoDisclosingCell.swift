@@ -163,13 +163,22 @@ extension WalletDetails
 			}
 		}
 		//
-		class InfoDisclosing_CopyableLongStringFieldView: UICommonComponents.Details.CopyableLongStringFieldView
+		class _InfoDisclosing_LongStringFieldView: UICommonComponents.Details.CopyableLongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
 				return UIEdgeInsetsMake(17, 44, 17, 16)
 			}
 		}
-		class InfoDisclosing_Truncated_CopyableLongStringFieldView: InfoDisclosing_CopyableLongStringFieldView
+		class InfoDisclosing_CopyableLongStringFieldView: _InfoDisclosing_LongStringFieldView
+		{
+		}
+		class InfoDisclosing_NonCopyableLongStringFieldView: _InfoDisclosing_LongStringFieldView
+		{
+			override var wants_valueButton: Bool {
+				return false
+			}
+		}
+		class _InfoDisclosing_Truncated_LongStringFieldView: _InfoDisclosing_LongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
 				return UIEdgeInsetsMake(17, 44, 12, 16)
@@ -197,7 +206,15 @@ extension WalletDetails
 				)
 			}
 		}
-		
+		class InfoDisclosing_Truncated_CopyableLongStringFieldView: _InfoDisclosing_Truncated_LongStringFieldView
+		{
+		}
+		class InfoDisclosing_Truncated_NonCopyableLongStringFieldView: _InfoDisclosing_Truncated_LongStringFieldView
+		{
+			override var wants_valueButton: Bool {
+				return false
+			}
+		}
 		class ContentContainerView: UICommonComponents.Details.SectionContentContainerView
 		{
 			//
@@ -221,17 +238,17 @@ extension WalletDetails
 				title: NSLocalizedString("Address", comment: ""),
 				valueToDisplayIfZero: nil
 			)
-			let disclosed__fieldView_viewKey = InfoDisclosing_CopyableLongStringFieldView(
+			let disclosed__fieldView_viewKey = InfoDisclosing_NonCopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Secret View Key", comment: ""),
 				valueToDisplayIfZero: nil
 			)
-			let disclosed__fieldView_spendKey = InfoDisclosing_CopyableLongStringFieldView(
+			let disclosed__fieldView_spendKey = InfoDisclosing_NonCopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Secret Spend Key", comment: ""),
 				valueToDisplayIfZero: nil
 			)
-			let disclosed__fieldView_mnemonic = InfoDisclosing_CopyableLongStringFieldView(
+			let disclosed__fieldView_mnemonic = InfoDisclosing_NonCopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Secret Mnemonic", comment: ""),
 				valueToDisplayIfZero: nil

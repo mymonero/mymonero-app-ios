@@ -407,12 +407,12 @@ extension UICommonComponents
 					text: text,
 					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: ifNonNil_overridingTextAndZeroValue_attributedDisplayText
 				)
-				self.copyButton.set(text: text) // even if nil
+				self.copyButton?.set(text: text) // even if nil
 			}
 			//
 			// Accessors
-			var copyButton: SmallUtilityCopyValueButton {
-				return self.valueButton as! SmallUtilityCopyValueButton
+			var copyButton: SmallUtilityCopyValueButton? {
+				return self.valueButton as? SmallUtilityCopyValueButton
 			}
 		}
 		class SharableLongStringFieldView: UtilityActionableLongStringFieldView
@@ -442,17 +442,17 @@ extension UICommonComponents
 					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: ifNonNil_overridingTextAndZeroValue_attributedDisplayText
 				)
 				if let url = self.urlToShare {
-					self.shareButton.setButtonValue(url: url)
-					self.shareButton.setButtonValue(text: nil) // to clear
+					self.shareButton?.setButtonValue(url: url)
+					self.shareButton?.setButtonValue(text: nil) // to clear
 				} else {
-					self.shareButton.setButtonValue(text: text) // even if nil
-					self.shareButton.setButtonValue(url: nil) // to clear
+					self.shareButton?.setButtonValue(text: text) // even if nil
+					self.shareButton?.setButtonValue(url: nil) // to clear
 				}
 			}
 			//
 			// Accessors
-			var shareButton: SmallUtilityShareValueButton {
-				return self.valueButton as! SmallUtilityShareValueButton
+			var shareButton: SmallUtilityShareValueButton? {
+				return self.valueButton as? SmallUtilityShareValueButton
 			}
 		}
 		class UtilityActionableLongStringFieldView: FieldView
@@ -473,7 +473,8 @@ extension UICommonComponents
 			var fieldTitle: String
 			//
 			var titleLabel: FieldLabel!
-			var valueButton: SmallUtilityValueButton!
+			var valueButton: SmallUtilityValueButton?
+			var wants_valueButton: Bool { return true } // default; overridable
 			var contentLabel: UILabel! // TODO a class?
 			//
 			var valueToDisplayIfZero: String?
@@ -483,8 +484,7 @@ extension UICommonComponents
 				labelVariant: FieldLabel.Variant,
 				title: String,
 				valueToDisplayIfZero: String?
-			)
-			{
+			) {
 				self.labelVariant = labelVariant
 				self.fieldTitle = title
 				self.valueToDisplayIfZero = valueToDisplayIfZero
@@ -502,7 +502,7 @@ extension UICommonComponents
 					self.titleLabel = view
 					self.addSubview(view)
 				}
-				do {
+				if self.wants_valueButton {
 					let valueButtonClass = type(of: self).valueButtonClass()
 					let view = valueButtonClass.init()
 					self.valueButton = view
@@ -567,12 +567,14 @@ extension UICommonComponents
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
-				self.valueButton.frame = CGRect(
-					x: containerWidth - contentInsets.right - self.valueButton.frame.size.width + SmallUtilityCopyValueButton.usabilityPadding_h,
-					y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
-					width: SmallUtilityCopyValueButton.w(),
-					height: SmallUtilityCopyValueButton.h 
-				).integral
+				if let view = self.valueButton {
+					view.frame = CGRect(
+						x: containerWidth - contentInsets.right - view.frame.size.width + SmallUtilityCopyValueButton.usabilityPadding_h,
+						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+						width: SmallUtilityCopyValueButton.w(),
+						height: SmallUtilityCopyValueButton.h
+					).integral
+				}
 				self.layOut_contentLabel(content_x: content_x, content_w: content_w)
 				//
 				let bottomPadding: CGFloat = contentInsets.bottom
@@ -787,7 +789,7 @@ extension UICommonComponents
 			var fieldTitle: String
 			//
 			var titleLabel: FieldLabel!
-			var valueButton: SmallUtilityShareValueButton!
+			var valueButton: SmallUtilityShareValueButton?
 			var contentImageButton: UIButton!
 			fileprivate var tapped_fn: (() -> Void)?
 			//
@@ -842,7 +844,7 @@ extension UICommonComponents
 			func set(image: UIImage?)
 			{
 				self.contentImageButton.setImage(image, for: .normal)
-				self.valueButton.setButtonValue(image: image)
+				self.valueButton?.setButtonValue(image: image)
 			}
 			//
 			// Imperatives - Layout - Overrides
@@ -863,12 +865,14 @@ extension UICommonComponents
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
-				self.valueButton.frame = CGRect(
-					x: containerWidth - contentInsets.right - self.valueButton.frame.size.width + SmallUtilityShareValueButton.usabilityPadding_h,
-					y: self.titleLabel.frame.origin.y - (SmallUtilityShareValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
-					width: SmallUtilityShareValueButton.w(),
-					height: SmallUtilityShareValueButton.h
-				).integral
+				if let view = self.valueButton {
+					view.frame = CGRect(
+						x: containerWidth - contentInsets.right - view.frame.size.width + SmallUtilityShareValueButton.usabilityPadding_h,
+						y: self.titleLabel.frame.origin.y - (SmallUtilityShareValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+						width: SmallUtilityShareValueButton.w(),
+						height: SmallUtilityShareValueButton.h
+					).integral
+				}
 				self.layOut_contentView(content_x: content_x, content_w: content_w)
 				//
 				let bottomPadding: CGFloat = contentInsets.bottom
