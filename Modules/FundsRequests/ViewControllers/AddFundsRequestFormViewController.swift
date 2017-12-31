@@ -42,6 +42,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var toWallet_inputView: UICommonComponents.WalletPickerButtonView!
 	//
 	var amount_label: UICommonComponents.Form.FieldLabel!
+	var amount_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
 	var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
 	//
 	var aboveMemo_separatorView: UICommonComponents.Details.FieldSeparatorView!
@@ -110,6 +111,11 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				title: NSLocalizedString("AMOUNT", comment: "")
 			)
 			self.amount_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+			self.amount_accessoryLabel = view
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -625,11 +631,27 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			).integral
 		}
 		do {
+			self.aboveMemo_separatorView.frame = CGRect(
+				x: input_x,
+				y: self.toWallet_inputView.frame.origin.y + self.toWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField, // estimate margin
+				width: textField_w,
+				height: self.aboveMemo_separatorView.frame.size.height
+			)
+		}
+		do {
 			self.amount_label.frame = CGRect(
 				x: label_x,
-				y: self.toWallet_inputView.frame.origin.y + self.toWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+				y: self.aboveMemo_separatorView.frame.origin.y
+					+ ceil(self.aboveMemo_separatorView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
+					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.toWallet_label.frame.size.height
+			).integral
+			self.amount_accessoryLabel.frame = CGRect(
+				x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
+				y: self.amount_label.frame.origin.y,
+				width: fullWidth_label_w,
+				height: self.amount_accessoryLabel.frame.size.height
 			).integral
 			self.amount_fieldset.frame = CGRect(
 				x: input_x,
@@ -639,18 +661,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			).integral
 		}
 		do {
-			self.aboveMemo_separatorView.frame = CGRect(
-				x: input_x,
-				y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField, // estimate margin
-				width: textField_w,
-				height: self.aboveMemo_separatorView.frame.size.height
-			)
-		}
-		do {
 			self.memo_label.frame = CGRect(
 				x: label_x,
-				y: self.aboveMemo_separatorView.frame.origin.y
-					+ ceil(self.aboveMemo_separatorView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
+				y: self.amount_fieldset.frame.origin.y
+					+ self.amount_fieldset.frame.size.height
 					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimated margin
 				width: fullWidth_label_w,
 				height: self.memo_label.frame.size.height

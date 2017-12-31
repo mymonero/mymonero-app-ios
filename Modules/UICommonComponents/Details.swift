@@ -306,7 +306,9 @@ extension UICommonComponents
 								width: self_width - contentInsets.left, // no right offset - flush with edge
 								height: FieldSeparatorView.h
 							)
-							currentField_yOffset = separatorView.frame.origin.y + separatorView.frame.size.height + bottomMargin // update - but do not add .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
+							currentField_yOffset = separatorView.frame.origin.y
+								+ ceil(separatorView.frame.size.height) // ceil in order to prevent split pixels from separatorView height
+								+ bottomMargin // update - but do not add .bottom inset (twice) since (a) we just added .bottom, and (b) next field has .top
 						} else { // just use the fixed height
 							currentField_yOffset += topMargin + h + bottomMargin
 						}
