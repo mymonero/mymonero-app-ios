@@ -97,4 +97,3 @@ Contributors to each release are credited in release notes.
 
 ### Ongoing Volunteers
 
-* 👑 `john_alan` iOS engineer
