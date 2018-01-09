@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 7/20/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -41,14 +41,14 @@ extension ImportTransactionsModal
 		struct Parameters
 		{
 			let fromWallet: Wallet
-			let infoRequestParsingResult: HostedMoneroAPIClient_Parsing.ParsedResult_ImportRequestInfoAndStatus
+			let infoRequestParsingResult: HostedMonero.ParsedResult_ImportRequestInfoAndStatus
 			//
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void // aka error
 			var success_fn: () -> Void
 		}
 		var parameters: Parameters
 		// TODO:
-//		var sendFunds_requestHandle: HostedMoneroAPIClient.RequestHandle?
+//		var sendFunds_requestHandle: HostedMonero.APIClient.RequestHandle?
 		init(parameters: Parameters)
 		{
 			self.parameters = parameters

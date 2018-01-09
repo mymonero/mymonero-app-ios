@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 7/19/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -272,22 +272,38 @@ extension TransactionDetails
 		// Delegation - Notifications
 		@objc func wallet_transactionsChanged()
 		{
-			var updated_transaction: MoneroHistoricalTransactionRecord? // to find
+			var mutable__updated_transaction: MoneroHistoricalTransactionRecord? // to find
 			do {
 				let transactions = self.wallet.transactions!
 				for (_, this_transaction) in transactions.enumerated() {
 					if this_transaction.hash == self.transaction.hash {
-						updated_transaction = this_transaction
+						mutable__updated_transaction = this_transaction
 						break
 					}
 				}
 			}
-			if updated_transaction != nil {
-				self.transaction = updated_transaction! // grab updated record
-				self.configureUI() // may not be this one which was updated but it's not that expensive to reconfig UI
-			} else {
-				assert(false, "Didn't find same transaction in already open details view. Probably a server bug.")
+			if mutable__updated_transaction == nil {
+				var shouldTrip = false
+				#if MOCK_SUCCESSOFTXSUBMISSION
+					#if !DEBUG
+						assert(false, "MOCK_SUCCESSOFTXSUBMISSION && !DEBUG") // no need to trip below assert
+					#endif
+					if self.transaction.cached__isConfirmed != false {
+						// ^-- approximately detecting whether this is the tx details view for the tx which was just (not really) submitted … doing so because this assert will trip when MOCK_SUCCESSOFTXSUBMISSION
+						shouldTrip = true
+					}
+				#else
+					shouldTrip = true
+				#endif
+				assert(shouldTrip == false, "Didn't find same transaction in already open details view. Likely a server issue.")
+				#if !MOCK_SUCCESSOFTXSUBMISSION
+					assert(false)
+				#endif
+				return // or else just prevent fallthrough
 			}
+			let updated_transaction = mutable__updated_transaction!
+			self.transaction = updated_transaction // grab updated record
+			self.configureUI() // may not be this one which was updated but it's not that expensive to reconfig UI
 		}
 		//
 		// Delegation - View lifecycle

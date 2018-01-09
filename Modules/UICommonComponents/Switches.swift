@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by John Woods on 06/09/2017.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //

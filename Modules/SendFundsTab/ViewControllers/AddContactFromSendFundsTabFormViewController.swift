@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 7/24/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -87,7 +87,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		super.setup_views()
 		self.set(
 			validationMessage: NSLocalizedString("Your Monero is on its way.", comment: ""),
-			wantsXButton: true // could also be false
+			wantsXButton: false
 		)
 		do {
 			self.address_inputView.set(isEnabled: false)

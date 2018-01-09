@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/19/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -36,10 +36,6 @@ import Foundation
 
 class WalletsListController: PersistedObjectListController
 {
-	//
-	// Properties - Initial
-	var mymoneroCore: MyMoneroCore!
-	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
 	static let shared = WalletsListController()
 	//

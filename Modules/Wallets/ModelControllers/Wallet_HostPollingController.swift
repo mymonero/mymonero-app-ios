@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/26/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -39,8 +39,8 @@ class Wallet_HostPollingController
 	weak var wallet: Wallet? // prevent retain cycle since wallet owns self
 	var timer: Timer!
 	//
-	var requestHandleFor_addressInfo: HostedMoneroAPIClient.RequestHandle?
-	var requestHandleFor_addressTransactions: HostedMoneroAPIClient.RequestHandle?
+	var requestHandleFor_addressInfo: HostedMonero.APIClient.RequestHandle?
+	var requestHandleFor_addressTransactions: HostedMonero.APIClient.RequestHandle?
 	//
 	//
 	// Lifecycle - Init
@@ -112,7 +112,8 @@ class Wallet_HostPollingController
 			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
-		self.requestHandleFor_addressInfo = HostedMoneroAPIClient.shared.AddressInfo(
+		self.requestHandleFor_addressInfo = HostedMonero.APIClient.shared.AddressInfo(
+			wallet_keyImageCache: wallet.keyImageCache,
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
@@ -160,7 +161,8 @@ class Wallet_HostPollingController
 			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
-		self.requestHandleFor_addressTransactions = HostedMoneroAPIClient.shared.AddressTransactions(
+		self.requestHandleFor_addressTransactions = HostedMonero.APIClient.shared.AddressTransactions(
+			wallet_keyImageCache: wallet.keyImageCache,
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
@@ -187,9 +189,7 @@ class Wallet_HostPollingController
 		)
 	}
 	//
-	//
 	// Delegation
-	// 
 	@objc func __timerFired()
 	{
 		self.performRequests()

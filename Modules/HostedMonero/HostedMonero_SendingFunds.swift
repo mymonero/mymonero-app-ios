@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/9/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -74,21 +74,21 @@ struct HostedMonero_SendFunds
 	}
 }
 //
-extension HostedMoneroAPIClient
+extension HostedMonero
 {
 	// TODO: port this to something akin to an OperationQueue so that it can be canceled properly
-	
 	
 	static func SendFunds( // assumes isRingCT=true - not intended to support non-rct nor sweep_all-like txs
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		wallet__keyImageCache: MoneroUtils.KeyImageCache,
 		wallet__public_address: MoneroAddress,
 		wallet__private_keys: MoneroKeyDuo,
 		wallet__public_keys: MoneroKeyDuo,
-		hostedMoneroAPIClient: HostedMoneroAPIClient,
+		hostedMoneroAPIClient: HostedMonero.APIClient,
 		payment_id: MoneroPaymentID?,
 //		preSuccess_obtainedSubmitTransactionRequestHandle: @escaping (
-//			_ requestHandle: HostedMoneroAPIClient.RequestHandle
+//			_ requestHandle: APIClient.RequestHandle
 //		) -> Void,
 		success_fn: @escaping (
 			_ tx_hash: MoneroTransactionHash,
@@ -167,6 +167,7 @@ extension HostedMoneroAPIClient
 			}
 		}
 		let _ = hostedMoneroAPIClient.UnspentOuts(
+			wallet_keyImageCache: wallet__keyImageCache,
 			address: wallet__public_address,
 			view_key__private: wallet__private_keys.view,
 			spend_key__public: wallet__public_keys.spend,
@@ -177,7 +178,7 @@ extension HostedMoneroAPIClient
 					return
 				}
 				_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-					original_unusedOuts: result!.unusedOutputs
+					original_unusedOuts: result!.unspentOutputs
 				)
 			}
 		)
@@ -203,7 +204,7 @@ extension HostedMoneroAPIClient
 		{ // Now we need to establish some values for balance validation and to construct the transaction
 			DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
 			var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
-			let _/*hostingService_chargeAmount*/ = HostedMoneroAPIClient_HostConfig.HostingServiceChargeForTransaction(
+			let _/*hostingService_chargeAmount*/ = HostedMonero.APIClient_HostConfig.HostingServiceChargeForTransaction(
 				with: attemptAt_network_minimumFee
 			)
 			var totalAmountIncludingFees = totalAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
@@ -338,7 +339,7 @@ extension HostedMoneroAPIClient
 						return
 					}
 					realDestViewKey = decodedAddressComponents.publicKeys.view
-					DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
+					DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey!)")
 				}
 			}
 			__proceedTo_createTxAndAttemptToSend(

@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 7/20/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -79,7 +79,7 @@ extension ImportTransactionsModal
 			//
 			let approximate_importOAAddress: String = SettingsController.shared.specificAPIAddressURLAuthority != nil
 				? "import.\(SettingsController.shared.specificAPIAddressURLAuthority!)" // this is obvs 'approximate' and only meant to be used as an example…… if specificAPIAddressURLAuthority contains a port or a subdomain then this will appear to be obviously wrong but still server its purpose as an example to the power user who is entering a custom server address
-				: HostedMoneroAPIClient.mymonero_importFeeSubmissionTarget_openAliasAddress
+				: HostedMonero.APIClient.mymonero_importFeeSubmissionTarget_openAliasAddress
 			//
 			do {
 				let view = UICommonComponents.FormAccessoryMessageLabel(
@@ -266,8 +266,8 @@ extension ImportTransactionsModal
 		//
 		// Imperatives - Import info request
 		var hasAlreadyInitiatedRequest = false
-		var importRequestInfoAndStatus_requestHandle: HostedMoneroAPIClient.RequestHandle?
-		var importRequestInfoAndStatus_receivedResult: HostedMoneroAPIClient_Parsing.ParsedResult_ImportRequestInfoAndStatus?
+		var importRequestInfoAndStatus_requestHandle: HostedMonero.APIClient.RequestHandle?
+		var importRequestInfoAndStatus_receivedResult: HostedMonero.ParsedResult_ImportRequestInfoAndStatus?
 		func doDataRequest_ifNecessary()
 		{
 			if self.hasAlreadyInitiatedRequest {
@@ -275,7 +275,7 @@ extension ImportTransactionsModal
 			}
 			self.hasAlreadyInitiatedRequest = true
 			assert(self.importRequestInfoAndStatus_requestHandle == nil)
-			self.importRequestInfoAndStatus_requestHandle = HostedMoneroAPIClient.shared.ImportRequestInfoAndStatus(
+			self.importRequestInfoAndStatus_requestHandle = HostedMonero.APIClient.shared.ImportRequestInfoAndStatus(
 				address: self.wallet.public_address,
 				view_key__private: self.wallet.private_keys.view
 			)

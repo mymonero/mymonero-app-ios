@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 5/19/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -239,6 +239,7 @@ class Wallet: PersistableObject
 	//
 	// Properties - Principal Persisted Values
 	//
+	let keyImageCache = MoneroUtils.KeyImageCache()
 	var currency: Currency!
 	var walletLabel: String!
 	var swatchColor: SwatchColor!
@@ -255,12 +256,12 @@ class Wallet: PersistableObject
 	var totalSent: MoneroAmount?
 	var lockedBalance: MoneroAmount?
 	//
-	var account_scanned_tx_height: Int?
-	var account_scanned_height: Int? // TODO: it would be good to resolve account_scanned_height vs account_scanned_tx_height
-	var account_scanned_block_height: Int?
-	var account_scan_start_height: Int?
-	var transaction_height: Int?
-	var blockchain_height: Int?
+	var account_scanned_tx_height: UInt64?
+	var account_scanned_height: UInt64? // TODO: it would be good to resolve account_scanned_height vs account_scanned_tx_height
+	var account_scanned_block_height: UInt64?
+	var account_scan_start_height: UInt64?
+	var transaction_height: UInt64?
+	var blockchain_height: UInt64?
 	//
 	var spentOutputs: [MoneroSpentOutputDescription]?
 	var transactions: [MoneroHistoricalTransactionRecord]?
@@ -280,7 +281,7 @@ class Wallet: PersistableObject
 	var isSendingFunds = false
 	//
 	// Properties - Objects
-	var logIn_requestHandle: HostedMoneroAPIClient.RequestHandle?
+	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
 	//
 	// 'Protocols' - Persistable Object
@@ -414,12 +415,12 @@ class Wallet: PersistableObject
 			self.lockedBalance = MoneroAmount(string as! String)
 		}
 		//
-		self.account_scanned_tx_height = dictRepresentation[DictKey.account_scanned_tx_height.rawValue] as? Int
-		self.account_scanned_height = dictRepresentation[DictKey.account_scanned_height.rawValue] as? Int
-		self.account_scanned_block_height = dictRepresentation[DictKey.account_scanned_block_height.rawValue] as? Int
-		self.account_scan_start_height = dictRepresentation[DictKey.account_scan_start_height.rawValue] as? Int
-		self.transaction_height = dictRepresentation[DictKey.transaction_height.rawValue] as? Int
-		self.blockchain_height = dictRepresentation[DictKey.blockchain_height.rawValue] as? Int
+		self.account_scanned_tx_height = dictRepresentation[DictKey.account_scanned_tx_height.rawValue] as? UInt64
+		self.account_scanned_height = dictRepresentation[DictKey.account_scanned_height.rawValue] as? UInt64
+		self.account_scanned_block_height = dictRepresentation[DictKey.account_scanned_block_height.rawValue] as? UInt64
+		self.account_scan_start_height = dictRepresentation[DictKey.account_scan_start_height.rawValue] as? UInt64
+		self.transaction_height = dictRepresentation[DictKey.transaction_height.rawValue] as? UInt64
+		self.blockchain_height = dictRepresentation[DictKey.blockchain_height.rawValue] as? UInt64
 		//
 		if let jsonRepresentations = dictRepresentation[DictKey.spentOutputs.rawValue] {
 			self.spentOutputs = MoneroSpentOutputDescription.newArray(
@@ -637,13 +638,14 @@ class Wallet: PersistableObject
 		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
 		if nBlocksBehind >= 10 { // grace interval, i believe
 			return true
-		} else if nBlocksBehind < 0 {
-			DDLog.Warn("Wallets", "nBlocksBehind < 0")
-			return false
 		}
+//		else if nBlocksBehind < 0 {
+//			DDLog.Warn("Wallets", "nBlocksBehind < 0")
+//			return false
+//		}
 		return false
 	}
-	var nBlocksBehind: Int
+	var nBlocksBehind: UInt64
 	{
 		if self.blockchain_height == nil || self.blockchain_height == 0 {
 			DDLog.Warn("Wallets", ".nBlocksBehind called while nil/0 blockchain_height")
@@ -810,7 +812,7 @@ class Wallet: PersistableObject
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
 			//
-			self.logIn_requestHandle = HostedMoneroAPIClient.shared.LogIn(
+			self.logIn_requestHandle = HostedMonero.APIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
 				{ [weak self] (login__err_str, isANewAddressToServer) in
@@ -922,13 +924,14 @@ class Wallet: PersistableObject
 			ScreenSleep.reEnable_screenSleep()
 		}
 		__lock()
-		let _/*TODO requestHandle*/ = HostedMoneroAPIClient.SendFunds(
+		let _/*TODO requestHandle*/ = HostedMonero.SendFunds(
 			target_address: target_address,
 			amount: amount,
+			wallet__keyImageCache: self.keyImageCache,
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			hostedMoneroAPIClient: HostedMoneroAPIClient.shared,
+			hostedMoneroAPIClient: HostedMonero.APIClient.shared,
 			payment_id: payment_id,
 			success_fn:
 			{ (tx_hash, tx_fee) in
@@ -948,17 +951,14 @@ class Wallet: PersistableObject
 	// HostPollingController - Delegation / Protocol
 	// 
 	func _HostPollingController_didFetch_addressInfo(
-		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo
-	) -> Void
-	{
-		//
+		_ parsedResult: HostedMonero.ParsedResult_AddressInfo
+	) -> Void {
 		let xmrToCcyRatesByCcy = parsedResult.xmrToCcyRatesByCcy
 		DispatchQueue.main.async { // just to let wallet stuff finish first
 			CcyConversionRates.Controller.shared.set_xmrToCcyRatesByCcy(
 				xmrToCcyRatesByCcy
 			)
 		}
-		//
 		let existing_totalReceived = self.totalReceived
 		let existing_totalSent = self.totalSent
 		let existing_lockedBalance = self.lockedBalance
@@ -1025,7 +1025,7 @@ class Wallet: PersistableObject
 		}
 	}
 	func _HostPollingController_didFetch_addressTransactions(
-		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions
+		_ parsedResult: HostedMonero.ParsedResult_AddressTransactions
 	) -> Void
 	{
 		let didActuallyChange_heights =

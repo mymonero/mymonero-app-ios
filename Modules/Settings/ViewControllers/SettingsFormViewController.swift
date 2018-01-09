@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 8/3/17.
-//  Copyright (c) 2014-2017, MyMonero.com
+//  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
 //
@@ -278,7 +278,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				if value!.contains(".") == false && value!.contains(":") == false && value!.contains("localhost") == false {
 					preSubmission_validationError = String(
 						format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
-						HostedMoneroAPIClient.mymonero_apiAddress_authority
+						HostedMonero.APIClient.mymonero_apiAddress_authority
 					)
 				}
 			}
