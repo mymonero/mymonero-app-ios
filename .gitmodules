@@ -3,4 +3,4 @@
 	url = https://github.com/mymonero/mymonero-core-js
 [submodule "Modules/mymonero-core-swift"]
 	path = Modules/mymonero-core-swift
-	url = git@github.com:mymonero/mymonero-core-swift.git
+	url = ssh://github.com/mymonero/mymonero-core-swift
