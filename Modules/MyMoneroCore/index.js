@@ -30,7 +30,6 @@
 //
 const mymonero_core_js = {}
 mymonero_core_js.monero_utils = require('./sub_modules/mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
-mymonero_core_js.api_response_parser_utils = require('./sub_modules/mymonero_core_js/monero_utils/mymonero_response_parser_utils')
 mymonero_core_js.JSBigInt = require('./sub_modules/mymonero_core_js/cryptonote_utils/biginteger').BigInteger // so that it is available to the web context for constructing arguments to the above modules
 //
 module.exports = mymonero_core_js

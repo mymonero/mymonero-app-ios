@@ -40,7 +40,6 @@ import WebKit
 enum MyMoneroCoreJS_ModuleName: String
 {
 	case core = "monero_utils"
-	case responseParser = "api_response_parser_utils"
 }
 //
 // Principal type
