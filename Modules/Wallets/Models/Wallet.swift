@@ -902,11 +902,14 @@ class Wallet: PersistableObject
 		failWithErr_fn: @escaping (
 			_ err_str: String
 		) -> Void
-	)
-	{
+	) {
+		if self.shouldDisplayImportAccountOption != nil && self.shouldDisplayImportAccountOption! {
+			failWithErr_fn(NSLocalizedString("This wallet must first be imported.", comment: ""))
+			return
+	   	}
 		func __isLocked() -> Bool { return self.isSendingFunds }
 		if __isLocked() {
-			failWithErr_fn("Currently sending funds. Please try again when complete.")
+			failWithErr_fn(NSLocalizedString("Currently sending funds. Please try again when complete.", comment: ""))
 			return // TODO nil
 		}
 		func __lock()
