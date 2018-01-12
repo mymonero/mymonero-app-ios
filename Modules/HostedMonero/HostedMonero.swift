@@ -267,12 +267,16 @@ extension HostedMonero
 			err_str: String?,
 			result: ParsedResult_UnspentOuts
 		) {
-			guard let output_value = response_jsonDict["outputs"] else { // empty
-				return (nil, ParsedResult_UnspentOuts(
+			guard let outputs_value__orNSNull = response_jsonDict["outputs"] else { // empty… or maybe still empty bc it could be NSNull
+				return (nil, ParsedResult_UnspentOuts( // empty
 					unspentOutputs: []
 				))
 			}
-			let outputs_dicts = output_value as! [[String: Any]] // separate nil check from format check
+			guard let outputs_dicts = outputs_value__orNSNull as? [[String: Any]] else { // imprecise bc it doesn't distinguish btwn legit empty but NSNull , and invalid input format… but we must catch NSNull too
+				return (nil, ParsedResult_UnspentOuts( // empty
+					unspentOutputs: []
+				))
+			}
 			var mutable_unspentOutputs: [MoneroOutputDescription] = []
 			for (_, output_dict) in outputs_dicts.enumerated() {
 				guard let output__tx_pub_key = output_dict["tx_pub_key"] as? MoneroTransactionPubKey else { // do we ever expect these not to exist?
