@@ -311,6 +311,7 @@
 		9FD354171F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */; };
 		9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */; };
 		9FD70E091F1988FB000FE675 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD70E081F1988FB000FE675 /* Tables.swift */; };
+		9FD961D6200837CB004A4CC7 /* Reachability-4.1.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD961D5200837CB004A4CC7 /* Reachability-4.1.0.swift */; };
 		9FE199251F846003003BE0DF /* MyMoneroScreenshots_Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */; };
 		9FE199271F848C1E003BE0DF /* AppProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199261F848C1E003BE0DF /* AppProcess.swift */; };
 		9FE199281F848E14003BE0DF /* AppProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199261F848C1E003BE0DF /* AppProcess.swift */; };
@@ -888,6 +889,7 @@
 		9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD70E081F1988FB000FE675 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
+		9FD961D5200837CB004A4CC7 /* Reachability-4.1.0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Reachability-4.1.0.swift"; sourceTree = "<group>"; };
 		9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshots_Constants.swift; sourceTree = "<group>"; };
 		9FE199261F848C1E003BE0DF /* AppProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProcess.swift; sourceTree = "<group>"; };
 		9FE224C01FFBEB730037412C /* monero_key_image_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = monero_key_image_utils.cpp; sourceTree = "<group>"; };
@@ -1725,6 +1727,7 @@
 				9F3826621F566A2E00800CA0 /* Headers */,
 				9F7ADAF31EBD2C1C0073C2BB /* Controllers */,
 				9F7ADAF61EBD2C1C0073C2BB /* Resources */,
+				9FD961D4200837CB004A4CC7 /* Vendor */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -2319,6 +2322,14 @@
 			path = OpenAlias;
 			sourceTree = "<group>";
 		};
+		9FD961D4200837CB004A4CC7 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				9FD961D5200837CB004A4CC7 /* Reachability-4.1.0.swift */,
+			);
+			path = Vendor;
+			sourceTree = "<group>";
+		};
 		9FEC04EC1ECFD8C4009256BD /* Lists */ = {
 			isa = PBXGroup;
 			children = (
@@ -2622,7 +2633,6 @@
 				"${BUILT_PRODUCTS_DIR}/PKHUD/PKHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Popover/Popover.framework",
 				"${BUILT_PRODUCTS_DIR}/RNCryptor/RNCryptor.framework",
-				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
 			);
@@ -2634,7 +2644,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PKHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Popover.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RNCryptor.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
 			);
@@ -2742,6 +2751,7 @@
 				9F61EB2F1FF1C72F00C89F36 /* slow-hash.c in Sources */,
 				9FCD9D631F4948A7004C0349 /* OpenAliasDNSLookups.swift in Sources */,
 				9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */,
+				9FD961D6200837CB004A4CC7 /* Reachability-4.1.0.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
@@ -3039,8 +3049,6 @@
 					"-framework",
 					"\"RNCryptor\"",
 					"-framework",
-					"\"ReachabilitySwift\"",
-					"-framework",
 					"\"SipHash\"",
 					"-framework",
 					"\"SwiftDate\"",
@@ -3101,8 +3109,6 @@
 					"\"Popover\"",
 					"-framework",
 					"\"RNCryptor\"",
-					"-framework",
-					"\"ReachabilitySwift\"",
 					"-framework",
 					"\"SipHash\"",
 					"-framework",
@@ -3213,8 +3219,6 @@
 					"-framework",
 					"\"RNCryptor\"",
 					"-framework",
-					"\"ReachabilitySwift\"",
-					"-framework",
 					"\"SipHash\"",
 					"-framework",
 					"\"SwiftDate\"",
@@ -3324,8 +3328,6 @@
 					"\"Popover\"",
 					"-framework",
 					"\"RNCryptor\"",
-					"-framework",
-					"\"ReachabilitySwift\"",
 					"-framework",
 					"\"SipHash\"",
 					"-framework",
@@ -3444,8 +3446,6 @@
 					"\"Popover\"",
 					"-framework",
 					"\"RNCryptor\"",
-					"-framework",
-					"\"ReachabilitySwift\"",
 					"-framework",
 					"\"SipHash\"",
 					"-framework",

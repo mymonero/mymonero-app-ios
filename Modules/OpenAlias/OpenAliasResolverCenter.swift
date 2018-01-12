@@ -33,7 +33,7 @@
 //
 //
 import Foundation
-import ReachabilitySwift
+//import Reachability // currently vendored, therefore within same module
 
 class OpenAliasResolver
 {
@@ -100,7 +100,7 @@ class OpenAliasResolver
 		let lookupHandle = OpenAliasDNSLookups.moneroAddressInfo(
 			fromOpenAliasAddress: openAliasAddress,
 			forCurrency: currency,
-			isReachable: self.reachability.isReachable,
+			isReachable: self.reachability.connection != .none,
 			fn:
 			{ (err_str, validResolvedAddressDescription) in
 				if err_str != nil {

@@ -33,7 +33,7 @@
 //
 //
 import UIKit
-import ReachabilitySwift
+//import Reachability // currently vendored, therefore within same module
 //
 class ConnectivityMessagePresentationController
 {
@@ -63,7 +63,7 @@ class ConnectivityMessagePresentationController
 		NotificationCenter.default.addObserver(
 			self,
 			selector: #selector(reachabilityChanged),
-			name: ReachabilityChangedNotification,
+			name: Notification.Name.reachabilityChanged,
 			object: self.reachability
 		)
 		do {
@@ -87,7 +87,7 @@ class ConnectivityMessagePresentationController
 		self.reachability.stopNotifier()
 		NotificationCenter.default.removeObserver(
 			self,
-			name: ReachabilityChangedNotification,
+			name: Notification.Name.reachabilityChanged,
 			object: self.reachability
 		)
 	}
@@ -96,7 +96,7 @@ class ConnectivityMessagePresentationController
 	func _configurePresentationWithReachability()
 	{
 		// commented for debug
-		if self.reachability.isReachable { // There is apparently a bug appearing in iOS 10 simulated apps by which reconnection is not detected - https://github.com/ashleymills/Reachability.swift/issues/151 - this looks to be fixed in iOS 11 / Swift 4
+		if self.reachability.connection != .none { // There is apparently a bug appearing in iOS 10 simulated apps by which reconnection is not detected - https://github.com/ashleymills/Reachability.swift/issues/151 - this looks to be fixed in iOS 11 / Swift 4
 			self.__dismiss()
 		} else {
 			self.__present()

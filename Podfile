@@ -3,15 +3,16 @@ platform :ios, '10.0'
 use_frameworks!
 
 def common_pods
-	pod 'BigInt', '~> 3.0.1'
-	pod 'SwiftDate', '~> 4.4.2'
-	pod 'Alamofire', '~> 4.5.1'
-	pod 'RNCryptor', '~> 5.0.1'
-	pod 'ReachabilitySwift', '~> 3.0'
-	pod 'PKHUD', :git => 'https://github.com/pkluz/PKHUD.git', :branch => 'release/swift4'
-	pod 'AMPopTip', '~> 3.0.0'
-	pod 'Popover', :git => 'https://github.com/corin8823/Popover.git', :branch => '1.2.0'
-	pod 'ofxiOSBoost', '~> 1.60.0'
+	pod 'BigInt', :git => 'https://github.com/mymonero/BigInt.git', :tag => 'v3.0.2'
+	pod 'SwiftDate', :git => 'https://github.com/mymonero/SwiftDate.git', :tag => '4.5.1'
+	pod 'Alamofire', :git => 'https://github.com/mymonero/Alamofire.git', :tag => '4.6.0'
+	pod 'RNCryptor', :git => 'https://github.com/mymonero/RNCryptor.git', :tag => 'RNCryptor-5.0.2'
+#	pod 'ReachabilitySwift', :git => 'https://github.com/mymonero/Reachability.swift.git', :tag => 'v4.1.0'
+# ^- vendored in App currently due to https://github.com/ashleymills/Reachability.swift/issues/257 
+	pod 'PKHUD', :git => 'https://github.com/mymonero/PKHUD.git', :tag => '5.0.0'
+	pod 'AMPopTip', :git => 'https://github.com/mymonero/AMPopTip.git', :tag => '3.0.0'
+	pod 'Popover', :git => 'https://github.com/mymonero/Popover.git', :tag => '1.2.0'
+	pod 'ofxiOSBoost', :git => 'https://github.com/mymonero/ofxiOSBoost.git', :tag => '1.60.0'
 end
 
 target 'MyMonero' do
