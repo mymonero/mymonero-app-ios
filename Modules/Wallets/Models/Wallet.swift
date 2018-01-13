@@ -932,6 +932,8 @@ class Wallet: PersistableObject
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
+			wallet__blockchainSize: self.blockchain_height!, // TODO: is this correct?
+			priority: .mlow, // TODO - pass this through (from slider) … and also… does this actually correspond with the old MyMonero priority?
 			payment_id: payment_id
 		)
 		fundsSender.success_fn =

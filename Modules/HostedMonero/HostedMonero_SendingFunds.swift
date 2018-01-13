@@ -86,6 +86,8 @@ extension HostedMonero
 		var wallet__public_address: MoneroAddress!
 		var wallet__private_keys: MoneroKeyDuo!
 		var wallet__public_keys: MoneroKeyDuo!
+		var wallet__blockchainSize: UInt64!
+		var priority: MoneroTransferSimplifiedPriority
 		var payment_id: MoneroPaymentID?
 		// TODO: for cancelling?
 //		var preSuccess_obtainedSubmitTransactionRequestHandle: (
@@ -106,6 +108,8 @@ extension HostedMonero
 			wallet__public_address: MoneroAddress,
 			wallet__private_keys: MoneroKeyDuo,
 			wallet__public_keys: MoneroKeyDuo,
+			wallet__blockchainSize: UInt64,
+			priority: MoneroTransferSimplifiedPriority,
 			payment_id: MoneroPaymentID?
 		) {
 			self.target_address = target_address
@@ -114,6 +118,8 @@ extension HostedMonero
 			self.wallet__public_address = wallet__public_address
 			self.wallet__private_keys = wallet__private_keys
 			self.wallet__public_keys = wallet__public_keys
+			self.wallet__blockchainSize = wallet__blockchainSize
+			self.priority = priority
 			self.payment_id = payment_id
 		}
 		func send()
@@ -196,6 +202,8 @@ extension HostedMonero
 					to_address: target_address,
 					amount: totalAmountWithoutFee,
 					payment_id: payment_id,
+					blockchainSize: self.wallet__blockchainSize,
+					priority: self.priority,
 					unusedOuts: unusedOuts,
 					getRandomOuts__block:
 					{ (cb) in
@@ -205,7 +213,7 @@ extension HostedMonero
 						
 						cb(retVals)
 					}
-				) { (errStr, serializedSignedTransaction) in
+				) { (err_str, serializedSignedTransaction) in
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)
 						return
