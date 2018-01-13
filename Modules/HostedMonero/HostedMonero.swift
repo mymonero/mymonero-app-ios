@@ -221,7 +221,7 @@ extension HostedMonero
 					paymentId: tx_dict["payment_id"] as? MoneroPaymentID,
 					mixin: tx_dict["mixin"] as! UInt,
 					//
-					mempool: tx_dict["mempool"] as! Bool,
+					mempool: tx_dict["mempool"] as! Bool, // is_unconfirmed
 					unlock_time: unlockTime,
 					height: height,
 					//

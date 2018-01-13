@@ -238,8 +238,6 @@ class Wallet: PersistableObject
 	//
 	//
 	// Properties - Principal Persisted Values
-	//
-	let keyImageCache = MoneroUtils.KeyImageCache()
 	var currency: Currency!
 	var walletLabel: String!
 	var swatchColor: SwatchColor!
@@ -283,6 +281,8 @@ class Wallet: PersistableObject
 	// Properties - Objects
 	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
+	let keyImageCache = MoneroUtils.KeyImageCache()
+	var fundsSender: HostedMonero.FundsSender?
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -891,7 +891,7 @@ class Wallet: PersistableObject
 	//
 	// Runtime (Booted) - Imperatives - Sending Funds
 	//
-	func SendFunds(
+	func sendFunds(
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 		payment_id: MoneroPaymentID?,
@@ -903,13 +903,9 @@ class Wallet: PersistableObject
 			_ err_str: String
 		) -> Void
 	) {
-		if self.shouldDisplayImportAccountOption != nil && self.shouldDisplayImportAccountOption! {
-			failWithErr_fn(NSLocalizedString("This wallet must first be imported.", comment: ""))
-			return
-	   	}
 		func __isLocked() -> Bool { return self.isSendingFunds }
 		if __isLocked() {
-			failWithErr_fn(NSLocalizedString("Currently sending funds. Please try again when complete.", comment: ""))
+			failWithErr_fn("Currently sending funds. Please try again when complete.")
 			return // TODO nil
 		}
 		func __lock()
@@ -922,32 +918,36 @@ class Wallet: PersistableObject
 		func __unlock()
 		{
 			self.isSendingFunds = false
+			self.fundsSender = nil // can assume if we're unlocking that this will always be nil… but the flip side of doing this here alone is that we must ensure we always call __unlock() when we need to nil fundsSender()
 			//
 			UserIdle.shared.reEnable_userIdle()
 			ScreenSleep.reEnable_screenSleep()
 		}
 		__lock()
-		let _/*TODO requestHandle*/ = HostedMonero.SendFunds(
+		assert(self.fundsSender == nil)
+		let fundsSender = HostedMonero.FundsSender(
 			target_address: target_address,
 			amount: amount,
 			wallet__keyImageCache: self.keyImageCache,
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			hostedMoneroAPIClient: HostedMonero.APIClient.shared,
-			payment_id: payment_id,
-			success_fn:
-			{ (tx_hash, tx_fee) in
-				__unlock()
-				success_fn(tx_hash, tx_fee)
-			},
-			failWithErr_fn:
-			{ err_str in
-				__unlock()
-				failWithErr_fn(err_str)
-			}
+			payment_id: payment_id
 		)
-		return // TODO requestHandle
+		fundsSender.success_fn =
+		{ (tx_hash, tx_fee) in
+			__unlock()
+			success_fn(tx_hash, tx_fee)
+		}
+		fundsSender.failWithErr_fn =
+		{ err_str in
+			__unlock()
+			failWithErr_fn(err_str)
+		}
+		self.fundsSender = fundsSender
+		fundsSender.send() // kick off; after having set property
+		//
+		return
 	}
 	//
 	//

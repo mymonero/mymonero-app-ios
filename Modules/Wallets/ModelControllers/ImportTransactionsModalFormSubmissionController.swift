@@ -65,7 +65,7 @@ extension ImportTransactionsModal
 			let target_address = self.parameters.infoRequestParsingResult.payment_address
 			let payment_id = self.parameters.infoRequestParsingResult.payment_id
 			let amount = self.parameters.infoRequestParsingResult.import_fee
-			self.parameters.fromWallet.SendFunds(
+			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
 				amount: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
 				payment_id: payment_id,
