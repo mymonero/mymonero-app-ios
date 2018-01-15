@@ -137,8 +137,6 @@ extension HostedMonero
 				__trampolineFor_err_withStr(err_str: "The amount you've entered is too low")
 				return
 			}
-			let totalAmountWithoutFee = MoneroAmount.new(withDouble: amount)
-			DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
 			//
 			// Final derivations, validations…
 			var final__payment_id = payment_id == "" ? nil : payment_id
@@ -200,7 +198,7 @@ extension HostedMonero
 				MyMoneroCore.shared.new_serializedSignedTransaction(
 					wallet__private_keys: wallet__private_keys,
 					to_address: target_address,
-					amount: totalAmountWithoutFee,
+					amount_float_string: "\(amount!)", // the C++ code wants to parse the float string again; Must unwrap to prevent 'Optional(…)'
 					payment_id: payment_id,
 					blockchainSize: self.wallet__blockchainSize,
 					priority: self.priority,
