@@ -172,7 +172,7 @@ class WalletsListController: PersistedObjectListController
 					do {
 						for (_, record) in self.records.enumerated() {
 							let wallet = record as! Wallet
-							if wallet.mnemonicString == mnemonicString {
+							if wallet.new_mnemonicString == mnemonicString { // TODO: avoid constructing the mnemonicString each time here … caching it properly would require care - see comments
 								fn(nil, wallet, true) // wasWalletAlreadyInserted: true
 								return
 							}

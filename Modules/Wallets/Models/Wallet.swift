@@ -191,7 +191,7 @@ class Wallet: PersistableObject
 				swatchColor: wallet.swatchColor,
 				mnemonic_wordsetName: wallet.mnemonic_wordsetName,
 				//
-				mnemonicString: wallet.mnemonicString,
+				mnemonicString: wallet.account_seed != nil ? wallet.new_mnemonicString : nil,
 				account_seed: wallet.account_seed,
 				private_keys: wallet.private_keys,
 				public_address: wallet.public_address
@@ -242,7 +242,30 @@ class Wallet: PersistableObject
 	var walletLabel: String!
 	var swatchColor: SwatchColor!
 	//
-	var mnemonicString: MoneroSeedAsMnemonic?
+	var new_mnemonicString: MoneroSeedAsMnemonic { // only call this when you have self.account_seed
+		guard let seed = self.account_seed, seed != "" else {
+			assert(false, "Code fault / Illegal: .new_mnemonicString called with self.account_seed=nil")
+			return ""
+		}
+		if self.mnemonic_wordsetName == nil {
+			assert(false, "Code fault / Illegal: .new_mnemonicString called with self.mnemonic_wordsetName=nil")
+			return ""
+		}
+		// re-derive mnemonic string from account seed
+		let (err_str, seedAsMnemonic) = MyMoneroCore.shared.MnemonicStringFromSeed(
+			self.account_seed!,
+			self.mnemonic_wordsetName!
+		)
+		if err_str != nil {
+			assert(false)
+			return ""
+		}
+		if seedAsMnemonic == nil {
+			assert(false)
+			return ""
+		}
+		return seedAsMnemonic!
+	}
 	var mnemonic_wordsetName: MoneroMnemonicWordsetName?
 	var generatedOnInit_walletDescription: MoneroWalletDescription?
 	var account_seed: MoneroSeed?
@@ -275,13 +298,12 @@ class Wallet: PersistableObject
 	// transient/not persisted
 	var isBooted = false
 	var isLoggingIn = false
-	var wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed: Bool?
 	var isSendingFunds = false
 	//
 	// Properties - Objects
 	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
-	let keyImageCache = MoneroUtils.KeyImageCache()
+	var light_wallet3_wrapper: LightWallet3Wrapper?
 	var fundsSender: HostedMonero.FundsSender?
 	//
 	// 'Protocols' - Persistable Object
@@ -466,6 +488,7 @@ class Wallet: PersistableObject
 	{
 		super.teardown()
 		self.hostPollingController = nil // just to be clear
+		self.light_wallet3_wrapper = nil // to be clear
 		if let handle = self.logIn_requestHandle {
 			handle.cancel() // in case wallet is being rebooted on API address change via settings
 		}
@@ -512,7 +535,12 @@ class Wallet: PersistableObject
 			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: wordsetName__err_str)
 			return
 		}
-		self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
+/*
+		COMMENTED now that it's a derived property… NOTE: probably best not to remove this comment in case someone wants to try to cache self.mnemonicString again later
+		
+	self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
+		
+*/
 		self.mnemonic_wordsetName = wordsetName!
 		//
 		MyMoneroCore.shared.WalletDescriptionFromMnemonicSeed(
@@ -524,6 +552,7 @@ class Wallet: PersistableObject
 					return
 				}
 				assert(walletDescription!.seed != "")
+				//
 				self._boot_byLoggingIn(
 					address: walletDescription!.publicAddress,
 					view_key__private: walletDescription!.privateKeys.view,
@@ -587,26 +616,22 @@ class Wallet: PersistableObject
 				)
 			}
 		}
-		if reconstitutionDescription.mnemonicString == nil {
-			if reconstitutionDescription.account_seed != nil {
-				assert(reconstitutionDescription.mnemonic_wordsetName != nil)
-				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
-				MyMoneroCore.shared.MnemonicStringFromSeed(
-					reconstitutionDescription.account_seed!,
-					reconstitutionDescription.mnemonic_wordsetName!
-				)
-				{ (err_str, seedAsMnemonic) in
-					if let err_str = err_str {
-						fn(err_str)
-						return
-					}
-					_proceedTo_login(mnemonicString: seedAsMnemonic!)
-				}
+		if reconstitutionDescription.account_seed != nil {
+			assert(reconstitutionDescription.mnemonic_wordsetName != nil)
+			// re-derive mnemonic string from account seed so we don't lose mnemonicSeed
+			let (err_str, seedAsMnemonic) = MyMoneroCore.shared.MnemonicStringFromSeed(
+				reconstitutionDescription.account_seed!,
+				reconstitutionDescription.mnemonic_wordsetName!
+			)
+			if let err_str = err_str {
+				fn(err_str)
 				return
 			}
+			_proceedTo_login(mnemonicString: seedAsMnemonic!)
+			return
 		}
 		_proceedTo_login(
-			mnemonicString: reconstitutionDescription.mnemonicString // might be nil
+			mnemonicString: reconstitutionDescription.mnemonicString // NOTE that this might be nil
 		)
 	}
 	//
@@ -720,54 +745,39 @@ class Wallet: PersistableObject
 	}
 	func _trampolineFor_successfullyBooted(
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{
-		func __proceed_havingActuallyBooted()
-		{
+	) {
 //			DDLog.Done("Wallets", "Successfully booted \(self)")
-			self.isBooted = true
-			DispatchQueue.main.async
-			{ [weak self] in
-				guard let thisSelf = self else {
-					return
-				}
-				thisSelf._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
-				//
-				NotificationCenter.default.post(name: PersistableObject.NotificationNames.booted.notificationName, object: self, userInfo: nil)
-			}
-			fn(nil)
+		//
+		// Important: must create & setup light_wallet3_wrapper
+		self.light_wallet3_wrapper = LightWallet3Wrapper() // TODO maybe roll init and setup together
+		let r: Bool!
+		if self.account_seed != nil {
+			r = self.light_wallet3_wrapper!.setupWallet( // TODO/FIXME: roll WalletDescriptionFromMnemonicSeed into LightWallet3Wrapper / light_wallet3 to avoid duplicate account_base alloc, etc
+				with_mnemonicSeed: self.new_mnemonicString, // derived non-nil from seed
+				mnemonicLanguage: self.mnemonic_wordsetName!.objcSerialized
+			)
+		} else {
+			r = self.light_wallet3_wrapper!.setupWallet( // TODO/FIXME: roll WalletDescriptionFromMnemonicSeed into LightWallet3Wrapper / light_wallet3 to avoid duplicate account_base alloc, etc
+				with_address: self.public_address,
+				viewkey: self.private_keys.view,
+				spendkey: self.private_keys.spend
+			)
+			
 		}
-		if self.account_seed == nil || self.account_seed! == "" {
-			DDLog.Warn("Wallets", "Wallet initialized without an account_seed.")
-			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
-			__proceed_havingActuallyBooted()
-			//
-			return
-		}
-		// re-derive mnemonic string from account seed
-		MyMoneroCore.shared.MnemonicStringFromSeed(
-			self.account_seed!,
-			self.mnemonic_wordsetName!
-		)
-		{ [weak self] (err_str, seedAsMnemonic) in
+		assert(r)
+		assert(self.light_wallet3_wrapper!.hasLWBeenInitialized)
+		//
+		self.isBooted = true
+		DispatchQueue.main.async
+		{ [weak self] in
 			guard let thisSelf = self else {
 				return
 			}
-			if let err_str = err_str {
-				thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
-				return
-			}
-			if thisSelf.mnemonicString != nil {
-				if thisSelf.mnemonicString != seedAsMnemonic! { // would be rather odd
-					assert(false, "Different mnemonicString derived from accountSeed than was entered for login")
-					thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: "Mnemonic seed mismatch")
-					return
-				}
-			} else {
-				thisSelf.mnemonicString = seedAsMnemonic!
-			}
-			__proceed_havingActuallyBooted()
+			thisSelf._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
+			//
+			NotificationCenter.default.post(name: PersistableObject.NotificationNames.booted.notificationName, object: self, userInfo: nil)
 		}
+		fn(nil)
 	}
 	func _atRuntime_setup_hostPollingController()
 	{
@@ -781,8 +791,7 @@ class Wallet: PersistableObject
 		wasAGeneratedWallet: Bool,
 		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{
+	) {
 		self.isLoggingIn = true
 		//
 		MyMoneroCore.shared.New_VerifiedComponentsForLogIn(
@@ -791,8 +800,7 @@ class Wallet: PersistableObject
 			spend_key: spend_key__private,
 			seed_orNil: seed_orNil,
 			wasAGeneratedWallet: wasAGeneratedWallet
-		)
-		{ [unowned self] (err_str, verifiedComponentsForLogIn) in
+		) { [unowned self] (err_str, verifiedComponentsForLogIn) in
 			if let err_str = err_str {
 				if persistEvenIfLoginFailed_forServerChange == true {
 					assert(false, "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true") // yet components are now invalid…?
@@ -928,7 +936,7 @@ class Wallet: PersistableObject
 		let fundsSender = HostedMonero.FundsSender(
 			target_address: target_address,
 			amount: amount,
-			wallet__keyImageCache: self.keyImageCache,
+			wallet__keyImageCache: MoneroUtils.KeyImageCache(), // TODO: remove this in favor of light_wallet3_wrapper sending
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
@@ -979,12 +987,12 @@ class Wallet: PersistableObject
 		self.spentOutputs = parsedResult.spentOutputs
 		//
 		let didActuallyChange_heights =
-			(self.account_scanned_tx_height == nil || self.account_scanned_tx_height != parsedResult.account_scanned_tx_height)
+			(self.account_scanned_tx_height == nil || self.account_scanned_tx_height != parsedResult.account_scanned_height)
 			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)
 			|| (self.account_scan_start_height == nil || self.account_scan_start_height != parsedResult.account_scan_start_height)
 			|| (self.transaction_height == nil || self.transaction_height != parsedResult.transaction_height)
 			|| (self.blockchain_height == nil || self.blockchain_height != parsedResult.blockchain_height)
-		self.account_scanned_tx_height = parsedResult.account_scanned_tx_height
+		self.account_scanned_tx_height = parsedResult.account_scanned_height
 		self.account_scanned_block_height = parsedResult.account_scanned_block_height
 		self.account_scan_start_height = parsedResult.account_scan_start_height
 		self.transaction_height = parsedResult.transaction_height

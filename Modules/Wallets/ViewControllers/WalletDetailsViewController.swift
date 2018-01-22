@@ -87,7 +87,7 @@ extension WalletDetails
 		{
 			self.wallet = wallet
 			self.infoDisclosingCellView = WalletDetails.InfoDisclosing.Cell(
-				wantsMnemonicDisplay: wallet.mnemonicString != nil
+				wantsMnemonicDisplay: wallet.account_seed != nil && wallet.account_seed! != "" /* to be careful… but TODO: rule this out earlier */
 			)
 			super.init()
 		}

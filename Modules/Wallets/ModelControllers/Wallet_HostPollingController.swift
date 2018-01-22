@@ -113,11 +113,7 @@ class Wallet_HostPollingController
 			return
 		}
 		self.requestHandleFor_addressInfo = HostedMonero.APIClient.shared.AddressInfo(
-			wallet_keyImageCache: wallet.keyImageCache,
-			address: wallet.public_address,
-			view_key__private: wallet.private_keys.view,
-			spend_key__public: wallet.public_keys.spend,
-			spend_key__private: wallet.private_keys.spend,
+			wallet__light_wallet3_wrapper: wallet.light_wallet3_wrapper!,
 			{ [unowned self] (err_str, parsedResult) in
 //				if self == nil {
 //					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
@@ -162,11 +158,7 @@ class Wallet_HostPollingController
 			return
 		}
 		self.requestHandleFor_addressTransactions = HostedMonero.APIClient.shared.AddressTransactions(
-			wallet_keyImageCache: wallet.keyImageCache,
-			address: wallet.public_address,
-			view_key__private: wallet.private_keys.view,
-			spend_key__public: wallet.public_keys.spend,
-			spend_key__private: wallet.private_keys.spend,
+			wallet__light_wallet3_wrapper: wallet.light_wallet3_wrapper!,
 			{ [unowned self] (err_str, parsedResult) in
 //				if self == nil {
 //					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")

@@ -319,7 +319,8 @@ extension WalletDetails
 				self.disclosed__fieldView_viewKey.set(text: wallet.private_keys.view)
 				self.disclosed__fieldView_spendKey.set(text: wallet.private_keys.spend)
 				if self.wantsMnemonicDisplay {
-					self.disclosed__fieldView_mnemonic.set(text: wallet.mnemonicString!)
+					assert(wallet.account_seed != nil)
+					self.disclosed__fieldView_mnemonic.set(text: wallet.new_mnemonicString)
 				}
 			}
 			func regenerateArrayOfFieldViews()

@@ -191,7 +191,6 @@
 		9F8441561F39405C00BED8E3 /* Tooltips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8441551F39405C00BED8E3 /* Tooltips.swift */; };
 		9F8587FA1F8A98B700E0F38F /* UIView+SafeArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8587F91F8A98B700E0F38F /* UIView+SafeArea.swift */; };
 		9F858B5C200983AB006F1339 /* monero_fork_rules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F858B5A200983AB006F1339 /* monero_fork_rules.cpp */; };
-		9F858B5F200E57F4006F1339 /* lightwallet_response_parsing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F858B5D200E57F4006F1339 /* lightwallet_response_parsing.cpp */; };
 		9F86738A1F2C396C00F89EAB /* URLOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8673891F2C396C00F89EAB /* URLOpening.swift */; };
 		9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */; };
 		9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */; };
@@ -293,6 +292,9 @@
 		9FAF95241FB4F4FD00ECE0A6 /* CcyConversionRates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */; };
 		9FB603081F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603061F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift */; };
 		9FB603091F4F6B6B00951175 /* ConnectivityMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603071F4F6B6B00951175 /* ConnectivityMessageViewController.swift */; };
+		9FC1D0C1200FD1E200A59744 /* LightWallet3Wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FC1D0BF200FD1E200A59744 /* LightWallet3Wrapper.mm */; };
+		9FC1D0C4200FE44A00A59744 /* light_wallet3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FC1D0C2200FE44A00A59744 /* light_wallet3.cpp */; };
+		9FC1D0C7200FE5AF00A59744 /* wallet3_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */; };
 		9FC366E51ECFA0E0006CE743 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC366E41ECFA0E0006CE743 /* Wallet.swift */; };
 		9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8AE901F241D2600AA553D /* IconAndMessage.swift */; };
 		9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */; };
@@ -770,8 +772,6 @@
 		9F858B59200983AA006F1339 /* wallet2_transfer_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wallet2_transfer_utils.h; sourceTree = "<group>"; };
 		9F858B5A200983AB006F1339 /* monero_fork_rules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_fork_rules.cpp; sourceTree = "<group>"; };
 		9F858B5B200983AB006F1339 /* monero_fork_rules.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_fork_rules.hpp; sourceTree = "<group>"; };
-		9F858B5D200E57F4006F1339 /* lightwallet_response_parsing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = lightwallet_response_parsing.cpp; sourceTree = "<group>"; };
-		9F858B5E200E57F4006F1339 /* lightwallet_response_parsing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = lightwallet_response_parsing.hpp; sourceTree = "<group>"; };
 		9F8673891F2C396C00F89EAB /* URLOpening.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLOpening.swift; sourceTree = "<group>"; };
 		9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Bold.otf"; sourceTree = "<group>"; };
 		9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Light.otf"; sourceTree = "<group>"; };
@@ -874,6 +874,12 @@
 		9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CcyConversionRates.swift; sourceTree = "<group>"; };
 		9FB603061F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessagePresentationController.swift; sourceTree = "<group>"; };
 		9FB603071F4F6B6B00951175 /* ConnectivityMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessageViewController.swift; sourceTree = "<group>"; };
+		9FC1D0BF200FD1E200A59744 /* LightWallet3Wrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LightWallet3Wrapper.mm; sourceTree = "<group>"; };
+		9FC1D0C0200FD1E200A59744 /* LightWallet3Wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightWallet3Wrapper.h; sourceTree = "<group>"; };
+		9FC1D0C2200FE44A00A59744 /* light_wallet3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = light_wallet3.cpp; sourceTree = "<group>"; };
+		9FC1D0C3200FE44A00A59744 /* light_wallet3.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = light_wallet3.hpp; sourceTree = "<group>"; };
+		9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wallet3_base.cpp; sourceTree = "<group>"; };
+		9FC1D0C6200FE5AF00A59744 /* wallet3_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = wallet3_base.hpp; sourceTree = "<group>"; };
 		9FC366E41ECFA0E0006CE743 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9FC8AE901F241D2600AA553D /* IconAndMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconAndMessage.swift; sourceTree = "<group>"; };
 		9FCB92741F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsAppTimeoutAfterSecondsSlider.swift; sourceTree = "<group>"; };
@@ -1690,8 +1696,8 @@
 			children = (
 				9F7ADAA61EBD2B420073C2BB /* App */,
 				9FA7341F1F07610E00C674D6 /* Logging */,
-				9F7CE0551FE89F5D00B351A3 /* mymonero-core-swift */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
+				9F7CE0551FE89F5D00B351A3 /* mymonero-core-swift */,
 				9FEC04F61ECFD8D3009256BD /* Persistence */,
 				9F8E301D1EED7D7800F89A1D /* Passwords */,
 				9FEC04EC1ECFD8C4009256BD /* Lists */,
@@ -1779,6 +1785,8 @@
 				9F7CE1781FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm */,
 				9F7CE0581FE89F5D00B351A3 /* MoneroTypes.h */,
 				9F7CE1791FE89F5D00B351A3 /* MoneroTypes.m */,
+				9FC1D0C0200FD1E200A59744 /* LightWallet3Wrapper.h */,
+				9FC1D0BF200FD1E200A59744 /* LightWallet3Wrapper.mm */,
 				9F7CE05C1FE89F5D00B351A3 /* mymonero-core-cpp */,
 			);
 			path = "mymonero-core-objcpp";
@@ -1797,11 +1805,13 @@
 				9F7CE0641FE89F5D00B351A3 /* monero_paymentID_utils.cpp */,
 				9F858B5A200983AB006F1339 /* monero_fork_rules.cpp */,
 				9F858B5B200983AB006F1339 /* monero_fork_rules.hpp */,
-				9F858B59200983AA006F1339 /* wallet2_transfer_utils.h */,
 				9F7CE05F1FE89F5D00B351A3 /* monero_transfer_utils.hpp */,
 				9F7CE0671FE89F5D00B351A3 /* monero_transfer_utils.cpp */,
-				9F858B5E200E57F4006F1339 /* lightwallet_response_parsing.hpp */,
-				9F858B5D200E57F4006F1339 /* lightwallet_response_parsing.cpp */,
+				9F858B59200983AA006F1339 /* wallet2_transfer_utils.h */,
+				9FC1D0C6200FE5AF00A59744 /* wallet3_base.hpp */,
+				9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */,
+				9FC1D0C3200FE44A00A59744 /* light_wallet3.hpp */,
+				9FC1D0C2200FE44A00A59744 /* light_wallet3.cpp */,
 				9F7CE0681FE89F5D00B351A3 /* Vendor */,
 			);
 			path = "mymonero-core-cpp";
@@ -2647,7 +2657,6 @@
 				9F9C59FD1F0D89BE003B9266 /* WalletPicker.swift in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */,
 				9FCD9D611F4948A7004C0349 /* OpenAlias.swift in Sources */,
-				9F858B5F200E57F4006F1339 /* lightwallet_response_parsing.cpp in Sources */,
 				9F7298C71F33E1FE00CD59E1 /* SettingsController.swift in Sources */,
 				9F33E70B1F22682A00610662 /* WalletDetailsTransactionsEmptyStateCell.swift in Sources */,
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
@@ -2699,6 +2708,7 @@
 				9F8587FA1F8A98B700E0F38F /* UIView+SafeArea.swift in Sources */,
 				9F2119211F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift in Sources */,
 				9F61EB2D1FF1C72F00C89F36 /* skein.c in Sources */,
+				9FC1D0C1200FD1E200A59744 /* LightWallet3Wrapper.mm in Sources */,
 				9F61EAA71FF1C72F00C89F36 /* crypto-ops.c in Sources */,
 				9F7CE20F1FE89F5D00B351A3 /* monero_key_utils.cpp in Sources */,
 				9F740D591F1702DF0017A20E /* FundsRequestDetailsViewController.swift in Sources */,
@@ -2735,6 +2745,7 @@
 				9FD961D6200837CB004A4CC7 /* Reachability-4.1.0.swift in Sources */,
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
+				9FC1D0C4200FE44A00A59744 /* light_wallet3.cpp in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
 				9F61EAA01FF1C72F00C89F36 /* keccak.c in Sources */,
 				9F61EB5E1FF1C72F00C89F36 /* memwipe.c in Sources */,
@@ -2759,6 +2770,7 @@
 				9F2119271F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
 				9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */,
 				9FA734181F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift in Sources */,
+				9FC1D0C7200FE5AF00A59744 /* wallet3_base.cpp in Sources */,
 				9F8E2FA01EE883B100F89A1D /* UIColor+Hex.swift in Sources */,
 				9F0801461F1965DD0074B35A /* WalletDetailsViewController.swift in Sources */,
 				9F2BFED01EF34FA3006B2F7D /* FundsRequest.swift in Sources */,
