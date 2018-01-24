@@ -38,6 +38,7 @@
 
 #import "DNSLookup.h"
 #import "MyMoneroCore_ObjCpp.h"
+#import "LightWallet3Wrapper.h"
 
 #endif /* MyMonero_BridgingHeader_h */
 

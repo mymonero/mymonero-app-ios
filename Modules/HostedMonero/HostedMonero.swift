@@ -50,8 +50,6 @@ extension HostedMonero
 		let transaction_height: UInt64
 		let blockchain_height: UInt64
 		//
-		let spentOutputs: [MoneroSpentOutputDescription] // these have a different format than MoneroOutputDescriptions (whose type's name needs to be made more precise)
-		//
 		let xmrToCcyRatesByCcy: [CcyConversionRates.Currency: Double]
 		//
 		static func new(
@@ -61,12 +59,7 @@ extension HostedMonero
 			err_str: String?,
 			result: ParsedResult_AddressInfo?
 		) {
-			
-			NSLog("total_received as int64: '\(wrapper.total_received() as UInt64)'")
-			NSLog("total_sent as int64: '\(wrapper.total_sent() as UInt64)'")
-			NSLog("locked_balance as int64: '\(wrapper.locked_balance() as UInt64)'")
-
-			let total_received = MoneroAmount("\(wrapper.total_sent() as UInt64)")!
+			let total_received = MoneroAmount("\(wrapper.total_received() as UInt64)")!
 			let locked_balance = MoneroAmount("\(wrapper.locked_balance() as UInt64)")!
 			let total_sent = MoneroAmount("\(wrapper.total_sent() as UInt64)")!
 			//
@@ -75,33 +68,6 @@ extension HostedMonero
 			let account_scan_start_height = wrapper.scan_start_height() as UInt64
 			let transaction_height = wrapper.transaction_height() as UInt64
 			let blockchain_height = wrapper.blockchain_height() as UInt64
-
-//			let spent_outputs = response_jsonDict["spent_outputs"] as? [[String: Any]] ?? [[String: Any]]()
-			//
-			var mutable_spentOutputs: [MoneroSpentOutputDescription] = []
-//			for (_, spent_output) in spent_outputs.enumerated() {
-//				let generated__keyImage = wallet_keyImageCache.lazy_keyImage(
-//					tx_pub_key: spent_output["tx_pub_key"] as! MoneroTransactionPubKey,
-//					out_index: spent_output["out_index"] as! UInt64,
-//					public_address: address,
-//					sec_keys: MoneroKeyDuo(view: view_key__private, spend: spend_key__private),
-//					pub_spendKey: spend_key__public
-//				)
-//				let spent_output__keyImage = spent_output["key_image"] as! MoneroKeyImage
-//				if spent_output__keyImage != generated__keyImage { // not spent
-//					//				 DDLog.Info(
-//					//					"HostedMonero",
-//					//					"Output used as mixin \(spent_output__keyImage)/\(generated__keyImage))"
-//					//				)
-//					let spent_output__amount = MoneroAmount(spent_output["amount"] as! String)!
-//					total_sent -= spent_output__amount
-//				}
-//				// TODO: this is faithful to old web wallet code but is it really correct?
-//				mutable_spentOutputs.append( // but keep output regardless of whether spent or not
-//					MoneroSpentOutputDescription.new(withAPIJSONDict: spent_output)
-//				)
-//			}
-			let final_spentOutputs = mutable_spentOutputs
 			//
 			let xmrToCcyRatesByCcySymbol = response_jsonDict["rates"] as? [String: Double] ?? [String: Double]() // jic it's not there
 			var final_xmrToCcyRatesByCcy: [CcyConversionRates.Currency: Double] = [:]
@@ -125,8 +91,6 @@ extension HostedMonero
 				account_scan_start_height: account_scan_start_height,
 				transaction_height: transaction_height,
 				blockchain_height: blockchain_height,
-				//
-				spentOutputs: final_spentOutputs,
 				//
 				xmrToCcyRatesByCcy: final_xmrToCcyRatesByCcy
 			)
@@ -156,81 +120,47 @@ extension HostedMonero
 			let blockchain_height = wrapper.blockchain_height() as UInt64
 			//
 			var mutable_transactions: [MoneroHistoricalTransactionRecord] = []
-//			let transaction_dicts = response_jsonDict["transactions"] as? [[String: Any]] ?? []
-//			for (_, tx_dict) in transaction_dicts.enumerated() {
-//				assert(blockchain_height != 0)  // if we have txs to parse, I think we can assume height != 0
-//				//
-//				var mutable__tx_total_sent = MoneroAmount(tx_dict["total_sent"] as! String)!
-//				let spent_outputs: [[String: Any]] = tx_dict["spent_outputs"] as? [[String: Any]] ?? []
-//				var mutable__final_tx_spent_output_dicts = [[String: Any]]()
-//				for (_, spent_output) in spent_outputs.enumerated() {
-//					let generated__keyImage = wallet_keyImageCache.lazy_keyImage(
-//						tx_pub_key: spent_output["tx_pub_key"] as! MoneroTransactionPubKey,
-//						out_index: spent_output["out_index"] as! UInt64,
-//						public_address: address,
-//						sec_keys: MoneroKeyDuo(view: view_key__private, spend: spend_key__private),
-//						pub_spendKey: spend_key__public
-//					)
-//					let spent_output__keyImage = spent_output["key_image"] as! MoneroKeyImage
-//					if spent_output__keyImage != generated__keyImage { // is NOT own - discard/redact
-//						//					NSLog("Output used as mixin \(spent_output__keyImage)/\(generated__keyImage))")
-//						let spent_output__amount = MoneroAmount(spent_output["amount"] as! String)!
-//						mutable__tx_total_sent -= spent_output__amount
-//					} else { // IS own - include/keep
-//						mutable__final_tx_spent_output_dicts.append(spent_output)
-//					}
-//				}
-//				let final_tx_totalSent: MoneroAmount = mutable__tx_total_sent
-//				let final_tx_spent_output_dicts = mutable__final_tx_spent_output_dicts
-//				let final_tx_totalReceived = MoneroAmount(tx_dict["total_received"] as! String)! // assuming value exists - default to 0 if n
-//				if (final_tx_totalReceived + final_tx_totalSent <= 0) {
-//					continue // skip
-//				}
-//				let final_tx_amount = final_tx_totalReceived - final_tx_totalSent
-//
-//				let height = tx_dict["height"] as! UInt64
-//				let unlockTime = tx_dict["unlock_time"] as? Double ?? 0
-//				//
-//				let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
-//					givenTransactionHeight: height,
-//					andWalletBlockchainHeight: blockchain_height
-//				)
-//				let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
-//					givenTransactionUnlockTime: unlockTime,
-//					andWalletBlockchainHeight: blockchain_height
-//				)
-//				let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
-//					givenTransactionUnlockTime: unlockTime,
-//					andWalletBlockchainHeight: blockchain_height
-//					) : nil
-//				let transactionRecord = MoneroHistoricalTransactionRecord(
-//					amount: final_tx_amount,
-//					totalSent: final_tx_totalSent, // must use this as it's been adjusted for non-own outputs
-//					totalReceived: MoneroAmount("\(tx_dict["total_received"] as! String)")!,
-//					approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: final_tx_amount), // -> String -> Double
-//					spent_outputs: MoneroSpentOutputDescription.newArray(
-//						withAPIJSONDicts: final_tx_spent_output_dicts // must use this as it's been adjusted for non-own outputs
-//					),
-//					timestamp: MoneroJSON_dateFormatter.date(from: "\(tx_dict["timestamp"] as! String)")!,
-//					hash: tx_dict["hash"] as! MoneroTransactionHash,
-//					paymentId: tx_dict["payment_id"] as? MoneroPaymentID,
-//					mixin: tx_dict["mixin"] as! UInt,
-//					//
-//					mempool: tx_dict["mempool"] as! Bool, // is_unconfirmed
-//					unlock_time: unlockTime,
-//					height: height,
-//					//
-//					cached__isConfirmed: isConfirmed,
-//					cached__isUnlocked: isUnlocked,
-//					cached__lockedReason: lockedReason,
-//					//
-//					//				id: (dict["id"] as? UInt64)!, // unwrapping this for clarity
-//					isJustSentTransientTransactionRecord: false
-//				)
-//				mutable_transactions.append(transactionRecord)
-//			}
-			mutable_transactions.sort { (a, b) -> Bool in
-				return a.timestamp >= b.timestamp // TODO: this used to sort by b.id-a.id in JS… is timestamp sort ok?
+			let bridge_ordered_address_txs = wrapper.timeOrdered_historicalTransactionRecords() as! [Monero_Bridge_HistoricalTransactionRecord]
+			for (_, bridge_address_tx) in bridge_ordered_address_txs.enumerated() {
+				let amountPolarity = MoneroAmount("\(bridge_address_tx.isIncoming ? 1 : -1)")!
+				let final_tx_amount = MoneroAmount("\(bridge_address_tx.amount as UInt64)")! * amountPolarity
+				let height = bridge_address_tx.height
+				let unlockTime = bridge_address_tx.unlockTime
+				//
+				let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
+					givenTransactionHeight: height,
+					andWalletBlockchainHeight: blockchain_height
+				)
+				let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
+					givenTransactionUnlockTime: unlockTime,
+					andWalletBlockchainHeight: blockchain_height
+				)
+				let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
+					givenTransactionUnlockTime: unlockTime,
+					andWalletBlockchainHeight: blockchain_height
+				) : nil
+				let optl__paymentId = bridge_address_tx.paymentId != nil && bridge_address_tx.paymentId! != "" ?  bridge_address_tx.paymentId as! MoneroPaymentID : nil
+				let transactionRecord = MoneroHistoricalTransactionRecord(
+					amount: final_tx_amount,
+					timestamp: Date.init(
+						timeIntervalSince1970: TimeInterval(bridge_address_tx.timestamp as UInt64)
+					),
+					hash: bridge_address_tx.txHash as MoneroTransactionHash,
+					paymentId: optl__paymentId,
+					mixin: bridge_address_tx.mixin as UInt32,
+					//
+					mempool: bridge_address_tx.mempool, // is_unconfirmed
+					unlock_time: unlockTime,
+					height: height,
+					//
+					cached__isConfirmed: isConfirmed,
+					cached__isUnlocked: isUnlocked,
+					cached__lockedReason: lockedReason,
+					//
+//					id: (dict["id"] as? UInt64)!, // unwrapping this for clarity
+					isJustSentTransientTransactionRecord: false
+				)
+				mutable_transactions.append(transactionRecord)
 			}
 			let final_transactions = mutable_transactions
 			//

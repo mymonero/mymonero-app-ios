@@ -172,8 +172,6 @@
 		9F7CE2101FE89F5D00B351A3 /* monero_key_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE1771FE89F5D00B351A3 /* monero_key_utils.cpp */; };
 		9F7CE2111FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE1781FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm */; };
 		9F7CE2121FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE1781FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm */; };
-		9F7CE2131FE89F5D00B351A3 /* MoneroTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE1791FE89F5D00B351A3 /* MoneroTypes.m */; };
-		9F7CE2141FE89F5D00B351A3 /* MoneroTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE1791FE89F5D00B351A3 /* MoneroTypes.m */; };
 		9F7CE2151FE89F5D00B351A3 /* MoneroTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE17A1FE89F5D00B351A3 /* MoneroTypes.swift */; };
 		9F7CE2161FE89F5D00B351A3 /* MoneroTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE17A1FE89F5D00B351A3 /* MoneroTypes.swift */; };
 		9F7CE2171FE89F5D00B351A3 /* MoneroUtils_PaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7CE17B1FE89F5D00B351A3 /* MoneroUtils_PaymentIDs.swift */; };
@@ -748,7 +746,6 @@
 		9F7ADB011EBD30330073C2BB /* AppSingletonsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSingletonsController.swift; sourceTree = "<group>"; };
 		9F7ADB031EBD30710073C2BB /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		9F7CE0571FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = MyMoneroCore_ObjCpp.h; sourceTree = "<group>"; };
-		9F7CE0581FE89F5D00B351A3 /* MoneroTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoneroTypes.h; sourceTree = "<group>"; };
 		9F7CE05E1FE89F5D00B351A3 /* monero_key_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_key_utils.hpp; sourceTree = "<group>"; };
 		9F7CE05F1FE89F5D00B351A3 /* monero_transfer_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_transfer_utils.hpp; sourceTree = "<group>"; };
 		9F7CE0601FE89F5D00B351A3 /* monero_paymentID_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_paymentID_utils.hpp; sourceTree = "<group>"; };
@@ -758,7 +755,6 @@
 		9F7CE0671FE89F5D00B351A3 /* monero_transfer_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_transfer_utils.cpp; sourceTree = "<group>"; };
 		9F7CE1771FE89F5D00B351A3 /* monero_key_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_key_utils.cpp; sourceTree = "<group>"; };
 		9F7CE1781FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MyMoneroCore_ObjCpp.mm; sourceTree = "<group>"; };
-		9F7CE1791FE89F5D00B351A3 /* MoneroTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoneroTypes.m; sourceTree = "<group>"; };
 		9F7CE17A1FE89F5D00B351A3 /* MoneroTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes.swift; sourceTree = "<group>"; };
 		9F7CE17B1FE89F5D00B351A3 /* MoneroUtils_PaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_PaymentIDs.swift; sourceTree = "<group>"; };
 		9F7CE17E1FE89F5D00B351A3 /* MoneroUtils_RequestURIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_RequestURIs.swift; sourceTree = "<group>"; };
@@ -1783,8 +1779,6 @@
 			children = (
 				9F7CE0571FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.h */,
 				9F7CE1781FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm */,
-				9F7CE0581FE89F5D00B351A3 /* MoneroTypes.h */,
-				9F7CE1791FE89F5D00B351A3 /* MoneroTypes.m */,
 				9FC1D0C0200FD1E200A59744 /* LightWallet3Wrapper.h */,
 				9FC1D0BF200FD1E200A59744 /* LightWallet3Wrapper.mm */,
 				9F7CE05C1FE89F5D00B351A3 /* mymonero-core-cpp */,
@@ -1795,6 +1789,11 @@
 		9F7CE05C1FE89F5D00B351A3 /* mymonero-core-cpp */ = {
 			isa = PBXGroup;
 			children = (
+				9F858B59200983AA006F1339 /* wallet2_transfer_utils.h */,
+				9FC1D0C6200FE5AF00A59744 /* wallet3_base.hpp */,
+				9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */,
+				9FC1D0C3200FE44A00A59744 /* light_wallet3.hpp */,
+				9FC1D0C2200FE44A00A59744 /* light_wallet3.cpp */,
 				9F7CE0611FE89F5D00B351A3 /* monero_wallet_utils.hpp */,
 				9F7CE0651FE89F5D00B351A3 /* monero_wallet_utils.cpp */,
 				9F7CE05E1FE89F5D00B351A3 /* monero_key_utils.hpp */,
@@ -1807,11 +1806,6 @@
 				9F858B5B200983AB006F1339 /* monero_fork_rules.hpp */,
 				9F7CE05F1FE89F5D00B351A3 /* monero_transfer_utils.hpp */,
 				9F7CE0671FE89F5D00B351A3 /* monero_transfer_utils.cpp */,
-				9F858B59200983AA006F1339 /* wallet2_transfer_utils.h */,
-				9FC1D0C6200FE5AF00A59744 /* wallet3_base.hpp */,
-				9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */,
-				9FC1D0C3200FE44A00A59744 /* light_wallet3.hpp */,
-				9FC1D0C2200FE44A00A59744 /* light_wallet3.cpp */,
 				9F7CE0681FE89F5D00B351A3 /* Vendor */,
 			);
 			path = "mymonero-core-cpp";
@@ -2775,7 +2769,6 @@
 				9F0801461F1965DD0074B35A /* WalletDetailsViewController.swift in Sources */,
 				9F2BFED01EF34FA3006B2F7D /* FundsRequest.swift in Sources */,
 				9F2BFE741EEEDEE3006B2F7D /* HighlightableCells.swift in Sources */,
-				9F7CE2131FE89F5D00B351A3 /* MoneroTypes.m in Sources */,
 				9FA734241F07610E00C674D6 /* Logging.swift in Sources */,
 				9FEFDD6A1F991B83001C3CFD /* CurrencyPicker.swift in Sources */,
 				9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */,
@@ -2864,7 +2857,6 @@
 				9F7CE2121FE89F5D00B351A3 /* MyMoneroCore_ObjCpp.mm in Sources */,
 				9F7CE2101FE89F5D00B351A3 /* monero_key_utils.cpp in Sources */,
 				9F7CE2221FE89F5D00B351A3 /* MyMoneroCore.swift in Sources */,
-				9F7CE2141FE89F5D00B351A3 /* MoneroTypes.m in Sources */,
 				9F7CE2161FE89F5D00B351A3 /* MoneroTypes.swift in Sources */,
 				9FE199251F846003003BE0DF /* MyMoneroScreenshots_Constants.swift in Sources */,
 				9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */,

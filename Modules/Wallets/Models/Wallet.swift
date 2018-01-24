@@ -164,7 +164,6 @@ class Wallet: PersistableObject
 		case swatchColorChanged	= "Wallet_NotificationNames_swatchColorChanged"
 		case balanceChanged		= "Wallet_NotificationNames_balanceChanged"
 		//
-		case spentOutputsChanged = "Wallet_NotificationNames_spentOutputsChanged"
 		case heightsUpdated		 = "Wallet_NotificationNames_heightsUpdated"
 		case transactionsChanged = "Wallet_NotificationNames_transactionsChanged"
 		//
@@ -222,8 +221,6 @@ class Wallet: PersistableObject
 		case account_scan_start_height = "account_scan_start_height"
 		case transaction_height = "transaction_height"
 		case blockchain_height = "blockchain_height"
-		//
-		case spentOutputs = "spentOutputs"
 		//
 		case transactions = "transactions"
 
@@ -284,7 +281,6 @@ class Wallet: PersistableObject
 	var transaction_height: UInt64?
 	var blockchain_height: UInt64?
 	//
-	var spentOutputs: [MoneroSpentOutputDescription]?
 	var transactions: [MoneroHistoricalTransactionRecord]?
 	//
 	var dateThatLast_fetchedAccountInfo: Date?
@@ -349,12 +345,6 @@ class Wallet: PersistableObject
 			}
 			if let value = self.lockedBalance {
 				dict[DictKey.lockedBalance.rawValue] = String(value, radix: 10)
-			}
-			//
-			if let array = self.spentOutputs {
-				dict[DictKey.spentOutputs.rawValue] = MoneroSpentOutputDescription.newSerializedDictRepresentation(
-					withArray: array
-				)
 			}
 			//
 			dict[DictKey.account_scanned_tx_height.rawValue] = self.account_scanned_tx_height
@@ -444,11 +434,6 @@ class Wallet: PersistableObject
 		self.transaction_height = dictRepresentation[DictKey.transaction_height.rawValue] as? UInt64
 		self.blockchain_height = dictRepresentation[DictKey.blockchain_height.rawValue] as? UInt64
 		//
-		if let jsonRepresentations = dictRepresentation[DictKey.spentOutputs.rawValue] {
-			self.spentOutputs = MoneroSpentOutputDescription.newArray(
-				fromJSONRepresentations: jsonRepresentations as! [[String: Any]]
-			)
-		}
 		if let jsonRepresentations = dictRepresentation[DictKey.transactions.rawValue] {
 			self.transactions = MoneroHistoricalTransactionRecord.newArray(
 				fromJSONRepresentations: jsonRepresentations as! [[String: Any]],
@@ -982,10 +967,6 @@ class Wallet: PersistableObject
 		self.totalSent = parsedResult.totalSent
 		self.lockedBalance = parsedResult.lockedBalance
 		//
-		let existing_spentOutputs = self.spentOutputs
-		let didActuallyChange_spentOutputs = existing_spentOutputs == nil || (parsedResult.spentOutputs != existing_spentOutputs!)
-		self.spentOutputs = parsedResult.spentOutputs
-		//
 		let didActuallyChange_heights =
 			(self.account_scanned_tx_height == nil || self.account_scanned_tx_height != parsedResult.account_scanned_height)
 			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)
@@ -1017,14 +998,6 @@ class Wallet: PersistableObject
 				old_totalReceived: existing_totalReceived,
 				old_totalSent: existing_totalSent,
 				old_lockedBalance: existing_lockedBalance
-			)
-		}
-		if didActuallyChange_spentOutputs == true
-			|| wasFirstFetchOf_accountInfo == true
-		{
-			anyChanges = true
-			self.___didReceiveActualChangeTo_spentOutputs(
-				old_spentOutputs: existing_spentOutputs
 			)
 		}
 		if didActuallyChange_heights == true
@@ -1091,20 +1064,9 @@ class Wallet: PersistableObject
 		old_totalReceived: MoneroAmount?,
 		old_totalSent: MoneroAmount?,
 		old_lockedBalance: MoneroAmount?
-	)
-	{
+	) {
 		NotificationCenter.default.post(
 			name: Notification.Name(NotificationNames.balanceChanged.rawValue),
-			object: self
-		)
-	}
-	func ___didReceiveActualChangeTo_spentOutputs(
-		// Not actually using this arg currently…
-		old_spentOutputs: [MoneroSpentOutputDescription]?
-	)
-	{
-		NotificationCenter.default.post(
-			name: Notification.Name(NotificationNames.spentOutputsChanged.rawValue),
 			object: self
 		)
 	}
@@ -1117,8 +1079,7 @@ class Wallet: PersistableObject
 	}
 	func ___didReceiveActualChangeTo_transactions(
 		old_transactions: [MoneroHistoricalTransactionRecord]?
-	)
-	{
+	) {
 		NotificationCenter.default.post(
 			name: Notification.Name(NotificationNames.transactionsChanged.rawValue),
 			object: self

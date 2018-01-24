@@ -165,12 +165,6 @@ extension WalletDetails
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(infoUpdated),
-				name: Wallet.NotificationNames.spentOutputsChanged.notificationName,
-				object: self.wallet
-			)
-			NotificationCenter.default.addObserver(
-				self,
-				selector: #selector(infoUpdated),
 				name: Wallet.NotificationNames.swatchColorChanged.notificationName,
 				object: self.wallet
 			)
@@ -203,7 +197,6 @@ extension WalletDetails
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.balanceChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.heightsUpdated.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.labelChanged.notificationName, object: self.wallet)
-			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.spentOutputsChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.swatchColorChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(self, name: Wallet.NotificationNames.transactionsChanged.notificationName, object: self.wallet)
 			NotificationCenter.default.removeObserver(

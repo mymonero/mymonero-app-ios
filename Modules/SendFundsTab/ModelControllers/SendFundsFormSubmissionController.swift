@@ -274,11 +274,7 @@ extension SendFundsForm
 		)
 		{
 			let mockedTransaction = MoneroHistoricalTransactionRecord(
-				amount: sentAmount,
-				totalSent: sentAmount,
-				totalReceived: MoneroAmount("0"),
-				approxFloatAmount: -1 * self.parameters.amount_submittableDouble, // -1 b/c it's outgoing!
-				spent_outputs: nil, // TODO: is this ok?
+				amount: MoneroAmount("0") - sentAmount, 
 				timestamp: Date(), // faking this
 				hash: transactionHash,
 				paymentId: sentWith_paymentID, // transaction.paymentId will therefore be nil for integrated addresses
