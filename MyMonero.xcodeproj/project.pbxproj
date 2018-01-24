@@ -527,6 +527,7 @@
 		9F5A14431FF19B2F00374D01 /* hex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hex.cpp; sourceTree = "<group>"; };
 		9F5A14461FF19B2F00374D01 /* http_auth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_auth.cpp; sourceTree = "<group>"; };
 		9F5A14471FF19B2F00374D01 /* wipeable_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wipeable_string.cpp; sourceTree = "<group>"; };
+		9F5DD406201911DF0056E6D6 /* light_wallet3_server_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light_wallet3_server_api.h; sourceTree = "<group>"; };
 		9F61E8821FF1B39C00C89F36 /* portable_binary_iarchive.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = portable_binary_iarchive.hpp; sourceTree = "<group>"; };
 		9F61E8831FF1B39C00C89F36 /* portable_binary_archive.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = portable_binary_archive.hpp; sourceTree = "<group>"; };
 		9F61E8841FF1B39C00C89F36 /* portable_binary_oarchive.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = portable_binary_oarchive.hpp; sourceTree = "<group>"; };
@@ -1792,6 +1793,7 @@
 				9F858B59200983AA006F1339 /* wallet2_transfer_utils.h */,
 				9FC1D0C6200FE5AF00A59744 /* wallet3_base.hpp */,
 				9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */,
+				9F5DD406201911DF0056E6D6 /* light_wallet3_server_api.h */,
 				9FC1D0C3200FE44A00A59744 /* light_wallet3.hpp */,
 				9FC1D0C2200FE44A00A59744 /* light_wallet3.cpp */,
 				9F7CE0611FE89F5D00B351A3 /* monero_wallet_utils.hpp */,
