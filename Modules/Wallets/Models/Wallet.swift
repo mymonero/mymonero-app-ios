@@ -747,7 +747,15 @@ class Wallet: PersistableObject
 				viewkey: self.private_keys.view,
 				spendkey: self.private_keys.spend
 			)
-			
+		}
+		self.light_wallet3_wrapper!.getRandomOuts__block =
+		{ [weak self] (cb) in
+			// TODO: ask server; factor this into method
+			let retVals = Monero_Bridge_GetRandomOutsBlock_RetVals()
+			retVals.errStr_orNil = nil // TODO
+			retVals.mixOuts = [[String: Any]]() // TODO
+
+			cb(retVals)
 		}
 		assert(r)
 		assert(self.light_wallet3_wrapper!.hasLWBeenInitialized)
@@ -921,11 +929,7 @@ class Wallet: PersistableObject
 		let fundsSender = HostedMonero.FundsSender(
 			target_address: target_address,
 			amount: amount,
-			wallet__keyImageCache: MoneroUtils.KeyImageCache(), // TODO: remove this in favor of light_wallet3_wrapper sending
-			wallet__public_address: self.public_address,
-			wallet__private_keys: self.private_keys,
-			wallet__public_keys: self.public_keys,
-			wallet__blockchainSize: self.blockchain_height!, // TODO: is this correct?
+			wallet__light_wallet3_wrapper: self.light_wallet3_wrapper!,
 			priority: .mlow, // TODO - pass this through (from slider) … and also… does this actually correspond with the old MyMonero priority?
 			payment_id: payment_id
 		)

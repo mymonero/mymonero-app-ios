@@ -82,11 +82,7 @@ extension HostedMonero
 		//
 		var target_address: MoneroAddress! // currency-ready wallet address, but not an OA address (resolve before calling)
 		var amount: HumanUnderstandableCurrencyAmountDouble! // human-understandable number, e.g. input 0.5 for 0.5 XMR
-		var wallet__keyImageCache: MoneroUtils.KeyImageCache!
-		var wallet__public_address: MoneroAddress!
-		var wallet__private_keys: MoneroKeyDuo!
-		var wallet__public_keys: MoneroKeyDuo!
-		var wallet__blockchainSize: UInt64!
+		var wallet__light_wallet3_wrapper: LightWallet3Wrapper!
 		var priority: MoneroTransferSimplifiedPriority
 		var payment_id: MoneroPaymentID?
 		// TODO: for cancelling?
@@ -104,21 +100,13 @@ extension HostedMonero
 		init(
 			target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 			amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
-			wallet__keyImageCache: MoneroUtils.KeyImageCache,
-			wallet__public_address: MoneroAddress,
-			wallet__private_keys: MoneroKeyDuo,
-			wallet__public_keys: MoneroKeyDuo,
-			wallet__blockchainSize: UInt64,
+			wallet__light_wallet3_wrapper: LightWallet3Wrapper,
 			priority: MoneroTransferSimplifiedPriority,
 			payment_id: MoneroPaymentID?
 		) {
 			self.target_address = target_address
 			self.amount = amount
-			self.wallet__keyImageCache = wallet__keyImageCache
-			self.wallet__public_address = wallet__public_address
-			self.wallet__private_keys = wallet__private_keys
-			self.wallet__public_keys = wallet__public_keys
-			self.wallet__blockchainSize = wallet__blockchainSize
+			self.wallet__light_wallet3_wrapper = wallet__light_wallet3_wrapper
 			self.priority = priority
 			self.payment_id = payment_id
 		}
@@ -177,40 +165,22 @@ extension HostedMonero
 			}
 			// TODO hang onto this to make it cancelable
 			let _ = HostedMonero.APIClient.shared.UnspentOuts(
-				wallet_keyImageCache: wallet__keyImageCache,
-				address: wallet__public_address,
-				view_key__private: wallet__private_keys.view,
-				spend_key__public: wallet__public_keys.spend,
-				spend_key__private: wallet__private_keys.spend,
-				{ (err_str, result) in
+				wallet__light_wallet3_wrapper: wallet__light_wallet3_wrapper!,
+				{ (err_str) in
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)
 						return
 					}
-					_proceedTo_contructAndSignTx(
-						unusedOuts: result!.unspentOutputs
-					)
+					_proceedTo_contructAndSignTx() // no need to pass any result b/c wrapper object has it
 				}
 			)
-			func _proceedTo_contructAndSignTx(
-				unusedOuts: [MoneroOutputDescription]
-			) {
-				MyMoneroCore.shared.new_serializedSignedTransaction(
-					wallet__private_keys: wallet__private_keys,
+			func _proceedTo_contructAndSignTx()
+			{
+				self.wallet__light_wallet3_wrapper.new_serializedSignedTransactionWith(
 					to_address: target_address,
 					amount_float_string: "\(amount!)", // the C++ code wants to parse the float string again; Must unwrap to prevent 'Optional(…)'
-					payment_id: payment_id,
-					blockchainSize: self.wallet__blockchainSize,
-					priority: self.priority,
-					unusedOuts: unusedOuts,
-					getRandomOuts__block:
-					{ (cb) in
-						let retVals = Monero_GetRandomOutsBlock_RetVals()
-						retVals.errStr_orNil = nil // TODO
-						retVals.mixOuts = [[String: Any]]() // TODO
-						
-						cb(retVals)
-					}
+					payment_id: self.payment_id,
+					priority: self.priority.cppRepresentation
 				) { (err_str, serializedSignedTransaction) in
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)

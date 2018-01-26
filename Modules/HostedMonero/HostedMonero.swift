@@ -174,71 +174,6 @@ extension HostedMonero
 			return (nil, result)
 		}
 	}
-	struct ParsedResult_UnspentOuts
-	{
-		let unspentOutputs: [MoneroOutputDescription]
-		//
-		//
-		static func newByParsing(
-			response_jsonDict: [String: Any],
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			spend_key__public: MoneroKey,
-			spend_key__private: MoneroKey,
-			wallet_keyImageCache: MoneroUtils.KeyImageCache
-		) -> (
-			err_str: String?,
-			result: ParsedResult_UnspentOuts
-		) {
-			guard let outputs_value__orNSNull = response_jsonDict["outputs"] else { // empty… or maybe still empty bc it could be NSNull
-				return (nil, ParsedResult_UnspentOuts( // empty
-					unspentOutputs: []
-				))
-			}
-			guard let outputs_dicts = outputs_value__orNSNull as? [[String: Any]] else { // imprecise bc it doesn't distinguish btwn legit empty but NSNull , and invalid input format… but we must catch NSNull too
-				return (nil, ParsedResult_UnspentOuts( // empty
-					unspentOutputs: []
-				))
-			}
-			var mutable_unspentOutputs: [MoneroOutputDescription] = []
-			for (_, output_dict) in outputs_dicts.enumerated() {
-				guard let output__tx_pub_key = output_dict["tx_pub_key"] as? MoneroTransactionPubKey else { // do we ever expect these not to exist?
-					DDLog.Warn("HostedMonero", "This unspent out was missing a tx_pub_key. Skipping.")
-					continue // skip
-				}
-				let output__index = output_dict["index"] as! UInt64 // not expecting it not to exist
-				let spend_key_images = output_dict["spend_key_images"] as! [String] // intended to throw on nil
-				var mutable_isOutputSpent = false // let's see…
-				for (_, output__spend_key_image) in spend_key_images.enumerated() {
-					let generated__keyImage = wallet_keyImageCache.lazy_keyImage(
-						tx_pub_key:output__tx_pub_key,
-						out_index: output__index,
-						public_address: address,
-						sec_keys: MoneroKeyDuo(view: view_key__private, spend: spend_key__private),
-						pub_spendKey: spend_key__public
-					)
-					if generated__keyImage == output__spend_key_image { // output was spent… exclude
-						//					DDLog.Info("HostedMonero", "Output was spent; key image: \(output__spend_key_image)");
-						mutable_isOutputSpent = true
-						break // exit spend key img loop to evaluate mutable_isOutputSpent
-					} else { // output was used for mixing
-						//					DDLog.Info("HostedMonero", "Output used as mixin; key image: \(output__spend_key_image)");
-					}
-				}
-				let isOutputSpent = mutable_isOutputSpent
-				if isOutputSpent == false {
-					let outputDescription = MoneroOutputDescription.new(withAPIJSONDict: output_dict)
-					mutable_unspentOutputs.append(outputDescription)
-				}
-			}
-			//
-			let final_unspentOutputs = mutable_unspentOutputs
-			let result = ParsedResult_UnspentOuts(
-				unspentOutputs: final_unspentOutputs
-			)
-			return (nil, result)
-		}
-	}
 	struct ParsedResult_RandomOuts
 	{
 		let amount_outs: [MoneroRandomAmountAndOutputs]
@@ -420,6 +355,24 @@ extension HostedMonero
 				}
 			}
 		}
+		private func _shared_onMain_callBackFromRequest(
+			_ err_str: String?,
+			_ fn: @escaping (
+				_ err_str: String?
+			) -> Void
+		) {
+			if err_str != nil {
+				DDLog.Error("HostedMonero", "\(err_str!)")
+			}
+			if Thread.isMainThread { // minor
+				fn(err_str)
+			} else {
+				DispatchQueue.main.async
+				{
+					fn(err_str)
+				}
+			}
+		}
 		//
 		// Login
 		@discardableResult
@@ -473,7 +426,7 @@ extension HostedMonero
 					// ^- we want to make sure the light_wallet3 gets to set its m_light_wallet_connected back to false
 					return
 				}
-				let response_jsonString = String(data: response_data!, encoding: .utf8)
+				let response_jsonString = String(data: response_data!, encoding: .utf8)!
 				wallet_wrapper.ingestJSONString_addressInfo(response_jsonString, or_didError: false)
 				//
 				let (err_str, result) = ParsedResult_AddressInfo.new(
@@ -504,7 +457,7 @@ extension HostedMonero
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let response_jsonString = String(data: response_data!, encoding: .utf8)
+				let response_jsonString = String(data: response_data!, encoding: .utf8)!
 				wallet_wrapper.ingestJSONString_addressTxs(response_jsonString)
 				//
 				let (err_str, result) = ParsedResult_AddressTransactions.new(
@@ -550,21 +503,17 @@ extension HostedMonero
 		// Sending funds
 		@discardableResult
 		func UnspentOuts(
-			wallet_keyImageCache: MoneroUtils.KeyImageCache,
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			spend_key__public: MoneroKey,
-			spend_key__private: MoneroKey,
+			wallet__light_wallet3_wrapper wallet_wrapper: LightWallet3Wrapper,
 			_ fn: @escaping (
-				_ err_str: String?,
-				_ result: ParsedResult_UnspentOuts?
+				_ err_str: String?
+				// no return value because values are stored on the wallet_wrapper
 			) -> Void
 		) -> RequestHandle? {
 			let mixinSize = MyMoneroCore.shared.fixedMixinsize
 			let parameters: [String: Any] =
 			[
-				"address": address,
-				"view_key": view_key__private,
+				"address": wallet_wrapper.address(),
+				"view_key": wallet_wrapper.view_key__private(),
 				"amount": "0",
 				"mixin": mixinSize,
 				"use_dust": mixinSize == 0, // Use dust outputs only when we are using no mixins
@@ -574,18 +523,16 @@ extension HostedMonero
 			let requestHandle = self._request(endpoint, parameters)
 			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
-					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
+					self._shared_onMain_callBackFromRequest(err_str, fn)
 					return
 				}
-				let (err_str, result) = ParsedResult_UnspentOuts.newByParsing(
-					response_jsonDict: response_jsonDict!,
-					address: address,
-					view_key__private: view_key__private,
-					spend_key__public: spend_key__public,
-					spend_key__private: spend_key__private,
-					wallet_keyImageCache: wallet_keyImageCache
+				let response_jsonString = String(data: response_data!, encoding: .utf8)!
+				wallet_wrapper.ingestJSONString_unspentOuts(
+					response_jsonString,
+					mixinSize: mixinSize
 				)
-				self._shared_onMain_callBackFromRequest(err_str, result, fn)
+				//
+				self._shared_onMain_callBackFromRequest(err_str, fn)
 			}
 			return requestHandle
 		}
