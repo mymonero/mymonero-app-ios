@@ -177,9 +177,9 @@ extension HostedMonero
 			func _proceedTo_contructAndSignTx()
 			{
 				self.wallet__light_wallet3_wrapper.new_serializedSignedTransactionWith(
-					to_address: target_address,
+					to_address: target_address.objcSerialized,
 					amount_float_string: "\(amount!)", // the C++ code wants to parse the float string again; Must unwrap to prevent 'Optional(…)'
-					payment_id: self.payment_id,
+					payment_id: self.payment_id?.objcSerialized,
 					priority: self.priority.cppRepresentation
 				) { (err_str, serializedSignedTransaction) in
 					if let err_str = err_str {
@@ -199,7 +199,6 @@ extension HostedMonero
 				//			signedTx: MoneroSignedTransaction
 				// TODO do we need MoneroSignedTransaction anymore?
 				
-				let serialized_signedTx: MoneroSerializedSignedTransaction = "" // TODO
 				let tx_hash: MoneroTransactionHash = "" // TODO
 				let final_networkFee = MoneroAmount("0")! // TODO
 				//
