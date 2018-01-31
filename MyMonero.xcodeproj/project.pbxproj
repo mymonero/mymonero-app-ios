@@ -97,6 +97,7 @@
 		9F5A14561FF19B2F00374D01 /* hex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5A14431FF19B2F00374D01 /* hex.cpp */; };
 		9F5A14591FF19B2F00374D01 /* http_auth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5A14461FF19B2F00374D01 /* http_auth.cpp */; };
 		9F5A145A1FF19B2F00374D01 /* wipeable_string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5A14471FF19B2F00374D01 /* wipeable_string.cpp */; };
+		9F613026202133CF00B435B3 /* monero_multisig_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */; };
 		9F61E8961FF1C24F00C89F36 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F61E8931FF1C24E00C89F36 /* openssl.framework */; };
 		9F61EAA01FF1C72F00C89F36 /* keccak.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F61E8AE1FF1C72E00C89F36 /* keccak.c */; };
 		9F61EAA11FF1C72F00C89F36 /* hash-extra-groestl.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F61E8B11FF1C72E00C89F36 /* hash-extra-groestl.c */; };
@@ -527,6 +528,8 @@
 		9F5A14461FF19B2F00374D01 /* http_auth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_auth.cpp; sourceTree = "<group>"; };
 		9F5A14471FF19B2F00374D01 /* wipeable_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wipeable_string.cpp; sourceTree = "<group>"; };
 		9F5DD406201911DF0056E6D6 /* light_wallet3_server_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light_wallet3_server_api.h; sourceTree = "<group>"; };
+		9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_multisig_utils.cpp; sourceTree = "<group>"; };
+		9F613025202133CF00B435B3 /* monero_multisig_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_multisig_utils.hpp; sourceTree = "<group>"; };
 		9F61E8821FF1B39C00C89F36 /* portable_binary_iarchive.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = portable_binary_iarchive.hpp; sourceTree = "<group>"; };
 		9F61E8831FF1B39C00C89F36 /* portable_binary_archive.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = portable_binary_archive.hpp; sourceTree = "<group>"; };
 		9F61E8841FF1B39C00C89F36 /* portable_binary_oarchive.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = portable_binary_oarchive.hpp; sourceTree = "<group>"; };
@@ -1805,6 +1808,8 @@
 				9F858B5B200983AB006F1339 /* monero_fork_rules.hpp */,
 				9F7CE05F1FE89F5D00B351A3 /* monero_transfer_utils.hpp */,
 				9F7CE0671FE89F5D00B351A3 /* monero_transfer_utils.cpp */,
+				9F613025202133CF00B435B3 /* monero_multisig_utils.hpp */,
+				9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */,
 				9F7CE0681FE89F5D00B351A3 /* Vendor */,
 			);
 			path = "mymonero-core-cpp";
@@ -2697,6 +2702,7 @@
 				9F9D776B1F958F6B0005CFFD /* Switches.swift in Sources */,
 				9F7CE2151FE89F5D00B351A3 /* MoneroTypes.swift in Sources */,
 				9F7CE2271FE89F5D00B351A3 /* MoneroTypes_Amounts.swift in Sources */,
+				9F613026202133CF00B435B3 /* monero_multisig_utils.cpp in Sources */,
 				9F8587FA1F8A98B700E0F38F /* UIView+SafeArea.swift in Sources */,
 				9F2119211F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift in Sources */,
 				9F61EB2D1FF1C72F00C89F36 /* skein.c in Sources */,
