@@ -174,30 +174,6 @@ extension HostedMonero
 			return (nil, result)
 		}
 	}
-	struct ParsedResult_RandomOuts
-	{
-		let amount_outs: [MoneroRandomAmountAndOutputs]
-		//
-		//
-		static func newByParsing(
-			response_jsonDict: [String: Any]
-		) -> (
-			err_str: String?,
-			result: ParsedResult_RandomOuts?
-		) {
-			let amount_outs = response_jsonDict["amount_outs"] as! [[String: Any]]
-			var mutable__amount_outs: [MoneroRandomAmountAndOutputs] = []
-			for (_, dict) in amount_outs.enumerated() {
-				let amountAndOutputs = MoneroRandomAmountAndOutputs.new(withAPIJSONDict: dict)
-				mutable__amount_outs.append(amountAndOutputs)
-			}
-			let final_amount_outs = mutable__amount_outs
-			let result = ParsedResult_RandomOuts(
-				amount_outs: final_amount_outs
-			)
-			return (nil, result)
-		}
-	}
 	struct ParsedResult_ImportRequestInfoAndStatus
 	{
 		let payment_id: MoneroPaymentID
@@ -537,20 +513,17 @@ extension HostedMonero
 			return requestHandle
 		}
 		func RandomOuts(
-			using_outs: [MoneroOutputDescription],
+			amounts: [String],
+			count: UInt32,
 			_ fn: @escaping (
 				_ err_str: String?,
-				_ result: ParsedResult_RandomOuts?
+				_ response_jsonString: String?
 			) -> Void
 		) -> RequestHandle? {
-			var amounts = [String]()
-			for (_, using_out_desc) in using_outs.enumerated() {
-				amounts.append(using_out_desc.rct != nil ? "0" : String(using_out_desc.amount))
-			}
 			let parameters: [String: Any] =
 			[
 				"amounts": amounts,
-				"count": MyMoneroCore.shared.fixedRingsize  // Add one to mixin so we can skip real output key if necessary
+				"count": count // could use fixedRingsize but this is slightly more flexible
 			]
 			let endpoint = HostedMoneroAPI_Endpoint.RandomOuts
 			let requestHandle = self._request(endpoint, parameters)
@@ -559,10 +532,8 @@ extension HostedMonero
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let (err_str, result) = ParsedResult_RandomOuts.newByParsing(
-					response_jsonDict: response_jsonDict!
-				)
-				self._shared_onMain_callBackFromRequest(err_str, result, fn)
+				let response_jsonString = String(data: response_data!, encoding: .utf8)!
+				self._shared_onMain_callBackFromRequest(err_str, response_jsonString, fn)
 			}
 			return requestHandle
 		}
@@ -615,7 +586,7 @@ extension HostedMonero
 				"Content-Type": "application/json",
 			]
 			let url = "\(type(of: self).apiAddress_scheme)://\(self.final_apiAddress_authority)/\(endpoint.rawValue)"
-	//		DDLog.Net("HostedMonero", "\(url)")
+			DDLog.Net("HostedMonero", "\(url)")
 			var final_parameters = parameters
 			do { // client metadata
 				if let value = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {

@@ -749,13 +749,19 @@ class Wallet: PersistableObject
 			)
 		}
 		self.light_wallet3_wrapper!.getRandomOuts__block =
-		{ [weak self] (cb) in
+		{ [weak self] (amountStrings, count, promisePointerValue, cb) in
 			// TODO: ask server; factor this into method
-			let retVals = Monero_Bridge_GetRandomOutsBlock_RetVals()
-			retVals.errStr_orNil = nil // TODO
-			retVals.mixOuts = [[String: Any]]() // TODO
-
-			cb(retVals)
+			DispatchQueue.global(qos: .background).async // this /must/ be executed on a background thread or it will deadlock as the future is blocking the calling thread
+			{
+				// TODO: maybe hold onto this returned request to make it cancellable - but a signal passing mechanism would have to be put together - maybe just an extra block to 'cancel' or that 'sendFundsCancelled'
+				let _ = HostedMonero.APIClient.shared.RandomOuts(
+					amounts: amountStrings as! [String],
+					count: count
+				) { (errStr, response_jsonString) in
+					let errStr: String? = nil
+					cb(errStr, response_jsonString, promisePointerValue)
+				}
+			}
 		}
 		assert(r)
 		assert(self.light_wallet3_wrapper!.hasLWBeenInitialized)
