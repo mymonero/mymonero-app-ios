@@ -321,6 +321,7 @@
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
+		9FEF122E202A4ED600091AB2 /* tools__ret_vals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEF122D202A4ED500091AB2 /* tools__ret_vals.cpp */; };
 		9FEFDD6A1F991B83001C3CFD /* CurrencyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEFDD691F991B83001C3CFD /* CurrencyPicker.swift */; };
 		9FF6C9A71F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */; };
 		9FF6C9B21F7D435100B20D40 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */; };
@@ -906,6 +907,8 @@
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
+		9FEF122C202A4ED500091AB2 /* tools__ret_vals.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tools__ret_vals.hpp; sourceTree = "<group>"; };
+		9FEF122D202A4ED500091AB2 /* tools__ret_vals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tools__ret_vals.cpp; sourceTree = "<group>"; };
 		9FEFDD691F991B83001C3CFD /* CurrencyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyPicker.swift; sourceTree = "<group>"; };
 		9FF6C9A41F7C919B00B20D40 /* MyMoneroScreenshotsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyMoneroScreenshotsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshotsUITests.swift; sourceTree = "<group>"; };
@@ -1810,6 +1813,8 @@
 				9F7CE0671FE89F5D00B351A3 /* monero_transfer_utils.cpp */,
 				9F613025202133CF00B435B3 /* monero_multisig_utils.hpp */,
 				9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */,
+				9FEF122C202A4ED500091AB2 /* tools__ret_vals.hpp */,
+				9FEF122D202A4ED500091AB2 /* tools__ret_vals.cpp */,
 				9F7CE0681FE89F5D00B351A3 /* Vendor */,
 			);
 			path = "mymonero-core-cpp";
@@ -2747,6 +2752,7 @@
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
 				9F61EAA01FF1C72F00C89F36 /* keccak.c in Sources */,
 				9F61EB5E1FF1C72F00C89F36 /* memwipe.c in Sources */,
+				9FEF122E202A4ED600091AB2 /* tools__ret_vals.cpp in Sources */,
 				9F7298BF1F33C0EE00CD59E1 /* ScreenSleep.swift in Sources */,
 				9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */,
 				9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */,

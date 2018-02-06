@@ -758,7 +758,6 @@ class Wallet: PersistableObject
 					amounts: amountStrings as! [String],
 					count: count
 				) { (errStr, response_jsonString) in
-					let errStr: String? = nil
 					cb(errStr, response_jsonString, promisePointerValue)
 				}
 			}

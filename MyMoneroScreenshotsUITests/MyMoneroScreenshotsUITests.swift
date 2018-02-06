@@ -3,7 +3,7 @@
 //  MyMoneroScreenshotsUITests
 //
 //  Created by Paul Shapiro on 9/27/17.
-//  Copyright © 2017 MyMonero. All rights reserved.
+//  Copyright © 2018 MyMonero. All rights reserved.
 //
 
 import XCTest
