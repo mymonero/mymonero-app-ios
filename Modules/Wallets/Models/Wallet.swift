@@ -902,8 +902,8 @@ class Wallet: PersistableObject
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 		payment_id: MoneroPaymentID?,
 		success_fn: @escaping (
-			_ tx_hash: MoneroTransactionHash,
-			_ tx_fee: MoneroAmount
+			_ txHash: MoneroTransactionHash,
+			_ total__tx_fee: MoneroAmount
 		) -> Void,
 		failWithErr_fn: @escaping (
 			_ err_str: String
@@ -939,9 +939,9 @@ class Wallet: PersistableObject
 			payment_id: payment_id
 		)
 		fundsSender.success_fn =
-		{ (tx_hash, tx_fee) in
+		{ (txHash, total__tx_fee) in
 			__unlock()
-			success_fn(tx_hash, tx_fee)
+			success_fn(txHash, total__tx_fee)
 		}
 		fundsSender.failWithErr_fn =
 		{ err_str in

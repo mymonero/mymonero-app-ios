@@ -245,15 +245,14 @@ extension SendFundsForm
 				amount: self.parameters.amount_submittableDouble,
 				payment_id: payment_id,
 				success_fn:
-				{ (transactionHash, sentAmount) in
+				{ (transactionHash, total_txFee) in
 					// formulate a mocked/transient historical transaction for details view presentation, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
 					self._didSend(
 						sentTo_address: target_address,
 						isXMRAddressIntegrated: isXMRAddressIntegrated,
 						integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
 						sentWith_paymentID: payment_id,
-						transactionHash: transactionHash,
-						sentAmount: sentAmount
+						transactionHash: transactionHash
 					)
 				},
 				failWithErr_fn:
@@ -269,12 +268,10 @@ extension SendFundsForm
 			isXMRAddressIntegrated: Bool,
 			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?,
 			sentWith_paymentID: MoneroPaymentID?,
-			transactionHash: MoneroTransactionHash,
-			sentAmount: MoneroAmount
-		)
-		{
+			transactionHash: MoneroTransactionHash
+		) {
 			let mockedTransaction = MoneroHistoricalTransactionRecord(
-				amount: MoneroAmount("0") - sentAmount, 
+				amount: MoneroAmount.new(withDouble: -1 * self.parameters.amount_submittableDouble),
 				timestamp: Date(), // faking this
 				hash: transactionHash,
 				paymentId: sentWith_paymentID, // transaction.paymentId will therefore be nil for integrated addresses

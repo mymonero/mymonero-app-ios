@@ -70,7 +70,7 @@ extension ImportTransactionsModal
 				amount: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
 				payment_id: payment_id,
 				success_fn:
-				{ (transactionHash, sentAmount) in
+				{ (transactionHash, total_txFee) in
 					// TODO: show transactionHash to user somehow!
 					self.parameters.success_fn()
 				},
