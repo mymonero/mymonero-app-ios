@@ -292,8 +292,11 @@ extension HostedMonero
 					validateHost: true
 				)
 			]
+			let configuration = URLSessionConfiguration.default
+			configuration.timeoutIntervalForResource = 120
+			configuration.timeoutIntervalForRequest = 120 // extended - but should maybe be reduced in future or made to work with background requests
 			self.manager = SessionManager(
-				configuration: URLSessionConfiguration.default,
+				configuration: configuration,
 				serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies_byDomain)
 			)
 		}
@@ -622,10 +625,14 @@ extension HostedMonero
 					case .failure(let error):
 						print(error)
 						DDLog.Error("HostedMonero", "\(url) \(statusCode)")
+						if error._code == NSURLErrorTimedOut {
+							// TODO: verify that .localizedDescription for this case is sufficient
+							DDLog.Info("HostedMonero", "dev message to be removed: (Timed out)")
+						}
 						fn(error.localizedDescription, nil, nil) // localized description ok here?
 						return
 					case .success:
-	//					DDLog.Done("HostedMonero", "\(url) \(statusCode)")
+						DDLog.Done("HostedMonero", "\(url) \(statusCode)")
 						break
 				}
 				guard let result_value = response.result.value else {
