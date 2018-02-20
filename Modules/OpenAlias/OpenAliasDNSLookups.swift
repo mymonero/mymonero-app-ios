@@ -266,7 +266,7 @@ struct OpenAliasDNSLookups
 			let record_length = record_NSString.length
 			let rangeOfValueNameKeyDeclaration = record_NSString.range(of: "\(valueName)=")
 			if rangeOfValueNameKeyDeclaration.location == NSNotFound { // Record does not contain param
-				DDLog.Warn("OpenAlias", "\(valueName) not found in OA record.")
+//				DDLog.Warn("OpenAlias", "\(valueName) not found in OA record.")
 				return nil
 			}
 			let nextDelimiter_searchRange_location = rangeOfValueNameKeyDeclaration.location + valueName_length + 1

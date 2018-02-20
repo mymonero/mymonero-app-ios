@@ -182,6 +182,7 @@ extension HostedMonero
 					payment_id: self.payment_id?.objcSerialized,
 					priority: self.priority.cppRepresentation
 				) { (err_str, serializedSignedTransaction, txHash, final_networkFee_UInt64) in
+					assert(Thread.isMainThread)
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)
 						return
@@ -189,7 +190,7 @@ extension HostedMonero
 					_proceedTo_submitSignedTx(
 						serializedSignedTransactionString: serializedSignedTransaction!,
 						txHash: txHash!,
-						final_networkFee: MoneroAmount("\(final_networkFee_UInt64)")! // TODO
+						final_networkFee: MoneroAmount("\(final_networkFee_UInt64)")!
 					)
 				}
 			}
@@ -200,18 +201,19 @@ extension HostedMonero
 			) {
 				//
 				// generated with correct per-kb fee
-				DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
+				DDLog.Info("HostedMonero", "Success; submitting tx <\(txHash)>. Final network fee of \(FormattedString(fromMoneroAmount: final_networkFee))")
 				// TODO: set status: submitting…
 				let _/*requestHandle*/ = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
 					address: wallet__light_wallet3_wrapper.address(),
 					view_key__private: wallet__light_wallet3_wrapper.view_key__private(),
 					serializedSignedTx: serializedSignedTransactionString,
 					{ (err_str, nilValue) in
+						assert(Thread.isMainThread)
 						if let err_str = err_str {
 							__trampolineFor_err_withStr(err_str: "Unexpected error while submitting your transaction: \(err_str)")
 							return
 						}
-						let total__tx_fee = final_networkFee/* + hostingService_chargeAmount NOTE: Service charge removed to reduce bloat for now */
+						let total__tx_fee = final_networkFee/* + hostingService_chargeAmount NOTE: Service charge removed for now */
 						self.success_fn?(
 							txHash,
 							total__tx_fee // maybe return final_networkFee as final_networkFee

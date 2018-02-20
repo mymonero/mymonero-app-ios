@@ -749,13 +749,13 @@ class Wallet: PersistableObject
 			)
 		}
 		self.light_wallet3_wrapper!.getRandomOuts__block =
-		{ /*[weak self] */(amountStrings, count, promisePointerValue, cb) in
+		{ /*[weak self] */(amountStrings, count, cb) in
 			// TODO: maybe hold onto this returned request to make it cancellable - but a signal passing mechanism would have to be put together - maybe just an extra block to 'cancel' or that 'sendFundsCancelled'
 			let _ = HostedMonero.APIClient.shared.RandomOuts(
 				amounts: amountStrings as! [String],
 				count: count
 			) { (errStr, response_jsonString) in
-				cb(errStr, response_jsonString, promisePointerValue)
+				cb(errStr, response_jsonString)
 			}
 		}
 		assert(r)
