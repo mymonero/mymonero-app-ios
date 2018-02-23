@@ -125,7 +125,7 @@ extension SendFundsForm
 							"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.\n\nMonero ringsize value set\nto %d.",
 							comment: ""
 						),
-						MyMoneroCore.shared.fixedRingsize
+						MyMoneroCore.Bridge.fixedRingsize
 					)
 				)
 				view.willPresentTipView_fn =
@@ -173,10 +173,11 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
+				let defaultPriority = MyMoneroCore.Bridge.transaction_defaultPriority
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Based on Monero network\nfee estimate (not final).\n\nMyMonero does not charge\nany transfer fees.",
+							"Based on Monero network\nfee estimate (not final).\n\nDefault priority is \(defaultPriority.rawValue)\n(\(defaultPriority.humanReadableLowercasedString)).\n\nMyMonero does not charge\nany transfer fees.",
 							comment: ""
 						)
 					)
@@ -625,7 +626,12 @@ extension SendFundsForm
 		// Imperatives - Configuration - Fee estimate label
 		func configure_networkFeeEstimate_label()
 		{
-			let estNetworkFee_monero_amountDouble: Double = 0.028 // constant for now due to median blocksize difference in fee est algo plus fact that MyMonero fee turned off for now
+			let feePerKB_Amount = MoneroAmount("209000000")! // constant for now pending polling fee_per_kb on account info
+			let estNetworkFee_moneroAmount: MoneroAmount = MyMoneroCore.Bridge.estimatedNetworkFee(
+				withFeePerKB: feePerKB_Amount,
+				priority: .mlow // TODO: pass this in based on control
+			)
+			let estNetworkFee_monero_amountDouble: Double = DoubleFromMoneroAmount(moneroAmount: estNetworkFee_moneroAmount)
 			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
 			var finalizable_amountDouble = estNetworkFee_monero_amountDouble // to finalize…
 			do {

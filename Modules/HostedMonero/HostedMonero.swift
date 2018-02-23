@@ -488,7 +488,7 @@ extension HostedMonero
 				// no return value because values are stored on the wallet_wrapper
 			) -> Void
 		) -> RequestHandle? {
-			let mixinSize = MyMoneroCore.shared.fixedMixinsize
+			let mixinSize = MyMoneroCore.Bridge.fixedMixinsize
 			let parameters: [String: Any] =
 			[
 				"address": wallet_wrapper.address(),
@@ -625,10 +625,6 @@ extension HostedMonero
 					case .failure(let error):
 						print(error)
 						DDLog.Error("HostedMonero", "\(url) \(statusCode)")
-						if error._code == NSURLErrorTimedOut {
-							// TODO: verify that .localizedDescription for this case is sufficient
-							DDLog.Info("HostedMonero", "dev message to be removed: (Timed out)")
-						}
 						fn(error.localizedDescription, nil, nil) // localized description ok here?
 						return
 					case .success:

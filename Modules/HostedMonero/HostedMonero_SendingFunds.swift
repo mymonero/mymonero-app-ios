@@ -35,45 +35,6 @@
 import Foundation
 import BigInt
 //
-extension MoneroUtils
-{
-	static func estimatedRingCTSize(
-		_ numberOfInputs: Int,
-		_ numberOfOutputs: Int
-	) -> Int
-	{
-		let Int__ringsize = Int(MyMoneroCore.shared.fixedRingsize)
-		var size = 0
-		size += numberOfOutputs * 6306
-		size += (Int__ringsize * 4 + 32 + 8) * numberOfInputs //key offsets + key image + amount
-		size += 64 * Int__ringsize * numberOfInputs + 64 * numberOfInputs //signature + pseudoOuts/cc
-		size += 74 //extra + whatever, assume long payment ID
-		//
-		return size
-	}
-	static func estimatedRingCTSize_numKB(
-		_ numberOfInputs: Int,
-		_ numberOfOutputs: Int
-	) -> Int
-	{
-		let numKB = Int(ceil(
-			Double(estimatedRingCTSize(numberOfInputs, numberOfOutputs)) / 1024.0
-		))
-		//
-		return numKB
-	}
-	static func estimatedRingCT_neededNetworkFee(
-		_ numberOfInputs: Int,
-		_ numberOfOutputs: Int
-	) -> MoneroAmount
-	{
-		let est_numKB = estimatedRingCTSize_numKB(numberOfInputs, numberOfOutputs)
-		let est_amount = MoneroAmount("\(est_numKB)")! * MoneroConstants.feePerKB
-		//
-		return est_amount
-	}
-}
-//
 extension HostedMonero
 {
 	class FundsSender

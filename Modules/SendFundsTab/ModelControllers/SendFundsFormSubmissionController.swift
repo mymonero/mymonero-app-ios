@@ -275,7 +275,7 @@ extension SendFundsForm
 				timestamp: Date(), // faking this
 				hash: transactionHash,
 				paymentId: sentWith_paymentID, // transaction.paymentId will therefore be nil for integrated addresses
-				mixin: MyMoneroCore.shared.fixedMixinsize,
+				mixin: MyMoneroCore.Bridge.fixedMixinsize,
 				mempool: false, // TODO: is this correct?
 				unlock_time: 0,
 				height: 0, // TODO: is this correct?
