@@ -633,7 +633,6 @@
 		9F61EA4D1FF1C72E00C89F36 /* wallet_rpc_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wallet_rpc_server.h; sourceTree = "<group>"; };
 		9F61EA671FF1C72E00C89F36 /* node_rpc_proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = node_rpc_proxy.h; sourceTree = "<group>"; };
 		9F61EA681FF1C72E00C89F36 /* wallet_errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wallet_errors.h; sourceTree = "<group>"; };
-		9F61EA691FF1C72E00C89F36 /* wallet2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wallet2.h; sourceTree = "<group>"; };
 		9F61EA6A1FF1C72E00C89F36 /* wallet_rpc_server_error_codes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wallet_rpc_server_error_codes.h; sourceTree = "<group>"; };
 		9F61EA6F1FF1C72E00C89F36 /* cryptonote_protocol_handler_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_protocol_handler_common.h; sourceTree = "<group>"; };
 		9F61EA711FF1C72E00C89F36 /* cryptonote_protocol_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_protocol_defs.h; sourceTree = "<group>"; };
@@ -1608,7 +1607,6 @@
 				9F61EA4D1FF1C72E00C89F36 /* wallet_rpc_server.h */,
 				9F61EA671FF1C72E00C89F36 /* node_rpc_proxy.h */,
 				9F61EA681FF1C72E00C89F36 /* wallet_errors.h */,
-				9F61EA691FF1C72E00C89F36 /* wallet2.h */,
 				9F61EA6A1FF1C72E00C89F36 /* wallet_rpc_server_error_codes.h */,
 			);
 			path = wallet;
