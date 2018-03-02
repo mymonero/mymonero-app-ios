@@ -139,7 +139,7 @@ extension HostedMonero
 					givenTransactionUnlockTime: unlockTime,
 					andWalletBlockchainHeight: blockchain_height
 				) : nil
-				let optl__paymentId = bridge_address_tx.paymentId != nil && bridge_address_tx.paymentId! != "" ?  bridge_address_tx.paymentId as! MoneroPaymentID : nil // TODO: add nullability to bridge property
+				let optl__paymentId = bridge_address_tx.paymentId != nil && bridge_address_tx.paymentId! != "" ?  bridge_address_tx.paymentId! as MoneroPaymentID : nil
 				let transactionRecord = MoneroHistoricalTransactionRecord(
 					amount: final_tx_amount,
 					timestamp: bridge_address_tx.timestampDate,
