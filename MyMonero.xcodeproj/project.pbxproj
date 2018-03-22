@@ -41,13 +41,11 @@
 		9F11AD1C205765CD0030B071 /* crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AB97205765CD0030B071 /* crypto.cpp */; };
 		9F11AD9A205765CD0030B071 /* skein.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC4C205765CD0030B071 /* skein.c */; };
 		9F11AD9B205765CD0030B071 /* crypto-ops-data.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC4E205765CD0030B071 /* crypto-ops-data.c */; };
-		9F11AD9C205765CD0030B071 /* crypto_device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC50205765CD0030B071 /* crypto_device.cpp */; };
 		9F11AD9D205765CD0030B071 /* slow-hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC53205765CD0030B071 /* slow-hash.c */; settings = {COMPILER_FLAGS = "-maes"; }; };
 		9F11AD9E205765CD0030B071 /* aesb.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC54205765CD0030B071 /* aesb.c */; };
 		9F11ADA1205765CD0030B071 /* rctCryptoOps.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC73205765CD0030B071 /* rctCryptoOps.c */; };
 		9F11ADA2205765CD0030B071 /* rctOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC74205765CD0030B071 /* rctOps.cpp */; };
 		9F11ADA4205765CD0030B071 /* rctSigs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC77205765CD0030B071 /* rctSigs.cpp */; };
-		9F11ADA5205765CD0030B071 /* rctOps_device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC78205765CD0030B071 /* rctOps_device.cpp */; };
 		9F11ADA6205765CD0030B071 /* bulletproofs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC7A205765CD0030B071 /* bulletproofs.cc */; };
 		9F11ADA7205765CD0030B071 /* rctTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC7D205765CD0030B071 /* rctTypes.cpp */; };
 		9F11ADA9205765CD0030B071 /* multisig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC81205765CD0030B071 /* multisig.cpp */; };
@@ -57,17 +55,11 @@
 		9F11ADAE205765CD0030B071 /* account.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC93205765CD0030B071 /* account.cpp */; };
 		9F11ADAF205765CD0030B071 /* hardfork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11AC97205765CD0030B071 /* hardfork.cpp */; };
 		9F11ADB4205765CD0030B071 /* base58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACA2205765CD0030B071 /* base58.cpp */; };
-		9F11ADBD205765CD0030B071 /* blockchain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACC0205765CD0030B071 /* blockchain.cpp */; };
-		9F11ADBF205765CD0030B071 /* cryptonote_core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACC6205765CD0030B071 /* cryptonote_core.cpp */; };
 		9F11ADC0205765CD0030B071 /* cryptonote_tx_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACC7205765CD0030B071 /* cryptonote_tx_utils.cpp */; };
-		9F11ADC1205765CD0030B071 /* tx_pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACC9205765CD0030B071 /* tx_pool.cpp */; };
-		9F11ADC3205765CD0030B071 /* gen_multisig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACCC205765CD0030B071 /* gen_multisig.cpp */; };
 		9F11ADC4205765CD0030B071 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACCE205765CD0030B071 /* log.cpp */; };
 		9F11ADC7205765CD0030B071 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACD2205765CD0030B071 /* device.cpp */; };
 		9F11ADC8205765CD0030B071 /* device_default.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACD4205765CD0030B071 /* device_default.cpp */; };
-		9F11ADC9205765CD0030B071 /* cryptonote_protocol_handler-base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACD9205765CD0030B071 /* cryptonote_protocol_handler-base.cpp */; };
 		9F11ADCB205765CD0030B071 /* cryptonote_protocol_handler.inl in Resources */ = {isa = PBXBuildFile; fileRef = 9F11ACDB205765CD0030B071 /* cryptonote_protocol_handler.inl */; };
-		9F11ADCC205765CD0030B071 /* block_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F11ACDD205765CD0030B071 /* block_queue.cpp */; };
 		9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */; };
 		9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D001B1EE301C100A4B3A5 /* RootTabBarViewController.swift */; };
 		9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1D002D1EE345DF00A4B3A5 /* Forms.swift */; };
@@ -116,6 +108,7 @@
 		9F2BFEE61EF38E61006B2F7D /* ContactsCellContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */; };
 		9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */; };
 		9F2BFF191EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */; };
+		9F2C6FA620605977000EC4C3 /* wallet2-BORROWED.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C6FA420605977000EC4C3 /* wallet2-BORROWED.cpp */; };
 		9F33E6E61F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */; };
 		9F33E6E71F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */; };
 		9F33E6E81F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */; };
@@ -148,7 +141,6 @@
 		9F453FAA1F267A65004590DC /* SendFundsFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */; };
 		9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */; };
 		9F453FAD1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */; };
-		9F613026202133CF00B435B3 /* monero_multisig_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */; };
 		9F61E8961FF1C24F00C89F36 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F61E8931FF1C24E00C89F36 /* openssl.framework */; };
 		9F61EBA91FF2BD7100C89F36 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F61EBA71FF2BC3E00C89F36 /* libstdc++.tbd */; };
 		9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */; };
@@ -321,6 +313,7 @@
 		9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */; };
 		9FD70E091F1988FB000FE675 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD70E081F1988FB000FE675 /* Tables.swift */; };
 		9FD961D6200837CB004A4CC7 /* Reachability-4.1.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD961D5200837CB004A4CC7 /* Reachability-4.1.0.swift */; };
+		9FD9BDB2206214A300CA83CC /* miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FD9BDB1206214A300CA83CC /* miner.cpp */; };
 		9FE199251F846003003BE0DF /* MyMoneroScreenshots_Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */; };
 		9FE199271F848C1E003BE0DF /* AppProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199261F848C1E003BE0DF /* AppProcess.swift */; };
 		9FE199281F848E14003BE0DF /* AppProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE199261F848C1E003BE0DF /* AppProcess.swift */; };
@@ -494,7 +487,6 @@
 		9F11AC4D205765CD0030B071 /* blake256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blake256.h; sourceTree = "<group>"; };
 		9F11AC4E205765CD0030B071 /* crypto-ops-data.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "crypto-ops-data.c"; sourceTree = "<group>"; };
 		9F11AC4F205765CD0030B071 /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
-		9F11AC50205765CD0030B071 /* crypto_device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = crypto_device.cpp; sourceTree = "<group>"; };
 		9F11AC51205765CD0030B071 /* crypto-ops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "crypto-ops.h"; sourceTree = "<group>"; };
 		9F11AC52205765CD0030B071 /* random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
 		9F11AC53205765CD0030B071 /* slow-hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "slow-hash.c"; sourceTree = "<group>"; };
@@ -525,7 +517,6 @@
 		9F11AC74205765CD0030B071 /* rctOps.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rctOps.cpp; sourceTree = "<group>"; };
 		9F11AC75205765CD0030B071 /* rctTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rctTypes.h; sourceTree = "<group>"; };
 		9F11AC77205765CD0030B071 /* rctSigs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rctSigs.cpp; sourceTree = "<group>"; };
-		9F11AC78205765CD0030B071 /* rctOps_device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rctOps_device.cpp; sourceTree = "<group>"; };
 		9F11AC79205765CD0030B071 /* bulletproofs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bulletproofs.h; sourceTree = "<group>"; };
 		9F11AC7A205765CD0030B071 /* bulletproofs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bulletproofs.cc; sourceTree = "<group>"; };
 		9F11AC7B205765CD0030B071 /* rctCryptoOps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rctCryptoOps.h; sourceTree = "<group>"; };
@@ -578,27 +569,20 @@
 		9F11ACB9205765CD0030B071 /* password.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = password.h; sourceTree = "<group>"; };
 		9F11ACBB205765CD0030B071 /* int-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "int-util.h"; sourceTree = "<group>"; };
 		9F11ACBC205765CD0030B071 /* boost_serialization_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = boost_serialization_helper.h; sourceTree = "<group>"; };
-		9F11ACC0205765CD0030B071 /* blockchain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blockchain.cpp; sourceTree = "<group>"; };
 		9F11ACC1205765CD0030B071 /* cryptonote_tx_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_tx_utils.h; sourceTree = "<group>"; };
 		9F11ACC3205765CD0030B071 /* cryptonote_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_core.h; sourceTree = "<group>"; };
 		9F11ACC4205765CD0030B071 /* blockchain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blockchain.h; sourceTree = "<group>"; };
 		9F11ACC5205765CD0030B071 /* tx_pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tx_pool.h; sourceTree = "<group>"; };
-		9F11ACC6205765CD0030B071 /* cryptonote_core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cryptonote_core.cpp; sourceTree = "<group>"; };
 		9F11ACC7205765CD0030B071 /* cryptonote_tx_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cryptonote_tx_utils.cpp; sourceTree = "<group>"; };
 		9F11ACC8205765CD0030B071 /* blockchain_storage_boost_serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blockchain_storage_boost_serialization.h; sourceTree = "<group>"; };
-		9F11ACC9205765CD0030B071 /* tx_pool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tx_pool.cpp; sourceTree = "<group>"; };
-		9F11ACCC205765CD0030B071 /* gen_multisig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gen_multisig.cpp; sourceTree = "<group>"; };
 		9F11ACCE205765CD0030B071 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log.cpp; sourceTree = "<group>"; };
 		9F11ACD1205765CD0030B071 /* device_default.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device_default.hpp; sourceTree = "<group>"; };
 		9F11ACD2205765CD0030B071 /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = device.cpp; sourceTree = "<group>"; };
 		9F11ACD4205765CD0030B071 /* device_default.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = device_default.cpp; sourceTree = "<group>"; };
 		9F11ACD5205765CD0030B071 /* device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
-		9F11ACD6205765CD0030B071 /* device_declare.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device_declare.hpp; sourceTree = "<group>"; };
 		9F11ACD7205765CD0030B071 /* log.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = log.hpp; sourceTree = "<group>"; };
-		9F11ACD9205765CD0030B071 /* cryptonote_protocol_handler-base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cryptonote_protocol_handler-base.cpp"; sourceTree = "<group>"; };
 		9F11ACDB205765CD0030B071 /* cryptonote_protocol_handler.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cryptonote_protocol_handler.inl; sourceTree = "<group>"; };
 		9F11ACDC205765CD0030B071 /* cryptonote_protocol_handler_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_protocol_handler_common.h; sourceTree = "<group>"; };
-		9F11ACDD205765CD0030B071 /* block_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = block_queue.cpp; sourceTree = "<group>"; };
 		9F11ACDE205765CD0030B071 /* cryptonote_protocol_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_protocol_defs.h; sourceTree = "<group>"; };
 		9F11ACDF205765CD0030B071 /* block_queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = block_queue.h; sourceTree = "<group>"; };
 		9F11ACE0205765CD0030B071 /* cryptonote_protocol_handler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cryptonote_protocol_handler.h; sourceTree = "<group>"; };
@@ -653,6 +637,8 @@
 		9F2BFEE51EF38E61006B2F7D /* ContactsCellContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsCellContentView.swift; sourceTree = "<group>"; };
 		9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
+		9F2C6FA420605977000EC4C3 /* wallet2-BORROWED.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "wallet2-BORROWED.cpp"; sourceTree = "<group>"; };
+		9F2C6FA520605977000EC4C3 /* wallet2-BORROWED.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "wallet2-BORROWED.h"; sourceTree = "<group>"; };
 		9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_blue@3x.png"; sourceTree = "<group>"; };
 		9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_darkGrey@3x.png"; sourceTree = "<group>"; };
 		9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_lightGrey@3x.png"; sourceTree = "<group>"; };
@@ -732,14 +718,11 @@
 		9F44F3BA2059858A00A7E9A0 /* chinese_simplified.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chinese_simplified.h; sourceTree = "<group>"; };
 		9F44F3BB2059858A00A7E9A0 /* english_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = english_old.h; sourceTree = "<group>"; };
 		9F44F3BC2059858A00A7E9A0 /* lojban.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lojban.h; sourceTree = "<group>"; };
-		9F44F3CF20598D6700A7E9A0 /* wallet2_transfer_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wallet2_transfer_utils.h; sourceTree = "<group>"; };
 		9F453FA51F267A65004590DC /* SendFundsFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormViewController.swift; sourceTree = "<group>"; };
 		9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsTabNavigationViewController.swift; sourceTree = "<group>"; };
 		9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromSendFundsTabFormViewController.swift; sourceTree = "<group>"; };
 		9F5DD406201911DF0056E6D6 /* light_wallet3_server_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = light_wallet3_server_api.h; sourceTree = "<group>"; };
-		9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_multisig_utils.cpp; sourceTree = "<group>"; };
-		9F613025202133CF00B435B3 /* monero_multisig_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_multisig_utils.hpp; sourceTree = "<group>"; };
 		9F61E8931FF1C24E00C89F36 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		9F61EBA71FF2BC3E00C89F36 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		9F61EBAA1FF2BEBC00C89F36 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -913,6 +896,7 @@
 		9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD70E081F1988FB000FE675 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
 		9FD961D5200837CB004A4CC7 /* Reachability-4.1.0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Reachability-4.1.0.swift"; sourceTree = "<group>"; };
+		9FD9BDB1206214A300CA83CC /* miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = miner.cpp; sourceTree = "<group>"; };
 		9FE199231F846003003BE0DF /* MyMoneroScreenshots_Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshots_Constants.swift; sourceTree = "<group>"; };
 		9FE199261F848C1E003BE0DF /* AppProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProcess.swift; sourceTree = "<group>"; };
 		9FE224C01FFBEB730037412C /* monero_key_image_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = monero_key_image_utils.cpp; sourceTree = "<group>"; };
@@ -1175,7 +1159,6 @@
 				9F11AC84205765CD0030B071 /* cryptonote_basic */,
 				9F11AC9B205765CD0030B071 /* common */,
 				9F11ACBF205765CD0030B071 /* cryptonote_core */,
-				9F11ACCA205765CD0030B071 /* gen_multisig */,
 				9F11ACCD205765CD0030B071 /* device */,
 				9F11ACD8205765CD0030B071 /* cryptonote_protocol */,
 				9F44F348205889FC00A7E9A0 /* rpc */,
@@ -1219,7 +1202,6 @@
 				9F11AC4D205765CD0030B071 /* blake256.h */,
 				9F11AC4E205765CD0030B071 /* crypto-ops-data.c */,
 				9F11AC4F205765CD0030B071 /* hash.h */,
-				9F11AC50205765CD0030B071 /* crypto_device.cpp */,
 				9F11AC51205765CD0030B071 /* crypto-ops.h */,
 				9F11AC52205765CD0030B071 /* random.h */,
 				9F11AC53205765CD0030B071 /* slow-hash.c */,
@@ -1295,7 +1277,6 @@
 				9F11AC74205765CD0030B071 /* rctOps.cpp */,
 				9F11AC75205765CD0030B071 /* rctTypes.h */,
 				9F11AC77205765CD0030B071 /* rctSigs.cpp */,
-				9F11AC78205765CD0030B071 /* rctOps_device.cpp */,
 				9F11AC79205765CD0030B071 /* bulletproofs.h */,
 				9F11AC7A205765CD0030B071 /* bulletproofs.cc */,
 				9F11AC7B205765CD0030B071 /* rctCryptoOps.h */,
@@ -1327,6 +1308,7 @@
 				9F11AC8C205765CD0030B071 /* account.h */,
 				9F11AC8D205765CD0030B071 /* cryptonote_basic_impl.cpp */,
 				9F11AC8E205765CD0030B071 /* miner.h */,
+				9FD9BDB1206214A300CA83CC /* miner.cpp */,
 				9F11AC8F205765CD0030B071 /* cryptonote_stat_info.h */,
 				9F11AC90205765CD0030B071 /* cryptonote_basic_impl.h */,
 				9F11AC91205765CD0030B071 /* cryptonote_format_utils.h */,
@@ -1377,25 +1359,14 @@
 		9F11ACBF205765CD0030B071 /* cryptonote_core */ = {
 			isa = PBXGroup;
 			children = (
-				9F11ACC0205765CD0030B071 /* blockchain.cpp */,
 				9F11ACC1205765CD0030B071 /* cryptonote_tx_utils.h */,
 				9F11ACC3205765CD0030B071 /* cryptonote_core.h */,
 				9F11ACC4205765CD0030B071 /* blockchain.h */,
 				9F11ACC5205765CD0030B071 /* tx_pool.h */,
-				9F11ACC6205765CD0030B071 /* cryptonote_core.cpp */,
 				9F11ACC7205765CD0030B071 /* cryptonote_tx_utils.cpp */,
 				9F11ACC8205765CD0030B071 /* blockchain_storage_boost_serialization.h */,
-				9F11ACC9205765CD0030B071 /* tx_pool.cpp */,
 			);
 			path = cryptonote_core;
-			sourceTree = "<group>";
-		};
-		9F11ACCA205765CD0030B071 /* gen_multisig */ = {
-			isa = PBXGroup;
-			children = (
-				9F11ACCC205765CD0030B071 /* gen_multisig.cpp */,
-			);
-			path = gen_multisig;
 			sourceTree = "<group>";
 		};
 		9F11ACCD205765CD0030B071 /* device */ = {
@@ -1406,7 +1377,6 @@
 				9F11ACD2205765CD0030B071 /* device.cpp */,
 				9F11ACD4205765CD0030B071 /* device_default.cpp */,
 				9F11ACD5205765CD0030B071 /* device.hpp */,
-				9F11ACD6205765CD0030B071 /* device_declare.hpp */,
 				9F11ACD7205765CD0030B071 /* log.hpp */,
 			);
 			path = device;
@@ -1415,10 +1385,8 @@
 		9F11ACD8205765CD0030B071 /* cryptonote_protocol */ = {
 			isa = PBXGroup;
 			children = (
-				9F11ACD9205765CD0030B071 /* cryptonote_protocol_handler-base.cpp */,
 				9F11ACDB205765CD0030B071 /* cryptonote_protocol_handler.inl */,
 				9F11ACDC205765CD0030B071 /* cryptonote_protocol_handler_common.h */,
-				9F11ACDD205765CD0030B071 /* block_queue.cpp */,
 				9F11ACDE205765CD0030B071 /* cryptonote_protocol_defs.h */,
 				9F11ACDF205765CD0030B071 /* block_queue.h */,
 				9F11ACE0205765CD0030B071 /* cryptonote_protocol_handler.h */,
@@ -1855,6 +1823,8 @@
 		9F7CE05C1FE89F5D00B351A3 /* mymonero-core-cpp */ = {
 			isa = PBXGroup;
 			children = (
+				9F2C6FA520605977000EC4C3 /* wallet2-BORROWED.h */,
+				9F2C6FA420605977000EC4C3 /* wallet2-BORROWED.cpp */,
 				9FC1D0C6200FE5AF00A59744 /* wallet3_base.hpp */,
 				9FC1D0C5200FE5AE00A59744 /* wallet3_base.cpp */,
 				9F5DD406201911DF0056E6D6 /* light_wallet3_server_api.h */,
@@ -1866,15 +1836,12 @@
 				9FE224C01FFBEB730037412C /* monero_key_image_utils.cpp */,
 				9F7CE0601FE89F5D00B351A3 /* monero_paymentID_utils.hpp */,
 				9F7CE0641FE89F5D00B351A3 /* monero_paymentID_utils.cpp */,
-				9F858B5A200983AB006F1339 /* monero_fork_rules.cpp */,
 				9F858B5B200983AB006F1339 /* monero_fork_rules.hpp */,
+				9F858B5A200983AB006F1339 /* monero_fork_rules.cpp */,
 				9F7CE05F1FE89F5D00B351A3 /* monero_transfer_utils.hpp */,
 				9F7CE0671FE89F5D00B351A3 /* monero_transfer_utils.cpp */,
-				9F613025202133CF00B435B3 /* monero_multisig_utils.hpp */,
-				9F613024202133CE00B435B3 /* monero_multisig_utils.cpp */,
 				9F44F3812058A6A200A7E9A0 /* monero_legacy16B_keys.hpp */,
 				9F44F3822058A6A200A7E9A0 /* monero_legacy16B_keys.cpp */,
-				9F44F3CF20598D6700A7E9A0 /* wallet2_transfer_utils.h */,
 				9FEF122C202A4ED500091AB2 /* tools__ret_vals.hpp */,
 				9FEF122D202A4ED500091AB2 /* tools__ret_vals.cpp */,
 				9F7CE0681FE89F5D00B351A3 /* Vendor */,
@@ -2696,7 +2663,6 @@
 				9F2119251F5E0EC300B8FA0E /* CreateWallet_InformOfMnemonic_ViewController.swift in Sources */,
 				9F2BFEDE1EF37E58006B2F7D /* FundsRequestListEmptyView.swift in Sources */,
 				9F9C59FD1F0D89BE003B9266 /* WalletPicker.swift in Sources */,
-				9F11ADCC205765CD0030B071 /* block_queue.cpp in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */,
 				9FCD9D611F4948A7004C0349 /* OpenAlias.swift in Sources */,
 				9F7298C71F33E1FE00CD59E1 /* SettingsController.swift in Sources */,
@@ -2705,7 +2671,6 @@
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
 				9F2119241F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
 				9F11AD9A205765CD0030B071 /* skein.c in Sources */,
-				9F11ADBD205765CD0030B071 /* blockchain.cpp in Sources */,
 				9F7CE1911FE89F5D00B351A3 /* monero_paymentID_utils.cpp in Sources */,
 				9F2119231F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */,
 				9F11AD15205765CD0030B071 /* hash.c in Sources */,
@@ -2716,7 +2681,6 @@
 				9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */,
 				9FE224C21FFBEB730037412C /* monero_key_image_utils.cpp in Sources */,
 				9F3826681F5678AE00800CA0 /* DNSLookup.m in Sources */,
-				9F11ADBF205765CD0030B071 /* cryptonote_core.cpp in Sources */,
 				9F44F3762058918000A7E9A0 /* perf_timer.cpp in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
 				9F7CE1931FE89F5D00B351A3 /* monero_wallet_utils.cpp in Sources */,
@@ -2730,16 +2694,14 @@
 				9F11AD1A205765CD0030B071 /* tree-hash.c in Sources */,
 				9F7298BB1F329EB900CD59E1 /* MMApplication.swift in Sources */,
 				9F33E6FB1F2004DD00610662 /* EditFormSubmissionController.swift in Sources */,
+				9F2C6FA620605977000EC4C3 /* wallet2-BORROWED.cpp in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
 				9F11ADC7205765CD0030B071 /* device.cpp in Sources */,
-				9F11ADC9205765CD0030B071 /* cryptonote_protocol_handler-base.cpp in Sources */,
 				9F2BFEE41EF38E46006B2F7D /* FundsRequestsCellContentView.swift in Sources */,
 				9F44F3832058A6A200A7E9A0 /* monero_legacy16B_keys.cpp in Sources */,
-				9F11ADC1205765CD0030B071 /* tx_pool.cpp in Sources */,
 				9F1D00341EE349CB00A4B3A5 /* NavigationBarButtons.swift in Sources */,
 				9F11AD10205765CD0030B071 /* hash-extra-blake.c in Sources */,
 				9FCD9D621F4948A7004C0349 /* OpenAliasResolverCenter.swift in Sources */,
-				9F11ADA5205765CD0030B071 /* rctOps_device.cpp in Sources */,
 				9F8E30281EED7D7800F89A1D /* EnterNewPasswordViewController.swift in Sources */,
 				9FB603091F4F6B6B00951175 /* ConnectivityMessageViewController.swift in Sources */,
 				9F33E6F71F1FE28100610662 /* WalletDetailsTransactionsSectionHeader.swift in Sources */,
@@ -2755,7 +2717,6 @@
 				9F7CE2151FE89F5D00B351A3 /* MoneroTypes.swift in Sources */,
 				9F11AD11205765CD0030B071 /* blake256.c in Sources */,
 				9F7CE2271FE89F5D00B351A3 /* MoneroTypes_Amounts.swift in Sources */,
-				9F613026202133CF00B435B3 /* monero_multisig_utils.cpp in Sources */,
 				9F8587FA1F8A98B700E0F38F /* UIView+SafeArea.swift in Sources */,
 				9F2119211F5E0EC300B8FA0E /* AddWalletWizardModalNavigationController.swift in Sources */,
 				9F11AD13205765CD0030B071 /* random.c in Sources */,
@@ -2792,7 +2753,6 @@
 				9F86738A1F2C396C00F89EAB /* URLOpening.swift in Sources */,
 				9FCD9D631F4948A7004C0349 /* OpenAliasDNSLookups.swift in Sources */,
 				9F11AD0D205765CD0030B071 /* keccak.c in Sources */,
-				9F11ADC3205765CD0030B071 /* gen_multisig.cpp in Sources */,
 				9F11AD16205765CD0030B071 /* hash-extra-jh.c in Sources */,
 				9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */,
 				9FD961D6200837CB004A4CC7 /* Reachability-4.1.0.swift in Sources */,
@@ -2867,8 +2827,8 @@
 				9F9C59FB1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift in Sources */,
 				9F11AD18205765CD0030B071 /* groestl.c in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
+				9FD9BDB2206214A300CA83CC /* miner.cpp in Sources */,
 				9F44F37D2058960000A7E9A0 /* easylogging++.cc in Sources */,
-				9F11AD9C205765CD0030B071 /* crypto_device.cpp in Sources */,
 				9F2119261F5E0EC300B8FA0E /* CreateWallet_Instructions_ViewController.swift in Sources */,
 				9F8E30271EED7D7800F89A1D /* EnterExistingPasswordViewController.swift in Sources */,
 				9F44F3CD2059858A00A7E9A0 /* electrum-words.cpp in Sources */,
