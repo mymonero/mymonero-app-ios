@@ -65,6 +65,9 @@ extension MoneroAmount
 	{
 		return FormattedString(fromMoneroAmount: self)
 	}
+	var atomicUnitsBigIntString: String {
+		return "\(self)"
+	}
 	//
 	var jsRepresentationString:String
 	{ // because we need to convert it back for calls like create_transaction 
@@ -105,7 +108,7 @@ extension MoneroAmount
 		if (unsignedDouble_NSString.length > maxDecimalUnits_stringLength) { // if precision too great
 			unsignedDouble_NSString = unsignedDouble_NSString.substring( // chop
 				with: NSMakeRange(0, maxDecimalUnits_stringLength)
-				) as NSString
+			) as NSString
 		}
 		let string_beforeDecimal = unsignedDouble_NSString.substring(with: NSMakeRange(0, decimalLocation))
 		let moneroAmount_beforeDecimal = BigUInt(string_beforeDecimal)! * BigUInt(10).power(MoneroConstants.currency_unitPlaces)

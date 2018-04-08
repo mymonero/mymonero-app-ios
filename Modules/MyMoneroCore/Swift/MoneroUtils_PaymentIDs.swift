@@ -34,7 +34,7 @@
 //
 import Foundation
 //
-struct MoneroUtils
+extension MoneroUtils
 {
 	struct PaymentIDs
 	{

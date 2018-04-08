@@ -93,6 +93,7 @@
 		9F453FAD1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */; };
 		9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F46F1D01F58E1A60046348C /* MoneroTypes.swift */; };
 		9F46F1D31F58EC250046348C /* MoneroUtils_PaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */; };
+		9F651660207A7066001BE504 /* MoneroUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65165F207A7065001BE504 /* MoneroUtils.swift */; };
 		9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */; };
 		9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B81F329D8400CD59E1 /* UserIdle.swift */; };
 		9F7298BB1F329EB900CD59E1 /* MMApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298BA1F329EB900CD59E1 /* MMApplication.swift */; };
@@ -354,6 +355,7 @@
 		9F453FAC1F26FB62004590DC /* AddContactFromSendFundsTabFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactFromSendFundsTabFormViewController.swift; sourceTree = "<group>"; };
 		9F46F1D01F58E1A60046348C /* MoneroTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes.swift; sourceTree = "<group>"; };
 		9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_PaymentIDs.swift; sourceTree = "<group>"; };
+		9F65165F207A7065001BE504 /* MoneroUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils.swift; sourceTree = "<group>"; };
 		9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAppContactActionsCoordinator.swift; sourceTree = "<group>"; };
 		9F7298B81F329D8400CD59E1 /* UserIdle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserIdle.swift; sourceTree = "<group>"; };
 		9F7298BA1F329EB900CD59E1 /* MMApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MMApplication.swift; sourceTree = "<group>"; };
@@ -556,6 +558,7 @@
 			children = (
 				9F46F1D01F58E1A60046348C /* MoneroTypes.swift */,
 				9F30470C1EC657CB00190268 /* MoneroTypes_Amounts.swift */,
+				9F65165F207A7065001BE504 /* MoneroUtils.swift */,
 				9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */,
 				9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */,
 				9F1B57461ED4E92D00410675 /* MoneroUtils_Mnemonics.swift */,
@@ -1769,6 +1772,7 @@
 				9F33E6F91F20016000610662 /* EditWalletViewController.swift in Sources */,
 				9F9C59F11F0C45AD003B9266 /* ScrollableInfo.swift in Sources */,
 				9F1B57471ED4E92D00410675 /* MoneroUtils_Mnemonics.swift in Sources */,
+				9F651660207A7066001BE504 /* MoneroUtils.swift in Sources */,
 				9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */,
 				9FCD9D641F4948A7004C0349 /* OpenAliasResolverRequestMaker.swift in Sources */,
 				9F8E30261EED7D7800F89A1D /* PasswordController.swift in Sources */,
