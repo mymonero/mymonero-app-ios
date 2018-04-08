@@ -500,8 +500,7 @@ class Wallet: PersistableObject
 		mnemonicString: MoneroSeedAsMnemonic,
 		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
-	) -> Void
-	{
+	) -> Void {
 		self.walletLabel = walletLabel
 		self.swatchColor = swatchColor
 		//
@@ -542,8 +541,7 @@ class Wallet: PersistableObject
 		privateKeys: MoneroKeyDuo,
 		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{
+	) {
 		self.walletLabel = walletLabel
 		self.swatchColor = swatchColor
 		//
@@ -789,8 +787,10 @@ class Wallet: PersistableObject
 			spend_key_orNilForViewOnly: spend_key_orNilForViewOnly,
 			seed_orNil: seed_orNil,
 			wasAGeneratedWallet: wasAGeneratedWallet
-		)
-		{ [unowned self] (err_str, verifiedComponentsForLogIn) in
+		) { [unowned self] (
+			err_str,
+			verifiedComponentsForLogIn
+		) in
 			if let err_str = err_str {
 				if persistEvenIfLoginFailed_forServerChange == true {
 					assert(false, "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true") // yet components are now invalid…?

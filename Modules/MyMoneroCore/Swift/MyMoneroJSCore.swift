@@ -200,8 +200,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		seed_orNil: MoneroSeed?,
 		wasAGeneratedWallet: Bool,
 		_ fn: @escaping (_ err_str: String?, MoneroVerifiedComponentsForLogIn?) -> Void
-	)
-	{
+	) {
 		let args =
 		[
 			"\"\(address)\"",
