@@ -749,3 +749,27 @@ struct MoneroSpentOutputDescription: Equatable
 }
 typealias MoneroSignedTransaction = [String: Any]
 typealias MoneroSerializedSignedTransaction = String
+//
+enum MoneroTransferSimplifiedPriority: UInt32
+{ // TODO: obtain values' specification from C++ somehow, or provisionally via MyMoneroCore_ObjCpp_SimplePriority_*
+	case vlow = 1
+	case mlow = 2
+	case mhigh = 3
+	case vhigh = 4
+	//
+	var cppRepresentation: UInt32 {
+		return self.rawValue
+	}
+	var humanReadableLowercasedString: String {
+		switch self {
+		case .vlow:
+			return NSLocalizedString("low", comment: "")
+		case .mlow:
+			return NSLocalizedString("medium", comment: "")
+		case .mhigh:
+			return NSLocalizedString("high", comment: "")
+		case .vhigh:
+			return NSLocalizedString("very high", comment: "")
+		}
+	}
+}
