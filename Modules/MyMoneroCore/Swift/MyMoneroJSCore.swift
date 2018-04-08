@@ -170,8 +170,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	func DecodeAddress(
 		_ address: String,
 		_ fn: @escaping (_ err_str: String?, _ decodedAddressComponents: MoneroDecodedAddressComponents?) -> Void
-	)
-	{
+	) {
 		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
 		{ (err_str, any) in
 			if let err_str = err_str {

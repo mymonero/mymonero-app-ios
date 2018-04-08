@@ -39,6 +39,7 @@ class Contact: PersistableObject
 	enum NotificationNames: String
 	{
 		case infoUpdated		= "Contact_NotificationNames_infoUpdated"
+		case cached_derived_integratedXMRAddress_wasDerived = "Contact_NotificationNames_cached_derived_integratedXMRAddress_wasDerived"
 		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
@@ -59,6 +60,58 @@ class Contact: PersistableObject
 	var payment_id: MoneroPaymentID?
 	var emoji: Emoji.EmojiCharacter!
 	var cached_OAResolved_XMR_address: MoneroAddress?
+	var cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid: MoneroIntegratedAddress?
+	func new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid(
+		_ fn: @escaping (_ intAddr: MoneroIntegratedAddress?) -> Void
+	) {
+		let payment_id: MoneroPaymentID? = self.payment_id
+		if payment_id == nil || payment_id == "" {
+			fn(nil) // no possible derived int address
+			return
+		}
+		if MoneroUtils.PaymentIDs.isAValid(paymentId: payment_id!, ofVariant: .short) == false {
+			fn(nil) // must be a long payment ID
+			return
+		}
+		MyMoneroCore.shared.DecodeAddress(self.address)
+		{ [weak self] (err_str, decodedAddress) in
+			guard let thisSelf = self else {
+				return // released
+			}
+			if err_str != nil {
+				fn(nil)
+				return
+			}
+			let intPaymentId = decodedAddress!.intPaymentId
+			if intPaymentId != nil && intPaymentId != "" {
+				fn(nil) // b/c we don't want to show a derived int addr if we already have the int addr
+				return
+			}
+			var address: MoneroIntegratedAddress?
+			if thisSelf.hasOpenAliasAddress {
+				address = thisSelf.cached_OAResolved_XMR_address!
+			} else {
+				address = thisSelf.address
+			}
+			if address == nil || address == "" {
+				fn(nil) // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
+				return
+			}
+			//
+			// now we know we have a std xmr addr and a short pid
+			MyMoneroCore.shared.New_IntegratedAddress(
+				fromStandardAddress: address!,
+				shortPaymentID: payment_id!
+			) { (err_str, integratedAddress) in
+				if err_str != nil {
+					fatalError(err_str!)
+				}
+				//
+				fn(integratedAddress)
+				return
+			}
+		}
+	}
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -96,6 +149,29 @@ class Contact: PersistableObject
 		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
 		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! Emoji.EmojiCharacter
 		self.cached_OAResolved_XMR_address = dictRepresentation[DictKey.cached_OAResolved_XMR_address.rawValue] as? String
+		//
+		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+	}
+	func generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+	{
+		// FIXME: make this synchronous to avoid all this coordination silliness
+		//
+		// NOTE: just going to invalidate it off the bat - too complicated otherwise
+		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = nil //
+		//
+		self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid
+		{ [weak self] (intAddr) in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = intAddr
+			//
+			// IMPORTANT: Consumers should observe this and redundantly configure UI etc on its appearance (they must wait asynchronously for it to appear after init until we can get its implementation synchronous (via e.g. native code)
+			NotificationCenter.default.post(
+				name: NotificationNames.cached_derived_integratedXMRAddress_wasDerived.notificationName,
+				object: thisSelf
+			)
+		}
 	}
 	//
 	// Lifecycle - Init - For adding new
@@ -109,21 +185,23 @@ class Contact: PersistableObject
 		payment_id: MoneroPaymentID?,
 		emoji: Emoji.EmojiCharacter?,
 		cached_OAResolved_XMR_address: MoneroAddress?
-	)
-	{
+	) {
 		self.init()
 		self.fullname = fullname
 		self.address = address
 		self.payment_id = payment_id
 		self.emoji = emoji
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
+		//
+		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
 	}
 	//
 	// Interface - Runtime - Accessors/Properties - Convenience
 	var hasOpenAliasAddress: Bool {
-		return OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.address)
+		return OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
+			self.address
+		)
 	}
-
 	//
 	// Runtime - Imperatives - Update cases
 	func SetValuesAndSave_fromEditAndPossibleOAResolve(
@@ -132,8 +210,7 @@ class Contact: PersistableObject
 		address: String, // could be an OA address too
 		payment_id: MoneroPaymentID?,
 		cached_OAResolved_XMR_address: MoneroAddress?
-	) -> String? // err_str -- maybe port to 'throws'
-	{
+	) -> String? { // err_str -- maybe port to 'throws'
 		self.fullname = fullname
 		self.emoji = emoji
 		self.address = address
@@ -143,6 +220,10 @@ class Contact: PersistableObject
 			self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
 		}
 		self.payment_id = payment_id
+		//
+		// v---- This is not persisted, but this is a good time to generate it
+		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		//
 		let err_str = self.saveToDisk()
 		if err_str != nil {
 			return err_str
@@ -156,10 +237,12 @@ class Contact: PersistableObject
 	func SetValuesAndSave_fromOAResolve(
 		payment_id: MoneroPaymentID?,
 		cached_OAResolved_XMR_address: MoneroAddress
-	) -> String? // err_str -- maybe port to 'throws'
-	{
+	) -> String? { // err_str -- maybe port to 'throws'
 		self.payment_id = payment_id
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
+		//
+		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		//
 		let err_str = self.saveToDisk()
 		if err_str != nil {
 			return err_str
@@ -175,7 +258,7 @@ class Contact: PersistableObject
 	func _atRuntime_contactInfoUpdated()
 	{
 		NotificationCenter.default.post(
-			name: Notification.Name(NotificationNames.infoUpdated.rawValue),
+			name: NotificationNames.infoUpdated.notificationName,
 			object: self
 		)
 	}

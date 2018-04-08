@@ -170,8 +170,8 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				
 			}
 			// else, IS integrated address
-			let paymentID: MoneroPaymentID? = nil /*integratedAddress_paymentId do not use this*/
-			self.parameters.feedBackOverridingPaymentIDValue_fn(integratedAddress_paymentId) // display this
+			let paymentID: MoneroPaymentID? = integratedAddress_paymentId // allowing this to be saved - but mostly for display purposes (to parity with design)
+			self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID) // display this
 			self.__proceedTo_persistContact(
 				withPaymentID: paymentID,
 				cached_OAResolved_XMR_address: nil
@@ -244,8 +244,7 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 				payment_id: paymentID_toSave,
 				emoji: self.parameters.emoji,
 				cached_OAResolved_XMR_address: cached_OAResolved_XMR_address
-				)
-			{ [unowned self] (err_str, contactInstance) in
+			) { [unowned self] (err_str, contactInstance) in
 				if err_str != nil {
 					self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
 					return
