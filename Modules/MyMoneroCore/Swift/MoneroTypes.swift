@@ -54,7 +54,7 @@ struct MoneroConstants
 	//
 	static let txMinConfirms = 10 // Minimum number of confirmations for a transaction to show as confirmed
 	static let maxBlockNumber = 500000000 // Maximum block number, used for tx unlock time
-	static let avgBlockTime = 60 // Average block time in seconds, used for unlock time estimation
+	static let avgBlockTime: TimeInterval = 60 // Average block time in seconds, used for unlock time estimation
 	//
 	static let feePerKB = MoneroAmount("2000000000")! // 0.002 XMR; Network per kb fee in atomic units
 	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
@@ -203,8 +203,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 		cached__isUnlocked: Bool,
 		cached__lockedReason: String?,
 		isJustSentTransientTransactionRecord: Bool
-		)
-	{
+	) {
 		self.amount = amount
 		self.totalSent = totalSent
 		self.totalReceived = totalReceived
@@ -237,8 +236,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func isConfirmed(
 		givenTransactionHeight height: Int,
 		andWalletBlockchainHeight blockchain_height: Int
-		) -> Bool
-	{
+	) -> Bool {
 		let differenceInHeight = blockchain_height - height
 		//
 		return differenceInHeight > MoneroConstants.txMinConfirms
@@ -246,8 +244,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func isUnlocked(
 		givenTransactionUnlockTime unlock_time: Double,
 		andWalletBlockchainHeight blockchain_height: Int
-		) -> Bool
-	{
+	) -> Bool {
 		if unlock_time < Double(MoneroConstants.maxBlockNumber) { // then unlock time is block height
 			return Double(blockchain_height) >= unlock_time
 		} else { // then unlock time is s timestamp as TimeInterval
@@ -258,8 +255,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func lockedReason(
 		givenTransactionUnlockTime unlock_time: Double,
 		andWalletBlockchainHeight blockchain_height: Int
-		) -> String
-	{
+	) -> String {
 		func colloquiallyFormattedDate(_ date: Date) -> String
 		{
 			let date_DateInRegion = DateInRegion(absoluteDate: date)
@@ -279,13 +275,14 @@ class MoneroHistoricalTransactionRecord: Equatable
 			//
 			return "Will be unlocked in \(numBlocks) blocks, about \(unlockPrediction_fromNow_String)"
 		}
+		let unlock_time_TimeInterval = TimeInterval(unlock_time)
 		// then unlock time is s timestamp as TimeInterval
 		let currentTime_s = round(Date().timeIntervalSince1970) // TODO: round was ported from cryptonote_utils.js; Do we need it?
-		let time_difference = unlock_time - currentTime_s
+		let time_difference = unlock_time_TimeInterval - currentTime_s
 		if(time_difference <= 0) {
 			return "Transaction is unlocked"
 		}
-		let unlockTime_Date = Date(timeIntervalSince1970: unlock_time)
+		let unlockTime_Date = Date(timeIntervalSince1970: unlock_time_TimeInterval)
 		let unlockTime_fromNow_String = colloquiallyFormattedDate(unlockTime_Date)
 		//
 		return "Will be unlocked \(unlockTime_fromNow_String)"
@@ -295,8 +292,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func ==(
 		l: MoneroHistoricalTransactionRecord,
 		r: MoneroHistoricalTransactionRecord
-		) -> Bool
-	{
+	) -> Bool {
 		if l.amount != r.amount {
 			return false
 		}
@@ -341,8 +337,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func newArray(
 		withCoreParsed_jsonDicts dicts: [[String: Any]],
 		wallet__blockchainHeight: Int
-		) -> [MoneroHistoricalTransactionRecord]
-	{
+	) -> [MoneroHistoricalTransactionRecord] {
 		return dicts.map
 			{
 				return MoneroHistoricalTransactionRecord.new(
@@ -354,8 +349,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func new(
 		withCoreParsed_jsonDict dict: [String: Any],
 		wallet__blockchainHeight: Int
-		) -> MoneroHistoricalTransactionRecord
-	{
+	) -> MoneroHistoricalTransactionRecord {
 		let height = dict["height"] as! Int
 		let unlockTime = dict["unlock_time"] as? Double ?? 0
 		//
@@ -398,8 +392,9 @@ class MoneroHistoricalTransactionRecord: Equatable
 		return instance
 	}
 	//
-	static func newSerializedDictRepresentation(withArray array: [MoneroHistoricalTransactionRecord]) -> [[String: Any]]
-	{
+	static func newSerializedDictRepresentation(
+		withArray array: [MoneroHistoricalTransactionRecord]
+	) -> [[String: Any]] {
 		return array.map{ $0.jsonRepresentation }
 	}
 	var jsonRepresentation: [String: Any]
@@ -429,8 +424,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func new(
 		fromJSONRepresentation jsonRepresentation: [String: Any],
 		wallet__blockchainHeight: Int
-		) -> MoneroHistoricalTransactionRecord
-	{
+	) -> MoneroHistoricalTransactionRecord {
 		let height = jsonRepresentation["height"] as! Int
 		let unlockTime = jsonRepresentation["unlock_time"] as! Double
 		//
@@ -456,7 +450,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			spent_outputs: MoneroSpentOutputDescription.newArray(
 				fromJSONRepresentations: jsonRepresentation["spent_outputs"] as! [[String: Any]]
 			),
-			timestamp: Date(timeIntervalSince1970: jsonRepresentation["timestamp"] as! TimeInterval),
+			timestamp: Date(timeIntervalSince1970: jsonRepresentation["timestamp"] as! TimeInterval), // since we took .timeIntervalSince1970
 			hash: jsonRepresentation["hash"] as! MoneroTransactionHash,
 			paymentId: jsonRepresentation["paymentId"] as? MoneroPaymentID,
 			mixin: jsonRepresentation["mixin"] as! Int,
@@ -474,14 +468,13 @@ class MoneroHistoricalTransactionRecord: Equatable
 	static func newArray(
 		fromJSONRepresentations array: [[String: Any]],
 		wallet__blockchainHeight: Int
-		) -> [MoneroHistoricalTransactionRecord]
-	{
+	) -> [MoneroHistoricalTransactionRecord] {
 		return array.map
-			{
-				return MoneroHistoricalTransactionRecord.new(
-					fromJSONRepresentation: $0,
-					wallet__blockchainHeight: wallet__blockchainHeight
-				)
+		{
+			return MoneroHistoricalTransactionRecord.new(
+				fromJSONRepresentation: $0,
+				wallet__blockchainHeight: wallet__blockchainHeight
+			)
 		}
 	}
 }
@@ -497,7 +490,7 @@ struct MoneroSpentOutputDescription: Equatable
 	static func ==(
 		l: MoneroSpentOutputDescription,
 		r: MoneroSpentOutputDescription
-		) -> Bool {
+	) -> Bool {
 		if l.amount != r.amount {
 			return false
 		}
@@ -560,7 +553,7 @@ struct MoneroSpentOutputDescription: Equatable
 	}
 	static func newArray(
 		fromJSONRepresentations array: [[String: Any]]
-		) -> [MoneroSpentOutputDescription] {
+	) -> [MoneroSpentOutputDescription] {
 		return array.map{ MoneroSpentOutputDescription.new(fromJSONRepresentation: $0) }
 	}
 }
@@ -593,7 +586,7 @@ struct MoneroSpentOutputDescription: Equatable
 		spend_key_images: [MoneroKeyImage],
 		timestamp: Date,
 		height: Int
-		) {
+	) {
 		self.amount = amount
 		self.public_key = public_key
 		self.index = index
@@ -662,7 +655,7 @@ struct MoneroSpentOutputDescription: Equatable
 	init(
 		amount: MoneroAmount,
 		outputs: [MoneroRandomOutputDescription]
-		) {
+	) {
 		self.amount = amount
 		self.outputs = outputs
 	}
@@ -696,7 +689,7 @@ struct MoneroSpentOutputDescription: Equatable
 		globalIndex: String,
 		public_key: MoneroTransactionPubKey,
 		rct: String?
-		) {
+	) {
 		self.globalIndex = globalIndex
 		self.public_key = public_key
 		self.rct = rct
@@ -740,14 +733,14 @@ struct MoneroSpentOutputDescription: Equatable
 	init(
 		address: MoneroAddress,
 		amount: MoneroAmount
-		) {
+	) {
 		self.address = address
 		self.amount = amount
 	}
 	//
 	class func jsArrayString(
 		_ array: [SendFundsTargetDescription]
-		) -> String {
+	) -> String {
 		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
 	}
 	var jsRepresentationString: String {
@@ -756,4 +749,3 @@ struct MoneroSpentOutputDescription: Equatable
 }
 typealias MoneroSignedTransaction = [String: Any]
 typealias MoneroSerializedSignedTransaction = String
-
