@@ -38,7 +38,6 @@ class WalletsListController: PersistedObjectListController
 {
 	//
 	// Properties - Initial
-	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
 	static let shared = WalletsListController()

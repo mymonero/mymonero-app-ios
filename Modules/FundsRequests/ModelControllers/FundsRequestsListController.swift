@@ -37,7 +37,6 @@ import Foundation
 class FundsRequestsListController: PersistedObjectListController
 {
 	// initial
-	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
 	static let shared = FundsRequestsListController()

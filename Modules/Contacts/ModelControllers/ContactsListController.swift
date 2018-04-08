@@ -37,7 +37,6 @@ import Foundation
 class ContactsListController: PersistedObjectListController
 {
 	// initial
-	var mymoneroCore: MyMoneroCore!
 	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
 	static let shared = ContactsListController()

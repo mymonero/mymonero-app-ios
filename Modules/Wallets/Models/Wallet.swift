@@ -928,7 +928,6 @@ class Wallet: PersistableObject
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			mymoneroCore: MyMoneroCore.shared,
 			hostedMoneroAPIClient: HostedMoneroAPIClient.shared,
 			payment_id: payment_id,
 			success_fn:
