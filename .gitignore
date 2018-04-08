@@ -27,3 +27,8 @@ Podfile.lock
 screenshots/en-US/*.png
 screenshots/screenshots.html
 MyMoneroScreenshotsUITests/MyMoneroScreenshots_Constants.swift
+
+Modules/MyMoneroCore/package-lock.json
+
+MyMonero.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+# ^ for now
