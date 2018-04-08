@@ -121,9 +121,16 @@ extension MoneroUtils.Mnemonics
 				.Japanese
 			]
 			//
-			var jsonRepresentation: String
-			{
+			var jsonRepresentation: String {
 				return self.rawValue
+			}
+			var wordsetName: String {
+				return self.rawValue
+			}
+			var objcSerialized: String {
+				let str = self.wordsetName
+				// just capitalizing the first letter… that's how mymonero-core-cpp requires the languages to be
+				return str.prefix(1).uppercased() + str.dropFirst()
 			}
 			static func new(fromJSONRepresentation jsonRepresentation: Any) -> WordsetName
 			{
