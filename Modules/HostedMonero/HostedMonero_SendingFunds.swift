@@ -133,8 +133,8 @@ extension HostedMoneroAPIClient
 		//
 		// Derive/finalize some values…
 		let final__mixin = MyMoneroCore.fixedMixin
-		if final__mixin < 0 {
-			__trampolineFor_err_withStr(err_str: "Invalid mixin")
+		if final__mixin <= 0 { // TODO: min mixin checking
+			__trampolineFor_err_withStr(err_str: "Expected mixin > 0")
 			return
 		}
 		var final__payment_id = payment_id == "" ? nil : payment_id
@@ -183,7 +183,6 @@ extension HostedMoneroAPIClient
 				view_key__private: wallet__private_keys.view,
 				spend_key__public: wallet__public_keys.spend,
 				spend_key__private: wallet__private_keys.spend,
-				mixinNumber: final__mixin,
 				{ (err_str, result) in
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)
@@ -325,13 +324,11 @@ extension HostedMoneroAPIClient
 			fundTransferDescriptions: [SendFundsTargetDescription],
 			passedIn_attemptAt_network_minimumFee: MoneroAmount,
 			usingOuts: [MoneroOutputDescription]
-		)
-		{
+		) {
 			DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
 			// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
 			let _ = hostedMoneroAPIClient.RandomOuts(
 				using_outs: usingOuts,
-				mixin: final__mixin,
 				{ (err_str, result) in
 					if let err_str = err_str {
 						__trampolineFor_err_withStr(err_str: err_str)

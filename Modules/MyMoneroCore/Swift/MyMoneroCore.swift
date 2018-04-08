@@ -44,8 +44,8 @@ final class MyMoneroCore : MyMoneroCoreJS
 	static let shared = MyMoneroCore()
 	//
 	// Constants
-	static var fixedMixin: Int {
-		return 9 // TODO: obtain this via the official core lib… or server?
+	static var fixedMixin: Int { // for min ring size of 7
+		return 6 // to mirror the simplewallet default and keep above network minimum
 	}
 	//
 	// Lifecycle - Init

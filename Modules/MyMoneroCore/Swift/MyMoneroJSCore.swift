@@ -294,7 +294,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		splitDestinations: [SendFundsTargetDescription], // in RingCT=true, splitDestinations can equal fundTransferDescriptions
 		usingOuts: [MoneroOutputDescription],
 		mix_outs: [MoneroRandomAmountAndOutputs],
-		fake_outputs_count: Int,
+		fake_outputs_count: Int, // should be MyMoneroCore.fixedMixin
 		fee_amount: MoneroAmount,
 		payment_id: MoneroPaymentID?,
 		pid_encrypt: Bool? = false,
