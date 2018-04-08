@@ -303,8 +303,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		unlock_time: Int,
 		isRingCT: Bool? = true,
 		_ fn: @escaping (_ err_str: String?, _ signedTxDescription_dict: MoneroSignedTransaction?) -> Void
-	) -> Void
-	{
+	) -> Void {
 		// Serialize all arguments into good inputs to .core.create_transaction
 		let args: [String] =
 		[
@@ -374,8 +373,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			_ err_str: String?,
 			_ fabricated_integratedAddress: MoneroIntegratedAddress?
 		) -> Void
-	) -> Void
-	{
+	) -> Void {
 		// Serialize all arguments into good inputs to .core.create_transaction
 		let args: [String] =
 		[
@@ -400,8 +398,10 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	//
 	// Internal - Accessors - Parsing/Factories
 	//
-	func _new_moneroWalletDescription_byParsing_dict(_ dict: [String: AnyObject], _ optl_passThrough_mnemonicString: MoneroSeedAsMnemonic?) -> MoneroWalletDescription
-	{
+	func _new_moneroWalletDescription_byParsing_dict(
+		_ dict: [String: AnyObject],
+		_ optl_passThrough_mnemonicString: MoneroSeedAsMnemonic?
+	) -> MoneroWalletDescription {
 		let mnemonicString = optl_passThrough_mnemonicString ?? dict["mnemonicString"] as! MoneroSeedAsMnemonic
 		let seed = dict["seed"] as! MoneroSeed
 		assert(seed != "")
@@ -439,8 +439,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			_ returnedValue: Any?
 		
 		) -> Void)?
-	)
-	{
+	) {
 		let args = argsAsJSFormattedStrings ?? []
 		let joined_args = args.joined(separator: ",")
 		let argsAreaString = joined_args
@@ -500,8 +499,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	func _evaluateJavaScript(
 		_ javaScriptString: String,
 		completionHandler: ((Any?, Error?) -> Void)?
-	)
-	{
+	) {
 		self.__evaluateJavaScript(
 			javaScriptString,
 			completionHandler: completionHandler,
@@ -512,8 +510,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ javaScriptString: String,
 		completionHandler: ((Any?, Error?) -> Void)?,
 		tryNumber: Int
-	)
-	{
+	) {
 		if (self.hasBooted == false) { // semi-janky but should be unlikely and finite
 			let retryAfter_s = 0.1
 			// TODO? check tryNumber * retryAfter_s < T?
