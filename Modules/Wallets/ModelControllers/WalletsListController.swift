@@ -37,9 +37,6 @@ import Foundation
 class WalletsListController: PersistedObjectListController
 {
 	//
-	// Properties - Initial
-	var hostedMoneroAPIClient: HostedMoneroAPIClient!
-	//
 	static let shared = WalletsListController()
 	//
 	// Lifecycle - Init
@@ -103,8 +100,7 @@ class WalletsListController: PersistedObjectListController
 	//
 	func CreateNewWallet_NoBootNoListAdd(
 		_ fn: @escaping (_ err: String?, _ walletInstance: Wallet?) -> Void
-	) -> Void
-	{ // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
+	) -> Void { // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
 		MyMoneroCore.shared.NewlyCreatedWallet
 		{ (err_str, walletDescription) in
 			if err_str != nil {
@@ -132,8 +128,7 @@ class WalletsListController: PersistedObjectListController
 			_ walletInstance: Wallet?
 		) -> Void,
 		userCanceledPasswordEntry_fn: (() -> Void)? = {}
-	) -> Void
-	{
+	) -> Void {
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
 				{ [unowned self] (password, passwordType) in
@@ -167,8 +162,7 @@ class WalletsListController: PersistedObjectListController
 			_ wasWalletAlreadyInserted: Bool?
 		) -> Void,
 		userCanceledPasswordEntry_fn: (() -> Void)? = {}
-	) -> Void
-	{
+	) -> Void {
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
 				{ [unowned self] (password, passwordType) in
@@ -223,8 +217,7 @@ class WalletsListController: PersistedObjectListController
 			_ wasWalletAlreadyInserted: Bool?
 		) -> Void,
 		userCanceledPasswordEntry_fn: (() -> Void)? = {}
-	)
-	{
+	) {
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
 				{ [unowned self] (password, passwordType) in
@@ -275,8 +268,7 @@ class WalletsListController: PersistedObjectListController
 	func reboot(
 		nonBootedWallet wallet: Wallet,
 		withSpecificReconstitutionDescription specific_reconstitutionDescription: Wallet.RebootReconstitutionDescription?
-	)
-	{
+	) {
 		assert(wallet.isBooted == false)
 		assert(wallet.isLoggedIn == false)
 		//

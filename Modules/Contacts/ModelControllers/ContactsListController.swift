@@ -36,8 +36,6 @@ import Foundation
 
 class ContactsListController: PersistedObjectListController
 {
-	// initial
-	var hostedMoneroAPIClient: HostedMoneroAPIClient!
 	//
 	static let shared = ContactsListController()
 	//
@@ -81,8 +79,7 @@ class ContactsListController: PersistedObjectListController
 		emoji: String?,
 		cached_OAResolved_XMR_address: MoneroAddress?,
 		_ fn: @escaping (_ err_str: String?, _ instance: Contact?) -> Void
-	)
-	{
+	) {
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
 				{ [unowned self] (password, passwordType) in
