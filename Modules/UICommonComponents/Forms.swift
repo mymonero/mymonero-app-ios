@@ -998,14 +998,13 @@ extension UICommonComponents.Form
 			//
 			withContainingWidth containingWidth: CGFloat,
 			yOffset: CGFloat
-		)
-		{
+		) {
 			// manual/patch call to custom method:
 			self.layOutSubviews(
-				withContainingWidth: self.frame.size.width,
+				withContainingWidth: containingWidth, // cannot use self.frame.size.width yet
 				withXOffset: 0,
 				andYOffset: 0
-			) // as used, this will cause the SectionContentContainerView to size itself but have height of 0
+			) // as used, this will cause the SectionContentContainerView to size itself but have height (and on first run, width) of 0
 			do { // so adjust height manually
 				var to_frame = self.containerView.frame
 				do {
