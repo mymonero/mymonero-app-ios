@@ -58,6 +58,19 @@ struct MoneyAmount
 	}
 }
 //
+var _doubleFormatter: NumberFormatter? = nil
+func shared_doubleFormatter() -> NumberFormatter
+{
+	if _doubleFormatter == nil {
+		_doubleFormatter = NumberFormatter()
+		_doubleFormatter!.minimumFractionDigits = 1
+		_doubleFormatter!.maximumFractionDigits = MoneroConstants.currency_unitPlaces + 1
+		_doubleFormatter!.roundingMode = .down
+		_doubleFormatter!.numberStyle = .decimal
+	}
+	return _doubleFormatter!
+}
+//
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
 extension MoneroAmount
 {
@@ -75,7 +88,9 @@ extension MoneroAmount
 	//
 	static func new(withDouble doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
 	{
-		return new(withMoneyAmountDoubleString: "\(doubleValue)")
+		let amountAsFormattedString = shared_doubleFormatter().string(for: doubleValue)!
+		//
+		return new(withMoneyAmountDoubleString: amountAsFormattedString)
 	}
 	static func new(withUserInputAmountString string: String) -> MoneroAmount?
 	{
