@@ -279,7 +279,7 @@ extension SendFundsForm
 		)
 		{
 			let mockedTransaction = MoneroHistoricalTransactionRecord(
-				amount: sentAmount,
+				amount: MoneroAmount.new(withDouble: -1 * self.parameters.amount_submittableDouble),
 				totalSent: sentAmount,
 				totalReceived: MoneroAmount("0"),
 				approxFloatAmount: -1 * self.parameters.amount_submittableDouble, // -1 b/c it's outgoing!
