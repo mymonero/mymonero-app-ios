@@ -302,10 +302,11 @@ class MoneroHistoricalTransactionRecord: Equatable
 		if l.totalReceived != r.totalReceived {
 			return false
 		}
-		if l.approxFloatAmount != r.approxFloatAmount {
-			return false
-		}
-		if l.spent_outputs == nil && r.spent_outputs == nil
+//		if l.approxFloatAmount != r.approxFloatAmount {
+//			return false
+//		}
+		if l.spent_outputs == nil || l.spent_outputs!.count == 0 && r.spent_outputs != nil && r.spent_outputs!.count != 0
+			|| l.spent_outputs != nil && l.spent_outputs!.count != 0 && r.spent_outputs == nil || r.spent_outputs!.count == 0
 			|| l.spent_outputs! != r.spent_outputs!
 		{
 			return false

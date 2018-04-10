@@ -280,7 +280,7 @@ class Wallet: PersistableObject
 	var isSendingFunds = false
 	//
 	// Properties - Objects
-	var logIn_requestHandle: HostedMoneroAPIClient.RequestHandle?
+	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
 	//
 	// 'Protocols' - Persistable Object
@@ -464,10 +464,17 @@ class Wallet: PersistableObject
 	override func teardown()
 	{
 		super.teardown()
+		//
 		self.hostPollingController = nil // just to be clear
 		if let handle = self.logIn_requestHandle {
 			handle.cancel() // in case wallet is being rebooted on API address change via settings
 		}
+		//
+		// And now that network requests have been terminated (with the exception, presently, of any SendFunds), we can delete the key image cache since no more will hopefully get added..
+		MyMoneroCore.shared.DeleteManagedKeyImages(forWalletWithAddress: self.public_address,
+		{ (err_str) in
+			// TODO: Unhandled - see note in DeleteManagedKeyImages()
+		})
 	}
 	//
 	//
@@ -810,7 +817,7 @@ class Wallet: PersistableObject
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
 			//
-			self.logIn_requestHandle = HostedMoneroAPIClient.shared.LogIn(
+			self.logIn_requestHandle = HostedMonero.APIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
 				{ [weak self] (login__err_str, isANewAddressToServer) in
@@ -900,8 +907,7 @@ class Wallet: PersistableObject
 		failWithErr_fn: @escaping (
 			_ err_str: String
 		) -> Void
-	)
-	{
+	) {
 		func __isLocked() -> Bool { return self.isSendingFunds }
 		if __isLocked() {
 			failWithErr_fn("Currently sending funds. Please try again when complete.")
@@ -922,13 +928,13 @@ class Wallet: PersistableObject
 			ScreenSleep.reEnable_screenSleep()
 		}
 		__lock()
-		let _/*TODO requestHandle*/ = HostedMoneroAPIClient.SendFunds(
+		let _/*TODO requestHandle*/ = HostedMonero.SendFunds(
 			target_address: target_address,
 			amount: amount,
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			hostedMoneroAPIClient: HostedMoneroAPIClient.shared,
+			hostedMoneroAPIClient: HostedMonero.APIClient.shared,
 			payment_id: payment_id,
 			success_fn:
 			{ (tx_hash, tx_fee) in
@@ -948,9 +954,8 @@ class Wallet: PersistableObject
 	// HostPollingController - Delegation / Protocol
 	// 
 	func _HostPollingController_didFetch_addressInfo(
-		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressInfo
-	) -> Void
-	{
+		_ parsedResult: HostedMonero.ParsedResult_AddressInfo
+	) -> Void {
 		//
 		let xmrToCcyRatesByCcy = parsedResult.xmrToCcyRatesByCcy
 		DispatchQueue.main.async { // just to let wallet stuff finish first
@@ -1025,9 +1030,8 @@ class Wallet: PersistableObject
 		}
 	}
 	func _HostPollingController_didFetch_addressTransactions(
-		_ parsedResult: HostedMoneroAPIClient_Parsing.ParsedResult_AddressTransactions
-	) -> Void
-	{
+		_ parsedResult: HostedMonero.ParsedResult_AddressTransactions
+	) -> Void {
 		let didActuallyChange_heights =
 			(self.account_scanned_height == nil || self.account_scanned_height != parsedResult.account_scanned_height)
 			|| (self.account_scanned_block_height == nil || self.account_scanned_block_height != parsedResult.account_scanned_block_height)

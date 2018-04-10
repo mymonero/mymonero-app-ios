@@ -43,6 +43,7 @@ enum MyMoneroCoreJS_ModuleName: String
 	case wallet = "monero_wallet_utils"
 	case paymentID = "monero_paymentID_utils"
 	case responseParser = "api_response_parser_utils"
+	case keyImage_cache_utils = "monero_keyImage_cache_utils"
 }
 //
 // Principal type
@@ -258,8 +259,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	}
 	func New_FakeAddressForRCTTx(
 		_ fn: @escaping (_ err_str: String?, _ address: MoneroAddress?) -> Void
-	)
-	{
+	) {
 		self._callSync(.core, "random_scalar", [])
 		{ [unowned self] (err_str, any) in
 			if let err_str = err_str {
@@ -288,6 +288,25 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			}
 		}
 	}
+	//
+	//
+	// For managing managed, globally stored key images (which can be removed once we have a way of generating key images synchronously in Swift or C++ - the Swift parsing code for this was already written .. this is mostly a kludge)
+	func DeleteManagedKeyImages(
+		forWalletWithAddress public_address: MoneroAddress,
+		_ fn: @escaping (_ err_str: String?) -> Void
+	) {
+		let args: [String] = [ public_address.jsRepresentationString ]
+		self._callSync(.keyImage_cache_utils, "DeleteManagedKeyImagesForWalletWith", args)
+		{ (err_str, any) in
+			if let err_str = err_str {
+				fn("Error deleting managed key image for wallet: \(err_str)")
+				return
+			}
+			fn(nil)
+		}
+	}
+	//
+	//
 	func CreateTransaction(
 		wallet__public_keys: MoneroKeyDuo,
 		wallet__private_keys: MoneroKeyDuo,

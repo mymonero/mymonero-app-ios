@@ -39,8 +39,8 @@ class Wallet_HostPollingController
 	weak var wallet: Wallet? // prevent retain cycle since wallet owns self
 	var timer: Timer!
 	//
-	var requestHandleFor_addressInfo: HostedMoneroAPIClient.RequestHandle?
-	var requestHandleFor_addressTransactions: HostedMoneroAPIClient.RequestHandle?
+	var requestHandleFor_addressInfo: HostedMonero.APIClient.RequestHandle?
+	var requestHandleFor_addressTransactions: HostedMonero.APIClient.RequestHandle?
 	//
 	//
 	// Lifecycle - Init
@@ -112,7 +112,7 @@ class Wallet_HostPollingController
 			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
-		self.requestHandleFor_addressInfo = HostedMoneroAPIClient.shared.AddressInfo(
+		self.requestHandleFor_addressInfo = HostedMonero.APIClient.shared.AddressInfo(
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
@@ -160,7 +160,7 @@ class Wallet_HostPollingController
 			DDLog.Error("Wallets", "Unable to do request for wallet w/o private_keys")
 			return
 		}
-		self.requestHandleFor_addressTransactions = HostedMoneroAPIClient.shared.AddressTransactions(
+		self.requestHandleFor_addressTransactions = HostedMonero.APIClient.shared.AddressTransactions(
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,

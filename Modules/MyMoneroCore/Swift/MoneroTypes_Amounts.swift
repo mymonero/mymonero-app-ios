@@ -61,8 +61,7 @@ struct MoneyAmount
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
 extension MoneroAmount
 {
-	var humanReadableString: String
-	{
+	var humanReadableString: String {
 		return FormattedString(fromMoneroAmount: self)
 	}
 	var atomicUnitsBigIntString: String {

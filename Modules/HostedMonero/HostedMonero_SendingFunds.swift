@@ -76,7 +76,7 @@ struct HostedMonero_SendFunds
 	}
 }
 //
-extension HostedMoneroAPIClient
+extension HostedMonero
 {
 	// TODO: port this to something akin to an OperationQueue so that it can be canceled properly
 	
@@ -87,10 +87,10 @@ extension HostedMoneroAPIClient
 		wallet__public_address: MoneroAddress,
 		wallet__private_keys: MoneroKeyDuo,
 		wallet__public_keys: MoneroKeyDuo,
-		hostedMoneroAPIClient: HostedMoneroAPIClient,
+		hostedMoneroAPIClient: HostedMonero.APIClient,
 		payment_id: MoneroPaymentID?,
 //		preSuccess_obtainedSubmitTransactionRequestHandle: @escaping (
-//			_ requestHandle: HostedMoneroAPIClient.RequestHandle
+//			_ requestHandle: APIClient.RequestHandle
 //		) -> Void,
 		success_fn: @escaping (
 			_ tx_hash: MoneroTransactionHash,
@@ -99,8 +99,7 @@ extension HostedMoneroAPIClient
 		failWithErr_fn: @escaping (
 			_ err_str: String
 		) -> Void
-	)
-	{
+	) {
 		//
 		// some callback trampoline func declarations…
 		func __trampolineFor_success(
@@ -189,7 +188,7 @@ extension HostedMoneroAPIClient
 						return
 					}
 					_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-						original_unusedOuts: result!.unusedOutputs
+						original_unusedOuts: result!.unspentOutputs
 					)
 				}
 			)
@@ -215,7 +214,7 @@ extension HostedMoneroAPIClient
 		{ // Now we need to establish some values for balance validation and to construct the transaction
 			DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
 			var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
-			let _/*hostingService_chargeAmount*/ = HostedMoneroAPIClient_HostConfig.HostingServiceChargeForTransaction(
+			let _/*hostingService_chargeAmount*/ = HostedMonero.APIClient_HostConfig.HostingServiceChargeForTransaction(
 				with: attemptAt_network_minimumFee
 			)
 			var totalAmountIncludingFees = totalAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
@@ -350,8 +349,7 @@ extension HostedMoneroAPIClient
 			passedIn_attemptAt_network_minimumFee: MoneroAmount,
 			usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
 			mix_outs: [MoneroRandomAmountAndOutputs]
-		)
-		{
+		) {
 			// Implementation note: per advice, in RingCT txs, decompose_tx_destinations should no longer necessary
 			//
 			func ___proceed(
@@ -496,8 +494,7 @@ extension HostedMoneroAPIClient
 		usingOuts: [MoneroOutputDescription],
 		usingOutsAmount: MoneroAmount,
 		remaining_unusedOuts: [MoneroOutputDescription]
-	)
-	{
+	) {
 		DDLog.Info("HostedMonero", "Selecting outputs to use. target: \(FormattedString(fromMoneroAmount: target_amount))")
 		var toFinalize_usingOutsAmount = MoneroAmount(0)
 		var toFinalize_usingOuts: [MoneroOutputDescription] = []

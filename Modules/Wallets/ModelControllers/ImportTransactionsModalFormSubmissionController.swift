@@ -41,7 +41,7 @@ extension ImportTransactionsModal
 		struct Parameters
 		{
 			let fromWallet: Wallet
-			let infoRequestParsingResult: HostedMoneroAPIClient_Parsing.ParsedResult_ImportRequestInfoAndStatus
+			let infoRequestParsingResult: HostedMonero.ParsedResult_ImportRequestInfoAndStatus
 			//
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void // aka error
 			var success_fn: () -> Void
