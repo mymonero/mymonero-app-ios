@@ -197,8 +197,11 @@ extension HostedMonero
 					validateHost: true
 				)
 			]
+			let configuration = URLSessionConfiguration.default
+			configuration.timeoutIntervalForResource = 120
+			configuration.timeoutIntervalForRequest = 120 // extended - but should maybe be reduced in future or made to work with background requests
 			self.manager = SessionManager(
-				configuration: URLSessionConfiguration.default,
+				configuration: configuration,
 				serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies_byDomain)
 			)
 		}
@@ -514,7 +517,7 @@ extension HostedMonero
 				"Content-Type": "application/json",
 			]
 			let url = "\(type(of: self).apiAddress_scheme)://\(self.final_apiAddress_authority)/\(endpoint.rawValue)"
-	//		DDLog.Net("HostedMonero", "\(url)")
+			DDLog.Net("HostedMonero", "\(url)")
 			var final_parameters = parameters
 			do { // client metadata
 				if let value = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
