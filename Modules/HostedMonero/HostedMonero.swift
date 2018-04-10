@@ -387,8 +387,7 @@ extension HostedMonero
 				_ err_str: String?,
 				_ result: ParsedResult_UnspentOuts?
 			) -> Void
-		) -> RequestHandle?
-		{
+		) -> RequestHandle? {
 			let mixinSize = MyMoneroCore.fixedMixin
 			let parameters: [String: Any] =
 			[
@@ -412,8 +411,7 @@ extension HostedMonero
 					view_key__private: view_key__private,
 					spend_key__public: spend_key__public,
 					spend_key__private: spend_key__private
-				)
-				{ (err_str, result) in
+				) { (err_str, result) in
 					self._shared_onMain_callBackFromRequest(err_str, result, fn)
 				}
 			}

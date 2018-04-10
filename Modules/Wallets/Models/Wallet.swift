@@ -282,6 +282,7 @@ class Wallet: PersistableObject
 	// Properties - Objects
 	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
+	var fundsSender: HostedMonero.FundsSender?
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -465,10 +466,17 @@ class Wallet: PersistableObject
 	{
 		super.teardown()
 		//
-		self.hostPollingController = nil // just to be clear
-		if let handle = self.logIn_requestHandle {
-			handle.cancel() // in case wallet is being rebooted on API address change via settings
+		self.hostPollingController = nil // stop requests
+		//
+		self.logIn_requestHandle?.cancel() // in case wallet is being rebooted on API address change via settings
+		self.logIn_requestHandle = nil
+		//
+		if self.isSendingFunds { // just in case - i.e. on teardown while sending but user sends the app to the background
+			UserIdle.shared.reEnable_userIdle()
+			ScreenSleep.reEnable_screenSleep()
 		}
+		self.fundsSender?.cancel() // to get the network request cancel immediately
+		self.fundsSender = nil
 		//
 		// And now that network requests have been terminated (with the exception, presently, of any SendFunds), we can delete the key image cache since no more will hopefully get added..
 		MyMoneroCore.shared.DeleteManagedKeyImages(forWalletWithAddress: self.public_address,
@@ -566,8 +574,7 @@ class Wallet: PersistableObject
 		reconstitutionDescription: RebootReconstitutionDescription,
 		persistEvenIfLoginFailed_forServerChange: Bool = true,
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{
+	) {
 		func _proceedTo_login(mnemonicString: MoneroSeedAsMnemonic?)
 		{
 			if mnemonicString != nil {
@@ -896,7 +903,7 @@ class Wallet: PersistableObject
 	//
 	// Runtime (Booted) - Imperatives - Sending Funds
 	//
-	func SendFunds(
+	func sendFunds(
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 		payment_id: MoneroPaymentID?,
@@ -917,41 +924,52 @@ class Wallet: PersistableObject
 			failWithErr_fn(NSLocalizedString("Currently sending funds. Please try again when complete.", comment: ""))
 			return // TODO nil
 		}
-		func __lock()
-		{
-			self.isSendingFunds = true
-			//
-			UserIdle.shared.temporarilyDisable_userIdle()
-			ScreenSleep.temporarilyDisable_screenSleep()
-		}
-		func __unlock()
-		{
-			self.isSendingFunds = false
-			//
-			UserIdle.shared.reEnable_userIdle()
-			ScreenSleep.reEnable_screenSleep()
-		}
-		__lock()
-		let _/*TODO requestHandle*/ = HostedMonero.SendFunds(
+		//
+		self.__lock_sending()
+		assert(self.fundsSender == nil)
+		let fundsSender = HostedMonero.FundsSender(
 			target_address: target_address,
 			amount: amount,
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			hostedMoneroAPIClient: HostedMonero.APIClient.shared,
-			payment_id: payment_id,
-			success_fn:
-			{ (tx_hash, tx_fee) in
-				__unlock()
-				success_fn(tx_hash, tx_fee)
-			},
-			failWithErr_fn:
-			{ err_str in
-				__unlock()
-				failWithErr_fn(err_str)
-			}
+			payment_id: payment_id
 		)
-		return // TODO requestHandle
+		fundsSender.success_fn =
+		{ [weak self] (tx_hash, tx_fee) in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.__unlock_sending()
+			success_fn(tx_hash, tx_fee)
+		}
+		fundsSender.failWithErr_fn =
+		{ [weak self] err_str in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.__unlock_sending()
+			failWithErr_fn(err_str)
+		}
+		self.fundsSender = fundsSender
+		fundsSender.send() // kick off; after having set property
+		//
+		return
+	}
+	func __lock_sending()
+	{
+		self.isSendingFunds = true
+		//
+		UserIdle.shared.temporarilyDisable_userIdle()
+		ScreenSleep.temporarilyDisable_screenSleep()
+	}
+	func __unlock_sending()
+	{
+		self.isSendingFunds = false
+		self.fundsSender = nil // can assume if we're unlocking that this will always be nil… but the flip side of doing this here alone is that we must ensure we always call __unlock() when we need to nil fundsSender()
+		//
+		UserIdle.shared.reEnable_userIdle()
+		ScreenSleep.reEnable_screenSleep()
 	}
 	//
 	//

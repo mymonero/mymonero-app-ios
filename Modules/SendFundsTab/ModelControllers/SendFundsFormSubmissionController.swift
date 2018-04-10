@@ -245,7 +245,7 @@ extension SendFundsForm
 		{
 			self.parameters.preSuccess_passedValidation_willBeginSending()
 			//
-			self.parameters.fromWallet.SendFunds(
+			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
 				amount: self.parameters.amount_submittableDouble,
 				payment_id: payment_id,

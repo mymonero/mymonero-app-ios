@@ -35,7 +35,7 @@
 import Foundation
 import BigInt
 //
-struct HostedMonero_SendFunds
+extension MoneroUtils
 {
 	static func estimatedRingCTSize(
 		_ numberOfInputs: Int,
@@ -78,406 +78,477 @@ struct HostedMonero_SendFunds
 //
 extension HostedMonero
 {
-	// TODO: port this to something akin to an OperationQueue so that it can be canceled properly
 	
-	
-	static func SendFunds( // assumes isRingCT=true - not intended to support non-rct nor sweep_all-like txs
-		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
-		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
-		wallet__public_address: MoneroAddress,
-		wallet__private_keys: MoneroKeyDuo,
-		wallet__public_keys: MoneroKeyDuo,
-		hostedMoneroAPIClient: HostedMonero.APIClient,
-		payment_id: MoneroPaymentID?,
-//		preSuccess_obtainedSubmitTransactionRequestHandle: @escaping (
+	class FundsSender
+	{
+		var hasSendBeenInitiated: Bool = false
+		var isCanceled = false
+		//
+		var target_address: MoneroAddress! // currency-ready wallet address, but not an OA address (resolve before calling)
+		var amount: HumanUnderstandableCurrencyAmountDouble! // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		var wallet__public_address: MoneroAddress!
+		var wallet__private_keys: MoneroKeyDuo!
+		var wallet__public_keys: MoneroKeyDuo!
+		var payment_id: MoneroPaymentID?
+		// TODO: for cancelling?
+//		var preSuccess_obtainedSubmitTransactionRequestHandle: (
 //			_ requestHandle: APIClient.RequestHandle
-//		) -> Void,
-		success_fn: @escaping (
+//		) -> Void
+		var success_fn: ((
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
-		) -> Void,
-		failWithErr_fn: @escaping (
+		) -> Void)?
+		var failWithErr_fn: ((
 			_ err_str: String
-		) -> Void
-	) {
+		) -> Void)?
 		//
-		// some callback trampoline func declarations…
-		func __trampolineFor_success(
-			tx_hash: MoneroTransactionHash,
-			tx_fee: MoneroAmount
-		) -> Void
+		var _current_request: HostedMonero.APIClient.RequestHandle?
+		//
+		init(
+			target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
+			amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+			wallet__public_address: MoneroAddress,
+			wallet__private_keys: MoneroKeyDuo,
+			wallet__public_keys: MoneroKeyDuo,
+			payment_id: MoneroPaymentID?
+		) {
+			self.target_address = target_address
+			self.amount = amount
+			self.wallet__public_address = wallet__public_address
+			self.wallet__private_keys = wallet__private_keys
+			self.wallet__public_keys = wallet__public_keys
+			self.payment_id = payment_id
+		}
+		deinit
 		{
-			success_fn(
-				tx_hash,
-				tx_fee
+			self.cancel()
+		}
+		func cancel()
+		{
+			self.isCanceled = true
+			if self._current_request != nil {
+				self._current_request!.cancel()
+				self._current_request = nil
+			}
+		}
+		func send()
+		{
+			assert(self.hasSendBeenInitiated == false)
+			self.hasSendBeenInitiated = true
+			//
+			assert(self._current_request == nil)
+			//
+			// status: preparing to send funds…
+			if amount <= 0 {
+				self.failWithErr_fn?("The amount you've entered is too low")
+				return
+			}
+			let totalAmountWithoutFee = MoneroAmount.new(withDouble: amount)
+			let targetDescription = SendFundsTargetDescription(
+				address: target_address,
+				amount: totalAmountWithoutFee
 			)
-		}
-		func __trampolineFor_err_withStr(err_str: String) -> Void
-		{
-			DDLog.Error("HostedMonero", "SendFunds(): \(err_str)")
-			failWithErr_fn(err_str)
-		}
-		// status: preparing to send funds…
-		if amount <= 0 {
-			__trampolineFor_err_withStr(err_str: "The amount you've entered is too low")
-			return
-		}
-		let totalAmountWithoutFee = MoneroAmount.new(withDouble: amount)
-		let targetDescription = SendFundsTargetDescription(
-			address: target_address,
-			amount: totalAmountWithoutFee
-		)
-	//	DDLog.Info("HostedMonero", "targetDescription \(targetDescription)")
-		DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
-		//
-		// Derive/finalize some values…
-		let final__mixin = MyMoneroCore.fixedMixin
-		if final__mixin <= 0 { // TODO: min mixin checking
-			__trampolineFor_err_withStr(err_str: "Expected mixin > 0")
-			return
-		}
-		var final__payment_id = payment_id == "" ? nil : payment_id
-		var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
-		MyMoneroCore.shared.DecodeAddress(target_address)
-		{ (err_str, decodedAddressComponents) in
-			if let _ = err_str {
-				__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
+		//	DDLog.Info("HostedMonero", "targetDescription \(targetDescription)")
+			DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
+			//
+			// Derive/finalize some values…
+			let final__mixin = MyMoneroCore.fixedMixin
+			if final__mixin <= 0 { // TODO: min mixin checking
+				self.failWithErr_fn?("Expected mixin > 0")
 				return
 			}
-			guard let decodedAddressComponents = decodedAddressComponents else {
-				__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components.")
-				return
-			}
-			if decodedAddressComponents.intPaymentId != nil && payment_id != nil {
-				__trampolineFor_err_withStr(err_str: "Payment ID field must be blank when using an Integrated Address")
-				return
-			}
-			if decodedAddressComponents.intPaymentId != nil {
-				final__payment_id = decodedAddressComponents.intPaymentId
-				final__pid_encrypt = true // we do want to encrypt if using an integrated address
-				assert(
-					MoneroUtils.PaymentIDs.isAValid(
-						paymentId: final__payment_id!,
-						ofVariant: .short
-					)
-				)
-			} else {
-				if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
-					__trampolineFor_err_withStr(err_str: "The payment ID you've entered is not valid")
+			var final__payment_id = payment_id == "" ? nil : payment_id
+			var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
+			MyMoneroCore.shared.DecodeAddress(target_address)
+			{ [weak self] (err_str, decodedAddressComponents) in
+				guard let thisSelf = self else {
 					return
 				}
-				if final__payment_id != nil {
-					final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(
-						paymentId: final__payment_id!,
-						ofVariant: .short // if it's a short pid, encrypt
-					)
+				if thisSelf.isCanceled {
+					return
 				}
-			}
-			_proceedTo_getUnspentOutsUsableForMixin()
-		}
-		func _proceedTo_getUnspentOutsUsableForMixin()
-		{
-			let _ = hostedMoneroAPIClient.UnspentOuts(
-				address: wallet__public_address,
-				view_key__private: wallet__private_keys.view,
-				spend_key__public: wallet__public_keys.spend,
-				spend_key__private: wallet__private_keys.spend,
-				{ (err_str, result) in
-					if let err_str = err_str {
-						__trampolineFor_err_withStr(err_str: err_str)
+				if let _ = err_str {
+					thisSelf.failWithErr_fn?("Invalid recipient address.")
+					return
+				}
+				guard let decodedAddressComponents = decodedAddressComponents else {
+					thisSelf.failWithErr_fn?("Error obtaining decoded recipient Monero address components.")
+					return
+				}
+				if decodedAddressComponents.intPaymentId != nil && thisSelf.payment_id != nil {
+					thisSelf.failWithErr_fn?("Payment ID field must be blank when using an Integrated Address")
+					return
+				}
+				if decodedAddressComponents.intPaymentId != nil {
+					final__payment_id = decodedAddressComponents.intPaymentId
+					final__pid_encrypt = true // we do want to encrypt if using an integrated address
+					assert(
+						MoneroUtils.PaymentIDs.isAValid(
+							paymentId: final__payment_id!,
+							ofVariant: .short
+						)
+					)
+				} else {
+					if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
+						thisSelf.failWithErr_fn?("The payment ID you've entered is not valid")
 						return
 					}
-					_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-						original_unusedOuts: result!.unspentOutputs
-					)
+					if final__payment_id != nil {
+						final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(
+							paymentId: final__payment_id!,
+							ofVariant: .short // if it's a short pid, encrypt
+						)
+					}
 				}
-			)
-		}
-		func _proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-			original_unusedOuts: [MoneroOutputDescription]
-		)
-		{ // status: constructing transaction…
-			let feePerKB = MoneroConstants.feePerKB
-			// Transaction will need at least 1KB fee (13KB for RingCT)
-			let network_minimumTXSize_kb = 13 // because isRingCT=true
-			let network_minimumFee = feePerKB * BigInt(network_minimumTXSize_kb)
-			// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
-			__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-				original_unusedOuts: original_unusedOuts,
-				passedIn_attemptAt_network_minimumFee: network_minimumFee
-			)
-		}
-		func __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-			original_unusedOuts: [MoneroOutputDescription],
-			passedIn_attemptAt_network_minimumFee: MoneroAmount
-		)
-		{ // Now we need to establish some values for balance validation and to construct the transaction
-			DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
-			var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
-			let _/*hostingService_chargeAmount*/ = HostedMonero.APIClient_HostConfig.HostingServiceChargeForTransaction(
-				with: attemptAt_network_minimumFee
-			)
-			var totalAmountIncludingFees = totalAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
-			let usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
-				target_amount: totalAmountIncludingFees,
-				unusedOuts: original_unusedOuts
-			)
-			
-			DDLog.Info("HostedMonero", "usableOutputsAndAmounts \(usableOutputsAndAmounts)")
-			
-			// v-- now, since isRingCT=true, compute fee as closely as possible before hand
-			var usingOuts = usableOutputsAndAmounts.usingOuts
-			var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
-			var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
-			if usingOuts.count > 1 {
-				var newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
-				totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
-				// add outputs 1 at a time till we either have them all or can meet the fee
-				while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
-					// pop and return random element from list
-					let idx = __randomIndex(remaining_unusedOuts)
-					let out = remaining_unusedOuts[idx]
-					remaining_unusedOuts.remove(at: idx)
-					//
-					usingOuts.append(out)
-					usingOutsAmount = usingOutsAmount + out.amount
-					DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
-					newNeededFee = HostedMonero_SendFunds.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
-					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
-				}
-				DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
-				attemptAt_network_minimumFee = newNeededFee
+				_proceedTo_getUnspentOutsUsableForMixin()
 			}
-			DDLog.Info("HostedMonero", "~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
-			// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
-			if usingOutsAmount < totalAmountIncludingFees {
-				__trampolineFor_err_withStr(err_str:
-					"Not enough spendable outputs / balance too low (have: \(FormattedString(fromMoneroAmount: usingOutsAmount)), need: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees)))"
-				)
-				return
-			}
-			// Now we can put together the list of fund transfers we need to perform
-			var fundTransferDescriptions: [SendFundsTargetDescription] = [] // to build…
-			// I. the actual transaction the user is asking to do
-			fundTransferDescriptions.append(
-				SendFundsTargetDescription(
-					address: target_address,
-					amount: totalAmountWithoutFee
-				)
-			)
-			// II. the fee that the hosting provider charges
-			// NOTE: The fee has been removed for RCT until a later date
-			// fundTransferDescriptions.push({
-			//             address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
-			//             amount: hostingService_chargeAmount
-			// })
-			// III. some amount of the total outputs will likely need to be returned to the user as "change":
-			func ___proceed()
+			func _proceedTo_getUnspentOutsUsableForMixin()
 			{
-				__proceedTo__getRandomOutsAndCreateTx(
-					original_unusedOuts: original_unusedOuts,
-					fundTransferDescriptions: fundTransferDescriptions,
-					passedIn_attemptAt_network_minimumFee: attemptAt_network_minimumFee, // note: using actual local attemptAt_network_minimumFee
-					usingOuts: usingOuts
+				assert(self._current_request == nil)
+				self._current_request = HostedMonero.APIClient.shared.UnspentOuts(
+					address: wallet__public_address,
+					view_key__private: wallet__private_keys.view,
+					spend_key__public: wallet__public_keys.spend,
+					spend_key__private: wallet__private_keys.spend,
+					{ [weak self] (err_str, result) in
+						guard let thisSelf = self else {
+							return
+						}
+						thisSelf._current_request = nil
+						if thisSelf.isCanceled {
+							return
+						}
+						if let err_str = err_str {
+							thisSelf.failWithErr_fn?(err_str)
+							return
+						}
+						_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
+							original_unusedOuts: result!.unspentOutputs
+						)
+					}
 				)
 			}
-			if usingOutsAmount > totalAmountIncludingFees {
-				let changeAmount = usingOutsAmount - totalAmountIncludingFees
-				DDLog.Info("HostedMonero", "changeAmount \(changeAmount)")
-				// for RCT we don't presently care about dustiness so add entire change amount
-				DDLog.Info("HostedMonero", "Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address)")
+			func _proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
+				original_unusedOuts: [MoneroOutputDescription]
+			) { // status: constructing transaction…
+				let feePerKB = MoneroConstants.feePerKB
+				// Transaction will need at least 1KB fee (13KB for RingCT)
+				let network_minimumTXSize_kb = 13 // because isRingCT=true
+				let network_minimumFee = feePerKB * BigInt(network_minimumTXSize_kb)
+				// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
+				__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
+					original_unusedOuts: original_unusedOuts,
+					passedIn_attemptAt_network_minimumFee: network_minimumFee
+				)
+			}
+			func __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
+				original_unusedOuts: [MoneroOutputDescription],
+				passedIn_attemptAt_network_minimumFee: MoneroAmount
+			) { // Now we need to establish some values for balance validation and to construct the transaction
+				DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
+				var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
+				let _/*hostingService_chargeAmount*/ = HostedMonero.APIClient_HostConfig.HostingServiceChargeForTransaction(
+					with: attemptAt_network_minimumFee
+				)
+				var totalAmountIncludingFees = totalAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
+				let usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
+					target_amount: totalAmountIncludingFees,
+					unusedOuts: original_unusedOuts
+				)
+				
+				DDLog.Info("HostedMonero", "usableOutputsAndAmounts \(usableOutputsAndAmounts)")
+				
+				// v-- now, since isRingCT=true, compute fee as closely as possible before hand
+				var usingOuts = usableOutputsAndAmounts.usingOuts
+				var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
+				var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
+				if usingOuts.count > 1 {
+					var newNeededFee = MoneroUtils.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
+					// add outputs 1 at a time till we either have them all or can meet the fee
+					while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
+						// pop and return random element from list
+						let idx = __randomIndex(remaining_unusedOuts)
+						let out = remaining_unusedOuts[idx]
+						remaining_unusedOuts.remove(at: idx)
+						//
+						usingOuts.append(out)
+						usingOutsAmount = usingOutsAmount + out.amount
+						DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
+						newNeededFee = MoneroUtils.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+						totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
+					}
+					DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
+					attemptAt_network_minimumFee = newNeededFee
+				}
+				DDLog.Info("HostedMonero", "~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
+				// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
+				if usingOutsAmount < totalAmountIncludingFees {
+					self.failWithErr_fn?(
+						"Not enough spendable outputs / balance too low (have: \(FormattedString(fromMoneroAmount: usingOutsAmount)), need: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees)))"
+					)
+					return
+				}
+				// Now we can put together the list of fund transfers we need to perform
+				var fundTransferDescriptions: [SendFundsTargetDescription] = [] // to build…
+				// I. the actual transaction the user is asking to do
 				fundTransferDescriptions.append(
 					SendFundsTargetDescription(
-						address: wallet__public_address,
-						amount: changeAmount
+						address: target_address,
+						amount: totalAmountWithoutFee
 					)
 				)
-				___proceed()
-				//
-				return
-			}
-			if usingOutsAmount == totalAmountWithoutFee {
-				// because isRingCT=true, create random destination to keep 2 outputs always in case of 0 change
-				// TODO: would be nice to avoid this asynchrony so ___proceed() can be dispensed with
-				MyMoneroCore.shared.New_FakeAddressForRCTTx({ (err_str, fakeAddress) in
-					DDLog.Info("HostedMonero", "Sending 0 XMR to a fake address to keep tx uniform (no change exists): \(fakeAddress.debugDescription)")
-					if let err_str = err_str {
-						__trampolineFor_err_withStr(err_str: err_str)
-						return
-					}
+				// II. the fee that the hosting provider charges
+				// NOTE: The fee has been removed for RCT until a later date
+				// fundTransferDescriptions.push({
+				//             address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
+				//             amount: hostingService_chargeAmount
+				// })
+				// III. some amount of the total outputs will likely need to be returned to the user as "change":
+				func ___proceed()
+				{
+					__proceedTo__getRandomOutsAndCreateTx(
+						original_unusedOuts: original_unusedOuts,
+						fundTransferDescriptions: fundTransferDescriptions,
+						passedIn_attemptAt_network_minimumFee: attemptAt_network_minimumFee, // note: using actual local attemptAt_network_minimumFee
+						usingOuts: usingOuts
+					)
+				}
+				if usingOutsAmount > totalAmountIncludingFees {
+					let changeAmount = usingOutsAmount - totalAmountIncludingFees
+					DDLog.Info("HostedMonero", "changeAmount \(changeAmount)")
+					// for RCT we don't presently care about dustiness so add entire change amount
+					DDLog.Info("HostedMonero", "Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address)")
 					fundTransferDescriptions.append(
 						SendFundsTargetDescription(
-							address: fakeAddress!,
-							amount: 0
+							address: wallet__public_address,
+							amount: changeAmount
 						)
 					)
 					___proceed()
-				})
-				//
-				return
+					//
+					return
+				}
+				if usingOutsAmount == totalAmountWithoutFee {
+					// because isRingCT=true, create random destination to keep 2 outputs always in case of 0 change
+					// TODO: would be nice to avoid this asynchrony so ___proceed() can be dispensed with
+					MyMoneroCore.shared.New_FakeAddressForRCTTx({ [weak self] (err_str, fakeAddress) in
+						DDLog.Info("HostedMonero", "Sending 0 XMR to a fake address to keep tx uniform (no change exists): \(fakeAddress.debugDescription)")
+						guard let thisSelf = self else {
+							return
+						}
+						if thisSelf.isCanceled {
+							return
+						}
+						if let err_str = err_str {
+							thisSelf.failWithErr_fn?(err_str)
+							return
+						}
+						fundTransferDescriptions.append(
+							SendFundsTargetDescription(
+								address: fakeAddress!,
+								amount: 0
+							)
+						)
+						___proceed()
+					})
+					//
+					return
+				}
+				___proceed()
 			}
-			___proceed()
-		}
-		func __proceedTo__getRandomOutsAndCreateTx(
-			original_unusedOuts: [MoneroOutputDescription],
-			fundTransferDescriptions: [SendFundsTargetDescription],
-			passedIn_attemptAt_network_minimumFee: MoneroAmount,
-			usingOuts: [MoneroOutputDescription]
-		) {
-			DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
-			// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
-			let _ = hostedMoneroAPIClient.RandomOuts(
-				using_outs: usingOuts,
-				{ (err_str, result) in
-					if let err_str = err_str {
-						__trampolineFor_err_withStr(err_str: err_str)
-						return
+			func __proceedTo__getRandomOutsAndCreateTx(
+				original_unusedOuts: [MoneroOutputDescription],
+				fundTransferDescriptions: [SendFundsTargetDescription],
+				passedIn_attemptAt_network_minimumFee: MoneroAmount,
+				usingOuts: [MoneroOutputDescription]
+			) {
+				DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
+				// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
+				assert(self._current_request == nil)
+				self._current_request = HostedMonero.APIClient.shared.RandomOuts(
+					using_outs: usingOuts,
+					{ [weak self] (err_str, result) in
+						guard let thisSelf = self else {
+							return
+						}
+						thisSelf._current_request = nil
+						if thisSelf.isCanceled {
+							return
+						}
+						if let err_str = err_str {
+							thisSelf.failWithErr_fn?(err_str)
+							return
+						}
+						__proceedTo_getViewKeyThenCreateTxAndAttemptToSend(
+							original_unusedOuts: original_unusedOuts,
+							fundTransferDescriptions: fundTransferDescriptions,
+							passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
+							usingOuts: usingOuts,
+							mix_outs: result!.amount_outs
+						)
 					}
-					__proceedTo_getViewKeyThenCreateTxAndAttemptToSend(
+				)
+			}
+			func __proceedTo_getViewKeyThenCreateTxAndAttemptToSend(
+				original_unusedOuts: [MoneroOutputDescription],
+				fundTransferDescriptions: [SendFundsTargetDescription],
+				passedIn_attemptAt_network_minimumFee: MoneroAmount,
+				usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
+				mix_outs: [MoneroRandomAmountAndOutputs]
+			) {
+				// Implementation note: per advice, in RingCT txs, decompose_tx_destinations should no longer necessary
+				//
+				func ___proceed(
+					realDestViewKey: MoneroKey?
+				) {
+					__proceedTo_createTxAndAttemptToSend(
 						original_unusedOuts: original_unusedOuts,
 						fundTransferDescriptions: fundTransferDescriptions,
 						passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
 						usingOuts: usingOuts,
-						mix_outs: result!.amount_outs
+						mix_outs: mix_outs,
+						realDestViewKey: realDestViewKey
 					)
 				}
-			)
-		}
-		func __proceedTo_getViewKeyThenCreateTxAndAttemptToSend(
-			original_unusedOuts: [MoneroOutputDescription],
-			fundTransferDescriptions: [SendFundsTargetDescription],
-			passedIn_attemptAt_network_minimumFee: MoneroAmount,
-			usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
-			mix_outs: [MoneroRandomAmountAndOutputs]
-		) {
-			// Implementation note: per advice, in RingCT txs, decompose_tx_destinations should no longer necessary
-			//
-			func ___proceed(
-				realDestViewKey: MoneroKey?
-			)
-			{
-				__proceedTo_createTxAndAttemptToSend(
-					original_unusedOuts: original_unusedOuts,
-					fundTransferDescriptions: fundTransferDescriptions,
-					passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
-					usingOuts: usingOuts,
-					mix_outs: mix_outs,
-					realDestViewKey: realDestViewKey
-				)
-			}
-			if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
-				MyMoneroCore.shared.DecodeAddress(target_address)
-				{ (err_str, decodedAddressComponents) in
-					if let _ = err_str {
-						__trampolineFor_err_withStr(err_str: "Invalid recipient address.")
-						return
-					}
-					guard let decodedAddressComponents = decodedAddressComponents else {
-						__trampolineFor_err_withStr(err_str: "Error obtaining decoded recipient Monero address components while creating transaction.")
-						return
-					}
-					let realDestViewKey = decodedAddressComponents.publicKeys.view
-					DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
-					___proceed(realDestViewKey: realDestViewKey)
-				}
-				return
-			}
-			___proceed(realDestViewKey: nil)
-		}
-		func __proceedTo_createTxAndAttemptToSend(
-			original_unusedOuts: [MoneroOutputDescription],
-			fundTransferDescriptions: [SendFundsTargetDescription],
-			passedIn_attemptAt_network_minimumFee: MoneroAmount,
-			usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
-			mix_outs: [MoneroRandomAmountAndOutputs],
-			realDestViewKey: MoneroKey?
-		)
-		{
-			assert(
-				final__pid_encrypt == false
-				|| (realDestViewKey != nil && MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
-			)
-			MyMoneroCore.shared.CreateTransaction(
-				wallet__public_keys: wallet__public_keys,
-				wallet__private_keys: wallet__private_keys,
-				splitDestinations: fundTransferDescriptions, // in RingCT=true, splitDestinations can equal fundTransferDescriptions
-				usingOuts: usingOuts,
-				mix_outs: mix_outs,
-				fake_outputs_count: final__mixin,
-				fee_amount: passedIn_attemptAt_network_minimumFee,
-				payment_id: final__payment_id,
-				pid_encrypt: final__pid_encrypt,
-				ifPIDEncrypt_realDestViewKey: realDestViewKey,
-				unlock_time: 0,
-				isRingCT: true
-			) { (err_str, signedTx) in
-				if let err_str = err_str {
-					__trampolineFor_err_withStr(err_str: err_str)
-					return
-				}
-	//			DDLog.Info("HostedMonero", "signed tx: \(signedTx!)")
-				__proceedTo_serializeSignedTxAndAttemptToSend(
-					original_unusedOuts: original_unusedOuts,
-					passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
-					signedTx: signedTx!
-				)
-			}
-		}
-		func __proceedTo_serializeSignedTxAndAttemptToSend(
-			original_unusedOuts: [MoneroOutputDescription],
-			passedIn_attemptAt_network_minimumFee: MoneroAmount,
-			signedTx: MoneroSignedTransaction
-		)
-		{
-			MyMoneroCore.shared.SerializeTransaction(signedTx: signedTx)
-			{ (err_str, serialized_signedTx, tx_hash) in
-				if let err_str = err_str {
-					__trampolineFor_err_withStr(err_str: err_str)
-					return
-				}
-				let serialized_signedTx = serialized_signedTx!
-				let tx_hash = tx_hash!
-				//
-				// work out per-kb fee for transaction and verify that it's enough
-				let txBlobBytes = Double(serialized_signedTx.count) / 2.0
-				var numKB = Int(floor(txBlobBytes / 1024.0))
-				if txBlobBytes.truncatingRemainder(dividingBy: 1024) != 0 { // TODO: AUDIT: != 0 correct here? note: truncatingRemainder is % operator
-					numKB += 1
-				}
-				DDLog.Info("HostedMonero", "\(txBlobBytes) bytes <= \(numKB) KB (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
-				let feeActuallyNeededByNetwork = MoneroConstants.feePerKB * MoneroAmount(numKB)
-				// if we need a higher fee
-				if feeActuallyNeededByNetwork > passedIn_attemptAt_network_minimumFee {
-					DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")
-					__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-						original_unusedOuts: original_unusedOuts, // this must be the original unusedOuts
-						passedIn_attemptAt_network_minimumFee: feeActuallyNeededByNetwork
-					)
-					// ^-- we are re-entering this codepath after changing this feeActuallyNeededByNetwork
-					return
-				}
-				//
-				// generated with correct per-kb fee
-				let final_networkFee = passedIn_attemptAt_network_minimumFee // just to make things clear
-				DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
-				// status: submitting…
-				let _/*requestHandle*/ = hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
-					address: wallet__public_address,
-					view_key__private: wallet__private_keys.view,
-					serializedSignedTx: serialized_signedTx,
-					{ (err_str, nilValue) in
-						if let err_str = err_str {
-							__trampolineFor_err_withStr(err_str: "Unexpected error while submitting your transaction: \(err_str)")
+				if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
+					MyMoneroCore.shared.DecodeAddress(target_address)
+					{ [weak self] (err_str, decodedAddressComponents) in
+						guard let thisSelf = self else {
 							return
 						}
-						let tx_fee = final_networkFee/* + hostingService_chargeAmount NOTE: Service charge removed to reduce bloat for now */
-						__trampolineFor_success(
-							tx_hash: tx_hash,
-							tx_fee: tx_fee
-						) // 🎉
+						if thisSelf.isCanceled {
+							return
+						}
+						if let _ = err_str {
+							thisSelf.failWithErr_fn?("Invalid recipient address.")
+							return
+						}
+						guard let decodedAddressComponents = decodedAddressComponents else {
+							thisSelf.failWithErr_fn?("Error obtaining decoded recipient Monero address components while creating transaction.")
+							return
+						}
+						let realDestViewKey = decodedAddressComponents.publicKeys.view
+						DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
+						___proceed(realDestViewKey: realDestViewKey)
 					}
+					return
+				}
+				___proceed(realDestViewKey: nil)
+			}
+			func __proceedTo_createTxAndAttemptToSend(
+				original_unusedOuts: [MoneroOutputDescription],
+				fundTransferDescriptions: [SendFundsTargetDescription],
+				passedIn_attemptAt_network_minimumFee: MoneroAmount,
+				usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
+				mix_outs: [MoneroRandomAmountAndOutputs],
+				realDestViewKey: MoneroKey?
+			) {
+				assert(
+					final__pid_encrypt == false
+					|| (realDestViewKey != nil && MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
 				)
-//				preSuccess_obtainedSubmitTransactionRequestHandle(requestHandle)
+				MyMoneroCore.shared.CreateTransaction(
+					wallet__public_keys: wallet__public_keys,
+					wallet__private_keys: wallet__private_keys,
+					splitDestinations: fundTransferDescriptions, // in RingCT=true, splitDestinations can equal fundTransferDescriptions
+					usingOuts: usingOuts,
+					mix_outs: mix_outs,
+					fake_outputs_count: final__mixin,
+					fee_amount: passedIn_attemptAt_network_minimumFee,
+					payment_id: final__payment_id,
+					pid_encrypt: final__pid_encrypt,
+					ifPIDEncrypt_realDestViewKey: realDestViewKey,
+					unlock_time: 0,
+					isRingCT: true
+				) { [weak self] (err_str, signedTx) in
+					guard let thisSelf = self else {
+						return
+					}
+					if thisSelf.isCanceled {
+						return
+					}
+					if let err_str = err_str {
+						thisSelf.failWithErr_fn?(err_str)
+						return
+					}
+		//			DDLog.Info("HostedMonero", "signed tx: \(signedTx!)")
+					__proceedTo_serializeSignedTxAndAttemptToSend(
+						original_unusedOuts: original_unusedOuts,
+						passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
+						signedTx: signedTx!
+					)
+				}
+			}
+			func __proceedTo_serializeSignedTxAndAttemptToSend(
+				original_unusedOuts: [MoneroOutputDescription],
+				passedIn_attemptAt_network_minimumFee: MoneroAmount,
+				signedTx: MoneroSignedTransaction
+			) {
+				MyMoneroCore.shared.SerializeTransaction(signedTx: signedTx)
+				{ [weak self] (err_str, serialized_signedTx, tx_hash) in
+					guard let thisSelf = self else {
+						return
+					}
+					if thisSelf.isCanceled {
+						return
+					}
+					if let err_str = err_str {
+						thisSelf.failWithErr_fn?(err_str)
+						return
+					}
+					let serialized_signedTx = serialized_signedTx!
+					let tx_hash = tx_hash!
+					//
+					// work out per-kb fee for transaction and verify that it's enough
+					let txBlobBytes = Double(serialized_signedTx.count) / 2.0
+					var numKB = Int(floor(txBlobBytes / 1024.0))
+					if txBlobBytes.truncatingRemainder(dividingBy: 1024) != 0 { // TODO: AUDIT: != 0 correct here? note: truncatingRemainder is % operator
+						numKB += 1
+					}
+					DDLog.Info("HostedMonero", "\(txBlobBytes) bytes <= \(numKB) KB (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
+					let feeActuallyNeededByNetwork = MoneroConstants.feePerKB * MoneroAmount(numKB)
+					// if we need a higher fee
+					if feeActuallyNeededByNetwork > passedIn_attemptAt_network_minimumFee {
+						DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")
+						__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
+							original_unusedOuts: original_unusedOuts, // this must be the original unusedOuts
+							passedIn_attemptAt_network_minimumFee: feeActuallyNeededByNetwork
+						)
+						// ^-- we are re-entering this codepath after changing this feeActuallyNeededByNetwork
+						return
+					}
+					//
+					// generated with correct per-kb fee
+					let final_networkFee = passedIn_attemptAt_network_minimumFee // just to make things clear
+					DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
+					// status: submitting…
+					assert(thisSelf._current_request == nil)
+					thisSelf._current_request = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
+						address: thisSelf.wallet__public_address,
+						view_key__private: thisSelf.wallet__private_keys.view,
+						serializedSignedTx: serialized_signedTx,
+						{ [weak self] (err_str, nilValue) in
+							guard let thisSelf = self else {
+								return
+							}
+							thisSelf._current_request = nil
+							if thisSelf.isCanceled {
+								return
+							}
+							if let err_str = err_str {
+								thisSelf.failWithErr_fn?("Unexpected error while submitting your transaction: \(err_str)")
+								return
+							}
+							let tx_fee = final_networkFee/* + hostingService_chargeAmount NOTE: Service charge removed */
+							thisSelf.success_fn?(
+								tx_hash,
+								tx_fee
+							) // 🎉
+						}
+					)
+	//				preSuccess_obtainedSubmitTransactionRequestHandle(requestHandle)
+				}
 			}
 		}
 	}
