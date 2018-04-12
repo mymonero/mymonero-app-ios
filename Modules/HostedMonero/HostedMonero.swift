@@ -74,6 +74,8 @@ extension HostedMonero
 	struct ParsedResult_UnspentOuts
 	{
 		let unspentOutputs: [MoneroOutputDescription]
+		let unusedOutputs: [MoneroOutputDescription]
+		let feePerKB: MoneroAmount
 	}
 	struct ParsedResult_RandomOuts
 	{
@@ -767,19 +769,30 @@ extension MyMoneroCoreJS // for Parsing
 				return
 			}
 			let returnValuesByKey = any as! [String: Any]
-			// not used:
-//			let unusedOuts = returnValuesByKey["unusedOuts"] as! [[String: Any]]
+			//
+			let unusedOuts = returnValuesByKey["unusedOuts"] as! [[String: Any]]
 			let unspentOutputs = returnValuesByKey["unspentOutputs"] as! [[String: Any]]
+			let feePerKB_atomicUnitsString = "\(returnValuesByKey["per_kb_fee"] as! Int)"
+			let feePerKB = MoneroAmount(feePerKB_atomicUnitsString)!
 			//
 			var final_unspentOutputs: [MoneroOutputDescription] = []
+			var final_unusedOutputs: [MoneroOutputDescription] = []
 			do { // finalize
 				for (_, dict) in unspentOutputs.enumerated() {
 					let outputDescription = MoneroOutputDescription.new(withCoreParsed_jsonDict: dict)
 					final_unspentOutputs.append(outputDescription)
 				}
 			}
+			do { // finalize
+				for (_, dict) in unusedOuts.enumerated() {
+					let outputDescription = MoneroOutputDescription.new(withCoreParsed_jsonDict: dict)
+					final_unusedOutputs.append(outputDescription)
+				}
+			}
 			let result = HostedMonero.ParsedResult_UnspentOuts(
-				unspentOutputs: final_unspentOutputs
+				unspentOutputs: final_unspentOutputs,
+				unusedOutputs: final_unusedOutputs,
+				feePerKB: feePerKB
 			)
 			fn(nil, result)
 		}

@@ -190,8 +190,7 @@ extension EditWallet
 				preSuccess_terminal_validationMessage_fn:
 				{ [unowned self] (localized_errStr) in
 					self.setValidationMessage(localized_errStr)
-				})
-				{ (wallet) in
+				}) { (wallet) in
 					// success
 					self.submissionController = nil // free
 					self.dismissModal()

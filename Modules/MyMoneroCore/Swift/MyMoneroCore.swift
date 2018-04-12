@@ -43,9 +43,17 @@ final class MyMoneroCore : MyMoneroCoreJS
 	// Interface - Singleton
 	static let shared = MyMoneroCore()
 	//
-	// Constants
-	static var fixedMixin: Int { // for min ring size of 7
-		return 6 // to mirror the simplewallet default and keep above network minimum
+	// Constants - Mixin
+	static let _forkv7_minimumMixin: Int = 6
+	static func _mixinToRingsize(_ mixin: Int) -> Int { return mixin + 1 }
+	//
+	static let thisFork_minMixin: Int = _forkv7_minimumMixin
+	static var thisFork_minRingSize: Int {
+		return _mixinToRingsize(thisFork_minMixin)
+	}
+	static var fixedMixin: Int = thisFork_minMixin // using the monero app default to remove MM user identifiers
+	static var fixedRingsize: Int {
+		return _mixinToRingsize(fixedMixin)
 	}
 	//
 	// Lifecycle - Init

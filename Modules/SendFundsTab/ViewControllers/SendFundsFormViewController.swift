@@ -625,7 +625,12 @@ extension SendFundsForm
 		// Imperatives - Configuration - Fee estimate label
 		func configure_networkFeeEstimate_label()
 		{
-			let estNetworkFee_monero_amountDouble: Double = 0.028 // constant for now due to median blocksize difference in fee est algo plus fact that MyMonero fee turned off for now
+			let feePerKB_Amount = MoneroAmount("209000000")! // constant for now pending polling fee_per_kb on account info
+			let priority = MoneroTransferSimplifiedPriority.defaultPriority // TODO: read this from dropdown
+			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
+			let estNetworkFee_monero_amountDouble: Double = DoubleFromMoneroAmount(
+				moneroAmount: estNetworkFee_moneroAmount
+			)
 			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
 			var finalizable_amountDouble = estNetworkFee_monero_amountDouble // to finalize…
 			do {
@@ -752,9 +757,12 @@ extension SendFundsForm
 				let resolvedPaymentID = self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? ""
 				let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
 				//
+				let priority: MoneroTransferSimplifiedPriority = .med // TODO: obtain from UI
+				//
 				let parameters = SendFundsForm.SubmissionController.Parameters(
 					fromWallet: fromWallet,
 					amount_submittableDouble: amount_submittableDouble!,
+					priority: priority,
 					//
 					selectedContact: selectedContact,
 					enteredAddressValue: enteredAddressValue,

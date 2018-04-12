@@ -907,6 +907,7 @@ class Wallet: PersistableObject
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 		payment_id: MoneroPaymentID?,
+		priority: MoneroTransferSimplifiedPriority,
 		success_fn: @escaping (
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
@@ -933,7 +934,8 @@ class Wallet: PersistableObject
 			wallet__public_address: self.public_address,
 			wallet__private_keys: self.private_keys,
 			wallet__public_keys: self.public_keys,
-			payment_id: payment_id
+			payment_id: payment_id,
+			priority: priority
 		)
 		fundsSender.success_fn =
 		{ [weak self] (tx_hash, tx_fee) in

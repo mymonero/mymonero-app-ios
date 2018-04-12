@@ -56,7 +56,6 @@ struct MoneroConstants
 	static let maxBlockNumber = 500000000 // Maximum block number, used for tx unlock time
 	static let avgBlockTime: TimeInterval = 60 // Average block time in seconds, used for unlock time estimation
 	//
-	static let feePerKB = MoneroAmount("2000000000")! // 0.002 XMR; Network per kb fee in atomic units
 	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 }
 //
@@ -753,23 +752,25 @@ typealias MoneroSerializedSignedTransaction = String
 //
 enum MoneroTransferSimplifiedPriority: UInt32
 { // TODO: obtain values' specification from C++ somehow, or provisionally via MyMoneroCore_ObjCpp_SimplePriority_*
-	case vlow = 1
-	case mlow = 2
-	case mhigh = 3
-	case vhigh = 4
+	case low = 1
+	case med = 2
+	case high = 3
+	case veryhigh = 4
+	//
+	static var defaultPriority: MoneroTransferSimplifiedPriority = .med
 	//
 	var cppRepresentation: UInt32 {
 		return self.rawValue
 	}
 	var humanReadableLowercasedString: String {
 		switch self {
-		case .vlow:
+		case .low:
 			return NSLocalizedString("low", comment: "")
-		case .mlow:
+		case .med:
 			return NSLocalizedString("medium", comment: "")
-		case .mhigh:
+		case .high:
 			return NSLocalizedString("high", comment: "")
-		case .vhigh:
+		case .veryhigh:
 			return NSLocalizedString("very high", comment: "")
 		}
 	}

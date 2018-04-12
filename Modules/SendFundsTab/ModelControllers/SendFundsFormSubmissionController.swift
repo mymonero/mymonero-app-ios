@@ -44,6 +44,7 @@ extension SendFundsForm
 			// Input values:
 			var fromWallet: Wallet! // must we make this weak? effects?
 			var amount_submittableDouble: Double
+			var priority: MoneroTransferSimplifiedPriority
 			//
 			let selectedContact: Contact?
 			let enteredAddressValue: String?
@@ -241,14 +242,14 @@ extension SendFundsForm
 			payment_id: MoneroPaymentID?,
 			isXMRAddressIntegrated: Bool,
 			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
-		)
-		{
+		) {
 			self.parameters.preSuccess_passedValidation_willBeginSending()
 			//
 			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
 				amount: self.parameters.amount_submittableDouble,
 				payment_id: payment_id,
+				priority: self.parameters.priority,
 				success_fn:
 				{ (transactionHash, sentAmount) in
 					// formulate a mocked/transient historical transaction for details view presentation, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
@@ -276,8 +277,7 @@ extension SendFundsForm
 			sentWith_paymentID: MoneroPaymentID?,
 			transactionHash: MoneroTransactionHash,
 			sentAmount: MoneroAmount
-		)
-		{
+		) {
 			let mockedTransaction = MoneroHistoricalTransactionRecord(
 				amount: MoneroAmount.new(withDouble: -1 * self.parameters.amount_submittableDouble),
 				totalSent: sentAmount,

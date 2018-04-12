@@ -37,42 +37,86 @@ import BigInt
 //
 extension MoneroUtils
 {
-	static func estimatedRingCTSize(
-		_ numberOfInputs: Int,
-		_ mixin: Int,
-		_ numberOfOutputs: Int
-	) -> Int
+	struct Fees
 	{
-		var size = 0
-		size += numberOfOutputs * 6306
-		size += ((mixin + 1) * 4 + 32 + 8) * numberOfInputs //key offsets + key image + amount
-		size += 64 * (mixin + 1) * numberOfInputs + 64 * numberOfInputs //signature + pseudoOuts/cc
-		size += 74 //extra + whatever, assume long payment ID
-		//
-		return size
-	}
-	static func estimatedRingCTSize_numKB(
-		_ numberOfInputs: Int,
-		_ mixin: Int,
-		_ numberOfOutputs: Int
-	) -> Int
-	{
-		let numKB = Int(ceil(
-			Double(estimatedRingCTSize(numberOfInputs, mixin, numberOfOutputs)) / 1024.0
-		))
-		//
-		return numKB
-	}
-	static func estimatedRingCT_neededNetworkFee(
-		_ numberOfInputs: Int,
-		_ mixin: Int,
-		_ numberOfOutputs: Int
-	) -> MoneroAmount
-	{
-		let est_numKB = estimatedRingCTSize_numKB(numberOfInputs, mixin, numberOfOutputs)
-		let est_amount = MoneroAmount("\(est_numKB)")! * MoneroConstants.feePerKB
-		//
-		return est_amount
+		static let newer_multipliers: [UInt] = [1, 4, 20, 166]
+		// TODO: replace this with an enum?
+		static func fee_multiplier_for_priority(
+			_ priority: MoneroTransferSimplifiedPriority
+		) -> UInt {
+			let priority_as_idx = Int(priority.rawValue - 1)
+			if (priority_as_idx < 0 || priority_as_idx >= newer_multipliers.count) {
+				fatalError("fee_multiplier_for_priority: priority_as_idx out of newer_multipliers bounds")
+			}
+			return MoneroUtils.Fees.newer_multipliers[priority_as_idx]
+		}
+		
+		static func estimateRctSize(
+			_ inputs: Int, // number of
+			_ mixin: Int,
+			_ outputs: Int // number of
+		) -> UInt {
+			var size = 0
+			// tx prefix
+			// first few bytes
+			size += 1 + 6;
+			size += inputs * (1+6+(mixin+1)*3+32); // original C implementation is *2+32 but author advised to change 2 to 3 as key offsets are variable size and this constitutes a best guess
+			// vout
+			size += outputs * (6+32);
+			// extra
+			size += 40;
+			// rct signatures
+			// type
+			size += 1;
+			// rangeSigs
+			size += (2*64*32+32+64*32) * outputs;
+			// MGs
+			size += inputs * (32 * (mixin+1) + 32);
+			// mixRing - not serialized, can be reconstructed
+			/* size += 2 * 32 * (mixin+1) * inputs; */
+			// pseudoOuts
+			size += 32 * inputs;
+			// ecdhInfo
+			size += 2 * 32 * outputs;
+			// outPk - only commitment is saved
+			size += 32 * outputs;
+			// txnFee
+			size += 4;
+			//
+			return UInt(size)
+		}
+		static func estimated_neededNetworkFee(
+			_ mixin: Int,
+			_ feePerKB: MoneroAmount,
+			_ priority: MoneroTransferSimplifiedPriority // TODO: implement
+		) -> MoneroAmount {
+			let numberOf_inputs: Int = 2 // this might change -- might select inputs
+			let numberOf_outputs: Int = 1/*dest*/ + 1/*change*/ + 0/*no mymonero fee presently*/
+			// TODO: update est tx size for bulletproofs
+			// TODO: normalize est tx size fn naming
+			let estimated_txSize_bytes = estimateRctSize(numberOf_inputs, mixin, numberOf_outputs)
+			let estimated_fee = calculate_fee(feePerKB, estimated_txSize_bytes, fee_multiplier_for_priority(priority))
+			//
+			return estimated_fee
+		}
+		static func calculate_fee__kb(
+			_ fee_per_kb: MoneroAmount,
+			_ numberOf_kb: UInt,
+			_ fee_multiplier: UInt
+		) -> MoneroAmount {
+			let fee = fee_per_kb * MoneroAmount("\(fee_multiplier)")! * MoneroAmount("\(numberOf_kb)")!
+			//
+			return fee
+		}
+		static func calculate_fee(
+			_ fee_per_kb: MoneroAmount,
+			_ numberOf_bytes: UInt,
+			_ fee_multiplier: UInt
+		) -> MoneroAmount {
+			let numberOf_kb: UInt = (numberOf_bytes + 1023) / 1024 // i.e. ceil
+			//
+			return calculate_fee__kb(fee_per_kb, numberOf_kb, fee_multiplier)
+		}
 	}
 }
 //
@@ -90,6 +134,7 @@ extension HostedMonero
 		var wallet__private_keys: MoneroKeyDuo!
 		var wallet__public_keys: MoneroKeyDuo!
 		var payment_id: MoneroPaymentID?
+		var priority: MoneroTransferSimplifiedPriority!
 		// TODO: for cancelling?
 //		var preSuccess_obtainedSubmitTransactionRequestHandle: (
 //			_ requestHandle: APIClient.RequestHandle
@@ -110,7 +155,8 @@ extension HostedMonero
 			wallet__public_address: MoneroAddress,
 			wallet__private_keys: MoneroKeyDuo,
 			wallet__public_keys: MoneroKeyDuo,
-			payment_id: MoneroPaymentID?
+			payment_id: MoneroPaymentID?,
+			priority: MoneroTransferSimplifiedPriority
 		) {
 			self.target_address = target_address
 			self.amount = amount
@@ -118,6 +164,7 @@ extension HostedMonero
 			self.wallet__private_keys = wallet__private_keys
 			self.wallet__public_keys = wallet__public_keys
 			self.payment_id = payment_id
+			self.priority = priority
 		}
 		deinit
 		{
@@ -155,6 +202,10 @@ extension HostedMonero
 			let final__mixin = MyMoneroCore.fixedMixin
 			if final__mixin <= 0 { // TODO: min mixin checking
 				self.failWithErr_fn?("Expected mixin > 0")
+				return
+			}
+			if final__mixin < MyMoneroCore.thisFork_minMixin {
+				self.failWithErr_fn?(NSLocalizedString("Ringsize is below the minimum.", comment: ""))
 				return
 			}
 			var final__payment_id = payment_id == "" ? nil : payment_id
@@ -223,26 +274,29 @@ extension HostedMonero
 							return
 						}
 						_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-							original_unusedOuts: result!.unspentOutputs
+							original_unusedOuts: result!.unusedOutputs,
+							feePerKB: result!.feePerKB
 						)
 					}
 				)
 			}
 			func _proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-				original_unusedOuts: [MoneroOutputDescription]
+				original_unusedOuts: [MoneroOutputDescription],
+				feePerKB: MoneroAmount
 			) { // status: constructing transaction…
-				let feePerKB = MoneroConstants.feePerKB
 				// Transaction will need at least 1KB fee (13KB for RingCT)
-				let network_minimumTXSize_kb = 13 // because isRingCT=true
-				let network_minimumFee = feePerKB * BigInt(network_minimumTXSize_kb)
+				let network_minimumTXSize_kb: UInt = 13 // because isRingCT=true
+				let network_minimumFee = MoneroUtils.Fees.calculate_fee__kb(feePerKB, network_minimumTXSize_kb, MoneroUtils.Fees.fee_multiplier_for_priority(self.priority))
 				// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
 				__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 					original_unusedOuts: original_unusedOuts,
+					feePerKB: feePerKB,
 					passedIn_attemptAt_network_minimumFee: network_minimumFee
 				)
 			}
 			func __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 				original_unusedOuts: [MoneroOutputDescription],
+				feePerKB: MoneroAmount,
 				passedIn_attemptAt_network_minimumFee: MoneroAmount
 			) { // Now we need to establish some values for balance validation and to construct the transaction
 				DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
@@ -263,7 +317,11 @@ extension HostedMonero
 				var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
 				var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
 				if usingOuts.count > 1 {
-					var newNeededFee = MoneroUtils.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+					var newNeededFee = MoneroUtils.Fees.calculate_fee(
+						feePerKB,
+						MoneroUtils.Fees.estimateRctSize(usingOuts.count, final__mixin, 2),
+						MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
+					)
 					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
 					// add outputs 1 at a time till we either have them all or can meet the fee
 					while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
@@ -275,7 +333,11 @@ extension HostedMonero
 						usingOuts.append(out)
 						usingOutsAmount = usingOutsAmount + out.amount
 						DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
-						newNeededFee = MoneroUtils.estimatedRingCT_neededNetworkFee(usingOuts.count, final__mixin, 2)
+						newNeededFee = MoneroUtils.Fees.calculate_fee(
+							feePerKB,
+							MoneroUtils.Fees.estimateRctSize(usingOuts.count, final__mixin, 2),
+							MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
+						)
 						totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
 					}
 					DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
@@ -311,7 +373,8 @@ extension HostedMonero
 						original_unusedOuts: original_unusedOuts,
 						fundTransferDescriptions: fundTransferDescriptions,
 						passedIn_attemptAt_network_minimumFee: attemptAt_network_minimumFee, // note: using actual local attemptAt_network_minimumFee
-						usingOuts: usingOuts
+						usingOuts: usingOuts,
+						feePerKB: feePerKB
 					)
 				}
 				if usingOutsAmount > totalAmountIncludingFees {
@@ -361,7 +424,8 @@ extension HostedMonero
 				original_unusedOuts: [MoneroOutputDescription],
 				fundTransferDescriptions: [SendFundsTargetDescription],
 				passedIn_attemptAt_network_minimumFee: MoneroAmount,
-				usingOuts: [MoneroOutputDescription]
+				usingOuts: [MoneroOutputDescription],
+				feePerKB: MoneroAmount
 			) {
 				DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
 				// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
@@ -385,7 +449,8 @@ extension HostedMonero
 							fundTransferDescriptions: fundTransferDescriptions,
 							passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
 							usingOuts: usingOuts,
-							mix_outs: result!.amount_outs
+							mix_outs: result!.amount_outs,
+							feePerKB: feePerKB
 						)
 					}
 				)
@@ -395,7 +460,8 @@ extension HostedMonero
 				fundTransferDescriptions: [SendFundsTargetDescription],
 				passedIn_attemptAt_network_minimumFee: MoneroAmount,
 				usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
-				mix_outs: [MoneroRandomAmountAndOutputs]
+				mix_outs: [MoneroRandomAmountAndOutputs],
+				feePerKB: MoneroAmount
 			) {
 				// Implementation note: per advice, in RingCT txs, decompose_tx_destinations should no longer necessary
 				//
@@ -408,7 +474,8 @@ extension HostedMonero
 						passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
 						usingOuts: usingOuts,
 						mix_outs: mix_outs,
-						realDestViewKey: realDestViewKey
+						realDestViewKey: realDestViewKey,
+						feePerKB: feePerKB
 					)
 				}
 				if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
@@ -442,7 +509,8 @@ extension HostedMonero
 				passedIn_attemptAt_network_minimumFee: MoneroAmount,
 				usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
 				mix_outs: [MoneroRandomAmountAndOutputs],
-				realDestViewKey: MoneroKey?
+				realDestViewKey: MoneroKey?,
+				feePerKB: MoneroAmount
 			) {
 				assert(
 					final__pid_encrypt == false
@@ -476,14 +544,16 @@ extension HostedMonero
 					__proceedTo_serializeSignedTxAndAttemptToSend(
 						original_unusedOuts: original_unusedOuts,
 						passedIn_attemptAt_network_minimumFee: passedIn_attemptAt_network_minimumFee,
-						signedTx: signedTx!
+						signedTx: signedTx!,
+						feePerKB: feePerKB
 					)
 				}
 			}
 			func __proceedTo_serializeSignedTxAndAttemptToSend(
 				original_unusedOuts: [MoneroOutputDescription],
 				passedIn_attemptAt_network_minimumFee: MoneroAmount,
-				signedTx: MoneroSignedTransaction
+				signedTx: MoneroSignedTransaction,
+				feePerKB: MoneroAmount
 			) {
 				MyMoneroCore.shared.SerializeTransaction(signedTx: signedTx)
 				{ [weak self] (err_str, serialized_signedTx, tx_hash) in
@@ -502,17 +572,18 @@ extension HostedMonero
 					//
 					// work out per-kb fee for transaction and verify that it's enough
 					let txBlobBytes = Double(serialized_signedTx.count) / 2.0
-					var numKB = Int(floor(txBlobBytes / 1024.0))
+					var numKB = UInt(floor(txBlobBytes / 1024.0))
 					if txBlobBytes.truncatingRemainder(dividingBy: 1024) != 0 { // TODO: AUDIT: != 0 correct here? note: truncatingRemainder is % operator
 						numKB += 1
 					}
 					DDLog.Info("HostedMonero", "\(txBlobBytes) bytes <= \(numKB) KB (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
-					let feeActuallyNeededByNetwork = MoneroConstants.feePerKB * MoneroAmount(numKB)
+					let feeActuallyNeededByNetwork = MoneroUtils.Fees.calculate_fee__kb(feePerKB, numKB, MoneroUtils.Fees.fee_multiplier_for_priority(thisSelf.priority))
 					// if we need a higher fee
 					if feeActuallyNeededByNetwork > passedIn_attemptAt_network_minimumFee {
 						DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")
 						__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 							original_unusedOuts: original_unusedOuts, // this must be the original unusedOuts
+							feePerKB: feePerKB, // this could probably be cached on the instance if really desired..
 							passedIn_attemptAt_network_minimumFee: feeActuallyNeededByNetwork
 						)
 						// ^-- we are re-entering this codepath after changing this feeActuallyNeededByNetwork
