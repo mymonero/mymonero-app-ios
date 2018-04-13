@@ -64,6 +64,7 @@ extension SendFundsForm
 		// Properties - Initial - Runtime
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
+		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
@@ -110,6 +111,21 @@ extension SendFundsForm
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.",
+						comment: ""
+					)
+				)
+				view.tooltipDirectionFromOrigin = .right // since it's at the top of the page (it tries to go up on its own)
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.fromWallet_tooltipSpawn_buttonView = view
+				self.scrollView.addSubview(view)
+			}
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
@@ -122,10 +138,10 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.\n\nMonero ringsize value set\nto %d.",
+							"Ring size value set to\nMonero default of %d.",
 							comment: ""
 						),
-						MyMoneroCore.fixedMixin+1
+						MyMoneroCore.fixedRingsize
 					)
 				)
 				view.willPresentTipView_fn =
@@ -176,7 +192,7 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Based on Monero network\nfee estimate (not final).\n\nMyMonero does not charge\nany transfer fees.",
+							"Based on Monero network\nfee estimate (not final).\n\nMyMonero does not charge\na transfer service fee.",
 							comment: ""
 						)
 					)
@@ -200,7 +216,7 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Please double-check the accuracy\nof your recipient information as\nMonero transfers are irreversible.",
+							"Please double-check the\naccuracy of your recipient\ninformation because Monero\ntransfers are irreversible.",
 							comment: ""
 						)
 					)
@@ -966,6 +982,21 @@ extension SendFundsForm
 					width: fullWidth_label_w,
 					height: self.fromWallet_label.frame.size.height
 				).integral
+				do {
+					self.fromWallet_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it.. it may be possible to do this only once (during setup.. especially since this operation is not cheap)
+					var final__label_frame = self.fromWallet_label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.fromWallet_label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
+					//
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
+						x: self.fromWallet_label.frame.origin.x + self.fromWallet_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+						y: self.fromWallet_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.fromWallet_label.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
 				self.fromWallet_inputView.frame = CGRect(
 					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
@@ -981,10 +1012,10 @@ extension SendFundsForm
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				do {
-					self.amount_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
-					var final__amount_label_frame = self.amount_label.frame
-					final__amount_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.amount_label.frame = final__amount_label_frame // kinda sucks to set this three times in this method. any alternative?
+					self.amount_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it.. it may be possible to do this only once (during setup.. especially since this operation is not cheap)
+					var final__label_frame = self.amount_label.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.amount_label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
 					//
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
