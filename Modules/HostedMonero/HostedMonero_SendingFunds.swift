@@ -187,7 +187,7 @@ extension HostedMonero
 			//
 			// status: preparing to send funds…
 			if amount <= 0 {
-				self.failWithErr_fn?("The amount you've entered is too low")
+				self.failWithErr_fn?(NSLocalizedString("The amount you've entered is too low", comment: ""))
 				return
 			}
 			let totalAmountWithoutFee = MoneroAmount.new(withDouble: amount)
@@ -201,7 +201,7 @@ extension HostedMonero
 			// Derive/finalize some values…
 			let final__mixin = MyMoneroCore.fixedMixin
 			if final__mixin <= 0 { // TODO: min mixin checking
-				self.failWithErr_fn?("Expected mixin > 0")
+				self.failWithErr_fn?(NSLocalizedString("Expected mixin > 0", comment: ""))
 				return
 			}
 			if final__mixin < MyMoneroCore.thisFork_minMixin {
@@ -219,15 +219,15 @@ extension HostedMonero
 					return
 				}
 				if let _ = err_str {
-					thisSelf.failWithErr_fn?("Invalid recipient address.")
+					thisSelf.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
 					return
 				}
 				guard let decodedAddressComponents = decodedAddressComponents else {
-					thisSelf.failWithErr_fn?("Error obtaining decoded recipient Monero address components.")
+					thisSelf.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components.", comment: ""))
 					return
 				}
 				if decodedAddressComponents.intPaymentId != nil && thisSelf.payment_id != nil {
-					thisSelf.failWithErr_fn?("Payment ID field must be blank when using an Integrated Address")
+					thisSelf.failWithErr_fn?(NSLocalizedString("Payment ID field must be blank when using an Integrated Address", comment: ""))
 					return
 				}
 				if decodedAddressComponents.intPaymentId != nil {
@@ -241,7 +241,7 @@ extension HostedMonero
 					)
 				} else {
 					if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
-						thisSelf.failWithErr_fn?("The payment ID you've entered is not valid")
+						thisSelf.failWithErr_fn?(NSLocalizedString("The payment ID you've entered is not valid", comment: ""))
 						return
 					}
 					if final__payment_id != nil {
@@ -346,9 +346,12 @@ extension HostedMonero
 				DDLog.Info("HostedMonero", "~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
 				// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
 				if usingOutsAmount < totalAmountIncludingFees {
-					self.failWithErr_fn?(
-						"Not enough spendable outputs / balance too low (have: \(FormattedString(fromMoneroAmount: usingOutsAmount)), need: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees)))"
+					let errStr_localized = String(format:
+						NSLocalizedString("Not enough spendable outputs / balance too low (have: %@, need: %@)", comment: ""),
+						FormattedString(fromMoneroAmount: usingOutsAmount),
+						FormattedString(fromMoneroAmount: totalAmountIncludingFees)
 					)
+					self.failWithErr_fn?(errStr_localized)
 					return
 				}
 				// Now we can put together the list of fund transfers we need to perform
@@ -488,11 +491,11 @@ extension HostedMonero
 							return
 						}
 						if let _ = err_str {
-							thisSelf.failWithErr_fn?("Invalid recipient address.")
+							thisSelf.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
 							return
 						}
 						guard let decodedAddressComponents = decodedAddressComponents else {
-							thisSelf.failWithErr_fn?("Error obtaining decoded recipient Monero address components while creating transaction.")
+							thisSelf.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components while creating transaction.", comment: ""))
 							return
 						}
 						let realDestViewKey = decodedAddressComponents.publicKeys.view
@@ -608,7 +611,11 @@ extension HostedMonero
 								return
 							}
 							if let err_str = err_str {
-								thisSelf.failWithErr_fn?("Unexpected error while submitting your transaction: \(err_str)")
+								let errStr_localized = String(
+									format: NSLocalizedString("Unexpected error while submitting your transaction: %@", comment: ""),
+									err_str
+								)
+								thisSelf.failWithErr_fn?(errStr_localized)
 								return
 							}
 							let tx_fee = final_networkFee/* + hostingService_chargeAmount NOTE: Service charge removed */
