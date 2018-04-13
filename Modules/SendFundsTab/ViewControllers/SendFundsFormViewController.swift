@@ -185,7 +185,6 @@ extension SendFundsForm
 					displayMode: .prominent // slightly brighter here per design; considered merging
 				)
 				self.networkFeeEstimate_label = view
-				self.configure_networkFeeEstimate_label()
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -413,6 +412,9 @@ extension SendFundsForm
 				self.chooseFile_actionButtonView = view
 				self.view.addSubview(view) // not self.scrollView
 			}
+			//
+			// initial configuration; now that references to both the fee estimate layer and the priority select control have been assigned…
+			self.configure_networkFeeEstimate_label()
 		}
 		override func setup_navigation()
 		{
@@ -1084,7 +1086,7 @@ extension SendFundsForm
 				let lastMostVisibleView = self.sendTo_inputView!
 				self.addPaymentID_buttonView!.frame = CGRect(
 					x: label_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
 					width: self.addPaymentID_buttonView!.frame.size.width,
 					height: self.addPaymentID_buttonView!.frame.size.height
 				)
