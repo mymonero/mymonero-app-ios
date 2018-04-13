@@ -138,7 +138,7 @@ extension TransactionDetails
 					let view = UICommonComponents.Details.CopyableLongStringFieldView(
 						labelVariant: self.fieldLabels_variant,
 						title: NSLocalizedString("Payment ID", comment: ""),
-						valueToDisplayIfZero: NSLocalizedString("N/A", comment: "")
+						valueToDisplayIfZero: NSLocalizedString("None", comment: "")
 					)
 					self.paymentID__fieldView = view
 					sectionView.add(fieldView: view)

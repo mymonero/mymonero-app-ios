@@ -270,7 +270,7 @@ extension WalletDetails
 					}
 				}
 				self.dateLabel.text = Transaction.lazy_cell_dateFormatter().string(from: object.timestamp).uppercased()
-				self.paymentIDLabel.text = object.paymentId ?? NSLocalizedString("N/A", comment: "")
+				self.paymentIDLabel.text = object.paymentId ?? ""
 				self.statusLabel.text = !object.cached__isConfirmed || !object.cached__isUnlocked ? NSLocalizedString("PENDING", comment: "") : NSLocalizedString("CONFIRMED", comment: "")
 			}
 			//
