@@ -82,6 +82,10 @@ extension SendFundsForm
 		var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
 		var manualPaymentID_inputView: UICommonComponents.FormInputField!
 		//
+		var priority_label: UICommonComponents.Form.FieldLabel!
+		var priority_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
+		var priority_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
+		//
 		var useCamera_actionButtonView: UICommonComponents.ActionButton!
 		var chooseFile_actionButtonView: UICommonComponents.ActionButton!
 		//
@@ -397,6 +401,43 @@ extension SendFundsForm
 			}
 			//
 			do {
+				let view = UICommonComponents.Form.FieldLabel(
+					title: NSLocalizedString("PRIORITY", comment: "")
+				)
+				self.priority_label = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+					tooltipText: NSLocalizedString(
+						"You can pay the Monero\nnetwork a higher fee to\nhave your transfers\nconfirmed faster.",
+						comment: ""
+					)
+				)
+				view.willPresentTipView_fn =
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
+				}
+				self.priority_tooltipSpawn_buttonView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.Form.StringPicker.PickerButtonView(
+					selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
+					allValues: MoneroTransferSimplifiedPriority.allValues_humanReadableCapitalizedStrings
+				)
+				view.selectedValue_fn =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.configure_networkFeeEstimate_label()
+				}
+				self.priority_inputView = view
+				self.scrollView.addSubview(view)
+			}
+			//
+			do {
 				let iconImage = UIImage(named: "actionButton_iconImage__useCamera")!
 				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
 				view.addTarget(self, action: #selector(useCamera_tapped), for: .touchUpInside)
@@ -615,6 +656,12 @@ extension SendFundsForm
 			}
 			return nil
 		}
+		var selected_priority: MoneroTransferSimplifiedPriority {
+			let selectedString = self.priority_inputView.selectedValue!
+			let priority = MoneroTransferSimplifiedPriority.new_priority(fromHumanReadableString: selectedString)
+			//
+			return priority
+		}
 		//
 		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
@@ -644,7 +691,7 @@ extension SendFundsForm
 		func configure_networkFeeEstimate_label()
 		{
 			let feePerKB_Amount = MoneroAmount("209000000")! // constant for now pending polling fee_per_kb on account info
-			let priority = MoneroTransferSimplifiedPriority.defaultPriority // TODO: read this from dropdown
+			let priority = self.selected_priority
 			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
 			let estNetworkFee_monero_amountDouble: Double = DoubleFromMoneroAmount(
 				moneroAmount: estNetworkFee_moneroAmount
@@ -775,7 +822,7 @@ extension SendFundsForm
 				let resolvedPaymentID = self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? ""
 				let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
 				//
-				let priority: MoneroTransferSimplifiedPriority = .med // TODO: obtain from UI
+				let priority = self.selected_priority
 				//
 				let parameters = SendFundsForm.SubmissionController.Parameters(
 					fromWallet: fromWallet,
@@ -1063,7 +1110,7 @@ extension SendFundsForm
 					width: 13,
 					height: self.sendTo_label.frame.size.height
 				).integral
-				do {					
+				do {
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.sendTo_tooltipSpawn_buttonView.frame = CGRect(
@@ -1109,16 +1156,52 @@ extension SendFundsForm
 				).integral
 			}
 			//
-			let bottomMostView: UIView
 			do {
-				if self.manualPaymentID_inputView.isHidden == false {
-					bottomMostView = self.manualPaymentID_inputView
-				} else if self.addPaymentID_buttonView.isHidden == false {
-					bottomMostView = self.addPaymentID_buttonView
-				} else {
-					bottomMostView = self.sendTo_inputView
+				let previousSectionBottomView: UIView
+				do {
+					if self.manualPaymentID_inputView.isHidden == false {
+						previousSectionBottomView = self.manualPaymentID_inputView
+					} else if self.addPaymentID_buttonView.isHidden == false {
+						previousSectionBottomView = self.addPaymentID_buttonView
+					} else {
+						previousSectionBottomView = self.sendTo_inputView
+					}
 				}
+				//
+				let tooltipHostingLabel = self.priority_label!
+				do {
+					tooltipHostingLabel.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it.. it may be possible to do this only once (during setup.. especially since this operation is not cheap)
+					var final__label_frame = tooltipHostingLabel.frame
+					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					tooltipHostingLabel.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
+				}
+				self.priority_label.frame = CGRect(
+					x: label_x,
+					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+					width: self.priority_label.frame.size.width,
+					height: self.priority_label.frame.size.height
+				).integral
+				do {
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					self.priority_tooltipSpawn_buttonView.frame = CGRect(
+						x: tooltipHostingLabel.frame.origin.x + tooltipHostingLabel.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+						y: tooltipHostingLabel.frame.origin.y - (tooltipSpawn_buttonView_h - tooltipHostingLabel.frame.size.height)/2,
+						width: tooltipSpawn_buttonView_w,
+						height: tooltipSpawn_buttonView_h
+					).integral
+				}
+				//
+				let fixed_dropdownWidth: CGFloat = 8*17 + 1
+				self.priority_inputView.frame = CGRect(
+					x: input_x,
+					y: self.priority_label.frame.origin.y + self.priority_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+					width: min(textField_w, fixed_dropdownWidth), // obvs the latter
+					height: self.priority_inputView.frame.size.height
+				)
 			}
+			//
+			let bottomMostView: UIView = self.priority_inputView
 			let bottomPadding: CGFloat = 18
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,

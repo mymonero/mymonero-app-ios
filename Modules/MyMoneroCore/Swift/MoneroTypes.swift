@@ -762,16 +762,43 @@ enum MoneroTransferSimplifiedPriority: UInt32
 	var cppRepresentation: UInt32 {
 		return self.rawValue
 	}
+	static let allValues_humanReadableCapitalizedStrings: [String] =
+	[
+		MoneroTransferSimplifiedPriority.low.humanReadableCapitalizedString,
+		MoneroTransferSimplifiedPriority.med.humanReadableCapitalizedString,
+		MoneroTransferSimplifiedPriority.high.humanReadableCapitalizedString,
+		MoneroTransferSimplifiedPriority.veryhigh.humanReadableCapitalizedString
+	]
 	var humanReadableLowercasedString: String {
 		switch self {
-		case .low:
-			return NSLocalizedString("low", comment: "")
-		case .med:
-			return NSLocalizedString("medium", comment: "")
-		case .high:
-			return NSLocalizedString("high", comment: "")
-		case .veryhigh:
-			return NSLocalizedString("very high", comment: "")
+			case .low:
+				return NSLocalizedString("low", comment: "")
+			case .med:
+				return NSLocalizedString("medium", comment: "")
+			case .high:
+				return NSLocalizedString("high", comment: "")
+			case .veryhigh:
+				return NSLocalizedString("very high", comment: "")
+		}
+	}
+	var humanReadableCapitalizedString: String {
+		return self.humanReadableLowercasedString.capitalized
+	}
+	static func new_priority(
+		fromHumanReadableString string: String
+	) -> MoneroTransferSimplifiedPriority {
+		let final_string = string.lowercased()
+		switch final_string {
+			case MoneroTransferSimplifiedPriority.low.humanReadableLowercasedString:
+				return MoneroTransferSimplifiedPriority.low
+			case MoneroTransferSimplifiedPriority.med.humanReadableLowercasedString:
+				return MoneroTransferSimplifiedPriority.med
+			case MoneroTransferSimplifiedPriority.high.humanReadableLowercasedString:
+				return MoneroTransferSimplifiedPriority.high
+			case MoneroTransferSimplifiedPriority.veryhigh.humanReadableLowercasedString:
+				return MoneroTransferSimplifiedPriority.veryhigh
+			default:
+				fatalError("Illegal string")
 		}
 	}
 }
