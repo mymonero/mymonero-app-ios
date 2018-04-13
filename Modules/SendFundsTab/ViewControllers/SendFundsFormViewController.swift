@@ -156,7 +156,7 @@ extension SendFundsForm
 					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
 					effectiveAmountTooltipText_orNil: String(
 						format: NSLocalizedString(
-							"Currency selector for display\npurposes only. The app will\nsend %@.\n\nRate sources include\n'%@'.",
+							"Currency selector for\ndisplay purposes only.\nThe app will send %@.\n\nRate providers include\n%@.",
 							comment:""
 						),
 						CcyConversionRates.Currency.XMR.symbol,
@@ -894,7 +894,7 @@ extension SendFundsForm
 						title: NSLocalizedString("Important", comment: ""),
 						message: String(
 							format: NSLocalizedString(
-								"Though %@ is selected, the app will send %@. (This is not an exchange.)\n\nRate provided by sources such as '%@'. No guarantee of accuracy nor favorability. Use at own risk / Not responsible for losses.",
+								"Though %@ is selected, the app will send %@. (This is not an exchange.)\n\nRate providers include %@. Neither accuracy or favorability are guaranteed. Use at your own risk.",
 								comment: ""
 							),
 							selectedCurrency.symbol,
