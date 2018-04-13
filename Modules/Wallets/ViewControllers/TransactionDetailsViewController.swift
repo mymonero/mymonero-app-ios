@@ -119,7 +119,7 @@ extension TransactionDetails
 				do {
 					let view = UICommonComponents.Details.ShortStringFieldView(
 						labelVariant: self.fieldLabels_variant,
-						title: NSLocalizedString("Ringsize", comment: ""),
+						title: NSLocalizedString("Ring size", comment: ""),
 						valueToDisplayIfZero: nil
 					)
 					self.ringsize__fieldView = view
