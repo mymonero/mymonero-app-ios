@@ -120,8 +120,7 @@ extension UICommonComponents.Form
 			inputMode: InputMode,
 			displayMode: AccessoryInfoDisplayMode,
 			parentScrollView: UIScrollView?
-		)
-		{
+		) {
 			self.inputMode = inputMode
 			self.displayMode = displayMode
 			self.parentScrollView = parentScrollView
@@ -146,7 +145,6 @@ extension UICommonComponents.Form
 				let view = ContactPickerSearchResultsInputAccessoryView()
 				view.collectionView.delegate = self
 				view.collectionView.dataSource = self
-				view.frame = .zero
 				self.autocompleteResults_inputAccessoryView = view
 				self.inputField.inputAccessoryView = view
 				self.inputField.reloadInputViews() // necessary? shouldn't currently be first responder…
@@ -300,12 +298,6 @@ extension UICommonComponents.Form
 				return
 			}
 			//
-			self.autocompleteResults_inputAccessoryView.bounds = CGRect(
-				x: 0,
-				y: 0,
-				width: self.autocompleteResults_inputAccessoryView.bounds.size.width,
-				height: ContactPickerSearchResultsInputAccessoryView.h
-			)
 			self.autocompleteResults_inputAccessoryView.isHidden = false
 		}
 		func __removeAllAndHideSearchResults()
@@ -336,8 +328,7 @@ extension UICommonComponents.Form
 			contact: Contact,
 			skipOAResolve: Bool = false,
 			useContactPaymentID: Bool = true
-		)
-		{ // This function must also be able to handle being called while a contact is already selected
+		) { // This function must also be able to handle being called while a contact is already selected
 			//
 			if self.selectedContact != nil {
 				if self.selectedContact! == contact {
@@ -472,8 +463,7 @@ extension UICommonComponents.Form
 		}
 		func unpickSelectedContact_andRedisplayInputField(
 			skipFocusingInputField: Bool = false
-		)
-		{
+		) {
 			self._removeSelectedContactPillView()
 			self.inputField.isHidden = false
 			if skipFocusingInputField != true {
@@ -670,7 +660,6 @@ extension UICommonComponents.Form
 						height: self.detected_iconAndMessageView!.frame.size.height
 					).integral
 				}
-
 			}
 		}
 		//
@@ -788,6 +777,10 @@ extension UICommonComponents.Form
 		}
 		//
 		// Delegation - Text field
+//		func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
+//		{
+//			return true
+//		}
 		func textFieldDidBeginEditing(_ textField: UITextField)
 		{
 			self._searchForAndDisplaySearchResults()
@@ -810,8 +803,7 @@ extension UICommonComponents.Form
 			_ textField: UITextField,
 			shouldChangeCharactersIn range: NSRange,
 			replacementString string: String
-		) -> Bool
-		{
+		) -> Bool {
 			return true
 		}
 		var mediumDelay_waitingToFinishTypingTimer: Timer?
@@ -875,8 +867,7 @@ extension UICommonComponents.Form
 			_ collectionView: UICollectionView,
 			layout collectionViewLayout: UICollectionViewLayout,
 			sizeForItemAt indexPath: IndexPath
-		) -> CGSize
-		{
+		) -> CGSize {
 			guard let searchResults = self.searchResults else {
 				// I think this probably shouldn't be happening but I'm just going to assume here that the results were cleared automatically by a programmatic form hydration and ignore this b/c it looks currently like an effectively harmless race
 				return .zero
@@ -960,6 +951,7 @@ extension UICommonComponents.Form
 		{
 			do {
 				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 0.9)
+				self.translatesAutoresizingMaskIntoConstraints = false // this must be turned off for height not to end up being set to 0 by conflicting constraint
 			}
 			do {
 				let layout = UICollectionViewFlowLayout()
@@ -986,6 +978,14 @@ extension UICommonComponents.Form
 		}
 		func teardown()
 		{
+		}
+		//
+		// Overrides - Accessors
+		override var intrinsicContentSize: CGSize {
+			return CGSize(
+				width: self.frame.size.width,
+				height: ContactPickerSearchResultsInputAccessoryView.h
+			)
 		}
 		//
 		// Overrides - Imperatives
