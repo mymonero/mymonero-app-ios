@@ -98,8 +98,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 		open url: URL,
 		sourceApplication: String?,
 		annotation: Any
-	) -> Bool
-	{
+	) -> Bool {
+		return URLOpening.shared.appReceived(url: url)
+	}
+	func application(
+		_ app: UIApplication,
+		open url: URL,
+		options: [UIApplicationOpenURLOptionsKey : Any] = [:]
+	) -> Bool {
 		return URLOpening.shared.appReceived(url: url)
 	}
 	func applicationWillResignActive(_ application: UIApplication)
