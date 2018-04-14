@@ -4,13 +4,13 @@ use_frameworks!
 
 def common_pods
 	pod 'BigInt', '~> 3.0.1'
-	pod 'SwiftDate', '~> 4.4.2'
-	pod 'Alamofire', '~> 4.5.1'
+	pod 'SwiftDate', '~> 4.5.1'
+	pod 'Alamofire', '~> 4.7.1'
 	pod 'RNCryptor', '~> 5.0.1'
-	pod 'ReachabilitySwift', '~> 3.0'
-	pod 'PKHUD', :git => 'https://github.com/pkluz/PKHUD.git', :branch => 'release/swift4'
-	pod 'AMPopTip', '~> 3.0.0'
-	pod 'Popover', :git => 'https://github.com/corin8823/Popover.git', :branch => '1.2.0'
+	pod 'ReachabilitySwift', '~> 4.1.0'
+	pod 'PKHUD', '~> 5.0'
+	pod 'AMPopTip', '~> 3.2.1'
+	pod 'Popover', '~> 1.2.0'
 end
 
 target 'MyMonero' do
