@@ -558,7 +558,7 @@ extension HostedMonero
 						fn(error.localizedDescription, nil, nil) // localized description ok here?
 						return
 					case .success:
-	//					DDLog.Done("HostedMonero", "\(url) \(statusCode)")
+						DDLog.Done("HostedMonero", "\(url) \(statusCode)")
 						break
 				}
 				guard let result_value = response.result.value else {

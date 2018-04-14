@@ -52,12 +52,10 @@ class Wallet_HostPollingController
 	}
 	func setup()
 	{
-		self._setup_startPolling()
+		// start polling:
+		self.timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(__timerFired), userInfo: nil, repeats: true)
 		// ^ just immediately going to jump into the runtime - so only instantiate self when you're ready to do this
-	}
-	func _setup_startPolling()
-	{
-		self.timer = Timer(timeInterval: 30, target: self, selector: #selector(__timerFired), userInfo: nil, repeats: true)
+		//
 		self.performRequests()
 	}
 	//
@@ -97,7 +95,6 @@ class Wallet_HostPollingController
 			return
 		}
 		guard let wallet = self.wallet else {
-			assert(self.wallet != nil)
 			return
 		}
 		if wallet.isLoggedIn != true {
@@ -145,7 +142,6 @@ class Wallet_HostPollingController
 			return
 		}
 		guard let wallet = self.wallet else {
-			assert(self.wallet != nil)
 			return
 		}
 		if wallet.isLoggedIn != true {
