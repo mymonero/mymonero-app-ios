@@ -105,7 +105,8 @@ extension SendFundsForm
 			super.setup_views()
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("FROM", comment: "")
+					title: NSLocalizedString("FROM", comment: ""),
+					sizeToFit: true
 				)
 				self.fromWallet_label = view
 				self.scrollView.addSubview(view)
@@ -133,7 +134,8 @@ extension SendFundsForm
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("AMOUNT", comment: "")
+					title: NSLocalizedString("AMOUNT", comment: ""),
+					sizeToFit: true
 				)
 				self.amount_label = view
 				self.scrollView.addSubview(view)
@@ -210,7 +212,8 @@ extension SendFundsForm
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("TO", comment: "")
+					title: NSLocalizedString("TO", comment: ""),
+					sizeToFit: true
 				)
 				self.sendTo_label = view
 				self.scrollView.addSubview(view)
@@ -402,7 +405,8 @@ extension SendFundsForm
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("PRIORITY", comment: "")
+					title: NSLocalizedString("PRIORITY", comment: ""),
+					sizeToFit: true
 				)
 				self.priority_label = view
 				self.scrollView.addSubview(view)
@@ -1041,15 +1045,10 @@ extension SendFundsForm
 				self.fromWallet_label.frame = CGRect(
 					x: label_x,
 					y: top_yOffset,
-					width: fullWidth_label_w,
+					width: self.fromWallet_label.frame.size.width,
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				do {
-					self.fromWallet_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it.. it may be possible to do this only once (during setup.. especially since this operation is not cheap)
-					var final__label_frame = self.fromWallet_label.frame
-					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.fromWallet_label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
-					//
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
@@ -1070,15 +1069,10 @@ extension SendFundsForm
 				self.amount_label.frame = CGRect(
 					x: label_x,
 					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
-					width: fullWidth_label_w,
-					height: self.fromWallet_label.frame.size.height
+					width: self.amount_label.frame.size.width,
+					height: self.amount_label.frame.size.height
 				).integral
 				do {
-					self.amount_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it.. it may be possible to do this only once (during setup.. especially since this operation is not cheap)
-					var final__label_frame = self.amount_label.frame
-					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.amount_label.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
-					//
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.amount_tooltipSpawn_buttonView.frame = CGRect(
@@ -1181,13 +1175,6 @@ extension SendFundsForm
 					}
 				}
 				//
-				let tooltipHostingLabel = self.priority_label!
-				do {
-					tooltipHostingLabel.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it.. it may be possible to do this only once (during setup.. especially since this operation is not cheap)
-					var final__label_frame = tooltipHostingLabel.frame
-					final__label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					tooltipHostingLabel.frame = final__label_frame // kinda sucks to set this three times in this method. any alternative?
-				}
 				self.priority_label.frame = CGRect(
 					x: label_x,
 					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
@@ -1198,8 +1185,8 @@ extension SendFundsForm
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.priority_tooltipSpawn_buttonView.frame = CGRect(
-						x: tooltipHostingLabel.frame.origin.x + tooltipHostingLabel.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-						y: tooltipHostingLabel.frame.origin.y - (tooltipSpawn_buttonView_h - tooltipHostingLabel.frame.size.height)/2,
+						x: self.priority_label.frame.origin.x + self.priority_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+						y: self.priority_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.priority_label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
 					).integral
