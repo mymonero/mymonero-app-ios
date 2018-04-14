@@ -426,6 +426,19 @@ extension SendFundsForm
 					selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
 					allValues: MoneroTransferSimplifiedPriority.allValues_humanReadableCapitalizedStrings
 				)
+				view.picker_inputField_didBeginEditing =
+				{ [weak self] (inputField) in
+					DispatchQueue.main.asyncAfter( // slightly janky
+						deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
+					) { [weak self] in
+						guard let thisSelf = self else {
+							return
+						}
+						if inputField.isFirstResponder { // jic
+							thisSelf.scrollInputViewToVisible(thisSelf.priority_inputView)
+						}
+					}
+				}
 				view.selectedValue_fn =
 				{ [weak self] in
 					guard let thisSelf = self else {

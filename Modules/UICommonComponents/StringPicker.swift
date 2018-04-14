@@ -40,7 +40,7 @@ extension UICommonComponents.Form
 }
 extension UICommonComponents.Form.StringPicker
 {
-	class PickerButtonView: UICommonComponents.PushButton
+	class PickerButtonView: UICommonComponents.PushButton, UITextFieldDelegate
 	{
 		//
 		// Interface - Constants
@@ -54,6 +54,7 @@ extension UICommonComponents.Form.StringPicker
 		var allValues: [String]
 		//
 		var tapped_fn: (() -> Void)?
+		var picker_inputField_didBeginEditing: ((_ textField: UITextField) -> Void)?
 		var selectedValue_fn: (() -> Void)?
 		
 		var selectedValue: String?
@@ -131,6 +132,7 @@ extension UICommonComponents.Form.StringPicker
 			}
 			do {
 				let view = UITextField(frame: .zero) // invisible - and possibly wouldn't work if hidden
+				view.delegate = self
 				view.inputView = pickerView
 				self.picker_inputField = view
 				self.addSubview(view)
@@ -191,8 +193,7 @@ extension UICommonComponents.Form.StringPicker
 		func set(
 			selectedValue value: String,
 			skipSettingOnPickerView: Bool = false // leave as false if you're setting from anywhere but the PickerView
-		)
-		{
+		) {
 			self.selectedValue = value
 			self.configure(withValue: value)
 			if skipSettingOnPickerView == false {
@@ -219,6 +220,14 @@ extension UICommonComponents.Form.StringPicker
 				self.picker_inputField.resignFirstResponder()
 			} else {
 				self.picker_inputField.becomeFirstResponder()
+			}
+		}
+		//
+		// Delegation - UITextField
+		func textFieldDidBeginEditing(_ textField: UITextField)
+		{
+			if textField == self.picker_inputField {
+				self.picker_inputField_didBeginEditing?(textField)
 			}
 		}
 	}
