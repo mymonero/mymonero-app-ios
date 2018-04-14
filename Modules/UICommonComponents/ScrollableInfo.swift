@@ -162,7 +162,7 @@ extension UICommonComponents
 		{ // legacy
 			self.set(validationMessage: message, wantsXButton: true)
 		}
-		func set(validationMessage message: String, wantsXButton: Bool)
+		func set(validationMessage message: String, wantsXButton: Bool, wantsFeedbackGenerated: Bool = true)
 		{
 			if self.new_wantsInlineMessageViewForValidationMessages() == false {
 				assert(false, "override \(#function)")
@@ -172,9 +172,11 @@ extension UICommonComponents
 				timer.invalidate() // always prevent an existing 'close' timer from stomping on a more recent 'show'
 				self._validationMessageDismissing_clearAndShowDebounceTimer = nil
 			}
-			let generator = UINotificationFeedbackGenerator()
-			generator.prepare()
-			generator.notificationOccurred(.warning) // TODO: set based on level of msg
+			if wantsFeedbackGenerated {
+				let generator = UINotificationFeedbackGenerator()
+				generator.prepare()
+				generator.notificationOccurred(.warning) // TODO: set based on level of msg
+			}
 			//
 			let view = self.messageView!
 			view.set(text: message)

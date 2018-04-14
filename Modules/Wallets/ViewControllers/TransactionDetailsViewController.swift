@@ -219,7 +219,11 @@ extension TransactionDetails
 				validationMessage += transaction.cached__lockedReason! // this is not necessarily a good localized way to concat strings
 			}
 			if validationMessage != "" {
-				self.set(validationMessage: validationMessage, wantsXButton: false)
+				self.set(
+					validationMessage: validationMessage,
+					wantsXButton: false,
+					wantsFeedbackGenerated: false // or we will produce feedback every time page updates, etc
+				)
 			} else {
 				self.clearValidationMessage()
 			}
