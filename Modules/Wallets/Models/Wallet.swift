@@ -478,11 +478,13 @@ class Wallet: PersistableObject
 		self.fundsSender?.cancel() // to get the network request cancel immediately
 		self.fundsSender = nil
 		//
-		// And now that network requests have been terminated (with the exception, presently, of any SendFunds), we can delete the key image cache since no more will hopefully get added..
-		MyMoneroCore.shared.DeleteManagedKeyImages(forWalletWithAddress: self.public_address,
-		{ (err_str) in
-			// TODO: Unhandled - see note in DeleteManagedKeyImages()
-		})
+		if self.public_address != nil { // remember the wallet info may not have been successfully generated yet
+			// And now that network requests have been terminated (with the exception, presently, of any SendFunds), we can delete the key image cache since no more will hopefully get added..
+			MyMoneroCore.shared.DeleteManagedKeyImages(forWalletWithAddress: self.public_address,
+			{ (err_str) in
+				// TODO: Unhandled - see note in DeleteManagedKeyImages()
+			})
+		}
 	}
 	//
 	//
