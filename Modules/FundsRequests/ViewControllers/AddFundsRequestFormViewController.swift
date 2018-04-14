@@ -739,7 +739,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			}
 			self.manualPaymentID_label.frame = CGRect(
 				x: label_x,
-				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
+				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.manualPaymentID_label.frame.size.height
 			).integral
