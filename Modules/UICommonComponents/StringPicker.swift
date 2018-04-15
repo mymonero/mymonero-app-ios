@@ -256,7 +256,7 @@ extension UICommonComponents.Form.StringPicker
 		}
 		func setup()
 		{
-			self.backgroundColor = .contentBackgroundColor
+			self.backgroundColor = .customKeyboardBackgroundColor
 			self.delegate = self
 			self.dataSource = self
 			//
@@ -385,6 +385,7 @@ extension UICommonComponents.Form.StringPicker
 		}
 		func setup()
 		{
+			self.backgroundColor = .customKeyboardBackgroundColor
 			do {
 				let view = UILabel(frame: .zero)
 				self.label = view

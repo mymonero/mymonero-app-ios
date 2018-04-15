@@ -231,7 +231,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		}
 		func setup()
 		{
-			self.backgroundColor = .contentBackgroundColor
+			self.backgroundColor = .customKeyboardBackgroundColor
 			self.delegate = self
 			self.dataSource = self
 			//
@@ -325,8 +325,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 			viewForRow row: Int,
 			forComponent component: Int,
 			reusing view: UIView?
-			) -> UIView
-		{
+		) -> UIView {
 			var mutable_view: UIView? = view
 			if mutable_view == nil {
 				mutable_view = PickerCellContentView()
@@ -360,7 +359,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		}
 		func setup()
 		{
-			self.backgroundColor = UIColor.contentBackgroundColor
+			self.backgroundColor = .customKeyboardBackgroundColor
 			do {
 				let view = UILabel(frame: .zero)
 				view.textAlignment = .center

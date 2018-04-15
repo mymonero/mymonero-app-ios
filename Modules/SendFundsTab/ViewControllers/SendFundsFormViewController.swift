@@ -1276,8 +1276,7 @@ extension SendFundsForm
 					UIAlertAction(
 						title: NSLocalizedString("OK", comment: ""),
 						style: .default
-						)
-					{ (result: UIAlertAction) -> Void in
+					) { (result: UIAlertAction) -> Void in
 					}
 				)
 				self.navigationController!.present(alertController, animated: true, completion: nil)
