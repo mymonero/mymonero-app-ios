@@ -117,8 +117,7 @@ extension UICommonComponents
 				_ optionIdx: Int,
 				_ optionViewFrame: CGRect
 			) -> Void)?
-		) -> Int // numberOfRows (would be nice to name return value)
-		{
+		) -> Int { // numberOfRows (would be nice to name return value)
 			var rowIdx = 0
 			var idxInRow = 0
 			let rowHeight = self.rowHeight
@@ -217,7 +216,7 @@ extension UICommonComponents
 				numberOfOptions: numberOfOptions,
 				inParentWithWidth: containerWidth,
 				emittingOptionInformation_fn:
-				{ (optionIdx, optionViewFrame) in
+				{ [unowned self] (optionIdx, optionViewFrame) in
 					let optionView = self.optionViews[optionIdx]
 					optionView.frame = optionViewFrame
 				}
