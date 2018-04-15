@@ -169,8 +169,7 @@ extension UICommonComponents
 		func set(
 			selectedWallet wallet: Wallet,
 			skipSettingOnPickerView: Bool = false // leave as false if you're setting from anywhere but the PickerView
-		)
-		{
+		) {
 			self.selectedWallet = wallet
 			self.configure(withRecord: wallet)
 			if skipSettingOnPickerView == false {
@@ -221,7 +220,7 @@ extension UICommonComponents
 		}
 		func setup()
 		{
-			self.backgroundColor = .contentBackgroundColor
+			self.backgroundColor = .customKeyboardBackgroundColor
 			self.delegate = self
 			self.dataSource = self
 			//
@@ -313,8 +312,7 @@ extension UICommonComponents
 			viewForRow row: Int,
 			forComponent component: Int,
 			reusing view: UIView?
-		) -> UIView
-		{
+		) -> UIView {
 			var mutable_view: UIView? = view
 			if mutable_view == nil {
 				mutable_view = WalletCellContentView(sizeClass: .medium32)

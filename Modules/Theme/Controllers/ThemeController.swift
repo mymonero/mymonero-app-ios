@@ -123,6 +123,10 @@ extension UIColor
 	{
 		return UIColor(rgb: 0x272527)
 	}
+	static var customKeyboardBackgroundColor: UIColor
+	{
+		return UIColor(rgb: 0x212021)
+	}
 	static var contentTextColor: UIColor
 	{
 		return UIColor(rgb: 0x9E9C9E)
