@@ -782,6 +782,17 @@ extension UICommonComponents.Form
 			resolver.resolve()
 		}
 		//
+		// Imperatives - Convenience - Setting inputField text
+		func setInputField(text: String)
+		{
+			self.inputField.text = text
+			/*
+			self.inputField.sendActions(for: .editingChanged) // so we trigger our .editingChanged observer
+			Since this comes with a delay for regular usage, I'm going to bypass and just say '0' delay - we're done "typing"
+			*/
+			self.__inputField_editingChanged(withTypingDelayOverride: 0)
+		}
+		//
 		// Delegation - Text field
 //		func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
 //		{
@@ -815,6 +826,13 @@ extension UICommonComponents.Form
 		var mediumDelay_waitingToFinishTypingTimer: Timer?
 		@objc func inputField_editingChanged()
 		{
+			self.__inputField_editingChanged() // use default (non-programmatic) typing delay
+		}
+		static let actualUsage_typingDelay: TimeInterval = 0.6 // so slow b/c mobile typing is slower than keyboard
+		func __inputField_editingChanged(
+			// v--- only provide this in special cases:
+			withTypingDelayOverride typingDelay: TimeInterval = ContactAndAddressPickerView.actualUsage_typingDelay
+		) {
 			do { // zeroing text input state
 				self.hasValidTextInput_moneroAddress = false
 				self.hasValidTextInput_resolvedOAAddress = false
@@ -823,36 +841,48 @@ extension UICommonComponents.Form
 				self.set(resolvingIndicatorIsVisible: false)
 				self.oaResolverRequestMaker = nil // must free, and before call-back
 			}
-			if self.inputField.isHidden == true || self.inputField.isFirstResponder == false {
+			if self.inputField.isHidden == true {
+//				|| self.inputField.isFirstResponder == false
+				// commenting this as I think we do we need to handle programmatic entries
+				DDLog.Warn("ContactPicker", "__inputField_editingChanged called but skipping update as field is hidden... verify this is desired.")
 				return // in case we're editing .text programmatically
 			}
 			//
 			self._searchForAndDisplaySearchResults() // b/c this computation is local, and cheap, we can do it immediately w/o waiting for delay
 			do {
-				// wait for sufficient pause in typing
 				if self.mediumDelay_waitingToFinishTypingTimer != nil {
 					self.mediumDelay_waitingToFinishTypingTimer!.invalidate()
 					self.mediumDelay_waitingToFinishTypingTimer = nil
 				}
-				self.mediumDelay_waitingToFinishTypingTimer = Timer.scheduledTimer(
-					withTimeInterval: 0.6, // so slow b/c mobile typing is slower than keyboard
-					repeats: false,
-					block:
-					{ [unowned self] (timer) in
-						do {
-							assert(timer == self.mediumDelay_waitingToFinishTypingTimer)
-							self.mediumDelay_waitingToFinishTypingTimer!.invalidate() // necessary?
-							self.mediumDelay_waitingToFinishTypingTimer = nil
+				//
+				func editingDidFinish()
+				{
+					DispatchQueue.main.async
+					{ [unowned self] in
+						if let fn = self.didFinishTypingInInput_afterMediumDelay_fn {
+							fn()
 						}
-						DispatchQueue.main.async
-						{ [unowned self] in
-							if let fn = self.didFinishTypingInInput_afterMediumDelay_fn {
-								fn()
-							}
-						}
-						self.didFinishTypingInInput_afterMediumDelay()
 					}
-				)
+					self.didFinishTypingInInput_afterMediumDelay()
+				}
+				if typingDelay == 0 {
+					editingDidFinish() // immediately
+				} else {
+					// wait for sufficient pause in typing
+					self.mediumDelay_waitingToFinishTypingTimer = Timer.scheduledTimer(
+						withTimeInterval: typingDelay,
+						repeats: false,
+						block:
+						{ [unowned self] (timer) in
+							do {
+								assert(timer == self.mediumDelay_waitingToFinishTypingTimer)
+								self.mediumDelay_waitingToFinishTypingTimer!.invalidate() // necessary?
+								self.mediumDelay_waitingToFinishTypingTimer = nil
+							}
+							editingDidFinish()
+						}
+					)
+				}
 			}
 		}
 		//

@@ -1519,7 +1519,7 @@ extension SendFundsForm
 								skipFocusingInputField: true // do NOT focus input
 							)
 						}
-						self.sendTo_inputView.inputField.text = target_address
+						self.sendTo_inputView.setInputField(text: target_address) // we must use this method instead of just going _inputView.inputField.text = ... b/c that would not alone send the event .editingChanged and would cause e.g. .hasValidTextInput_moneroAddress to be stale
 					}
 				}
 				// and no matter what, display payment id from request, if present
