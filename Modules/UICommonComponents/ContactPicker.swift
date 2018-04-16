@@ -218,9 +218,15 @@ extension UICommonComponents.Form
 		var new_h: CGFloat {
 			if self.displayMode == .paymentIds_andResolvedAddrs {
 				if self.detected_iconAndMessageView!.isHidden == false {
+					// this works because if any of the detected/resolved payment id or addr fields are visible, self.detected_iconAndMessageView will not be hidden
 					return self.detected_iconAndMessageView!.frame.origin.y + self.detected_iconAndMessageView!.frame.size.height
 				}
 			}
+			// if any resolved/detected fields are not displaying, the 'resolving' act. ind. might be visible and so would be the bottom-most view - it would be nice to formalize that with typed modes
+			if self.resolving_activityIndicator.isHidden == false {
+				return self.resolving_activityIndicator!.frame.origin.y + self.resolving_activityIndicator!.frame.size.height
+			}
+			// otherwise..
 			if self.selectedContact == nil {
 				return self.inputField.frame.origin.y + self.inputField.frame.size.height
 			}
@@ -585,13 +591,13 @@ extension UICommonComponents.Form
 			//
 			var bottomMostView_beforeAccessoryViews: UIView!
 			if self.resolving_activityIndicator.isHidden == false {
-				let x: CGFloat = 8
+				let x: CGFloat = 8 
 				self.resolving_activityIndicator.frame = CGRect(
 					x: x,
 					y: bottomMostView_beforeAccessoryAndResolvingViews.frame.origin.y + bottomMostView_beforeAccessoryAndResolvingViews.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
 					width: self.frame.size.width - 2*x,
-					height: self.resolving_activityIndicator.new_height
-					).integral
+					height: self.resolving_activityIndicator.new_height_withoutVSpacing // since components below will space themselves
+				).integral
 				bottomMostView_beforeAccessoryViews = self.resolving_activityIndicator
 			} else {
 				bottomMostView_beforeAccessoryViews = bottomMostView_beforeAccessoryAndResolvingViews

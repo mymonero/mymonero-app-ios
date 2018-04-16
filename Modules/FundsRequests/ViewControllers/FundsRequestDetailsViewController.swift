@@ -379,8 +379,7 @@ extension UICommonComponents.Details
 		init(
 			fundsRequest: FundsRequest,
 			displayMode: FundsRequestsCellContentView.DisplayMode? = .withQRCode
-		)
-		{
+		) {
 			do {
 				let view = FundsRequestsCellContentView(displayMode: displayMode ?? .withQRCode)
 				self.cellContentView = view
@@ -403,8 +402,7 @@ extension UICommonComponents.Details
 			withContainerWidth containerWidth: CGFloat,
 			withXOffset xOffset: CGFloat,
 			andYOffset yOffset: CGFloat
-			)
-		{
+		) {
 			let contentInsets = self.contentInsets
 			let content_x: CGFloat = contentInsets.left
 			let content_rightMargin: CGFloat = contentInsets.right
