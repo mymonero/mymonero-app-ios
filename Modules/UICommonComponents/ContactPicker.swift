@@ -216,15 +216,15 @@ extension UICommonComponents.Form
 		}
 		//
 		var new_h: CGFloat {
-			if self.displayMode == .paymentIds_andResolvedAddrs {
-				if self.detected_iconAndMessageView!.isHidden == false {
-					// this works because if any of the detected/resolved payment id or addr fields are visible, self.detected_iconAndMessageView will not be hidden
-					return self.detected_iconAndMessageView!.frame.origin.y + self.detected_iconAndMessageView!.frame.size.height
-				}
-			}
 			// if any resolved/detected fields are not displaying, the 'resolving' act. ind. might be visible and so would be the bottom-most view - it would be nice to formalize that with typed modes
 			if self.resolving_activityIndicator.isHidden == false {
 				return self.resolving_activityIndicator!.frame.origin.y + self.resolving_activityIndicator!.frame.size.height
+			}
+			if self.detected_iconAndMessageView!.isHidden == false {
+				return self.detected_iconAndMessageView!.frame.origin.y + self.detected_iconAndMessageView!.frame.size.height // this works because if any of the detected/resolved payment id (below addr field) is visible, self.detected_iconAndMessageView will not be hidden
+			}
+			if self.resolvedXMRAddr_inputView!.isHidden == false {
+				return self.resolvedXMRAddr_inputView!.frame.origin.y + self.resolvedXMRAddr_inputView!.frame.size.height // but the 'detected' view won't necessarily be showing if we're only showing the address
 			}
 			// otherwise..
 			if self.selectedContact == nil {
@@ -504,7 +504,9 @@ extension UICommonComponents.Form
 			self.resolvedXMRAddr_inputView!.textView.text = value
 			self.resolvedXMRAddr_label!.isHidden = false
 			self.resolvedXMRAddr_inputView!.isHidden = false
+			/* not going to show this for address only
 			self.detected_iconAndMessageView!.isHidden = false
+			*/
 			self.updateBounds()
 		}
 		func _hide_resolved_XMRAddress()
@@ -512,9 +514,11 @@ extension UICommonComponents.Form
 			self.resolvedXMRAddr_label!.isHidden = true
 			self.resolvedXMRAddr_inputView!.isHidden = true
 			self.resolvedXMRAddr_inputView!.textView.inputView = nil
+			/* since we're not showing this for addr only, we don't need to worry about hiding it for addr only
 			if self.resolvedPaymentID_inputView!.isHidden == true {
 				self.detected_iconAndMessageView!.isHidden = true
 			}
+			*/
 			self.updateBounds()
 		}
 		func _display(resolved_paymentID value: String)
