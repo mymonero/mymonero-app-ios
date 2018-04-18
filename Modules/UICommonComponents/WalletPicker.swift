@@ -328,8 +328,15 @@ extension UICommonComponents
 		@objc func PersistedObjectListController_Notifications_List_updated()
 		{
 			self.reloadAllComponents()
-			if let fn = self.reloaded_fn {
-				fn()
+			//
+			DispatchQueue.main.async
+			{ [weak self] in // give components time to reload - reloaded_fn might trigger access to them
+				guard let thisSelf = self else {
+					return
+				}
+				if let fn = thisSelf.reloaded_fn {
+					fn()
+				}
 			}
 		}
 	}

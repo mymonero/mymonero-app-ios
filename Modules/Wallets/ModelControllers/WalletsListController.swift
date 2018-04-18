@@ -372,7 +372,7 @@ class WalletsListController: PersistedObjectListController
 			}
 		}
 		self.overridable_sortRecords()
-		self._dispatchAsync_listUpdated_records()
+		self.__dispatchAsync_listUpdated_records()
 		// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
 	}
 }

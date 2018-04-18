@@ -276,21 +276,11 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	// Imperatives - Overridable
 	func overridable_sortRecords() {}
 	//
-	// Internal - Imperatives - Queue entry
-	func _dispatchAsync_listUpdated_records()
-	{
-		DispatchQueue.main.async
-		{ [unowned self] in
-			self._listUpdated_records()
-		}
-	}
-	//
 	// Imperatives - Deferring execution
 	// NOTE: onceBooted() exists because waiting for a password to be entered by the user must be asynchronous
 	func onceBooted(
 		_ fn: @escaping (() -> Void)
-	)
-	{
+	) {
 		if self.hasBooted == true {
 			fn()
 			return
@@ -332,12 +322,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 			record._id == object._id
 		})!
 		self.records.remove(at: index)
-		do {
-			let userInfo = [ Notifications_userInfoKeys.record.rawValue: object ]
-			NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: userInfo)
-		}
-		// TODO: isn't one of these .post()s redundant?
-		self._listUpdated_records()
+		//
+		self._listUpdated_records(updatedRecord: object)
 	}
 	//
 	// Delegation
@@ -350,15 +336,25 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true {
 			self.overridable_sortRecords()
 		}
-		self._dispatchAsync_listUpdated_records()
+		self.__dispatchAsync_listUpdated_records(updatedRecord: listedObject)
 		// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
 	}
-	func _listUpdated_records()
+	func _listUpdated_records(updatedRecord record: PersistableObject? = nil) {
+		var userInfo = [String: Any]()
+		if record != nil {
+			userInfo[Notifications_userInfoKeys.record.rawValue] = record
+		}
+		NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: userInfo)
+	}
+	func __dispatchAsync_listUpdated_records(updatedRecord record: PersistableObject? = nil)
 	{
-		NotificationCenter.default.post(
-			name: Notifications_List.updated.notificationName,
-			object: self
-		)
+		DispatchQueue.main.async
+		{ [weak self] in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf._listUpdated_records(updatedRecord: record)
+		}
 	}
 	//
 	// Protocol - DeleteEverythingRegistrant
@@ -403,7 +399,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	}
 	@objc func PasswordController_didDeconstructBootedStateAndClearPassword()
 	{
-		self._dispatchAsync_listUpdated_records() // manually emit so that the UI updates to empty list after the pw entry screen is shown
+		self.__dispatchAsync_listUpdated_records() // manually emit so that the UI updates to empty list after the pw entry screen is shown
 		self.setup_tryToBoot() // this will re-request the pw and lead to loading records & booting self
 	}
 }

@@ -275,8 +275,7 @@ extension CcyConversionRates
 		// Interface - Accessors
 		func isRateReady( // if you won't need the actual value
 			fromXMRToCurrency currency: Currency
-		) -> Bool
-		{
+		) -> Bool {
 			if currency == .none || currency == .XMR {
 				fatalError("Invalid 'currency' argument value")
 			}
@@ -284,8 +283,7 @@ extension CcyConversionRates
 		}
 		func rateFromXMR_orNilIfNotReady(
 			toCurrency currency: Currency
-		) -> Rate?
-		{
+		) -> Rate? {
 			if currency == .none || currency == .XMR {
 				fatalError("Invalid 'currency' argument value")
 			}
@@ -297,8 +295,7 @@ extension CcyConversionRates
 			XMRToCurrencyRate rate: Rate, // non-nil … ought to only need to be set to nil internally
 			forCurrency currency: Currency,
 			isPartOfBatch doNotNotify: Bool = false // normally false … but pass true for batch calls and then call ifBatched_notifyOf_set_XMRToCurrencyRate manually (arg is called doNotNotify b/c if part of batch, you only want to do currency-non-specific notify post once instead of N times)
-		) -> Bool // wasSetValueDifferent
-		{
+		) -> Bool { // wasSetValueDifferent
 			let wasSetValueDifferent = rate != self.xmrToCurrencyRatesByCurrencyUID[currency.uid]
 			self.xmrToCurrencyRatesByCurrencyUID[currency.uid] = rate
 			if doNotNotify != true {
@@ -314,8 +311,7 @@ extension CcyConversionRates
 		//
 		func set_xmrToCcyRatesByCcy(
 			_ xmrToCcyRatesByCcy: [Currency: Double]
-		)
-		{
+		) {
 			var wasAnyRateChanged = false
 			for (_, keyAndValue) in xmrToCcyRatesByCcy.enumerated() {
 				let wasSetValueDifferent = self.set(
