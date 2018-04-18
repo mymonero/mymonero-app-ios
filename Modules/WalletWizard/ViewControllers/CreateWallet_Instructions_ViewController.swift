@@ -121,19 +121,19 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		var list: [TitleAndDescription] = []
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Creating a wallet", comment: ""),
-			description: NSLocalizedString("Each Monero wallet gets a secret word-sequence called a mnemonic.", comment: "")
+			description: NSLocalizedString("Each Monero wallet gets a unique word-sequence called a mnemonic.", comment: "")
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Write down your mnemonic", comment: ""),
-			description: NSLocalizedString("It's the only way to recover access to your wallet, and is never uploaded.", comment: "")
+			description: NSLocalizedString("It's the only way to regain access to your funds if you delete the app.", comment: "")
 		))
 		list.append(TitleAndDescription(
-			title: NSLocalizedString("Keep it secure & private", comment: ""),
-			description: NSLocalizedString("Anyone with the mnemonic can view and spend the funds in your wallet.", comment: "")
-		))
-		list.append(TitleAndDescription(
-			title: NSLocalizedString("Use pen and paper or back it up", comment: ""),
+			title: NSLocalizedString("Keep it secret and safe", comment: ""),
 			description: NSLocalizedString("If you save it to an insecure location, it may be viewable by other apps.", comment: "")
+		))
+		list.append(TitleAndDescription(
+			title: NSLocalizedString("Use it like an actual wallet", comment: ""),
+			description: NSLocalizedString("For keeping large amounts long-term, make a cold-storage wallet instead.", comment: "")
 		))
 		//
 		return list
