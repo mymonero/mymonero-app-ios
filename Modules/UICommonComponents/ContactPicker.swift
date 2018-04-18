@@ -220,11 +220,15 @@ extension UICommonComponents.Form
 			if self.resolving_activityIndicator.isHidden == false {
 				return self.resolving_activityIndicator!.frame.origin.y + self.resolving_activityIndicator!.frame.size.height
 			}
-			if self.detected_iconAndMessageView!.isHidden == false {
-				return self.detected_iconAndMessageView!.frame.origin.y + self.detected_iconAndMessageView!.frame.size.height // this works because if any of the detected/resolved payment id (below addr field) is visible, self.detected_iconAndMessageView will not be hidden
+			if let view = self.detected_iconAndMessageView {
+				if view.isHidden == false {
+					return view.frame.origin.y + view.frame.size.height // this works because if any of the detected/resolved payment id (below addr field) is visible, self.detected_iconAndMessageView will not be hidden
+				}
 			}
-			if self.resolvedXMRAddr_inputView!.isHidden == false {
-				return self.resolvedXMRAddr_inputView!.frame.origin.y + self.resolvedXMRAddr_inputView!.frame.size.height // but the 'detected' view won't necessarily be showing if we're only showing the address
+			if let view = self.resolvedXMRAddr_inputView {
+				if view.isHidden == false {
+					return view.frame.origin.y + view.frame.size.height // but the 'detected' view won't necessarily be showing if we're only showing the address
+				}
 			}
 			// otherwise..
 			if self.selectedContact == nil {
