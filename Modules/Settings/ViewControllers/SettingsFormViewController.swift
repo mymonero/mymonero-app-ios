@@ -50,9 +50,8 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var displayCurrency_label: UICommonComponents.Form.FieldLabel!
 	var displayCurrency_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
 	//
-//	var notifyMeWhen_label: UICommonComponents.Form.FieldLabel!
-//	var fundsComeIn_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
-//	var whenOutgoingTransactionsConfirmed_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
+	var requireUnlock_label: UICommonComponents.Form.FieldLabel!
+	var whenSendingMoney_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	//
 	var address_label: UICommonComponents.Form.FieldLabel!
 	var address_inputView: UICommonComponents.FormInputField!
@@ -105,6 +104,23 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
+				title: NSLocalizedString("REQUIRE UNLOCK", comment: "")
+			)
+			self.requireUnlock_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.Switches.TitleAndControlField(
+				frame: .zero,
+				title: NSLocalizedString("When sending money", comment: ""),
+				isSelected: false // for now - will update on VDA
+			)
+			self.whenSendingMoney_inputView = view
+			self.scrollView.addSubview(view)
+		}
+		//
+		do {
+			let view = UICommonComponents.Form.FieldLabel(
 				title: NSLocalizedString("DISPLAY CURRENCY", comment: "")
 			)
 			self.displayCurrency_label = view
@@ -131,30 +147,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.displayCurrency_inputView = view
 			self.scrollView.addSubview(view)
 		}
-		//
-//		do {
-//			let view = UICommonComponents.Form.FieldLabel(
-//				title: NSLocalizedString("NOTIFY ME WHEN", comment: "")
-//			)
-//			self.notifyMeWhen_label = view
-//			self.scrollView.addSubview(view)
-//		}
-//		do {
-//			let view = UICommonComponents.Form.Switches.TitleAndControlField(
-//				frame: .zero,
-//				title: NSLocalizedString("Funds arrive", comment: "")
-//			)
-//			self.fundsComeIn_inputView = view
-//			self.scrollView.addSubview(view)
-//		}
-//		do {
-//			let view = UICommonComponents.Form.Switches.TitleAndControlField(
-//				frame: .zero,
-//				title: NSLocalizedString("Outgoing transactions are confirmed", comment: "")
-//			)
-//			self.whenOutgoingTransactionsConfirmed_inputView = view
-//			self.scrollView.addSubview(view)
-//		}
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
@@ -196,7 +188,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		}
 		//
 		let (_, _) = self._updateValidationErrorForAddressInputView() // so we get validation error from persisted but incorrect value, if necessary for user feedback
-
 	}
 	override func setup_navigation()
 	{
@@ -265,8 +256,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	func _updateValidationErrorForAddressInputView() -> (
 		didError: Bool,
 		savableValue: String?
-	)
-	{
+	) {
 		var value = self.sanitizedInputValue__address // use even nil b/c it means use mymonero.com api
 		if value == "" {
 			assert(false)
@@ -369,6 +359,31 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		}
 		do {
 			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
+			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
+			self.requireUnlock_label.frame = CGRect(
+				x: label_x,
+				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
+				width: fullWidth_label_w,
+				height: self.requireUnlock_label.frame.size.height
+			)
+			let switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
+				[
+					self.whenSendingMoney_inputView
+			]
+			for (idx, switchView) in switchesToLayOut.enumerated() {
+				let mostPreviousView = idx == 0 ? self.requireUnlock_label : switchesToLayOut[idx - 1]
+				switchView.frame = CGRect(
+					x: input_x,
+					y: mostPreviousView.frame.origin.y + mostPreviousView.frame.size.height
+						+ (idx == 0 ? marginUnderSwitchesFieldsetTitleAboveFirstField : 0)
+					,
+					width: textField_w,
+					height: switchView.fixedHeight
+					).integral
+			}
+		}
+		do {
+			let previousSectionBottomView: UIView = self.whenSendingMoney_inputView!
 			self.displayCurrency_label.frame = CGRect(
 				x: label_x,
 				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
@@ -384,42 +399,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 		}
 		//
-//		do {
-//			let previousSectionBottomView: UIView = self.displayCurrency_inputView!
-//			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
-//			self.notifyMeWhen_label.frame = CGRect(
-//				x: label_x,
-//				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
-//				width: fullWidth_label_w,
-//				height: self.notifyMeWhen_label.frame.size.height
-//			)
-//			let switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
-//			[
-//				self.fundsComeIn_inputView,
-//				self.whenOutgoingTransactionsConfirmed_inputView
-//			]
-//			for (idx, switchView) in switchesToLayOut.enumerated() {
-//				let mostPreviousView = idx == 0 ? self.notifyMeWhen_label : switchesToLayOut[idx - 1]
-//				switchView.frame = CGRect(
-//					x: edgeFlushInput_x,
-//					y: mostPreviousView.frame.origin.y + mostPreviousView.frame.size.height
-//						+ (idx == 0 ? marginUnderSwitchesFieldsetTitleAboveFirstField : 0)
-//					,
-//					width: edgeFlushInput_w,
-//					height: switchView.fixedHeight
-//				)
-//			}
-//		}
-		//
-		// NOTE: IF YOU UNCOMMENT THE ABOVE, MAKE SURE TO UNCOMMENT/SWAP the 'previousSectionBottomView = self.whenOutgoingTransactionsConfirmed_inputView! just below'
-		
-		
-		
-		
-		//
 		do {
+			// NOTE: if you re-comment the above, make sure to swap these
 			let previousSectionBottomView: UIView = self.displayCurrency_inputView!
-//			let previousSectionBottomView: UIView = self.whenOutgoingTransactionsConfirmed_inputView!
 			self.address_label.frame = CGRect(
 				x: label_x,
 				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
@@ -492,6 +474,8 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		}
 		do {
 			self.appTimeoutAfterS_inputView.slider.setValueFromSettings()
+			//
+			self.whenSendingMoney_inputView.switchControl.isSelected = SettingsController.shared.requireUnlock__whenSendingMoney
 		}
 		do {
 			if PasswordController.shared.hasUserSavedAPassword == false {

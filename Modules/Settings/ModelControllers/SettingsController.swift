@@ -41,6 +41,7 @@ class SettingsController: DeleteEverythingRegistrant
 		case specificAPIAddressURLAuthority = "SettingsController_NotificationNames_Changed_specificAPIAddressURLAuthority"
 		case appTimeoutAfterS_nilForDefault_orNeverValue = "SettingsController_NotificationNames_Changed_appTimeoutAfterS_nilForDefault_orNeverValue"
 		case displayCurrencySymbol = "SettingsController_NotificationNames_Changed_displayCurrencySymbol"
+		case requireUnlock__whenSendingMoney = "SettingsController_NotificationNames_Changed_requireUnlock__whenSendingMoney"
 		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
@@ -57,6 +58,7 @@ class SettingsController: DeleteEverythingRegistrant
 		case specificAPIAddressURLAuthority = "specificAPIAddressURLAuthority"
 		case appTimeoutAfterS_nilForDefault_orNeverValue = "appTimeoutAfterS_nilForDefault_orNeverValue"
 		case displayCurrencySymbol = "displayCurrencySymbol"
+		case requireUnlock__whenSendingMoney = "requireUnlock__whenSendingMoney"
 		//
 		var changed_notificationName: NSNotification.Name?
 		{
@@ -67,6 +69,8 @@ class SettingsController: DeleteEverythingRegistrant
 					return NotificationNames_Changed.appTimeoutAfterS_nilForDefault_orNeverValue.notificationName
 				case .displayCurrencySymbol:
 					return NotificationNames_Changed.displayCurrencySymbol.notificationName
+				case .requireUnlock__whenSendingMoney:
+					return NotificationNames_Changed.requireUnlock__whenSendingMoney.notificationName
 				case ._id:
 					assert(false)
 					// _id is not to be updated
@@ -81,6 +85,7 @@ class SettingsController: DeleteEverythingRegistrant
 	var default_displayCurrencySymbol: CcyConversionRates.CurrencySymbol {
 		return CcyConversionRates.Currency.XMR.symbol // for now...? mayyyybe detect by locale and try to guess? but that could end up being too inaccurate. language es could appear in Venezualan users and i wouldn't think MXN would be super helpful there - but i have no data on it
 	}
+	let default_requireUnlock__whenSendingMoney = true
 	//
 	// Properties - Runtime - Transient
 	var hasBooted = false
@@ -93,6 +98,7 @@ class SettingsController: DeleteEverythingRegistrant
 	var _id: DocumentPersister.DocumentId?
 	var specificAPIAddressURLAuthority: String?
 	var appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval?
+	var requireUnlock__whenSendingMoney: Bool!
 	var displayCurrencySymbol: CcyConversionRates.CurrencySymbol!
 	var displayCurrency: CcyConversionRates.Currency {
 		return CcyConversionRates.Currency(rawValue: self.displayCurrencySymbol)!
@@ -122,7 +128,8 @@ class SettingsController: DeleteEverythingRegistrant
 			self._setup_loadState(
 				_id: nil,
 				specificAPIAddressURLAuthority: nil,
-				appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS,
+				appTimeoutAfterS_nilForDefault_orNeverValue: self.default_appTimeoutAfterS,
+				requireUnlock__whenSendingMoney: self.default_requireUnlock__whenSendingMoney,
 				displayCurrencySymbol: self.default_displayCurrencySymbol
 			)
 			return
@@ -131,11 +138,13 @@ class SettingsController: DeleteEverythingRegistrant
 		let _id = jsonDict[DictKey._id.rawValue] as! DocumentPersister.DocumentId
 		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
 		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval
+		let requireUnlock__whenSendingMoney = jsonDict[DictKey.requireUnlock__whenSendingMoney.rawValue] as? Bool
 		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as? CcyConversionRates.CurrencySymbol
 		self._setup_loadState(
 			_id: _id,
 			specificAPIAddressURLAuthority: specificAPIAddressURLAuthority,
 			appTimeoutAfterS_nilForDefault_orNeverValue: appTimeoutAfterS_nilForDefault_orNeverValue,
+			requireUnlock__whenSendingMoney: requireUnlock__whenSendingMoney != nil ? requireUnlock__whenSendingMoney! : default_requireUnlock__whenSendingMoney,
 			displayCurrencySymbol: displayCurrencySymbol ?? default_displayCurrencySymbol /*legacy/prerelease dict*/
 		)
 	}
@@ -143,12 +152,13 @@ class SettingsController: DeleteEverythingRegistrant
 		_id: DocumentPersister.DocumentId?,
 		specificAPIAddressURLAuthority: String?,
 		appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval,
+		requireUnlock__whenSendingMoney: Bool,
 		displayCurrencySymbol: CcyConversionRates.CurrencySymbol
-	)
-	{
+	) {
 		self._id = _id
 		self.specificAPIAddressURLAuthority = specificAPIAddressURLAuthority
 		self.appTimeoutAfterS_nilForDefault_orNeverValue = appTimeoutAfterS_nilForDefault_orNeverValue
+		self.requireUnlock__whenSendingMoney = requireUnlock__whenSendingMoney
 		self.displayCurrencySymbol = displayCurrencySymbol
 		//
 		self.hasBooted = true
@@ -216,6 +226,9 @@ class SettingsController: DeleteEverythingRegistrant
 			case .appTimeoutAfterS_nilForDefault_orNeverValue:
 				self.appTimeoutAfterS_nilForDefault_orNeverValue = value as? TimeInterval // nil means 'use default idle time' and -1 means 'disable idle timer'; luckily TimeInterval can be negative
 				break
+			case .requireUnlock__whenSendingMoney:
+				self.requireUnlock__whenSendingMoney = value as? Bool ?? self.default_requireUnlock__whenSendingMoney // nil will get default set
+				break
 			case .displayCurrencySymbol:
 				self.displayCurrencySymbol = value as? CcyConversionRates.CurrencySymbol // validate?
 				break
@@ -233,6 +246,10 @@ class SettingsController: DeleteEverythingRegistrant
 	func set(appTimeoutAfterS_nilForDefault_orNeverValue value: TimeInterval?) -> String? // err_str; use nil for 'never', not for resetting to default
 	{
 		return self.set(valuesByDictKey: [ DictKey.appTimeoutAfterS_nilForDefault_orNeverValue: value as Any ])
+	}
+	func set(requireUnlock__whenSendingMoney value: Bool) -> String? // err_str
+	{
+		return self.set(valuesByDictKey: [ DictKey.requireUnlock__whenSendingMoney: value as Any ])
 	}
 	func set(displayCurrencySymbol_nilForDefault value: CcyConversionRates.CurrencySymbol?) -> String? // err_str; use nil for default
 	{
@@ -253,6 +270,9 @@ class SettingsController: DeleteEverythingRegistrant
 		}
 		if let value = self.appTimeoutAfterS_nilForDefault_orNeverValue {
 			dict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] = value
+		}
+		if let value = self.requireUnlock__whenSendingMoney {
+			dict[DictKey.requireUnlock__whenSendingMoney.rawValue] = value
 		}
 		if let value = self.displayCurrencySymbol {
 			dict[DictKey.displayCurrencySymbol.rawValue] = value
@@ -317,6 +337,7 @@ class SettingsController: DeleteEverythingRegistrant
 		[
 			.specificAPIAddressURLAuthority: "",
 			.appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS,
+			.requireUnlock__whenSendingMoney: default_requireUnlock__whenSendingMoney,
 			.displayCurrencySymbol: self.default_displayCurrencySymbol
 		]
 		let err_str = self.set(valuesByDictKey: defaults_valuesByKey)

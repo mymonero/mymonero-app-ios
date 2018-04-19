@@ -61,6 +61,7 @@ extension SendFundsForm
 			// Process callbacks
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
 			var preSuccess_passedValidation_willBeginSending: () -> Void
+			var canceled_fn: () -> Void
 			var success_fn: (
 				_ mockedTransaction: MoneroHistoricalTransactionRecord,
 				_ isXMRAddressIntegrated: Bool,
@@ -251,9 +252,12 @@ extension SendFundsForm
 				payment_id: payment_id,
 				priority: self.parameters.priority,
 				success_fn:
-				{ (transactionHash, sentAmount) in
+				{ [weak self] (transactionHash, sentAmount) in
+					guard let thisSelf = self else {
+						return
+					}
 					// formulate a mocked/transient historical transaction for details view presentation, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-					self._didSend(
+					thisSelf._didSend(
 						sentTo_address: target_address,
 						isXMRAddressIntegrated: isXMRAddressIntegrated,
 						integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
@@ -262,9 +266,19 @@ extension SendFundsForm
 						sentAmount: sentAmount
 					)
 				},
+				canceled_fn:
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.parameters.canceled_fn()
+				},
 				failWithErr_fn:
-				{ (err_str) in
-					self.parameters.preSuccess_terminal_validationMessage_fn(err_str)
+				{ [weak self] (err_str) in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.parameters.preSuccess_terminal_validationMessage_fn(err_str)
 				}
 			)
 		}

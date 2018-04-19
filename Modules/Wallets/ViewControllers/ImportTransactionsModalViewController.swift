@@ -398,21 +398,38 @@ extension ImportTransactionsModal
 				fromWallet: fromWallet,
 				infoRequestParsingResult: result,
 				preSuccess_terminal_validationMessage_fn:
-				{ [unowned self] (localized_errStr) in
-					self.reEnableForm() // important
-					self.setValidationMessage(localized_errStr)
+				{ [weak self] (localized_errStr) in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.reEnableForm() // important
+					thisSelf.setValidationMessage(localized_errStr)
+				},
+				canceled_fn:
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.reEnableForm() // important
+					thisSelf.clearValidationMessage() // un-set "Sending... "
 				})
-				{ [unowned self] in // success
-					self.submissionController = nil // free
-					self.set(
+				{ [weak self] in // success
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.submissionController = nil // free
+					thisSelf.set(
 						validationMessage: NSLocalizedString("Sent!", comment: ""),
 						wantsXButton: false
 					)
 					DispatchQueue.main.asyncAfter( 
 						deadline: .now() + 1.0, // for effect
 						execute:
-						{ [unowned self] in // Now dismiss
-							self.navigationController?.dismiss(animated: true, completion: nil)
+						{ [weak self] in // Now dismiss
+							guard let thisSelf = self else {
+								return
+							}
+							thisSelf.navigationController?.dismiss(animated: true, completion: nil)
 						}
 					)
 					DispatchQueue.main.async

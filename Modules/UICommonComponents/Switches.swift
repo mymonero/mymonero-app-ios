@@ -34,34 +34,24 @@
 //
 import UIKit
 //
-//UIColor extension for MyMonero colors
-extension UIColor {
-	// TODO: put these into (or, if specific to this file, derive these from) ThemeController
-	class func myMoneroKnobBlue() -> UIColor {
-		return UIColor(red: 77/255.0, green: 199/255.0, blue: 251/255.0, alpha: 1)
-	}
-	class func myMoneroKnobGray() -> UIColor {
-		return UIColor(red: 51/255.0, green: 54/255.0, blue: 56/255.0, alpha: 1)
-	}
-	class func myMoneroKnobShadow() -> UIColor {
-		return UIColor(red: 145/255.0, green: 150/255.0, blue: 170/255.0, alpha: 1)
-	}
-	class func myMoneroBackgroundGray() -> UIColor {
-		return UIColor(red: 29/255.0, green: 27/255.0, blue: 29/255.0, alpha: 1)
-	}
-}
 extension UICommonComponents.Form
 {
 	struct Switches {}
 }
 extension UICommonComponents.Form.Switches
 {
-	class TitleAndControlField: UIView
+	class TitleAndControlField: UIView, UIGestureRecognizerDelegate
 	{
 		//
-		// Metrics
+		// Interface - Settable
+		var toggled_fn: (() -> Void)?
+		//
+		// Interface - Accessors
 		var fixedHeight: CGFloat {
 			return 40
+		}
+		var isSelected: Bool {
+			return self.switchControl!.isSelected
 		}
 		//
 		// Properties
@@ -71,24 +61,24 @@ extension UICommonComponents.Form.Switches
 		var separatorView: UICommonComponents.Details.FieldSeparatorView!
 		//
 		// Lifecycle - Init
-		init(frame: CGRect, title: String)
+		init(frame: CGRect, title: String, isSelected: Bool)
 		{
 			super.init(frame: frame)
-			self.setup(title: title)
+			self.setup(title: title, isSelected: isSelected)
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
 		}
-		func setup(title: String)
+		func setup(title: String, isSelected: Bool)
 		{
 			do {
 				let view = UIView(frame: .zero)
 				self.touchInterceptingFieldBackgroundView = view
 				self.addSubview(view)
-				do {
-					let recognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundView_tapped))
-					view.addGestureRecognizer(recognizer)
-				}
+				//
+				let recognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundView_tapped))
+				recognizer.delegate = self
+				view.addGestureRecognizer(recognizer)
 			}
 			do {
 				let view = UICommonComponents.FormFieldAccessoryMessageLabel(
@@ -100,8 +90,15 @@ extension UICommonComponents.Form.Switches
 				self.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.Form.Switches.Control(frame: .zero) // initial frame
+				let view = UICommonComponents.Form.Switches.Control(isSelected: isSelected)
 				self.switchControl = view
+				view.toggled_fn =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.toggled_fn?()
+				}
 				self.addSubview(view)
 			}
 			do {
@@ -122,8 +119,8 @@ extension UICommonComponents.Form.Switches
 			self.touchInterceptingFieldBackgroundView.frame = self.bounds
 			//
 			let minimumSwitchSectionWidth: CGFloat = 80
-			let switchControl_width: CGFloat = 30 // TODO: place this declaration into the control itself as a derived property - so it can scale with the UI
-			let switchControl_height: CGFloat = 10 // TODO: place this declaration into the control itself as a derived property - so it can scale with the UI
+			let switchControl_width: CGFloat = self.switchControl.fixed__size.width
+			let switchControl_height: CGFloat = self.switchControl.fixed__size.height
 			//
 			self.titleLabel.frame = CGRect(
 				x: CGFloat.form_label_margin_x - CGFloat.form_input_margin_x, // b/c self is already positioned by the consumer at the properly inset input_x
@@ -132,7 +129,7 @@ extension UICommonComponents.Form.Switches
 				height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
 			).integral
 			self.switchControl.frame = CGRect(
-				x: self.bounds.size.width - switchControl_width - 8/*design insets.right*/ + 1/*for visual alignment*/,
+				x: self.bounds.size.width - switchControl_width - 8/*design insets.right*/,
 				y: (self.bounds.size.height - switchControl_height)/2, // or 17 per design
 				width: switchControl_width,
 				height: switchControl_height
@@ -143,320 +140,83 @@ extension UICommonComponents.Form.Switches
 		// Delegation
 		@objc func backgroundView_tapped()
 		{
-			self.switchControl.toggle()
+			self.switchControl.sendActions(for: .touchUpInside)
 		}
 	}
-	class Control: UIControl
+	class Control: UIButton
 	{
-		fileprivate(set) var isOn = false
-		var switchFeedbackGenerator:UISelectionFeedbackGenerator? = nil
-		var backgroundLayer: CALayer!
-		var knobLayer: CALayer!
-		
-		//configurable parameters
-		var shadowIntensity: CGFloat { didSet { self.knobLayer?.shadowOffset = CGSize(width: 0, height: 1.5 * self.shadowIntensity); self.knobLayer?.shadowRadius = 0.6 * (self.shadowIntensity * 2) }}
-		var knobOffBorderColor: UIColor? { didSet { self.knobLayer?.borderColor = self.knobOffBorderColor?.cgColor }}
-		var knobOffFillColor: UIColor? { didSet { self.knobLayer?.backgroundColor = self.knobOffFillColor?.cgColor }}
-		var railOffBorderColor: UIColor? { didSet { self.backgroundLayer?.borderColor = self.railOffBorderColor?.cgColor }}
-		var railOffFillColor: UIColor? { didSet { self.backgroundLayer?.backgroundColor = self.railOffFillColor?.cgColor }}
-		var knobDiameter: CGFloat { didSet { self.knobLayer?.frame = self.getKnobOffRect(); self.knobLayer?.cornerRadius = self.knobDiameter / 2 }}
-		var cornerRadius: CGFloat { didSet { self.backgroundLayer?.self.cornerRadius = self.cornerRadius }}
-		var knobCornerRadius: CGFloat { didSet { self.knobLayer?.cornerRadius = self.knobCornerRadius }}
-		var knobShadowColor: UIColor? { didSet { self.knobLayer?.shadowColor = self.knobShadowColor?.cgColor }}
-		var railOffInteractionBorderColor: UIColor?
-		var knobOffInteractionBorderColor: UIColor?
-		var railOnFillColor: UIColor?
-		var railOnBorderColor: UIColor?
-		var knobOnBorderColor: UIColor?
-		var knobOnFillColor: UIColor?
-		var railInset: CGFloat
-		//end configurable parameters
-		
-		let knobDelta:CGFloat = 6
-		
-		//init methods
-		required public init(coder aDecoder: NSCoder) {
-			self.knobDiameter = 12
-			self.cornerRadius = 10
-			self.knobCornerRadius = 6
-			self.railInset = 0
-			self.shadowIntensity = 1
-			//
-			super.init(coder: aDecoder)!
-			self.setup()
-		}
-		override public init(frame: CGRect) {
-			self.knobDiameter = 12
-			self.cornerRadius = 10
-			self.knobCornerRadius = 6
-			self.railInset = 0
-			self.shadowIntensity = 1
-			//
-			super.init(frame: frame)
-			self.setup()
-		}
-		//post-super-init setup
-		fileprivate func setup() {
-			self.clipsToBounds = false
-			self.railOffBorderColor = UIColor.myMoneroBackgroundGray()
-			self.railOffFillColor = UIColor.myMoneroBackgroundGray()
-			self.railOnBorderColor = UIColor.myMoneroBackgroundGray()
-			self.railOnFillColor = UIColor.myMoneroBackgroundGray()
-			self.railOffInteractionBorderColor = UIColor.myMoneroBackgroundGray()
-			
-			self.knobShadowColor = UIColor.black
-			self.knobOffInteractionBorderColor = UIColor.myMoneroBackgroundGray()
-			self.knobOffBorderColor = UIColor.myMoneroKnobGray()
-			self.knobOffFillColor = UIColor.myMoneroKnobGray()
-			self.knobOnBorderColor = UIColor.myMoneroKnobBlue()
-			self.knobOnFillColor = UIColor.myMoneroKnobBlue()
-			
-			self.knobLayer = CALayer()
-			self.knobLayer.frame = self.getKnobOffRect()
-			self.knobLayer.cornerRadius = self.knobCornerRadius
-			self.knobLayer.backgroundColor = self.knobOffFillColor?.cgColor
-			self.knobLayer.borderWidth = 1
-			self.knobLayer.shadowOffset = CGSize(width: 0, height: 1.5 * self.shadowIntensity)
-			self.knobLayer.shadowRadius = 0.6 * (self.shadowIntensity * 2)
-			self.knobLayer.shadowColor = self.knobShadowColor?.cgColor
-			self.knobLayer.shadowOpacity = 1
-			self.knobLayer.borderColor = self.knobOffBorderColor?.cgColor
-			
-			self.backgroundLayer = CALayer()
-			self.backgroundLayer.cornerRadius = self.cornerRadius
-			self.backgroundLayer.borderWidth = 1
-			self.backgroundLayer.borderColor = self.railOffBorderColor?.cgColor
-			self.backgroundLayer.backgroundColor = self.railOffFillColor?.cgColor
-			self.layer.addSublayer(self.backgroundLayer)
-			self.layer.addSublayer(self.knobLayer)
-		}
-		//factory methods for creation of CAAnimation and CAAnimationGrp objects
-		fileprivate func makeCABasicAnimation(withKeyPath:String, timingFunction:CAMediaTimingFunction, fromValue:Any, toValue:Any, fillMode:String, duration:CFTimeInterval, isRemovedOnCompletion:Bool) -> CABasicAnimation {
-			let returnAnimation = CABasicAnimation(keyPath: withKeyPath)
-			returnAnimation.timingFunction = timingFunction
-			returnAnimation.fromValue = fromValue
-			returnAnimation.toValue = toValue
-			returnAnimation.fillMode = fillMode
-			returnAnimation.duration = duration
-			returnAnimation.isRemovedOnCompletion = isRemovedOnCompletion
-			return returnAnimation
-		}
-		fileprivate func makeCAAnimationGrp(duration:CFTimeInterval, fillMode:String, isRemovedOnCompletion:Bool, animations:[CAAnimation]) -> CAAnimationGroup {
-			let returnAnimationGrp = CAAnimationGroup()
-			returnAnimationGrp.duration = duration
-			returnAnimationGrp.fillMode = fillMode
-			returnAnimationGrp.isRemovedOnCompletion = isRemovedOnCompletion
-			returnAnimationGrp.animations = animations
-			return returnAnimationGrp
-		}
-		
-		//layout subViews
-		override func layoutSubviews() {
-			super.layoutSubviews()
-			self.backgroundLayer.frame = CGRect(x: 0 + self.railInset, y: 0 + self.railInset, width: self.frame.width - self.railInset*2.0, height: self.frame.height - self.railInset*2.0)
-			(self.isOn ? (self.knobLayer.frame = self.getKnobOnRect()) : (self.knobLayer.frame = self.getKnobOffRect()))
-		}
-		fileprivate func getKnobOffRect() -> CGRect {
-			return CGRect(x: (self.frame.height - self.knobDiameter)/2.0, y: (self.frame.height - self.knobDiameter)/2.0, width: self.knobDiameter, height: self.knobDiameter)
-		}
-		fileprivate func getKnobOffInteractionRect() -> CGRect {
-			return CGRect(x: (self.frame.height - self.knobDiameter)/2.0, y: (self.frame.height - self.knobDiameter)/2.0, width: self.knobDiameter + self.knobDelta, height: self.knobDiameter)
-		}
-		fileprivate func getKnobOnRect() -> CGRect {
-			return CGRect(x: self.frame.width - self.knobDiameter - ((self.frame.height - self.knobDiameter)/2.0), y: (self.frame.height - self.knobDiameter)/2.0, width: self.knobDiameter, height: self.knobDiameter)
-		}
-		fileprivate func getKnobOffPos() -> CGPoint {
-			return CGPoint(x: self.frame.height/2.0, y: self.frame.height/2.0)
-		}
-		fileprivate func getKnobOffInteractionPos() -> CGPoint {
-			return CGPoint(x: self.frame.height/2.0 + self.knobDelta - 3, y: self.frame.height/2.0)
-		}
-		fileprivate func getKnobOnPos() -> CGPoint {
-			return CGPoint(x: self.frame.width - self.frame.height/2.0, y: self.frame.height/2.0)
-		}
-		fileprivate func getKnobOnInteractionPos() -> CGPoint {
-			return CGPoint(x: (self.frame.width - self.frame.height/2.0) - self.knobDelta + 3, y: self.frame.height/2.0)
-		}
-		
-		func prepareFeedbackGenerator()
-		{
-			self.switchFeedbackGenerator = UISelectionFeedbackGenerator()
-			self.switchFeedbackGenerator?.prepare()
-		}
-		func teardownFeedbackGenerator()
-		{
-			self.switchFeedbackGenerator = nil
-		}
-		
-		override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-			super.touchesBegan(touches, with: event)
-			self.prepareFeedbackGenerator()
-			if (self.isOn) {
-				//animations for CALayer
-				let knobBoundsAnimation = self.makeCABasicAnimation(withKeyPath: "bounds", timingFunction: CAMediaTimingFunction(controlPoints: 0.175, 0.885, 0.32, 1.275), fromValue: NSValue(cgRect: self.getKnobOffRect()), toValue: NSValue(cgRect: self.getKnobOffInteractionRect()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let knobPositionAnimation = self.makeCABasicAnimation(withKeyPath: "position", timingFunction: CAMediaTimingFunction(controlPoints: 0.175, 0.885, 0.32, 1.275), fromValue: NSValue(cgPoint: self.getKnobOnPos()), toValue: NSValue(cgPoint: self.getKnobOnInteractionPos()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let knobBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOnBorderColor?.cgColor as Any, toValue: self.knobOnBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let knobFillColorAnimation = self.makeCABasicAnimation(withKeyPath: "backgroundColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOnFillColor?.cgColor as Any, toValue: self.knobOnFillColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				//Containing Group
-				let animKnobGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [knobBoundsAnimation, knobPositionAnimation, knobBorderColorAnimation, knobFillColorAnimation])
-				
-				//cleansing of animations and addition to layer
-				self.knobLayer.removeAllAnimations()
-				self.knobLayer.add(animKnobGrp, forKey: "knobAnimation")
-			} else {
-				let bgBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.55, 0.055, 0.675, 0.19), fromValue: self.railOffBorderColor?.cgColor as Any, toValue: self.railOffInteractionBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let animGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [bgBorderColorAnimation])
-				
-				self.backgroundLayer.add(animGrp, forKey: "bgAnimation")
-				
-				
-				let knobBoundsAnimation = self.makeCABasicAnimation(withKeyPath: "bounds", timingFunction: CAMediaTimingFunction(controlPoints: 0.175, 0.885, 0.32, 1.275), fromValue: NSValue(cgRect: self.getKnobOffRect()), toValue: NSValue(cgRect: self.getKnobOffInteractionRect()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let knobPosAnimation = self.makeCABasicAnimation(withKeyPath: "position", timingFunction: CAMediaTimingFunction(controlPoints: 0.175, 0.885, 0.32, 1.275), fromValue: NSValue(cgPoint: self.getKnobOffPos()), toValue: NSValue(cgPoint: self.getKnobOffInteractionPos()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let knobBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.55, 0.055, 0.675, 0.19), fromValue: self.knobOffBorderColor?.cgColor as Any, toValue: self.knobOffInteractionBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-				
-				let animKnobGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [knobBoundsAnimation, knobPosAnimation, knobBorderColorAnimation])
-				
-				self.knobLayer.add(animKnobGrp, forKey: "knobAnimation")
-			}
-		}
-		
-		override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-			super.touchesEnded(touches, with: event)
-			let touchPoint = touches.first?.location(in: self)
-			if (self.bounds.contains(touchPoint!)) {
-				(self.isOn ? (self.animateFromOnToOff()) : (self.animateFromOffToOn()))
-				self.isOn = !self.isOn
-				self.sendActions(for: UIControlEvents.valueChanged)
-			} else {
-				if (self.isOn) {
-					let knobBoundsAnimation = self.makeCABasicAnimation(withKeyPath: "bounds", timingFunction: CAMediaTimingFunction(controlPoints: 0.175, 0.885, 0.32, 1.275), fromValue: NSValue(cgRect: self.getKnobOffInteractionRect()), toValue: NSValue(cgRect: self.getKnobOffRect()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let knobPosAnimation = self.makeCABasicAnimation(withKeyPath: "position", timingFunction: CAMediaTimingFunction(controlPoints: 0.175, 0.885, 0.32, 1.275), fromValue: NSValue(cgPoint: self.getKnobOnInteractionPos()), toValue: NSValue(cgPoint: self.getKnobOnPos()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let knobBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOnBorderColor?.cgColor as Any, toValue: self.knobOnBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let knobFillColorAnimation = self.makeCABasicAnimation(withKeyPath: "backgroundColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOnFillColor?.cgColor as Any, toValue: self.knobOnFillColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let animKnobGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [knobBoundsAnimation, knobPosAnimation, knobBorderColorAnimation, knobFillColorAnimation])
-					
-					self.knobLayer.removeAllAnimations()
-					self.knobLayer.add(animKnobGrp, forKey: "knobAnimation")
-				} else {
-					
-					let bgBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.railOffInteractionBorderColor?.cgColor as Any, toValue: self.railOffBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let animGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [bgBorderColorAnimation])
-					
-					self.backgroundLayer.removeAllAnimations()
-					self.backgroundLayer.add(animGrp, forKey: "bgAnimation")
-					
-					
-					let knobBoundsAnimation = self.makeCABasicAnimation(withKeyPath: "bounds", timingFunction: CAMediaTimingFunction(controlPoints: 0.77, 0, 0.175, 1), fromValue: NSValue(cgRect: self.getKnobOffInteractionRect()), toValue: NSValue(cgRect: self.getKnobOffRect()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let knobPosAnimation = self.makeCABasicAnimation(withKeyPath: "position", timingFunction: CAMediaTimingFunction(controlPoints: 0.77, 0, 0.175, 1), fromValue: NSValue(cgPoint: self.getKnobOffInteractionPos()), toValue: NSValue(cgPoint: self.getKnobOffPos()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let knobBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.55, 0.055, 0.675, 0.19), fromValue: self.knobOffInteractionBorderColor?.cgColor as Any, toValue: self.knobOffBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					let animKnobGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [knobBoundsAnimation, knobPosAnimation, knobBorderColorAnimation])
-					
-					self.knobLayer.removeAllAnimations()
-					self.knobLayer.add(animKnobGrp, forKey: "knobAnimation")
-				}
-			}
-		}
-		
-		fileprivate func animateFromOnToOff() {
-			let bgBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.railOnBorderColor?.cgColor as Any, toValue: self.railOffBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let bgFillColorAnimation = self.makeCABasicAnimation(withKeyPath: "backgroundColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.railOnFillColor?.cgColor as Any, toValue: self.railOffFillColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let animGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [bgBorderColorAnimation, bgFillColorAnimation])
-			
-			self.backgroundLayer.removeAllAnimations()
-			self.backgroundLayer.add(animGrp, forKey: "bgAnimation")
-			
-			
-			let knobBoundsAnimation = self.makeCABasicAnimation(withKeyPath: "bounds", timingFunction: CAMediaTimingFunction(controlPoints: 0.77, 0, 0.175, 1), fromValue: NSValue(cgRect: self.getKnobOffInteractionRect()), toValue: NSValue(cgRect: self.getKnobOffRect()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let knobPosAnimation = self.makeCABasicAnimation(withKeyPath: "position", timingFunction: CAMediaTimingFunction(controlPoints: 0.77, 0, 0.175, 1), fromValue: NSValue(cgPoint: self.getKnobOnInteractionPos()), toValue: NSValue(cgPoint: self.getKnobOffPos()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let knobBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOnBorderColor?.cgColor as Any, toValue: self.knobOffBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let knobFillColorAnimation = self.makeCABasicAnimation(withKeyPath: "backgroundColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOnFillColor?.cgColor as Any, toValue: self.knobOffFillColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let animKnobGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [knobBoundsAnimation, knobPosAnimation, knobBorderColorAnimation, knobFillColorAnimation])
-			
-			self.knobLayer.removeAllAnimations()
-			self.knobLayer.add(animKnobGrp, forKey: "knobAnimation")
-			self.switchFeedbackGenerator?.selectionChanged()
-			self.teardownFeedbackGenerator()
-		}
-		
-		fileprivate func animateFromOffToOn() {
-			let bgBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.railOffInteractionBorderColor?.cgColor as Any, toValue: self.railOnBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let bgFillColorAnimation = self.makeCABasicAnimation(withKeyPath: "backgroundColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.railOffFillColor?.cgColor as Any, toValue: self.railOnFillColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let animBorderGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [bgBorderColorAnimation, bgFillColorAnimation])
-			
-			self.backgroundLayer.add(animBorderGrp, forKey: "bgOffToOnAnimation")
-			
-			
-			let knobBoundsAnimation = self.makeCABasicAnimation(withKeyPath: "bounds", timingFunction: CAMediaTimingFunction(controlPoints: 0.77, 0, 0.175, 1), fromValue: NSValue(cgRect: self.getKnobOffInteractionRect()), toValue: NSValue(cgRect: self.getKnobOffRect()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let knobPosAnimation = self.makeCABasicAnimation(withKeyPath: "position", timingFunction: CAMediaTimingFunction(controlPoints: 0.77, 0, 0.175, 1), fromValue: NSValue(cgPoint: self.getKnobOffInteractionPos()), toValue: NSValue(cgPoint: self.getKnobOnPos()), fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let knobBorderColorAnimation = self.makeCABasicAnimation(withKeyPath: "borderColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOffInteractionBorderColor?.cgColor as Any, toValue: self.knobOnBorderColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let knobFillColorAnimation = self.makeCABasicAnimation(withKeyPath: "backgroundColor", timingFunction: CAMediaTimingFunction(controlPoints: 0.165, 0.84, 0.44, 1), fromValue: self.knobOffFillColor?.cgColor as Any, toValue: self.knobOnFillColor?.cgColor as Any, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-			
-			let animKnobGrp = self.makeCAAnimationGrp(duration: 0.25, fillMode: kCAFillModeForwards, isRemovedOnCompletion: false, animations: [knobBoundsAnimation, knobPosAnimation, knobBorderColorAnimation, knobFillColorAnimation])
-			
-			self.knobLayer.removeAllAnimations()
-			self.knobLayer.add(animKnobGrp, forKey: "knobAnimation")
-			self.switchFeedbackGenerator?.selectionChanged()
-			self.teardownFeedbackGenerator()
-		}
-		
-		
-		// TODO: Is this code here bugged/incomplete?
-		// 1. is setOn() called on init? if not, is it guaranteed that prepareFeedbackGenerator() would have been called for all .enabled=true self? and
-		// 2. should .prepareFeedbackGenerator only be called if animated=true? seems like it would cause a bug
 		//
-		func setOn(_ on: Bool, animated :Bool) {
-			self.isOn = on
-			if (animated) {
-				self.prepareFeedbackGenerator()
-				if (on) {
-					let bgBorderAnimation = self.makeCABasicAnimation(withKeyPath: "borderWidth", timingFunction: CAMediaTimingFunction(controlPoints: 0.55, 0.055, 0.675, 0.19), fromValue: 1, toValue: self.frame.height / 2, fillMode: kCAFillModeForwards, duration: 0.25, isRemovedOnCompletion: false)
-					
-					self.backgroundLayer.add(bgBorderAnimation, forKey: "bgAnimation")
-					self.animateFromOffToOn()
-				} else {
-					self.animateFromOnToOff()
-				}
-			} else {
-				if (on) {
-					self.backgroundLayer.borderColor = self.railOnBorderColor?.cgColor
-					self.knobLayer.position = self.getKnobOnPos()
-					self.knobLayer.borderColor = self.knobOnBorderColor?.cgColor
-				} else {
-					self.backgroundLayer.borderColor = self.railOffFillColor?.cgColor
-					self.knobLayer.position = self.getKnobOffPos()
-					self.knobLayer.borderColor = self.knobOffBorderColor?.cgColor
+		// Interface - Settable after init
+		var toggled_fn: (() -> Void)?
+		//
+		// Internal
+		var fixed__size: CGSize!
+		enum ToggleMode
+		{
+			case on
+			case off
+			//
+			var image_name: String {
+				switch self {
+					case .on:
+						return "switch_toggle"
+					case .off:
+						return "switch_toggle_off"
 				}
 			}
+			var image: UIImage {
+				return UIImage(named: self.image_name)!
+			}
 		}
+		//
+		// Imperatives - Lifecycle - Init
+		convenience init()
+		{
+			self.init(isSelected: false)
+		}
+		init(isSelected: Bool)
+		{
+			super.init(frame: .zero)
+			//
+			self.isSelected = isSelected
+			//
+			self.setup()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			let image__off = ToggleMode.off.image
+			let image__on = ToggleMode.on.image
+			self.setImage(image__off, for: .normal)
+			self.setImage(image__on, for: .selected)
+			//
+			self.fixed__size = image__off.size // sample the size
+			//
+			self.addTarget(self, action: #selector(touched_upInside), for: .touchUpInside)
+		}
+		//
 		func toggle()
 		{
-			self.setOn(!(self.isOn), animated: true)
+			let generator = UISelectionFeedbackGenerator()
+			generator.prepare()
+			//
+				self.isSelected = !self.isSelected
+			//
+			generator.selectionChanged()
+			DispatchQueue.main.async { [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.toggled_fn?()
+			}
+		}
+		//
+		// Delegation - Interactions
+		@objc func touched_upInside()
+		{
+			self.toggle()
 		}
 	}
 

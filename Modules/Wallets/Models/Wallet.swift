@@ -914,6 +914,7 @@ class Wallet: PersistableObject
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
 		) -> Void,
+		canceled_fn: @escaping () -> Void,
 		failWithErr_fn: @escaping (
 			_ err_str: String
 		) -> Void
@@ -927,36 +928,56 @@ class Wallet: PersistableObject
 			failWithErr_fn(NSLocalizedString("Currently sending funds. Please try again when complete.", comment: ""))
 			return // TODO nil
 		}
-		//
-		self.__lock_sending()
-		assert(self.fundsSender == nil)
-		let fundsSender = HostedMonero.FundsSender(
-			target_address: target_address,
-			amount: amount,
-			wallet__public_address: self.public_address,
-			wallet__private_keys: self.private_keys,
-			wallet__public_keys: self.public_keys,
-			payment_id: payment_id,
-			priority: priority
-		)
-		fundsSender.success_fn =
-		{ [weak self] (tx_hash, tx_fee) in
-			guard let thisSelf = self else {
-				return
+		func __really_proceed()
+		{
+			self.__lock_sending()
+			assert(self.fundsSender == nil)
+			let fundsSender = HostedMonero.FundsSender(
+				target_address: target_address,
+				amount: amount,
+				wallet__public_address: self.public_address,
+				wallet__private_keys: self.private_keys,
+				wallet__public_keys: self.public_keys,
+				payment_id: payment_id,
+				priority: priority
+			)
+			fundsSender.success_fn =
+			{ [weak self] (tx_hash, tx_fee) in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.__unlock_sending()
+				success_fn(tx_hash, tx_fee)
 			}
-			thisSelf.__unlock_sending()
-			success_fn(tx_hash, tx_fee)
-		}
-		fundsSender.failWithErr_fn =
-		{ [weak self] err_str in
-			guard let thisSelf = self else {
-				return
+			fundsSender.failWithErr_fn =
+			{ [weak self] err_str in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.__unlock_sending()
+				failWithErr_fn(err_str)
 			}
-			thisSelf.__unlock_sending()
-			failWithErr_fn(err_str)
+			self.fundsSender = fundsSender
+			fundsSender.send() // kick off; after having set property
 		}
-		self.fundsSender = fundsSender
-		fundsSender.send() // kick off; after having set property
+		if SettingsController.shared.requireUnlock__whenSendingMoney == false {
+			__really_proceed()
+		} else {
+			PasswordController.shared.initiate_verifyUserCanEnterPassword(
+				canceled_fn: {
+					canceled_fn()
+				},
+				failedWithMessage_fn: { (err_str) in
+					failWithErr_fn(err_str)
+				},
+				entryAttempt_incorrect_fn: { (err_str) in
+					failWithErr_fn(err_str)
+				},
+				entryAttempt_succeeded_fn: {
+					__really_proceed()
+				}
+			)
+		}
 		//
 		return
 	}

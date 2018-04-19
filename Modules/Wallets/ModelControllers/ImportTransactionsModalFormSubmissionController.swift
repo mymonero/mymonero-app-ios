@@ -44,6 +44,7 @@ extension ImportTransactionsModal
 			let infoRequestParsingResult: HostedMonero.ParsedResult_ImportRequestInfoAndStatus
 			//
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void // aka error
+			var canceled_fn: () -> Void
 			var success_fn: () -> Void
 		}
 		var parameters: Parameters
@@ -71,13 +72,26 @@ extension ImportTransactionsModal
 				payment_id: payment_id,
 				priority: MoneroTransferSimplifiedPriority.defaultPriority, // .med
 				success_fn:
-				{ (transactionHash, sentAmount) in
+				{ [weak self] (transactionHash, sentAmount) in
+					guard let thisSelf = self else {
+						return
+					}
 					// TODO: show transactionHash to user somehow!
-					self.parameters.success_fn()
+					thisSelf.parameters.success_fn()
+				},
+				canceled_fn:
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.parameters.canceled_fn()
 				},
 				failWithErr_fn:
-				{ (err_str) in
-					self.parameters.preSuccess_terminal_validationMessage_fn(err_str)
+				{ [weak self] (err_str) in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.parameters.preSuccess_terminal_validationMessage_fn(err_str)
 				}
 			)
 		}

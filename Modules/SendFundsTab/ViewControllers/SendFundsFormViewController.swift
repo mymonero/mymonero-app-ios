@@ -883,6 +883,17 @@ extension SendFundsForm
 							wantsXButton: false
 						)
 					},
+					canceled_fn:
+					{ [weak self] in
+						guard let thisSelf = self else {
+							return
+						}
+						thisSelf.clearValidationMessage() // un-set "Sending... "
+						//
+						thisSelf.formSubmissionController = nil // must free as this is a terminal callback
+						thisSelf.set_isFormSubmittable_needsUpdate()
+						thisSelf.reEnableForm() // b/c we disabled it
+					},
 					success_fn:
 					{ [unowned self] (
 						mockedTransaction,

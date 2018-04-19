@@ -218,6 +218,8 @@
 		9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */; };
 		9FAA18AB1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */; };
 		9FAA18B41F0B032C001F1D4D /* ContactFormSubmissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */; };
+		9FAF0EC02088F52600473D97 /* switch_toggle_off@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAF0EBE2088F52500473D97 /* switch_toggle_off@3x.png */; };
+		9FAF0EC12088F52600473D97 /* switch_toggle@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAF0EBF2088F52500473D97 /* switch_toggle@3x.png */; };
 		9FAF95241FB4F4FD00ECE0A6 /* CcyConversionRates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */; };
 		9FB603081F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603061F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift */; };
 		9FB603091F4F6B6B00951175 /* ConnectivityMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB603071F4F6B6B00951175 /* ConnectivityMessageViewController.swift */; };
@@ -482,6 +484,8 @@
 		9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicators.swift; sourceTree = "<group>"; };
 		9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graphicActivityIndicator_decoration@3x.png"; sourceTree = "<group>"; };
 		9FAA18B31F0B032C001F1D4D /* ContactFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFormSubmissionController.swift; sourceTree = "<group>"; };
+		9FAF0EBE2088F52500473D97 /* switch_toggle_off@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch_toggle_off@3x.png"; sourceTree = "<group>"; };
+		9FAF0EBF2088F52500473D97 /* switch_toggle@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch_toggle@3x.png"; sourceTree = "<group>"; };
 		9FAF95221FB4F4FD00ECE0A6 /* CcyConversionRates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CcyConversionRates.swift; sourceTree = "<group>"; };
 		9FB603061F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessagePresentationController.swift; sourceTree = "<group>"; };
 		9FB603071F4F6B6B00951175 /* ConnectivityMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectivityMessageViewController.swift; sourceTree = "<group>"; };
@@ -893,6 +897,8 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9FAF0EBE2088F52500473D97 /* switch_toggle_off@3x.png */,
+				9FAF0EBF2088F52500473D97 /* switch_toggle@3x.png */,
 				9F1F16E11FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png */,
 				9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */,
 				9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */,
@@ -1474,6 +1480,7 @@
 				9F33E6E71F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png in Resources */,
 				9F9C59ED1F0C316C003B9266 /* highlightableCellBG@3x.png in Resources */,
 				9F8E2FFD1EE978E800F89A1D /* icon_tabBar_contacts__active@3x.png in Resources */,
+				9FAF0EC02088F52600473D97 /* switch_toggle_off@3x.png in Resources */,
 				9F8E30441EEDAB9400F89A1D /* wallet-D975E1@3x.png in Resources */,
 				9F33E6EB1F1A9F9C00610662 /* balanceDisplayBG_stretchable_salmon@3x.png in Resources */,
 				9F9C59EB1F0C316C003B9266 /* highlightableCellBG_disabled@3x.png in Resources */,
@@ -1503,6 +1510,7 @@
 				9FCB927B1F412FA8005852BA /* slider_knob_highlighted@3x.png in Resources */,
 				9F8E2FEF1EE978B700F89A1D /* qrDropzoneIcon@3x.png in Resources */,
 				9F8E303E1EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png in Resources */,
+				9FAF0EC12088F52600473D97 /* switch_toggle@3x.png in Resources */,
 				9FA734381F077EA100C674D6 /* popoverDisclosureArrow@3x.png in Resources */,
 				9F8E303D1EEDAB9400F89A1D /* detectedCheckmark@3x.png in Resources */,
 				9F2BFEC81EF0A4FF006B2F7D /* Assets.xcassets in Resources */,
