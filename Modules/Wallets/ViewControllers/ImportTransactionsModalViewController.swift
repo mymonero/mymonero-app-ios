@@ -210,7 +210,7 @@ extension ImportTransactionsModal
 			}
 			do {
 				let view = self.note_messageView
-				view.set(text: NSLocalizedString("NOTE: Do not send your wallet's balance to this address. (This is not your new address.)", comment: ""))
+				view.set(text: NSLocalizedString("NOTE: Don't transfer your wallet's balance to this address. (This isn't your new address.)", comment: ""))
 				view.show()
 				self.scrollView.addSubview(view)
 			}
