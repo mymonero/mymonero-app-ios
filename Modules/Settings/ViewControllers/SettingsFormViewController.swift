@@ -115,6 +115,40 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				title: NSLocalizedString("When sending money", comment: ""),
 				isSelected: false // for now - will update on VDA
 			)
+			view.toggled_fn =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				let err_str = SettingsController.shared.set(
+					requireUnlock__whenSendingMoney: thisSelf.whenSendingMoney_inputView.isSelected
+				)
+				if err_str != nil {
+					assert(false, "error while setting display currency")
+				}
+			}
+			view.set(
+				shouldToggle_fn: { (to_isSelected, async_fn) in
+					if to_isSelected == false { // if it's being turned off
+						// then they need to authorize
+						PasswordController.shared.initiate_verifyUserCanUnlockApp(
+							customNavigationBarTitle: NSLocalizedString("Unlock to Disable Setting", comment: ""),
+							canceled_fn: {
+								async_fn(false) // disallowed
+							},
+							entryAttempt_succeeded_fn: {
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute:
+								{ // this delay is purely for visual effect, waiting for pw entry to dismiss
+									async_fn(true) // allowed
+								})
+							}
+						)
+					} else {
+						async_fn(true) // no auth needed
+					}
+				}
+			)
+			assert(view.switchControl.shouldToggle_fn != nil) // maybe this needs to be redesigned so the switch doesn't have the control on whether to unlock, but the SettingsController does, and so the UI must update accordingly?
 			self.whenSendingMoney_inputView = view
 			self.scrollView.addSubview(view)
 		}
@@ -367,8 +401,8 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				height: self.requireUnlock_label.frame.size.height
 			)
 			let switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
-				[
-					self.whenSendingMoney_inputView
+			[
+				self.whenSendingMoney_inputView
 			]
 			for (idx, switchView) in switchesToLayOut.enumerated() {
 				let mostPreviousView = idx == 0 ? self.requireUnlock_label : switchesToLayOut[idx - 1]
@@ -379,7 +413,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					,
 					width: textField_w,
 					height: switchView.fixedHeight
-					).integral
+				).integral
 			}
 		}
 		do {

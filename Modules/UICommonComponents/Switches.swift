@@ -45,6 +45,14 @@ extension UICommonComponents.Form.Switches
 		//
 		// Interface - Settable
 		var toggled_fn: (() -> Void)?
+		func set(
+			shouldToggle_fn: ((
+				_ to_isSelected: Bool,
+				_ async_fn: @escaping ((_ shouldToggle: Bool) -> Void)
+			) -> Void)?
+		) {
+			self.switchControl.shouldToggle_fn = shouldToggle_fn
+		}
 		//
 		// Interface - Accessors
 		var fixedHeight: CGFloat {
@@ -148,6 +156,10 @@ extension UICommonComponents.Form.Switches
 		//
 		// Interface - Settable after init
 		var toggled_fn: (() -> Void)?
+		var shouldToggle_fn: ((
+			_ to_isSelected: Bool,
+			_ async_fn: @escaping ((_ shouldToggle: Bool) -> Void)
+		) -> Void)?
 		//
 		// Internal
 		var fixed__size: CGSize!
@@ -199,17 +211,33 @@ extension UICommonComponents.Form.Switches
 		//
 		func toggle()
 		{
-			let generator = UISelectionFeedbackGenerator()
-			generator.prepare()
-			//
-				self.isSelected = !self.isSelected
-			//
-			generator.selectionChanged()
-			DispatchQueue.main.async { [weak self] in
-				guard let thisSelf = self else {
-					return
+			let to_isSelected = !self.isSelected
+			func _really_toggle()
+			{
+				let generator = UISelectionFeedbackGenerator()
+				generator.prepare()
+				//
+					self.isSelected = to_isSelected
+				//
+				generator.selectionChanged()
+				DispatchQueue.main.async { [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.toggled_fn?()
 				}
-				thisSelf.toggled_fn?()
+			}
+			if let fn = self.shouldToggle_fn {
+				fn( // enable consumer to disallow toggle
+					to_isSelected,
+					{ (shouldToggle) in
+						if shouldToggle {
+							_really_toggle()
+						}
+					}
+				)
+			} else {
+				_really_toggle()
 			}
 		}
 		//
