@@ -529,7 +529,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	//
 	@objc func changePasswordButton_tapped()
 	{
-		PasswordController.shared.initiateChangePassword()
+		PasswordController.shared.initiate_changePassword()
 	}
 	@objc func deleteButton_tapped()
 	{

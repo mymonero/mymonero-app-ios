@@ -99,7 +99,7 @@ final class PasswordController
 		case password = "password" // free-form, string password
 		static var lengthOfPIN: Int { return 6 }
 		var humanReadableString: String
-		{
+		{ // TODO: return localized
 			return self.rawValue
 		}
 		var capitalized_humanReadableString: String
@@ -269,27 +269,26 @@ final class PasswordController
 	}
 	//
 	// Accessors - Runtime - Derived properties
-	var hasUserEnteredValidPasswordYet: Bool
-	{
+	var hasUserEnteredValidPasswordYet: Bool {
 		return self.password != nil
 	}
-	var isUserChangingPassword: Bool
-	{
+	var isUserChangingPassword: Bool {
 		return self.hasUserEnteredValidPasswordYet == true && self.isAlreadyGettingExistingOrNewPWFromUser == true
 	}
-	var new_incorrectPasswordValidationErrorMessageString: String
-	{
+	var new_incorrectPasswordValidationErrorMessageString: String {
 		let humanReadable_passwordType = self.passwordType!.humanReadableString
-		//
-		return "Incorrect \(humanReadable_passwordType)"
+		// TODO: ensure above localized ^
+		return String(format:
+			NSLocalizedString("Incorrect %@", comment: ""),
+			humanReadable_passwordType
+		)
 	}
 	//
 	// Accessors - Deferring execution convenience methods
 	func OnceBootedAndPasswordObtained(
 		_ fn: @escaping (_ password: Password, _ passwordType: PasswordType) -> Void,
 		_ userCanceled_fn: (() -> Void)? = {}
-	)
-	{
+	) {
 		func callBackHavingObtainedPassword()
 		{
 			fn(self.password!, self.passwordType)
@@ -477,18 +476,18 @@ final class PasswordController
 	}
 	//
 	// Runtime - Imperatives - Password change
-	func initiateChangePassword()
+	func initiate_changePassword()
 	{
 		self.onceBooted
 		{ [unowned self] in
 			if self.hasUserEnteredValidPasswordYet == false {
-				let err_etr = "InitiateChangePassword called but hasUserEnteredValidPasswordYet == false. This should be disallowed in the UI"
+				let err_etr = "initiate_changePassword called but hasUserEnteredValidPasswordYet == false. This should be disallowed in the UI"
 				assert(false, err_etr)
 				return
 			}
 			do { // guard
 				if self.isAlreadyGettingExistingOrNewPWFromUser == true {
-					let err_str = "InitiateChangePassword called but isAlreadyGettingExistingOrNewPWFromUser == true. This should be precluded in the UI"
+					let err_str = "initiate_changePassword called but isAlreadyGettingExistingOrNewPWFromUser == true. This should be precluded in the UI"
 					assert(false, err_str)
 					// only need to wait for it to be obtained
 					return
@@ -537,6 +536,59 @@ final class PasswordController
 		}
 	}
 	//
+	// Runtime - Imperatives - Password verification
+	func initiate_verifyUserCanEnterPassword( // NOTE: optional closures are treated as @escaping
+		canceled_fn: (() -> Void)?,
+		failedWithMessage_fn: ((_ err_str: String) -> Void)?,
+		entryAttempt_incorrect_fn: ((_ message: String) -> Void)?,
+		entryAttempt_succeeded_fn: @escaping (() -> Void) // required
+	) {
+		self.onceBooted
+		{ [unowned self] in
+			if self.hasUserEnteredValidPasswordYet == false {
+				let err_etr = "initiate_changePassword called but hasUserEnteredValidPasswordYet == false. This should be disallowed in the UI"
+				assert(false, err_etr)
+				return
+			}
+			do { // guard
+				if self.isAlreadyGettingExistingOrNewPWFromUser == true {
+					let err_str = "initiate_changePassword called but isAlreadyGettingExistingOrNewPWFromUser == true. This should be precluded in the UI"
+					assert(false, err_str)
+					// only need to wait for it to be obtained
+					return
+				}
+				self.isAlreadyGettingExistingOrNewPWFromUser = true
+			}
+			// ^-- we're relying on having checked above that user has entered a valid pw already
+			self._getUserToEnterTheirExistingPassword(
+				isForChangePassword: false,
+				{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
+					if validationErr_orNil != nil { // takes precedence over cancel
+						self.unguard_getNewOrExistingPassword()
+						//
+						failedWithMessage_fn?(validationErr_orNil!)
+						return
+					}
+					if didCancel_orNil == true {
+						self.unguard_getNewOrExistingPassword()
+						//
+						canceled_fn?()
+						return // just silently exit after unguarding
+					}
+					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
+					if self.password != entered_existingPassword {
+						self.unguard_getNewOrExistingPassword()
+						let err_str = self.new_incorrectPasswordValidationErrorMessageString
+						//
+						entryAttempt_incorrect_fn?(err_str)
+						return
+					}
+					entryAttempt_succeeded_fn()
+				}
+			)
+		}
+	}
+	//
 	// Runtime - Imperatives - Private - Requesting password from user
 	func unguard_getNewOrExistingPassword()
 	{
@@ -549,8 +601,7 @@ final class PasswordController
 			_ validationErr_orNil: String?,
 			_ obtainedPasswordString: Password?
 		) -> Void
-	)
-	{
+	) {
 		var _isCurrentlyLockedOut: Bool = false
 		var _unlockTimer: Timer?
 		var _numberOfTriesDuringThisTimePeriod: Int = 0
@@ -739,8 +790,7 @@ final class PasswordController
 	// NOTE: onceBooted() exists because even though init()->setup() is synchronous, we need to be able to tear down and reconstruct the passwordController booted state, e.g. on user idle and delete everything
 	func onceBooted(
 		_ fn: @escaping (() -> Void)
-	)
-	{
+	) {
 		if self.hasBooted == true {
 			fn()
 			return
@@ -800,8 +850,7 @@ final class PasswordController
 	var weakRefsTo_deleteEverythingRegistrants: [WeakRefTo_DeleteEverythingRegistrant] = []
 	func addRegistrantForDeleteEverything(
 		_ registrant: DeleteEverythingRegistrant
-	) -> Void
-	{
+	) -> Void {
 //		DDLog.Info("Passwords", "Adding registrant for 'DeleteEverything': \(registrant)")
 		self.weakRefsTo_deleteEverythingRegistrants.append(
 			WeakRefTo_DeleteEverythingRegistrant(value: registrant)
@@ -809,8 +858,7 @@ final class PasswordController
 	}
 	func removeRegistrantForDeleteEverything(
 		_ registrant: DeleteEverythingRegistrant
-		) -> Void
-	{
+	) -> Void {
 		var index: Int?
 		for (this_index, this_weakRefTo_registrant) in self.weakRefsTo_deleteEverythingRegistrants.enumerated() {
 			if this_weakRefTo_registrant.value == nil {
@@ -907,8 +955,7 @@ final class PasswordController
 		optl__fn: ((
 			_ err_str: String?
 		) -> Void)?
-	)
-	{
+	) {
 		let hasFiredWill_fn = optl__hasFiredWill_fn ?? { (cb) in cb(nil) }
 		let fn = optl__fn ?? { (err_str) in }
 		//
