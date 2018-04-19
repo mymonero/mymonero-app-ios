@@ -64,6 +64,8 @@ extension ImportTransactionsModal
 		var paymentID_labelAccessory_copyButton: UICommonComponents.SmallUtilityCopyValueButton!
 		var paymentID_inputView: UICommonComponents.FormInputField!
 		//
+		let note_messageView = UICommonComponents.InlineMessageView(mode: .noCloseButton)
+		//
 		// Lifecycle - Init
 		init(wallet: Wallet)
 		{
@@ -185,7 +187,7 @@ extension ImportTransactionsModal
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("PAYMENT ID", comment: "")
+					title: NSLocalizedString("PAYMENT ID (REQUIRED)", comment: "")
 				)
 				self.paymentID_label = view
 				self.scrollView.addSubview(view)
@@ -204,6 +206,12 @@ extension ImportTransactionsModal
 				inputField.isEnabled = false
 				inputField.isImmutable = true
 				self.paymentID_inputView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = self.note_messageView
+				view.set(text: NSLocalizedString("NOTE: Do not send your wallet's balance to this address. (This is not your new address.)", comment: ""))
+				view.show()
 				self.scrollView.addSubview(view)
 			}
 		}
@@ -560,7 +568,10 @@ extension ImportTransactionsModal
 					height: self.paymentID_inputView.frame.size.height
 				).integral
 			}
-			let bottomMostView = self.paymentID_inputView!
+			do {
+				self.note_messageView.layOut(atX: input_x, y: self.paymentID_inputView.frame.origin.y + self.paymentID_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, width: textField_w)
+			}
+			let bottomMostView = self.note_messageView
 			let bottomPadding: CGFloat = 18
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,
