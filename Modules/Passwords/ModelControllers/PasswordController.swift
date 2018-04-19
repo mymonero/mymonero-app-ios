@@ -67,6 +67,8 @@ protocol PasswordEntryDelegate
 {
 	func getUserToEnterExistingPassword(
 		isForChangePassword: Bool,
+		isForDemonstratingUnlockOnly: Bool, // normally no - this is for things like SendFunds
+		customNavigationBarTitle: String?,
 		_ enterExistingPassword_cb: @escaping (
 			_ didCancel_orNil: Bool?,
 			_ obtainedPasswordString: PasswordController.Password?
@@ -143,6 +145,9 @@ final class PasswordController
 		//
 		case canceledWhileChangingPassword = "PasswordController_Runtime_NotificationNames_canceledWhileChangingPassword"
 		case errorWhileChangingPassword = "PasswordController_Runtime_NotificationNames_errorWhileChangingPassword"
+		//
+		case errorWhileDemonstratingAbilityToUnlockApp = "PasswordController_Runtime_NotificationNames_errorWhileDemonstratingAbilityToUnlockApp"
+		case successfullyDemonstratedAbilityToUnlockApp = "PasswordController_Runtime_NotificationNames_successfullyDemonstratedAbilityToUnlockApp"
 		//
 		case willDeconstructBootedStateAndClearPassword = "PasswordController_Runtime_NotificationNames_willDeconstructBootedStateAndClearPassword"
 		case didDeconstructBootedStateAndClearPassword = "PasswordController_Runtime_NotificationNames_didDeconstructBootedStateAndClearPassword"
@@ -284,6 +289,15 @@ final class PasswordController
 		)
 	}
 	//
+	// Accessors - Common
+	fileprivate func withExistingPassword_isCorrect(enteredPassword: String) -> Bool
+	{ // NOTE: This function should most likely remain fileprivate so that it is not cheap to check PW and must be done through the PW entry UI (by way of methods on PasswordController)
+		//
+		// FIXME/TODO: is this check too weak? is it better to try decrypt and check hmac mismatch?
+		//
+		return self.password! == enteredPassword // force unwrap self.password so it cannot be equal to a nil passed as arg despite present method sig decl
+	}
+	//
 	// Accessors - Deferring execution convenience methods
 	func OnceBootedAndPasswordObtained(
 		_ fn: @escaping (_ password: Password, _ passwordType: PasswordType) -> Void,
@@ -398,6 +412,7 @@ final class PasswordController
 		}
 		// we'll use this in a couple places
 		let isForChangePassword = false // this is simply for requesting to have the existing or a new password from the user
+		let isForDemonstratingUnlockOnly = false // "
 		//
 		if self._id == nil { // if the user is not unlocking an already pw-protected app
 			// then we need to get a new PW from the user
@@ -414,8 +429,10 @@ final class PasswordController
 				assert(false, err_str)
 				return
 			}
-			self._getUserToEnterTheirExistingPassword(isForChangePassword: isForChangePassword)
-			{ [unowned self] (didCancel_orNil, validationErr_orNil, obtainedPasswordString) in
+			self._getUserToEnterTheirExistingPassword(
+				isForChangePassword: isForChangePassword,
+				isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly // false
+			) { [unowned self] (didCancel_orNil, validationErr_orNil, obtainedPasswordString) in
 				if validationErr_orNil != nil { // takes precedence over cancel
 					self.unguard_getNewOrExistingPassword()
 					NotificationCenter.default.post(
@@ -498,6 +515,7 @@ final class PasswordController
 			let isForChangePassword = true // we'll use this in a couple places
 			self._getUserToEnterTheirExistingPassword(
 				isForChangePassword: isForChangePassword,
+				isForDemonstratingUnlockOnly: false,
 				{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
 					if validationErr_orNil != nil { // takes precedence over cancel
 						self.unguard_getNewOrExistingPassword()
@@ -516,8 +534,10 @@ final class PasswordController
 						)
 						return // just silently exit after unguarding
 					}
-					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
-					if self.password != entered_existingPassword {
+					let isGoodEnteredPassword = self.withExistingPassword_isCorrect(
+						enteredPassword: entered_existingPassword!
+					)
+					if isGoodEnteredPassword == false {
 						self.unguard_getNewOrExistingPassword()
 						let err_str = self.new_incorrectPasswordValidationErrorMessageString
 						NotificationCenter.default.post(
@@ -537,10 +557,9 @@ final class PasswordController
 	}
 	//
 	// Runtime - Imperatives - Password verification
-	func initiate_verifyUserCanEnterPassword( // NOTE: optional closures are treated as @escaping
-		canceled_fn: (() -> Void)?,
-		failedWithMessage_fn: ((_ err_str: String) -> Void)?,
-		entryAttempt_incorrect_fn: ((_ message: String) -> Void)?,
+	func initiate_verifyUserCanUnlockApp(
+		customNavigationBarTitle: String? = nil,
+		canceled_fn: (() -> Void)?, // NOTE: this compiles b/c optional closures are treated as @escaping
 		entryAttempt_succeeded_fn: @escaping (() -> Void) // required
 	) {
 		self.onceBooted
@@ -560,29 +579,49 @@ final class PasswordController
 				self.isAlreadyGettingExistingOrNewPWFromUser = true
 			}
 			// ^-- we're relying on having checked above that user has entered a valid pw already
+			//
+			/// TODO: change this to 'get user to demonstrate app unlock'
 			self._getUserToEnterTheirExistingPassword(
 				isForChangePassword: false,
+				isForDemonstratingUnlockOnly: true,
+				customNavigationBarTitle: customNavigationBarTitle,
 				{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
 					if validationErr_orNil != nil { // takes precedence over cancel
 						self.unguard_getNewOrExistingPassword()
-						//
-						failedWithMessage_fn?(validationErr_orNil!)
+						NotificationCenter.default.post(
+							name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+							object: self,
+							userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: validationErr_orNil! ]
+						)
 						return
 					}
 					if didCancel_orNil == true {
 						self.unguard_getNewOrExistingPassword()
 						//
-						canceled_fn?()
+						// currently there's no need of a .canceledWhileDemonstrating note post here
+						canceled_fn?() // but must call cb
+						//
 						return // just silently exit after unguarding
 					}
-					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
-					if self.password != entered_existingPassword {
+					let isGoodEnteredPassword = self.withExistingPassword_isCorrect(
+						enteredPassword: entered_existingPassword!
+					)
+					if isGoodEnteredPassword == false {
 						self.unguard_getNewOrExistingPassword()
 						let err_str = self.new_incorrectPasswordValidationErrorMessageString
-						//
-						entryAttempt_incorrect_fn?(err_str)
+						NotificationCenter.default.post(
+							name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+							object: self,
+							userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str ]
+						)
 						return
 					}
+					//
+					self.unguard_getNewOrExistingPassword() // must be called
+					NotificationCenter.default.post( // this must be posted so the PresentationController can dismiss the entry modal
+						name: NotificationNames.successfullyDemonstratedAbilityToUnlockApp.notificationName,
+						object: self
+					)
 					entryAttempt_succeeded_fn()
 				}
 			)
@@ -596,6 +635,8 @@ final class PasswordController
 	}
 	func _getUserToEnterTheirExistingPassword(
 		isForChangePassword: Bool,
+		isForDemonstratingUnlockOnly: Bool,
+		customNavigationBarTitle: String? = nil,
 		_ fn: @escaping (
 			_ didCancel_orNil: Bool?,
 			_ validationErr_orNil: String?,
@@ -627,9 +668,13 @@ final class PasswordController
 				}
 			)
 		}
+		assert(isForChangePassword == false || isForDemonstratingUnlockOnly == false) // both shouldn't be true
 		// Now put request out
-		self.passwordEntryDelegate!.getUserToEnterExistingPassword(isForChangePassword: isForChangePassword)
-		{ (didCancel_orNil, obtainedPasswordString) in
+		self.passwordEntryDelegate!.getUserToEnterExistingPassword(
+			isForChangePassword: isForChangePassword,
+			isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly,
+			customNavigationBarTitle: customNavigationBarTitle
+		) { (didCancel_orNil, obtainedPasswordString) in
 			var validationErr_orNil: String? = nil // so far…
 			if didCancel_orNil != true { // so user did NOT cancel
 				// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
@@ -844,9 +889,7 @@ final class PasswordController
 		return err_str
 	}
 	//
-	//
 	// Runtime - Imperatives - Delete everything
-	//
 	var weakRefsTo_deleteEverythingRegistrants: [WeakRefTo_DeleteEverythingRegistrant] = []
 	func addRegistrantForDeleteEverything(
 		_ registrant: DeleteEverythingRegistrant

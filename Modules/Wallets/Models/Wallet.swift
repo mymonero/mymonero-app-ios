@@ -963,16 +963,12 @@ class Wallet: PersistableObject
 		if SettingsController.shared.requireUnlock__whenSendingMoney == false {
 			__really_proceed()
 		} else {
-			PasswordController.shared.initiate_verifyUserCanEnterPassword(
+			PasswordController.shared.initiate_verifyUserCanUnlockApp(
+				customNavigationBarTitle: NSLocalizedString("Unlock to Send Funds", comment: ""),
 				canceled_fn: {
 					canceled_fn()
 				},
-				failedWithMessage_fn: { (err_str) in
-					failWithErr_fn(err_str)
-				},
-				entryAttempt_incorrect_fn: { (err_str) in
-					failWithErr_fn(err_str)
-				},
+				// all failures show in entry UI
 				entryAttempt_succeeded_fn: {
 					__really_proceed()
 				}

@@ -37,14 +37,22 @@ import UIKit
 class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewController
 {
 	var isForChangingPassword: Bool!
+	var isForDemonstratingUnlockOnly: Bool!
+	var customNavigationBarTitle: String?
 	//
 	// Consumers: set these after init
 	var userSubmittedNonZeroPassword_cb: ((_ password: PasswordController.Password) -> Void)!
 	var cancelButtonPressed_cb: (() -> Void)!
 	//
-	init(isForChangingPassword: Bool)
-	{
+	init(
+		isForChangingPassword: Bool,
+		isForDemonstratingUnlockOnly: Bool,
+		customNavigationBarTitle: String? = nil
+	) {
 		self.isForChangingPassword = isForChangingPassword
+		self.isForDemonstratingUnlockOnly = isForDemonstratingUnlockOnly
+		self.customNavigationBarTitle = customNavigationBarTitle
+		assert(isForDemonstratingUnlockOnly == false || isForChangingPassword == false)
 		super.init()
 	}
 	required init?(coder aDecoder: NSCoder) {

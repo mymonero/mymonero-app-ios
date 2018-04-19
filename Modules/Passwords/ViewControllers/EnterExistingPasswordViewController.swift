@@ -36,9 +36,11 @@ import UIKit
 
 class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 {
+	//
 	var password_label: UICommonComponents.Form.FieldLabel!
 	var password_inputView: UICommonComponents.FormInputField!
-	var forgot_linkButtonView: UICommonComponents.LinkButtonView!
+	//
+	var forgot_linkButtonView: UICommonComponents.LinkButtonView?
 	//
 	override func setup_views()
 	{
@@ -62,7 +64,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			self.password_label = view
 			self.scrollView.addSubview(view)
 		}
-		do {
+		if self.isForDemonstratingUnlockOnly != true { // no need to show if true
 			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("Forgot?", comment: ""))
 			view.addTarget(self, action: #selector(tapped_forgotButton), for: .touchUpInside)
 			view.contentHorizontalAlignment = .right // so we can just set the width to whatever
@@ -72,7 +74,14 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	}
 	override func setup_navigation()
 	{
-		self.navigationItem.title = NSLocalizedString("Enter \(PasswordController.shared.passwordType.capitalized_humanReadableString)", comment: "")
+		let title = self.customNavigationBarTitle ?? String(
+			format: NSLocalizedString(
+				"Enter %@",
+				comment: ""
+			),
+			PasswordController.shared.passwordType.capitalized_humanReadableString
+		)
+		self.navigationItem.title = title
 		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
 		self.navigationItem.rightBarButtonItem = self._new_rightBarButtonItem()
 	}
@@ -80,7 +89,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 	// Accessors - Factories - Views
 	func _new_leftBarButtonItem() -> UICommonComponents.NavigationBarButtonItem?
 	{
-		if self.isForChangingPassword != true {
+		if self.isForChangingPassword != true && self.isForDemonstratingUnlockOnly != true {
 			return nil
 		}
 		let item = UICommonComponents.NavigationBarButtonItem(
@@ -134,7 +143,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		super.disableForm()
 		//
 		self.password_inputView.isEnabled = false
-		self.forgot_linkButtonView.isEnabled = false
+		self.forgot_linkButtonView?.isEnabled = false
 	}
 	override func reEnableForm()
 	{
@@ -142,7 +151,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		//
 		self.password_inputView.isEnabled = true
 		self.password_inputView.becomeFirstResponder() // since disable would have de-focused
-		self.forgot_linkButtonView.isEnabled = true
+		self.forgot_linkButtonView?.isEnabled = true
 	}
 	//
 	// Overrides - Imperatives - Validation
@@ -193,13 +202,15 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			width: self.scrollView.frame.size.width - 2 * label_x,
 			height: self.password_label.frame.size.height
 		).integral
-		assert(self.forgot_linkButtonView.frame.size.height > self.password_label.frame.size.height, "self.forgot_linkButtonView.frame.size.height <= self.password_label.frame.size.height")
-		self.forgot_linkButtonView.frame = CGRect(
-			x: input_x + textField_w - self.forgot_linkButtonView.frame.size.width - fabs(label_x - input_x),
-			y: self.password_label.frame.origin.y - fabs(self.forgot_linkButtonView.frame.size.height - self.password_label.frame.size.height)/2, // since this button is taller than the label, we can't use the same y offset; we have to vertically center the forgot_linkButtonView with the label
-			width: self.forgot_linkButtonView.frame.size.width,
-			height: self.forgot_linkButtonView.frame.size.height
-		).integral
+		if let buttonView = self.forgot_linkButtonView  {
+			assert(buttonView.frame.size.height > self.password_label.frame.size.height, "self.forgot_linkButtonView!.frame.size.height <= self.password_label.frame.size.height")
+			buttonView.frame = CGRect(
+				x: input_x + textField_w - buttonView.frame.size.width - fabs(label_x - input_x),
+				y: self.password_label.frame.origin.y - fabs(buttonView.frame.size.height - self.password_label.frame.size.height)/2, // since this button is taller than the label, we can't use the same y offset; we have to vertically center the buttonView with the label
+				width: buttonView.frame.size.width,
+				height: buttonView.frame.size.height
+			).integral
+		}
 		self.password_inputView.frame = CGRect(
 			x: input_x,
 			y: self.password_label.frame.origin.y + self.password_label.frame.size.height + textField_topMargin,

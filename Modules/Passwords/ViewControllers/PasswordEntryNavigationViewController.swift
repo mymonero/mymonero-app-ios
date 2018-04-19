@@ -116,19 +116,24 @@ class PasswordEntryNavigationViewController: UINavigationController
 	// Imperatives
 	func _configure(
 		withMode taskMode: PasswordEntryPresentationController.PasswordEntryTaskMode,
-		shouldAnimateToNewState: Bool
-	)
-	{
+		shouldAnimateToNewState: Bool,
+		customNavigationBarTitle: String?
+	) {
 		let isForChangingPassword =
 			taskMode == .forChangingPassword_ExistingPasswordGivenType
 		 || taskMode == .forChangingPassword_NewPasswordAndType
+		let isForDemonstratingUnlockOnly = taskMode == .forDemonstratingAbilityToUnlockApp
 		// we do not need to call self._clearValidationMessage() here because the ConfigureToBeShown() fns have the same effect
 		do { // transition to screen
-			switch taskMode
-			{
+			switch taskMode {
 				case .forUnlockingApp_ExistingPasswordGivenType,
-				     .forChangingPassword_ExistingPasswordGivenType:
-					let controller = EnterExistingPasswordViewController(isForChangingPassword: isForChangingPassword)
+				     .forChangingPassword_ExistingPasswordGivenType,
+					 .forDemonstratingAbilityToUnlockApp:
+					let controller = EnterExistingPasswordViewController(
+						isForChangingPassword: isForChangingPassword,
+						isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly,
+						customNavigationBarTitle: customNavigationBarTitle
+					)
 					controller.userSubmittedNonZeroPassword_cb =
 					{ [unowned self] password in
 						self.submitForm(password: password)
@@ -142,7 +147,13 @@ class PasswordEntryNavigationViewController: UINavigationController
 				
 				case .forFirstEntry_NewPasswordAndType,
 				     .forChangingPassword_NewPasswordAndType:
-					let controller = EnterNewPasswordViewController(isForChangingPassword: isForChangingPassword)
+					assert(isForDemonstratingUnlockOnly == false)
+					assert(customNavigationBarTitle == nil)
+					//
+					let controller = EnterNewPasswordViewController(
+						isForChangingPassword: isForChangingPassword,
+						isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly // will not be true for new pw
+					)
 					controller.userSubmittedNonZeroPassword_cb =
 					{ [unowned self] password in
 						self.submitForm(password: password)

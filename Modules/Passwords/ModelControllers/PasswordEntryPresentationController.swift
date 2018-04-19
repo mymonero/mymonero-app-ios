@@ -45,6 +45,8 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		//
 		case forChangingPassword_ExistingPasswordGivenType
 		case forChangingPassword_NewPasswordAndType
+		//
+		case forDemonstratingAbilityToUnlockApp
 	}
 	//
 	// Static
@@ -92,7 +94,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			object: PasswordController.shared,
 			queue: OperationQueue.main,
 			using:
-			{ (notification) in
+			{ [unowned self] (notification) in
 				self.passwordEntryNavigationViewController!.validationErrorNotificationReceived(notification)
 			}
 		))
@@ -101,7 +103,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			object: PasswordController.shared,
 			queue: OperationQueue.main,
 			using:
-			{ (notification) in
+			{ [unowned self] (notification) in
 				self.passwordEntryNavigationViewController!.validationErrorNotificationReceived(notification)
 			}
 		))
@@ -110,8 +112,26 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			object: PasswordController.shared,
 			queue: OperationQueue.main,
 			using:
-			{ (notification) in
+			{ [unowned self] (notification) in
 				self.passwordEntryNavigationViewController!.validationErrorNotificationReceived(notification)
+			}
+		))
+		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
+			forName: PasswordController.NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+			object: PasswordController.shared,
+			queue: OperationQueue.main,
+			using:
+			{ [unowned self] (notification) in
+				self.passwordEntryNavigationViewController!.validationErrorNotificationReceived(notification)
+			}
+		))
+		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
+			forName: PasswordController.NotificationNames.successfullyDemonstratedAbilityToUnlockApp.notificationName,
+			object: PasswordController.shared,
+			queue: OperationQueue.main,
+			using:
+			{ [unowned self] (notification) in
+				self.passwordEntryNavigationViewController!.dismiss(animated: true)
 			}
 		))
 		//
@@ -187,10 +207,13 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 	var enterExistingPassword_cb: ((Bool?, PasswordController.Password?) -> Void)?
 	func getUserToEnterExistingPassword(
 		isForChangePassword: Bool,
+		isForDemonstratingUnlockOnly: Bool, // normally no - for things like SendFunds
+		customNavigationBarTitle: String?, // normally nil
 		_ enterExistingPassword_cb: @escaping (Bool?, PasswordController.Password?) -> Void
-	)
-	{
-		let shouldAnimateToNewState = isForChangePassword == true // TODO: this needs to also be true for the rare case that they have deleted all wallets and other data, have killed and relaunched the app (so they have not entered the pw but have not been asked for it yet), and are adding a wallet back
+	) {
+		assert(isForChangePassword == false || isForDemonstratingUnlockOnly == false) // both shouldn't be true
+		let shouldAnimateToNewState = isForChangePassword || isForDemonstratingUnlockOnly
+		// ^--- TODO: this needs to also be true for the rare case that they have deleted all wallets and other data, have killed and relaunched the app (so they have not entered the pw but have not been asked for it yet), and are adding a wallet back
 		do { // check legality
 			if self.taskMode != nil {
 				assert(false, "getUserToEnterExistingPassword called but self.passwordEntryTaskMode not none/nil")
@@ -202,20 +225,25 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		}
 		// lazy instantiate
 		if self.passwordEntryNavigationViewController == nil {
-			self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController(passwordEntryModalPresentationDelegate: self)
+			self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController(
+				passwordEntryModalPresentationDelegate: self
+			)
 		}
 		do { // put view into mode
 			var taskMode: PasswordEntryTaskMode
 			if isForChangePassword {
 				taskMode = .forChangingPassword_ExistingPasswordGivenType
-			} else {
+			} else if isForDemonstratingUnlockOnly {
+				taskMode = .forDemonstratingAbilityToUnlockApp
+			} else  {
 				taskMode = .forUnlockingApp_ExistingPasswordGivenType
 			}
 			self.taskMode = taskMode
 			//
 			self.passwordEntryNavigationViewController!._configure(
 				withMode: taskMode,
-				shouldAnimateToNewState: shouldAnimateToNewState
+				shouldAnimateToNewState: shouldAnimateToNewState,
+				customNavigationBarTitle: customNavigationBarTitle
 			)
 		}
 		self.passwordEntryNavigationViewController!.present(animated: shouldAnimateToNewState)
@@ -224,8 +252,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 	func getUserToEnterNewPasswordAndType(
 		isForChangePassword: Bool,
 		_ enterNewPasswordAndType_cb: @escaping (Bool?, PasswordController.Password?, PasswordController.PasswordType?) -> Void
-	)
-	{
+	) {
 		let shouldAnimateToNewState = isForChangePassword
 		do { // check legality
 			if self.taskMode != nil {
@@ -240,7 +267,9 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		}
 		// lazy instantiate
 		if self.passwordEntryNavigationViewController == nil {
-			self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController(passwordEntryModalPresentationDelegate: self)
+			self.passwordEntryNavigationViewController = PasswordEntryNavigationViewController(
+				passwordEntryModalPresentationDelegate: self
+			)
 		}
 		do { // put view into mode
 			var taskMode: PasswordEntryTaskMode!
@@ -253,7 +282,8 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			//
 			self.passwordEntryNavigationViewController!._configure(
 				withMode: taskMode,
-				shouldAnimateToNewState: shouldAnimateToNewState
+				shouldAnimateToNewState: shouldAnimateToNewState,
+				customNavigationBarTitle: nil // not supported here
 			)
 		}
 		self.passwordEntryNavigationViewController!.present(animated: true) // this is for NEW password, so we want this to show with an animation
@@ -276,12 +306,12 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		didCancel: Bool,
 		or_password password_orNil: PasswordController.Password?,
 		and_passwordType passwordType_orNil: PasswordController.PasswordType?
-	)
-	{
+	) {
 		assert(self.taskMode != nil, "nil self.taskMode")
 		switch self.taskMode! {
 		case .forUnlockingApp_ExistingPasswordGivenType,
-		     .forChangingPassword_ExistingPasswordGivenType:
+		     .forChangingPassword_ExistingPasswordGivenType,
+			 .forDemonstratingAbilityToUnlockApp:
 			guard let enterExistingPassword_cb = self.enterExistingPassword_cb else {
 				assert(false, "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPassword_cb for passwordEntryTaskMode: \(self.taskMode!)")
 				return
@@ -307,6 +337,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			)
 			// we don't want to free/zero the cb here - might trigger validation err & need to be called again
 			break
+			
 		}
 	}
 }
