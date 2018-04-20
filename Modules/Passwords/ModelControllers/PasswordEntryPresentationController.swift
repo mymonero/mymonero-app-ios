@@ -46,7 +46,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		case forChangingPassword_ExistingPasswordGivenType
 		case forChangingPassword_NewPasswordAndType
 		//
-		case forDemonstratingAbilityToUnlockApp
+		case forAuthorizingAppAction
 	}
 	//
 	// Static
@@ -117,7 +117,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			}
 		))
 		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+			forName: PasswordController.NotificationNames.errorWhileAuthorizingForAppAction.notificationName,
 			object: PasswordController.shared,
 			queue: OperationQueue.main,
 			using:
@@ -126,7 +126,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			}
 		))
 		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.successfullyDemonstratedAbilityToUnlockApp.notificationName,
+			forName: PasswordController.NotificationNames.successfullyAuthorizedForAppAction.notificationName,
 			object: PasswordController.shared,
 			queue: OperationQueue.main,
 			using:
@@ -207,12 +207,12 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 	var enterExistingPassword_cb: ((Bool?, PasswordController.Password?) -> Void)?
 	func getUserToEnterExistingPassword(
 		isForChangePassword: Bool,
-		isForDemonstratingUnlockOnly: Bool, // normally no - for things like SendFunds
+		isForAuthorizingAppActionOnly: Bool, // normally no - for things like SendFunds
 		customNavigationBarTitle: String?, // normally nil
 		_ enterExistingPassword_cb: @escaping (Bool?, PasswordController.Password?) -> Void
 	) {
-		assert(isForChangePassword == false || isForDemonstratingUnlockOnly == false) // both shouldn't be true
-		let shouldAnimateToNewState = isForChangePassword || isForDemonstratingUnlockOnly
+		assert(isForChangePassword == false || isForAuthorizingAppActionOnly == false) // both shouldn't be true
+		let shouldAnimateToNewState = isForChangePassword || isForAuthorizingAppActionOnly
 		// ^--- TODO: this needs to also be true for the rare case that they have deleted all wallets and other data, have killed and relaunched the app (so they have not entered the pw but have not been asked for it yet), and are adding a wallet back
 		do { // check legality
 			if self.taskMode != nil {
@@ -233,8 +233,8 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			var taskMode: PasswordEntryTaskMode
 			if isForChangePassword {
 				taskMode = .forChangingPassword_ExistingPasswordGivenType
-			} else if isForDemonstratingUnlockOnly {
-				taskMode = .forDemonstratingAbilityToUnlockApp
+			} else if isForAuthorizingAppActionOnly {
+				taskMode = .forAuthorizingAppAction
 			} else  {
 				taskMode = .forUnlockingApp_ExistingPasswordGivenType
 			}
@@ -311,7 +311,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 		switch self.taskMode! {
 		case .forUnlockingApp_ExistingPasswordGivenType,
 		     .forChangingPassword_ExistingPasswordGivenType,
-			 .forDemonstratingAbilityToUnlockApp:
+			 .forAuthorizingAppAction:
 			guard let enterExistingPassword_cb = self.enterExistingPassword_cb else {
 				assert(false, "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPassword_cb for passwordEntryTaskMode: \(self.taskMode!)")
 				return

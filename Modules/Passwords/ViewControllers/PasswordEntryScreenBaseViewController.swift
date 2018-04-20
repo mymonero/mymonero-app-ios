@@ -37,7 +37,7 @@ import UIKit
 class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewController
 {
 	var isForChangingPassword: Bool!
-	var isForDemonstratingUnlockOnly: Bool!
+	var isForAuthorizingAppActionOnly: Bool!
 	var customNavigationBarTitle: String?
 	//
 	// Consumers: set these after init
@@ -46,13 +46,13 @@ class PasswordEntryScreenBaseViewController: UICommonComponents.FormViewControll
 	//
 	init(
 		isForChangingPassword: Bool,
-		isForDemonstratingUnlockOnly: Bool,
+		isForAuthorizingAppActionOnly: Bool,
 		customNavigationBarTitle: String? = nil
 	) {
 		self.isForChangingPassword = isForChangingPassword
-		self.isForDemonstratingUnlockOnly = isForDemonstratingUnlockOnly
+		self.isForAuthorizingAppActionOnly = isForAuthorizingAppActionOnly
 		self.customNavigationBarTitle = customNavigationBarTitle
-		assert(isForDemonstratingUnlockOnly == false || isForChangingPassword == false)
+		assert(isForAuthorizingAppActionOnly == false || isForChangingPassword == false)
 		super.init()
 	}
 	required init?(coder aDecoder: NSCoder) {

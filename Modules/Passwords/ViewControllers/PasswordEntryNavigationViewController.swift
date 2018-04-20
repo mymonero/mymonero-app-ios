@@ -122,16 +122,16 @@ class PasswordEntryNavigationViewController: UINavigationController
 		let isForChangingPassword =
 			taskMode == .forChangingPassword_ExistingPasswordGivenType
 		 || taskMode == .forChangingPassword_NewPasswordAndType
-		let isForDemonstratingUnlockOnly = taskMode == .forDemonstratingAbilityToUnlockApp
+		let isForAuthorizingAppActionOnly = taskMode == .forAuthorizingAppAction
 		// we do not need to call self._clearValidationMessage() here because the ConfigureToBeShown() fns have the same effect
 		do { // transition to screen
 			switch taskMode {
 				case .forUnlockingApp_ExistingPasswordGivenType,
 				     .forChangingPassword_ExistingPasswordGivenType,
-					 .forDemonstratingAbilityToUnlockApp:
+					 .forAuthorizingAppAction:
 					let controller = EnterExistingPasswordViewController(
 						isForChangingPassword: isForChangingPassword,
-						isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly,
+						isForAuthorizingAppActionOnly: isForAuthorizingAppActionOnly,
 						customNavigationBarTitle: customNavigationBarTitle
 					)
 					controller.userSubmittedNonZeroPassword_cb =
@@ -147,12 +147,12 @@ class PasswordEntryNavigationViewController: UINavigationController
 				
 				case .forFirstEntry_NewPasswordAndType,
 				     .forChangingPassword_NewPasswordAndType:
-					assert(isForDemonstratingUnlockOnly == false)
+					assert(isForAuthorizingAppActionOnly == false)
 					assert(customNavigationBarTitle == nil)
 					//
 					let controller = EnterNewPasswordViewController(
 						isForChangingPassword: isForChangingPassword,
-						isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly // will not be true for new pw
+						isForAuthorizingAppActionOnly: isForAuthorizingAppActionOnly // will not be true for new pw
 					)
 					controller.userSubmittedNonZeroPassword_cb =
 					{ [unowned self] password in

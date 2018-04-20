@@ -68,7 +68,7 @@ protocol PasswordEntryDelegate
 {
 	func getUserToEnterExistingPassword(
 		isForChangePassword: Bool,
-		isForDemonstratingUnlockOnly: Bool, // normally no - this is for things like SendFunds
+		isForAuthorizingAppActionOnly: Bool, // normally no - this is for things like SendFunds
 		customNavigationBarTitle: String?,
 		_ enterExistingPassword_cb: @escaping (
 			_ didCancel_orNil: Bool?,
@@ -147,8 +147,8 @@ final class PasswordController
 		case canceledWhileChangingPassword = "PasswordController_Runtime_NotificationNames_canceledWhileChangingPassword"
 		case errorWhileChangingPassword = "PasswordController_Runtime_NotificationNames_errorWhileChangingPassword"
 		//
-		case errorWhileDemonstratingAbilityToUnlockApp = "PasswordController_Runtime_NotificationNames_errorWhileDemonstratingAbilityToUnlockApp"
-		case successfullyDemonstratedAbilityToUnlockApp = "PasswordController_Runtime_NotificationNames_successfullyDemonstratedAbilityToUnlockApp"
+		case errorWhileAuthorizingForAppAction = "PasswordController_Runtime_NotificationNames_errorWhileAuthorizingForAppAction"
+		case successfullyAuthorizedForAppAction = "PasswordController_Runtime_NotificationNames_successfullyAuthorizedForAppAction"
 		//
 		case willDeconstructBootedStateAndClearPassword = "PasswordController_Runtime_NotificationNames_willDeconstructBootedStateAndClearPassword"
 		case didDeconstructBootedStateAndClearPassword = "PasswordController_Runtime_NotificationNames_didDeconstructBootedStateAndClearPassword"
@@ -413,7 +413,7 @@ final class PasswordController
 		}
 		// we'll use this in a couple places
 		let isForChangePassword = false // this is simply for requesting to have the existing or a new password from the user
-		let isForDemonstratingUnlockOnly = false // "
+		let isForAuthorizingAppActionOnly = false // "
 		//
 		if self._id == nil { // if the user is not unlocking an already pw-protected app
 			// then we need to get a new PW from the user
@@ -432,7 +432,7 @@ final class PasswordController
 			}
 			self._getUserToEnterTheirExistingPassword(
 				isForChangePassword: isForChangePassword,
-				isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly // false
+				isForAuthorizingAppActionOnly: isForAuthorizingAppActionOnly // false
 			) { [unowned self] (didCancel_orNil, validationErr_orNil, obtainedPasswordString) in
 				if validationErr_orNil != nil { // takes precedence over cancel
 					self.unguard_getNewOrExistingPassword()
@@ -516,7 +516,7 @@ final class PasswordController
 			let isForChangePassword = true // we'll use this in a couple places
 			self._getUserToEnterTheirExistingPassword(
 				isForChangePassword: isForChangePassword,
-				isForDemonstratingUnlockOnly: false,
+				isForAuthorizingAppActionOnly: false,
 				{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
 					if validationErr_orNil != nil { // takes precedence over cancel
 						self.unguard_getNewOrExistingPassword()
@@ -584,13 +584,13 @@ final class PasswordController
 			{
 				self._getUserToEnterTheirExistingPassword(
 					isForChangePassword: false,
-					isForDemonstratingUnlockOnly: true,
+					isForAuthorizingAppActionOnly: true,
 					customNavigationBarTitle: customNavigationBarTitle,
 					{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
 						if validationErr_orNil != nil { // takes precedence over cancel
 							self.unguard_getNewOrExistingPassword()
 							NotificationCenter.default.post(
-								name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+								name: NotificationNames.errorWhileAuthorizingForAppAction.notificationName,
 								object: self,
 								userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: validationErr_orNil! ]
 							)
@@ -599,7 +599,7 @@ final class PasswordController
 						if didCancel_orNil == true {
 							self.unguard_getNewOrExistingPassword()
 							//
-							// currently there's no need of a .canceledWhileDemonstrating note post here
+							// currently there's no need of a .canceledWhileAuthorizingForAppAction note post here
 							canceled_fn?() // but must call cb
 							//
 							return // just silently exit after unguarding
@@ -611,7 +611,7 @@ final class PasswordController
 							self.unguard_getNewOrExistingPassword()
 							let err_str = self.new_incorrectPasswordValidationErrorMessageString
 							NotificationCenter.default.post(
-								name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+								name: NotificationNames.errorWhileAuthorizingForAppAction.notificationName,
 								object: self,
 								userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str ]
 							)
@@ -620,7 +620,7 @@ final class PasswordController
 						//
 						self.unguard_getNewOrExistingPassword() // must be called
 						NotificationCenter.default.post( // this must be posted so the PresentationController can dismiss the entry modal
-							name: NotificationNames.successfullyDemonstratedAbilityToUnlockApp.notificationName,
+							name: NotificationNames.successfullyAuthorizedForAppAction.notificationName,
 							object: self
 						)
 						entryAttempt_succeeded_fn()
@@ -704,7 +704,7 @@ final class PasswordController
 	}
 	func _getUserToEnterTheirExistingPassword(
 		isForChangePassword: Bool,
-		isForDemonstratingUnlockOnly: Bool,
+		isForAuthorizingAppActionOnly: Bool,
 		customNavigationBarTitle: String? = nil,
 		_ fn: @escaping (
 			_ didCancel_orNil: Bool?,
@@ -737,11 +737,11 @@ final class PasswordController
 				}
 			)
 		}
-		assert(isForChangePassword == false || isForDemonstratingUnlockOnly == false) // both shouldn't be true
+		assert(isForChangePassword == false || isForAuthorizingAppActionOnly == false) // both shouldn't be true
 		// Now put request out
 		self.passwordEntryDelegate!.getUserToEnterExistingPassword(
 			isForChangePassword: isForChangePassword,
-			isForDemonstratingUnlockOnly: isForDemonstratingUnlockOnly,
+			isForAuthorizingAppActionOnly: isForAuthorizingAppActionOnly,
 			customNavigationBarTitle: customNavigationBarTitle
 		) { (didCancel_orNil, obtainedPasswordString) in
 			var validationErr_orNil: String? = nil // so far…
