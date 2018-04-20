@@ -50,7 +50,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var displayCurrency_label: UICommonComponents.Form.FieldLabel!
 	var displayCurrency_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
 	//
-	var requireUnlock_label: UICommonComponents.Form.FieldLabel!
+	var authentication_label: UICommonComponents.Form.FieldLabel!
 	var whenSendingMoney_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	//
 	var address_label: UICommonComponents.Form.FieldLabel!
@@ -104,15 +104,15 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("REQUIRE UNLOCK", comment: "")
+				title: NSLocalizedString("AUTHENTICATION", comment: "")
 			)
-			self.requireUnlock_label = view
+			self.authentication_label = view
 			self.scrollView.addSubview(view)
 		}
 		do {
 			let view = UICommonComponents.Form.Switches.TitleAndControlField(
 				frame: .zero,
-				title: NSLocalizedString("When sending money", comment: ""),
+				title: NSLocalizedString("Require when sending", comment: ""),
 				isSelected: false // for now - will update on VDA
 			)
 			view.toggled_fn =
@@ -121,7 +121,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					return
 				}
 				let err_str = SettingsController.shared.set(
-					requireUnlock__whenSendingMoney: thisSelf.whenSendingMoney_inputView.isSelected
+					authentication__requireWhenSending: thisSelf.whenSendingMoney_inputView.isSelected
 				)
 				if err_str != nil {
 					assert(false, "error while setting display currency")
@@ -129,10 +129,10 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			}
 			view.set(
 				shouldToggle_fn: { (to_isSelected, async_fn) in
-					if to_isSelected == false { // if it's being turned off
-						// then they need to authorize
-						PasswordController.shared.initiate_verifyUserCanUnlockApp(
-							customNavigationBarTitle: NSLocalizedString("Unlock to Disable Setting", comment: ""),
+					if to_isSelected == false { // if it's being turned OFF
+						// then they need to authenticate
+						PasswordController.shared.initiate_verifyUserAuthenticationForAction(
+							customNavigationBarTitle: NSLocalizedString("Authenticate to Disable Setting", comment: ""),
 							canceled_fn: {
 								async_fn(false) // disallowed
 							},
@@ -394,18 +394,18 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
 			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
-			self.requireUnlock_label.frame = CGRect(
+			self.authentication_label.frame = CGRect(
 				x: label_x,
 				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
 				width: fullWidth_label_w,
-				height: self.requireUnlock_label.frame.size.height
+				height: self.authentication_label.frame.size.height
 			)
 			let switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
 			[
 				self.whenSendingMoney_inputView
 			]
 			for (idx, switchView) in switchesToLayOut.enumerated() {
-				let mostPreviousView = idx == 0 ? self.requireUnlock_label : switchesToLayOut[idx - 1]
+				let mostPreviousView = idx == 0 ? self.authentication_label : switchesToLayOut[idx - 1]
 				switchView.frame = CGRect(
 					x: input_x,
 					y: mostPreviousView.frame.origin.y + mostPreviousView.frame.size.height
@@ -509,7 +509,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			self.appTimeoutAfterS_inputView.slider.setValueFromSettings()
 			//
-			self.whenSendingMoney_inputView.switchControl.isSelected = SettingsController.shared.requireUnlock__whenSendingMoney
+			self.whenSendingMoney_inputView.switchControl.isSelected = SettingsController.shared.authentication__requireWhenSending
 		}
 		do {
 			if PasswordController.shared.hasUserSavedAPassword == false {

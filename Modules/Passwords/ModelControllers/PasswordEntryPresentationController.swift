@@ -126,7 +126,7 @@ class PasswordEntryPresentationController: PasswordEntryDelegate, PasswordEntryM
 			}
 		))
 		self.passwordController_notificationTokens!.append(NotificationCenter.default.addObserver(
-			forName: PasswordController.NotificationNames.successfullyAuthorizedForAppAction.notificationName,
+			forName: PasswordController.NotificationNames.successfullyAuthenticatedForAppAction.notificationName,
 			object: PasswordController.shared,
 			queue: OperationQueue.main,
 			using:

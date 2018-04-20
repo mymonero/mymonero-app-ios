@@ -50,7 +50,7 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>The MyMonero app lets you use Face ID and Touch ID to authorize actions after unlocking the app, such as sending money.</string>
+	<string>The MyMonero app lets you use Face ID and Touch ID to authenticate for actions after unlocking the app, such as sending money.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

@@ -960,11 +960,11 @@ class Wallet: PersistableObject
 			self.fundsSender = fundsSender
 			fundsSender.send() // kick off; after having set property
 		}
-		if SettingsController.shared.requireUnlock__whenSendingMoney == false {
+		if SettingsController.shared.authentication__requireWhenSending == false {
 			__really_proceed()
 		} else {
-			PasswordController.shared.initiate_verifyUserCanUnlockApp(
-				customNavigationBarTitle: NSLocalizedString("Unlock to Send Funds", comment: ""),
+			PasswordController.shared.initiate_verifyUserAuthenticationForAction(
+				customNavigationBarTitle: NSLocalizedString("Authenticate to Send", comment: ""),
 				canceled_fn: {
 					canceled_fn()
 				},

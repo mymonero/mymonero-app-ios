@@ -148,7 +148,7 @@ final class PasswordController
 		case errorWhileChangingPassword = "PasswordController_Runtime_NotificationNames_errorWhileChangingPassword"
 		//
 		case errorWhileAuthorizingForAppAction = "PasswordController_Runtime_NotificationNames_errorWhileAuthorizingForAppAction"
-		case successfullyAuthorizedForAppAction = "PasswordController_Runtime_NotificationNames_successfullyAuthorizedForAppAction"
+		case successfullyAuthenticatedForAppAction = "PasswordController_Runtime_NotificationNames_successfullyAuthenticatedForAppAction"
 		//
 		case willDeconstructBootedStateAndClearPassword = "PasswordController_Runtime_NotificationNames_willDeconstructBootedStateAndClearPassword"
 		case didDeconstructBootedStateAndClearPassword = "PasswordController_Runtime_NotificationNames_didDeconstructBootedStateAndClearPassword"
@@ -558,7 +558,7 @@ final class PasswordController
 	}
 	//
 	// Runtime - Imperatives - Password verification
-	func initiate_verifyUserCanUnlockApp(
+	func initiate_verifyUserAuthenticationForAction(
 		customNavigationBarTitle: String? = nil,
 		canceled_fn: (() -> Void)?, // NOTE: this compiles b/c optional closures are treated as @escaping
 		entryAttempt_succeeded_fn: @escaping (() -> Void) // required
@@ -620,7 +620,7 @@ final class PasswordController
 						//
 						self.unguard_getNewOrExistingPassword() // must be called
 						NotificationCenter.default.post( // this must be posted so the PresentationController can dismiss the entry modal
-							name: NotificationNames.successfullyAuthorizedForAppAction.notificationName,
+							name: NotificationNames.successfullyAuthenticatedForAppAction.notificationName,
 							object: self
 						)
 						entryAttempt_succeeded_fn()
@@ -674,7 +674,7 @@ final class PasswordController
 						{
 							if success {
 								thisSelf.unguard_getNewOrExistingPassword() // must be called at function terminus
-								entryAttempt_succeeded_fn() // consider this an authorization
+								entryAttempt_succeeded_fn() // consider this an authentication
 							} else { // User did not authenticate successfully
 								_handle(receivedLAError: evaluateError! as NSError)
 							}
