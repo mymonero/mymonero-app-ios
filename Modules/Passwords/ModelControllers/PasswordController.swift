@@ -34,6 +34,7 @@
 //
 import Foundation
 import RNCryptor
+import LocalAuthentication
 //
 // TODO: namespace within Passwords
 protocol DeleteEverythingRegistrant: class
@@ -579,52 +580,120 @@ final class PasswordController
 				self.isAlreadyGettingExistingOrNewPWFromUser = true
 			}
 			// ^-- we're relying on having checked above that user has entered a valid pw already
-			//
-			/// TODO: change this to 'get user to demonstrate app unlock'
-			self._getUserToEnterTheirExistingPassword(
-				isForChangePassword: false,
-				isForDemonstratingUnlockOnly: true,
-				customNavigationBarTitle: customNavigationBarTitle,
-				{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
-					if validationErr_orNil != nil { // takes precedence over cancel
-						self.unguard_getNewOrExistingPassword()
-						NotificationCenter.default.post(
-							name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
-							object: self,
-							userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: validationErr_orNil! ]
+			func _proceedTo_verifyVia_passphrase()
+			{
+				self._getUserToEnterTheirExistingPassword(
+					isForChangePassword: false,
+					isForDemonstratingUnlockOnly: true,
+					customNavigationBarTitle: customNavigationBarTitle,
+					{ [unowned self] (didCancel_orNil, validationErr_orNil, entered_existingPassword) in
+						if validationErr_orNil != nil { // takes precedence over cancel
+							self.unguard_getNewOrExistingPassword()
+							NotificationCenter.default.post(
+								name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+								object: self,
+								userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: validationErr_orNil! ]
+							)
+							return
+						}
+						if didCancel_orNil == true {
+							self.unguard_getNewOrExistingPassword()
+							//
+							// currently there's no need of a .canceledWhileDemonstrating note post here
+							canceled_fn?() // but must call cb
+							//
+							return // just silently exit after unguarding
+						}
+						let isGoodEnteredPassword = self.withExistingPassword_isCorrect(
+							enteredPassword: entered_existingPassword!
 						)
-						return
-					}
-					if didCancel_orNil == true {
-						self.unguard_getNewOrExistingPassword()
+						if isGoodEnteredPassword == false {
+							self.unguard_getNewOrExistingPassword()
+							let err_str = self.new_incorrectPasswordValidationErrorMessageString
+							NotificationCenter.default.post(
+								name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
+								object: self,
+								userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str ]
+							)
+							return
+						}
 						//
-						// currently there's no need of a .canceledWhileDemonstrating note post here
-						canceled_fn?() // but must call cb
-						//
-						return // just silently exit after unguarding
-					}
-					let isGoodEnteredPassword = self.withExistingPassword_isCorrect(
-						enteredPassword: entered_existingPassword!
-					)
-					if isGoodEnteredPassword == false {
-						self.unguard_getNewOrExistingPassword()
-						let err_str = self.new_incorrectPasswordValidationErrorMessageString
-						NotificationCenter.default.post(
-							name: NotificationNames.errorWhileDemonstratingAbilityToUnlockApp.notificationName,
-							object: self,
-							userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: err_str ]
+						self.unguard_getNewOrExistingPassword() // must be called
+						NotificationCenter.default.post( // this must be posted so the PresentationController can dismiss the entry modal
+							name: NotificationNames.successfullyDemonstratedAbilityToUnlockApp.notificationName,
+							object: self
 						)
-						return
+						entryAttempt_succeeded_fn()
 					}
-					//
-					self.unguard_getNewOrExistingPassword() // must be called
-					NotificationCenter.default.post( // this must be posted so the PresentationController can dismiss the entry modal
-						name: NotificationNames.successfullyDemonstratedAbilityToUnlockApp.notificationName,
-						object: self
-					)
-					entryAttempt_succeeded_fn()
+				)
+			}
+			// now see if we can use biometrics
+			if #available(iOS 8.0, macOS 10.12.1, *) {
+				func _handle(receivedLAError error: NSError)
+				{
+					let code = LAError.Code(rawValue: error.code)!
+					switch code {
+						case .biometryNotEnrolled, // this case, go straight to pw
+							 .biometryNotAvailable, // straight to pw
+							 .biometryLockout, // this case, because we want to present a fallback method plus the cancel button
+							 .authenticationFailed, // is including this correct?
+							 .passcodeNotSet, // go straight to pw?
+							 .notInteractive,
+							 .userFallback
+							:
+							_proceedTo_verifyVia_passphrase()
+							break
+						// compiler says these will never be executed, that a default won't either, /and/ that switch must be exhaustive. so, opted to just enumerate the cases here to retain compiler check for exhaustiveness
+						case .touchIDNotEnrolled,
+							 .touchIDNotAvailable,
+							 .touchIDLockout: // this case, because we want to present a fallback method plus the cancel button
+							_proceedTo_verifyVia_passphrase()
+							break
+						case .systemCancel,
+							 .appCancel,
+							 .userCancel:
+							self.unguard_getNewOrExistingPassword() // must be called at function terminus
+							canceled_fn?()
+							break
+						case .invalidContext: // error.. fatal?
+							fatalError("LAContext passed to this call has been previously invalidated.")
+							break
+					}
 				}
-			)
+				let laContext = LAContext()
+				let policy: LAPolicy = .deviceOwnerAuthenticationWithBiometrics
+				var authError: NSError?
+				if laContext.canEvaluatePolicy(policy, error: &authError) {
+					let reason_localizedString = NSLocalizedString(customNavigationBarTitle ?? "Authenticate to allow MyMonero to perform this action.", comment: "")
+					laContext.evaluatePolicy(policy, localizedReason: reason_localizedString)
+					{ [weak self] (success, evaluateError) in
+						guard let thisSelf = self else {
+							return
+						}
+						func ___proceed()
+						{
+							if success {
+								thisSelf.unguard_getNewOrExistingPassword() // must be called at function terminus
+								entryAttempt_succeeded_fn() // consider this an authorization
+							} else { // User did not authenticate successfully
+								_handle(receivedLAError: evaluateError! as NSError)
+							}
+						}
+						if Thread.isMainThread == false { // has a tendency to call back on a bg thread
+							DispatchQueue.main.async {
+								___proceed()
+							}
+						} else {
+							___proceed()
+						}
+					}
+				} else { // Could not evaluate policy
+					_handle(receivedLAError: authError!)
+					return
+				}
+			} else {
+				_proceedTo_verifyVia_passphrase()
+			}
 		}
 	}
 	//

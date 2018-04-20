@@ -529,6 +529,15 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		completionHandler: ((Any?, Error?) -> Void)?,
 		tryNumber: Int
 	) {
+		if Thread.isMainThread == false {
+			DispatchQueue.main.async { [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.__evaluateJavaScript(javaScriptString, completionHandler: completionHandler, tryNumber: tryNumber)
+			}
+			return
+		}
 		if (self.hasBooted == false) { // semi-janky but should be unlikely and finite
 			let retryAfter_s = 0.1
 			// TODO? check tryNumber * retryAfter_s < T?
