@@ -627,7 +627,12 @@ final class PasswordController
 					}
 				)
 			}
+			let tryBiometrics = SettingsController.shared.authentication__tryBiometric
 			// now see if we can use biometrics
+			if tryBiometrics == false {
+				_proceedTo_verifyVia_passphrase()
+				return // so we don't have to wrap the whole following branch in an if
+			}
 			if #available(iOS 8.0, macOS 10.12.1, *) {
 				func _handle(receivedLAError error: NSError)
 				{

@@ -42,6 +42,7 @@ class SettingsController: DeleteEverythingRegistrant
 		case appTimeoutAfterS_nilForDefault_orNeverValue = "SettingsController_NotificationNames_Changed_appTimeoutAfterS_nilForDefault_orNeverValue"
 		case displayCurrencySymbol = "SettingsController_NotificationNames_Changed_displayCurrencySymbol"
 		case authentication__requireWhenSending = "SettingsController_NotificationNames_Changed_authentication__requireWhenSending"
+		case authentication__tryBiometric = "SettingsController_NotificationNames_Changed_authentication__tryBiometric"
 		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
@@ -59,6 +60,7 @@ class SettingsController: DeleteEverythingRegistrant
 		case appTimeoutAfterS_nilForDefault_orNeverValue = "appTimeoutAfterS_nilForDefault_orNeverValue"
 		case displayCurrencySymbol = "displayCurrencySymbol"
 		case authentication__requireWhenSending = "authentication__requireWhenSending"
+		case authentication__tryBiometric = "authentication__tryBiometric"
 		//
 		var changed_notificationName: NSNotification.Name?
 		{
@@ -71,6 +73,8 @@ class SettingsController: DeleteEverythingRegistrant
 					return NotificationNames_Changed.displayCurrencySymbol.notificationName
 				case .authentication__requireWhenSending:
 					return NotificationNames_Changed.authentication__requireWhenSending.notificationName
+				case .authentication__tryBiometric:
+					return NotificationNames_Changed.authentication__tryBiometric.notificationName
 				case ._id:
 					assert(false)
 					// _id is not to be updated
@@ -86,6 +90,7 @@ class SettingsController: DeleteEverythingRegistrant
 		return CcyConversionRates.Currency.XMR.symbol // for now...? mayyyybe detect by locale and try to guess? but that could end up being too inaccurate. language es could appear in Venezualan users and i wouldn't think MXN would be super helpful there - but i have no data on it
 	}
 	let default_authentication__requireWhenSending = true
+	let default_authentication__tryBiometric = true
 	//
 	// Properties - Runtime - Transient
 	var hasBooted = false
@@ -99,6 +104,7 @@ class SettingsController: DeleteEverythingRegistrant
 	var specificAPIAddressURLAuthority: String?
 	var appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval?
 	var authentication__requireWhenSending: Bool!
+	var authentication__tryBiometric: Bool!
 	var displayCurrencySymbol: CcyConversionRates.CurrencySymbol!
 	var displayCurrency: CcyConversionRates.Currency {
 		return CcyConversionRates.Currency(rawValue: self.displayCurrencySymbol)!
@@ -130,6 +136,7 @@ class SettingsController: DeleteEverythingRegistrant
 				specificAPIAddressURLAuthority: nil,
 				appTimeoutAfterS_nilForDefault_orNeverValue: self.default_appTimeoutAfterS,
 				authentication__requireWhenSending: self.default_authentication__requireWhenSending,
+				authentication__tryBiometric: self.default_authentication__tryBiometric,
 				displayCurrencySymbol: self.default_displayCurrencySymbol
 			)
 			return
@@ -139,12 +146,14 @@ class SettingsController: DeleteEverythingRegistrant
 		let specificAPIAddressURLAuthority = jsonDict[DictKey.specificAPIAddressURLAuthority.rawValue] as? String
 		let appTimeoutAfterS_nilForDefault_orNeverValue = jsonDict[DictKey.appTimeoutAfterS_nilForDefault_orNeverValue.rawValue] as! TimeInterval
 		let authentication__requireWhenSending = jsonDict[DictKey.authentication__requireWhenSending.rawValue] as? Bool
+		let authentication__tryBiometric = jsonDict[DictKey.authentication__tryBiometric.rawValue] as? Bool
 		let displayCurrencySymbol = jsonDict[DictKey.displayCurrencySymbol.rawValue] as? CcyConversionRates.CurrencySymbol
 		self._setup_loadState(
 			_id: _id,
 			specificAPIAddressURLAuthority: specificAPIAddressURLAuthority,
 			appTimeoutAfterS_nilForDefault_orNeverValue: appTimeoutAfterS_nilForDefault_orNeverValue,
 			authentication__requireWhenSending: authentication__requireWhenSending != nil ? authentication__requireWhenSending! : default_authentication__requireWhenSending,
+			authentication__tryBiometric: authentication__tryBiometric != nil ? authentication__tryBiometric! : default_authentication__tryBiometric,
 			displayCurrencySymbol: displayCurrencySymbol ?? default_displayCurrencySymbol /*legacy/prerelease dict*/
 		)
 	}
@@ -153,12 +162,14 @@ class SettingsController: DeleteEverythingRegistrant
 		specificAPIAddressURLAuthority: String?,
 		appTimeoutAfterS_nilForDefault_orNeverValue: TimeInterval,
 		authentication__requireWhenSending: Bool,
+		authentication__tryBiometric: Bool,
 		displayCurrencySymbol: CcyConversionRates.CurrencySymbol
 	) {
 		self._id = _id
 		self.specificAPIAddressURLAuthority = specificAPIAddressURLAuthority
 		self.appTimeoutAfterS_nilForDefault_orNeverValue = appTimeoutAfterS_nilForDefault_orNeverValue
 		self.authentication__requireWhenSending = authentication__requireWhenSending
+		self.authentication__tryBiometric = authentication__tryBiometric
 		self.displayCurrencySymbol = displayCurrencySymbol
 		//
 		self.hasBooted = true
@@ -229,6 +240,8 @@ class SettingsController: DeleteEverythingRegistrant
 			case .authentication__requireWhenSending:
 				self.authentication__requireWhenSending = value as? Bool ?? self.default_authentication__requireWhenSending // nil will get default set
 				break
+			case .authentication__tryBiometric:
+				self.authentication__tryBiometric = value as? Bool ?? self.default_authentication__tryBiometric // nil gets default set
 			case .displayCurrencySymbol:
 				self.displayCurrencySymbol = value as? CcyConversionRates.CurrencySymbol // validate?
 				break
@@ -250,6 +263,10 @@ class SettingsController: DeleteEverythingRegistrant
 	func set(authentication__requireWhenSending value: Bool) -> String? // err_str
 	{
 		return self.set(valuesByDictKey: [ DictKey.authentication__requireWhenSending: value as Any ])
+	}
+	func set(authentication__tryBiometric value: Bool) -> String? // err_str
+	{
+		return self.set(valuesByDictKey: [ DictKey.authentication__tryBiometric: value as Any ])
 	}
 	func set(displayCurrencySymbol_nilForDefault value: CcyConversionRates.CurrencySymbol?) -> String? // err_str; use nil for default
 	{
@@ -273,6 +290,9 @@ class SettingsController: DeleteEverythingRegistrant
 		}
 		if let value = self.authentication__requireWhenSending {
 			dict[DictKey.authentication__requireWhenSending.rawValue] = value
+		}
+		if let value = self.authentication__tryBiometric {
+			dict[DictKey.authentication__tryBiometric.rawValue] = value
 		}
 		if let value = self.displayCurrencySymbol {
 			dict[DictKey.displayCurrencySymbol.rawValue] = value
@@ -338,6 +358,7 @@ class SettingsController: DeleteEverythingRegistrant
 			.specificAPIAddressURLAuthority: "",
 			.appTimeoutAfterS_nilForDefault_orNeverValue: default_appTimeoutAfterS,
 			.authentication__requireWhenSending: default_authentication__requireWhenSending,
+			.authentication__tryBiometric: default_authentication__tryBiometric,
 			.displayCurrencySymbol: self.default_displayCurrencySymbol
 		]
 		let err_str = self.set(valuesByDictKey: defaults_valuesByKey)

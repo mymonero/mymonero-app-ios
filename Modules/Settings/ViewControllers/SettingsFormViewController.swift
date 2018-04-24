@@ -52,6 +52,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	//
 	var authentication_label: UICommonComponents.Form.FieldLabel!
 	var whenSendingMoney_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
+	var tryBiometric_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	//
 	var address_label: UICommonComponents.Form.FieldLabel!
 	var address_inputView: UICommonComponents.FormInputField!
@@ -124,7 +125,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					authentication__requireWhenSending: thisSelf.whenSendingMoney_inputView.isSelected
 				)
 				if err_str != nil {
-					assert(false, "error while setting display currency")
+					assert(false, "error while setting authentication__requireWhenSending")
 				}
 			}
 			view.set(
@@ -150,6 +151,49 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 			assert(view.switchControl.shouldToggle_fn != nil) // maybe this needs to be redesigned so the switch doesn't have the control on whether to unlock, but the SettingsController does, and so the UI must update accordingly?
 			self.whenSendingMoney_inputView = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.Switches.TitleAndControlField(
+				frame: .zero,
+				title: NSLocalizedString("Attempt Touch ID / Face ID", comment: ""),
+				isSelected: false // for now - will update on VDA
+			)
+			view.toggled_fn =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				let err_str = SettingsController.shared.set(
+					authentication__tryBiometric: thisSelf.tryBiometric_inputView.isSelected
+				)
+				if err_str != nil {
+					assert(false, "error while setting authentication__requireWhenSending")
+				}
+			}
+			view.set(
+				shouldToggle_fn: { (to_isSelected, async_fn) in
+					if to_isSelected == true { // if it's being turned ON
+						// then they need to authenticate b/c this is a loosening of security
+						PasswordController.shared.initiate_verifyUserAuthenticationForAction(
+							customNavigationBarTitle: NSLocalizedString("Authenticate to Enable Setting", comment: ""),
+							canceled_fn: {
+								async_fn(false) // disallowed
+							},
+							entryAttempt_succeeded_fn: {
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute:
+								{ // this delay is purely for visual effect, waiting for pw entry to dismiss
+									async_fn(true) // allowed
+								})
+							}
+						)
+					} else {
+						async_fn(true) // no auth needed
+					}
+				}
+			)
+			assert(view.switchControl.shouldToggle_fn != nil) // maybe this needs to be redesigned so the switch doesn't have the control on whether to unlock, but the SettingsController does, and so the UI must update accordingly?
+			self.tryBiometric_inputView = view
 			self.scrollView.addSubview(view)
 		}
 		//
@@ -391,7 +435,13 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.sizeToFit()
 		}
+		let authorization_switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
+		[
+			self.whenSendingMoney_inputView,
+			self.tryBiometric_inputView
+		]
 		do {
+			let switchesToLayOut = authorization_switchesToLayOut
 			let previousSectionBottomView: UIView = self.appTimeoutAfterS_fieldAccessoryMessageLabel!
 			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
 			self.authentication_label.frame = CGRect(
@@ -400,10 +450,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				width: fullWidth_label_w,
 				height: self.authentication_label.frame.size.height
 			)
-			let switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
-			[
-				self.whenSendingMoney_inputView
-			]
 			for (idx, switchView) in switchesToLayOut.enumerated() {
 				let mostPreviousView = idx == 0 ? self.authentication_label : switchesToLayOut[idx - 1]
 				switchView.frame = CGRect(
@@ -417,7 +463,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			}
 		}
 		do {
-			let previousSectionBottomView: UIView = self.whenSendingMoney_inputView!
+			let previousSectionBottomView: UIView = authorization_switchesToLayOut.last!
 			self.displayCurrency_label.frame = CGRect(
 				x: label_x,
 				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
@@ -510,6 +556,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.appTimeoutAfterS_inputView.slider.setValueFromSettings()
 			//
 			self.whenSendingMoney_inputView.switchControl.isSelected = SettingsController.shared.authentication__requireWhenSending
+			self.tryBiometric_inputView.switchControl.isSelected = SettingsController.shared.authentication__tryBiometric
 		}
 		do {
 			if PasswordController.shared.hasUserSavedAPassword == false {
