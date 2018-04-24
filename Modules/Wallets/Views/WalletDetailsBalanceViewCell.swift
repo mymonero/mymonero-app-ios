@@ -181,29 +181,30 @@ extension WalletDetails
 					let moneroBalanceAmount = wallet.balanceAmount
 					var raw_balanceString: String
 					if displayCurrency == .XMR {
-						raw_balanceString = moneroBalanceAmount.humanReadableString
+						raw_balanceString = moneroBalanceAmount.localized_formattedString
 					} else {
 						let convertedAmount = displayCurrency.displayUnitsRounded_amountInCurrency(
 							fromMoneroAmount: moneroBalanceAmount
 						)
 						if convertedAmount != nil {
-							raw_balanceString = "\(convertedAmount!)"
+							raw_balanceString = MoneroAmount.shared_localized_doubleFormatter().string(for: convertedAmount)!
 						} else {
-							raw_balanceString = moneroBalanceAmount.humanReadableString
+							raw_balanceString = moneroBalanceAmount.localized_formattedString
 							displayCurrency = .XMR // display XMR until rate is ready? or maybe just show 'LOADING…'?
 						}
 					}
 					let display_coinUnitPlaces = displayCurrency.unitsForDisplay
 					//
 					// TODO: the following should probably be factored and placed into something like an/the Amounts class
-					let raw_balanceString__components = raw_balanceString.components(separatedBy: ".")
+					let locale_decimalSeparator = Locale.current.decimalSeparator ?? "."
+					let raw_balanceString__components = raw_balanceString.components(separatedBy: locale_decimalSeparator)
 					if raw_balanceString__components.count == 1 {
 						let balance_aspect_integer = raw_balanceString__components[0]
 						if balance_aspect_integer == "0" {
 							finalized_main_string = ""
-							finalized_paddingZeros_string = "00." + String(repeating: "0", count: display_coinUnitPlaces)
+							finalized_paddingZeros_string = "00" + locale_decimalSeparator + String(repeating: "0", count: display_coinUnitPlaces)
 						} else {
-							finalized_main_string = balance_aspect_integer + "."
+							finalized_main_string = balance_aspect_integer + locale_decimalSeparator
 							finalized_paddingZeros_string = String(repeating: "0", count: display_coinUnitPlaces)
 						}
 					} else if raw_balanceString__components.count == 2 {

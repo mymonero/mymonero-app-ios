@@ -185,7 +185,7 @@ extension TransactionDetails
 		func set_navigationTitleAndColor()
 		{
 			self.configureNavigationBarTitleColor() // may be redundant but is also necessary for infoUpdated()
-			self.navigationItem.title = "\(self.transaction.approxFloatAmount)"
+			self.navigationItem.title = MoneroAmount.shared_localized_doubleFormatter().string(for: self.transaction.approxFloatAmount)!
 		}
 		//
 		// Overrides - Layout
@@ -238,7 +238,7 @@ extension TransactionDetails
 			do {
 				// TODO: array of multivaluefieldrowdescriptions w/clr etc for amount and two fees
 				let floatAmount = self.transaction.approxFloatAmount
-				let value = "\(floatAmount)"
+				let value = MoneroAmount.shared_localized_doubleFormatter().string(for: floatAmount)!
 				self.amountsFeesTotals__fieldView.set(
 					text: value,
 					color: floatAmount < 0 ? UIColor(rgb: 0xF97777) : nil

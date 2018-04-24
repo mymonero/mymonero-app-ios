@@ -710,29 +710,28 @@ extension SendFundsForm
 			let feePerKB_Amount = MoneroAmount("209000000")! // constant for now pending polling fee_per_kb on account info
 			let priority = self.selected_priority
 			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
-			let estNetworkFee_monero_amountDouble: Double = DoubleFromMoneroAmount(
-				moneroAmount: estNetworkFee_moneroAmount
-			)
 			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
-			var finalizable_amountDouble = estNetworkFee_monero_amountDouble // to finalize…
+			var final_amount_formattedString: String!
 			do {
 				if finalizable_displayCurrency != .XMR {
-					let moneroAmount = MoneroAmount.new(
-						withDouble: estNetworkFee_monero_amountDouble
+					let converted_amountDouble = finalizable_displayCurrency.displayUnitsRounded_amountInCurrency(
+						fromMoneroAmount: estNetworkFee_moneroAmount
 					)
-					if let converted_amountDouble = finalizable_displayCurrency.displayUnitsRounded_amountInCurrency(
-						fromMoneroAmount: moneroAmount
-					) {
-						finalizable_amountDouble = converted_amountDouble // use converted, non-xmr amount
+					if converted_amountDouble != nil {
+						final_amount_formattedString = finalizable_displayCurrency.nonAtomicCurrency_localized_formattedString(
+							final_amountDouble: converted_amountDouble!
+						)
 					} else {
 						assert(finalizable_displayCurrency != .XMR)
 						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
 					}
 				}
+				if finalizable_displayCurrency == .XMR { // still
+					// then we still need to derive final_amount_formattedString
+					final_amount_formattedString = estNetworkFee_moneroAmount.localized_formattedString
+				}
 			}
 			let final_displayCurrency = finalizable_displayCurrency
-			let final_amountDouble = finalizable_amountDouble
-			let final_amount_formattedString = final_displayCurrency == .XMR ? "\(final_amountDouble)" : final_displayCurrency.nonAtomicCurrency_formattedString(final_amountDouble: final_amountDouble)
 			let text = String(
 				format: NSLocalizedString("+ %@ %@ EST. NETWORK FEE", comment: ""),
 				final_amount_formattedString,
@@ -878,7 +877,7 @@ extension SendFundsForm
 						self.set(
 							validationMessage: String(
 								format: NSLocalizedString("Sending %@ XMR…", comment: ""),
-								moneroAmount.humanReadableString
+								moneroAmount.localized_formattedString
 							),
 							wantsXButton: false
 						)
@@ -982,7 +981,7 @@ extension SendFundsForm
 						UIAlertAction(
 							title: String(
 								format: NSLocalizedString("Agree and Send %@ %@", comment: ""),
-								"\(amount_submittableDouble!)",
+								MoneroAmount.shared_localized_doubleFormatter().string(for: amount_submittableDouble!)!,
 								CcyConversionRates.Currency.XMR.symbol
 							),
 							style: .destructive // or is red negative b/c the action is also constructive? (use .default)

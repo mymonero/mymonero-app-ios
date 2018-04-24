@@ -242,16 +242,16 @@ class WalletCellContentView: UIView
 				var final_balanceAmountString: String!
 				var final_lockedBalanceAmountString: String?
 				if final_displayCurrency == .XMR {
-					final_balanceAmountString = MoneroAmount.new(withDouble: final_balanceAmountDouble).humanReadableString
+					final_balanceAmountString = MoneroAmount.new(withDouble: final_balanceAmountDouble).localized_formattedString
 					if hasLockedFunds {
-						final_lockedBalanceAmountString = MoneroAmount.new(withDouble: final_lockedBalanceAmountDouble!).humanReadableString
+						final_lockedBalanceAmountString = MoneroAmount.new(withDouble: final_lockedBalanceAmountDouble!).localized_formattedString
 					}
 				} else {
-					final_balanceAmountString = final_displayCurrency.nonAtomicCurrency_formattedString(
+					final_balanceAmountString = final_displayCurrency.nonAtomicCurrency_localized_formattedString(
 						final_amountDouble: final_balanceAmountDouble
 					)
 					if hasLockedFunds {
-						final_lockedBalanceAmountString = final_displayCurrency.nonAtomicCurrency_formattedString(
+						final_lockedBalanceAmountString = final_displayCurrency.nonAtomicCurrency_localized_formattedString(
 							final_amountDouble: final_lockedBalanceAmountDouble!
 						)
 					}

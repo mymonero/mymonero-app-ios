@@ -155,21 +155,21 @@ extension CcyConversionRates
 //
 extension CcyConversionRates.Currency
 {
-	func nonAtomicCurrency_formattedString( // is nonAtomic-unit'd currency a good enough way to categorize these? 
-		final_amountDouble: Double
-	) -> String
-	{
+	func nonAtomicCurrency_localized_formattedString( // is nonAtomic-unit'd currency a good enough way to categorize these?
+		final_amountDouble: Double,
+		decimalSeparator: String = Locale.current.decimalSeparator ?? "."
+	) -> String {
 		assert(self != .XMR)
 		if final_amountDouble == 0 {
-			return "0" // not 0.0
+			return "0" // not 0.0 / 0,0 / ...
 		}
-		let naiveString = "\(final_amountDouble)"
-		let components = naiveString.components(separatedBy: ".")
+		let naiveLocalizedString = MoneroAmount.shared_localized_doubleFormatter().string(for: final_amountDouble)!
+		let components = naiveLocalizedString.components(separatedBy: decimalSeparator)
 		let components_count = components.count
 		assert(components_count > 0, "Unexpected 0 components while formatting nonatomic currency")
 		if components_count == 1 { // meaning there's no '.'
-			assert(naiveString.contains(".") == false)
-			return naiveString+".00"
+			assert(naiveLocalizedString.contains(decimalSeparator) == false)
+			return naiveLocalizedString + decimalSeparator + "00"
 		}
 		assert(components_count == 2)
 		let component_1 = components[0]
@@ -183,7 +183,7 @@ extension CcyConversionRates.Currency
 				rightSidePaddingZeroes += "0" // TODO: less verbose way to do this?
 			}
 		}
-		return component_1+"."+component_2+rightSidePaddingZeroes // pad
+		return component_1 + decimalSeparator + component_2 + rightSidePaddingZeroes // pad
 	}
 }
 //
@@ -215,8 +215,7 @@ extension CcyConversionRates.Currency
 	}
 	func displayUnitsRounded_amountInCurrency( // Note: __DISPLAY__ units
 		fromMoneroAmount moneroAmount: MoneroAmount
-	) -> Double?
-	{
+	) -> Double? {
 		if self == .none {
 			fatalError("Selected currency unexpectedly .none") // TODO: should this be a throw instead?
 		}

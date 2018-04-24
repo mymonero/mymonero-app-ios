@@ -535,10 +535,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		var submittableAmountFinalString: String?
 		if submittableDoubleAmount != nil {
 			submittableAmountFinalString = amount!
-			if amount!.first! == "." {
+			if amount!.first! == "." || amount!.first == (Locale.current.decimalSeparator ?? ".").first! {
 				submittableAmountFinalString = "0" + submittableAmountFinalString!
 			}
-			if submittableAmountFinalString!.last! == "." {
+			if submittableAmountFinalString!.last! == (Locale.current.decimalSeparator ?? ".").first! {
 				submittableAmountFinalString! += "0"
 			}
 		}

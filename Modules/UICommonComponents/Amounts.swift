@@ -256,7 +256,7 @@ extension UICommonComponents.Form.Amounts
 						"~ %@ %@",
 						comment: ""
 					),
-					displayCurrency.nonAtomicCurrency_formattedString(final_amountDouble: displayCurrencyAmount),
+					displayCurrency.nonAtomicCurrency_localized_formattedString(final_amountDouble: displayCurrencyAmount),
 					displayCurrency.symbol
 				)
 			} else {
@@ -265,7 +265,7 @@ extension UICommonComponents.Form.Amounts
 						"= %@ %@",
 						comment: ""
 					),
-					moneroAmount.humanReadableString,
+					moneroAmount.localized_formattedString,
 					CcyConversionRates.Currency.XMR.symbol
 				)
 			}
@@ -434,15 +434,35 @@ extension UICommonComponents.Form.Amounts
 			return false
 		}
 		var isEmptyOrHasIncompleteNumber: Bool {
-			if self.isEmpty || self.text! == "." {
+			if self.isEmpty {
+				return true
+			}
+			var hasOnlyDecimalSeparators = true
+			do { // check if the string has only decimal separators
+				let locale_decimalSeparator = Locale.current.decimalSeparator ?? "."
+				let locale_decimalSeparator_isDifferentFromDot = locale_decimalSeparator != "."
+				for (_, char) in self.text!.enumerated() {
+					if char != ".".first! {
+						if locale_decimalSeparator_isDifferentFromDot {
+							if char != locale_decimalSeparator.first! {
+								hasOnlyDecimalSeparators = false
+								break
+							}
+						} else { // no other valid decimalSeparators
+							hasOnlyDecimalSeparators = false
+							break
+						}
+					}
+				}
+			}
+			if hasOnlyDecimalSeparators {
 				return true
 			}
 			return false
 		}
 		func hasInputButMoneroAmountIsNotSubmittable(
 			selectedCurrency: CcyConversionRates.Currency
-		) -> Bool
-		{
+		) -> Bool {
 			if self.isEmpty {
 				return false // no input
 			}
@@ -475,8 +495,7 @@ extension UICommonComponents.Form.Amounts
 		}
 		func submittableMoneroAmountDouble_orNil(
 			selectedCurrency: CcyConversionRates.Currency
-		) -> Double?
-		{ // ccyConversion approximation will be performed from user input
+		) -> Double? { // ccyConversion approximation will be performed from user input
 			guard let userInputAmountDouble = self.submittableAmountRawDouble_orNil else {
 				return nil
 			}
@@ -495,11 +514,15 @@ extension UICommonComponents.Form.Amounts
 			_ textField: UITextField,
 			shouldChangeCharactersIn range: NSRange,
 			replacementString string: String
-		) -> Bool
-		{
-			let decimalPlaceCharacter = "."
+		) -> Bool {
+			let default_decimalPlaceCharacter = "."
+			let locale_decimalSeparator = Locale.current.decimalSeparator ?? "."
+			var allDecimalPlaceCharacters = default_decimalPlaceCharacter
+			if locale_decimalSeparator != default_decimalPlaceCharacter {
+				allDecimalPlaceCharacters += locale_decimalSeparator // to allow "," etc
+			}
 			do { // first check legal characters
-				let aSet = NSCharacterSet(charactersIn:"0123456789\(decimalPlaceCharacter)").inverted
+				let aSet = NSCharacterSet(charactersIn:"0123456789\(allDecimalPlaceCharacters)").inverted
 				let compSepByCharInSet = string.components(separatedBy: aSet)
 				let numberFiltered = compSepByCharInSet.joined(separator: "")
 				if string != numberFiltered {
@@ -508,9 +531,22 @@ extension UICommonComponents.Form.Amounts
 			}
 			do { // disallow more than one decimal character
 				let toString = ((textField.text ?? "") as NSString).replacingCharacters(in: range, with: string)
-				let components = toString.components(separatedBy: decimalPlaceCharacter)
-				if components.count > 2 {
+				func numberOf(decimalSeparator: String) -> Int {
+					let components = toString.components(separatedBy: decimalSeparator)
+					return components.count - 1
+				}
+				let numberOf_default_decimalPlaceCharacter = numberOf(decimalSeparator: default_decimalPlaceCharacter)
+				let numberOf_locale_decimalSeparator = numberOf(decimalSeparator: locale_decimalSeparator)
+				if numberOf_default_decimalPlaceCharacter > 1 {
 					return false
+				}
+				if default_decimalPlaceCharacter != locale_decimalSeparator {
+					if numberOf_locale_decimalSeparator > 1 {
+						return false
+					}
+					if numberOf_locale_decimalSeparator > 0 && numberOf_default_decimalPlaceCharacter > 0 {
+						return false // must disallow more than one separator
+					}
 				}
 			}
 			do { // disallow input which is toooo long. some values are out of spec

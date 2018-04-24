@@ -40,16 +40,31 @@ typealias HumanUnderstandableCurrencyAmountDouble = Double // e.g. -0.5 for -0.5
 //
 struct MoneyAmount
 {
-	static let _formatter = NumberFormatter()
-	static var __hasConfigured_formatter = false
+	static let _localized_formatter = NumberFormatter()
+	static let _dotDecimal_formatter = NumberFormatter()
+	static let _dotDecimal_separator = "."
+	static var __hasConfigured_formatters = false
 	static func newDouble(withUserInputAmountString string: String) -> Double?
 	{
-		if __hasConfigured_formatter == false {
-			MoneyAmount._formatter.numberStyle = .decimal
-			__hasConfigured_formatter = true
+		if __hasConfigured_formatters == false {
+			_localized_formatter.numberStyle = .decimal
+			_localized_formatter.locale = Locale.current // to be explicit
+			//
+			_dotDecimal_formatter.numberStyle = .decimal
+			_dotDecimal_formatter.decimalSeparator = _dotDecimal_separator
+			//
+			__hasConfigured_formatters = true
 		}
-		let number = MoneyAmount._formatter.number(from: string)
+		var number = _localized_formatter.number(from: string)
 		if number == nil {
+			let string_NSString = string as NSString
+			let decimalLocation = string_NSString.range(of: _dotDecimal_separator).location
+			if decimalLocation != NSNotFound { // has decimal - try formatting with dotDecimal formatter
+				number = _dotDecimal_formatter.number(from: string)
+				// then allow to fall through
+			}
+		}
+		if number == nil { // if number still nil
 			return nil
 		}
 		let double = number!.doubleValue
@@ -58,27 +73,35 @@ struct MoneyAmount
 	}
 }
 //
-var _doubleFormatter: NumberFormatter? = nil
-func shared_doubleFormatter() -> NumberFormatter
-{
-	if _doubleFormatter == nil {
-		_doubleFormatter = NumberFormatter()
-		_doubleFormatter!.minimumFractionDigits = 1
-		_doubleFormatter!.maximumFractionDigits = MoneroConstants.currency_unitPlaces + 1
-		_doubleFormatter!.roundingMode = .down
-		_doubleFormatter!.numberStyle = .decimal
-	}
-	return _doubleFormatter!
-}
-//
 typealias MoneroAmount = BigInt // in atomic units, i.e. 10^12 per 1 xmr; and must be unsigned!
 extension MoneroAmount
 {
-	var humanReadableString: String {
-		return FormattedString(fromMoneroAmount: self)
+	static var _doubleFormatter: NumberFormatter? = nil
+	static func shared_localized_doubleFormatter() -> NumberFormatter
+	{
+		if _doubleFormatter == nil {
+			let formatter = NumberFormatter()
+			_doubleFormatter = formatter
+			formatter.minimumFractionDigits = 1
+			formatter.maximumFractionDigits = MoneroConstants.currency_unitPlaces + 1
+			formatter.roundingMode = .down
+			formatter.numberStyle = .decimal
+			formatter.usesGroupingSeparator = false // so as not to complicate matters.. for now
+			formatter.locale = Locale.current // to be explicit ... this could be reworked to be a "."-decimalSeparator-specific formatter
+		}
+		return _doubleFormatter!
 	}
+	//
+	//
 	var atomicUnitsBigIntString: String {
 		return "\(self)"
+	}
+	//
+	var doubleParseable_formattedString: String {
+		return FormattedString(fromMoneroAmount: self, decimalSeparator: ".") // must specifically use "." here
+	}
+	var localized_formattedString: String {
+		return FormattedString(fromMoneroAmount: self) // defaults to locale's decimalSeparator
 	}
 	//
 	var jsRepresentationString:String
@@ -88,9 +111,12 @@ extension MoneroAmount
 	//
 	static func new(withDouble doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
 	{
-		let amountAsFormattedString = shared_doubleFormatter().string(for: doubleValue)!
+		let amountAsFormattedString = MoneroAmount.shared_localized_doubleFormatter().string(for: doubleValue)!
 		//
-		return new(withMoneyAmountDoubleString: amountAsFormattedString)
+		return new(
+			withMoneyAmountDoubleString: amountAsFormattedString
+			// default to using locale's decimalSeparator, because we've just gotten this number from a locale-sensitive number formatter
+		)
 	}
 	static func new(withUserInputAmountString string: String) -> MoneroAmount?
 	{
@@ -101,7 +127,10 @@ extension MoneroAmount
 		//
 		return amount
 	}
-	static func new(withMoneyAmountDoubleString string: String) -> MoneroAmount
+	static func new(
+		withMoneyAmountDoubleString string: String,
+		decimalSeparator: String = Locale.current.decimalSeparator ?? "." // NOTE: defaults to locale's decimal separator!
+	) -> MoneroAmount
 	{ // aka monero_utils.parseMoney
 		if string == "" {
 			return MoneroAmount(0)
@@ -114,9 +143,9 @@ extension MoneroAmount
 		} else {
 			unsignedDouble_NSString = signed_NSString
 		}
-		let decimalLocation = unsignedDouble_NSString.range(of: ".").location
+		let decimalLocation = unsignedDouble_NSString.range(of: decimalSeparator).location
 		if decimalLocation == NSNotFound { // no decimal
-			unsignedDouble_NSString = "\(unsignedDouble_NSString).0" as NSString // so that we have single codepath for int and double
+			unsignedDouble_NSString = "\(unsignedDouble_NSString)\(decimalSeparator)0" as NSString // so that we have single codepath for int and double
 		}
 		let maxDecimalUnits_stringLength = decimalLocation + MoneroConstants.currency_unitPlaces + 1
 		if (unsignedDouble_NSString.length > maxDecimalUnits_stringLength) { // if precision too great
@@ -163,8 +192,10 @@ struct MoneroAmounts
 		return retStr
 	}
 }
-func FormattedString(fromMoneroAmount moneroAmount: MoneroAmount) -> String
-{ // aka monero_utils.formatMoneyFull + monero_utils.formatMoney
+func FormattedString(
+	fromMoneroAmount moneroAmount: MoneroAmount,
+	decimalSeparator: String = Locale.current.decimalSeparator ?? "." // NOTE: this therefore uses locale's decimalSeparator by default, so if you want to parse this formattedString as a double, you should pass "." instead
+) -> String { // aka monero_utils.formatMoneyFull + monero_utils.formatMoney
 	let signed_moneroAmount_NSString = String(moneroAmount, radix: 10) as NSString
 	// now first strip off and hang onto any '-' sign
 	let symbol = signed_moneroAmount_NSString.substring(to: 1) == "-" ? "-" : ""
@@ -191,11 +222,11 @@ func FormattedString(fromMoneroAmount moneroAmount: MoneroAmount) -> String
 		with: NSMakeRange(0, lengthOf_substring_beforeDecimal) // will come out as empty string if nothing before decimal
 	)
 	let final_substring_beforeDecimal = raw_substring_beforeDecimal != "" ? raw_substring_beforeDecimal : "0"
-	let fullyFormatted = "\(symbol)\(final_substring_beforeDecimal).\(final_substring_afterDecimal!)"
+	let fullyFormatted = "\(symbol)\(final_substring_beforeDecimal)\(decimalSeparator)\(final_substring_afterDecimal!)"
 	//
 	var trimmed_fullyFormatted_NSString = MoneroAmounts.trimRight(fullyFormatted, Character("0")) as NSString
 	let rangeOf_lastChar = NSMakeRange(trimmed_fullyFormatted_NSString.length - 1, 1)
-	if trimmed_fullyFormatted_NSString.substring(with: rangeOf_lastChar) == "." {
+	if trimmed_fullyFormatted_NSString.substring(with: rangeOf_lastChar) == decimalSeparator {
 		trimmed_fullyFormatted_NSString = trimmed_fullyFormatted_NSString.substring(to: rangeOf_lastChar.location) as NSString
 	}
 	//
@@ -203,5 +234,5 @@ func FormattedString(fromMoneroAmount moneroAmount: MoneroAmount) -> String
 }
 func DoubleFromMoneroAmount(moneroAmount: MoneroAmount) -> HumanUnderstandableCurrencyAmountDouble
 {
-	return Double(FormattedString(fromMoneroAmount: moneroAmount))!
+	return Double(moneroAmount.doubleParseable_formattedString)!
 }
