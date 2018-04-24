@@ -208,12 +208,12 @@ extension TransactionDetails
 			//
 			var validationMessage = ""
 			if transaction.isJustSentTransientTransactionRecord || transaction.cached__isConfirmed == false {
-				let floatAmount = self.transaction.approxFloatAmount
-				if floatAmount > 0 {
-					validationMessage += NSLocalizedString("Some Monero is arriving.", comment: "")
-				} else {
+//				let floatAmount = self.transaction.approxFloatAmount
+//				if floatAmount > 0 {
+//					validationMessage += NSLocalizedString("Some Monero is arriving.", comment: "")
+//				} else {
 					validationMessage += NSLocalizedString("Your Monero is on its way.", comment: "")
-				}
+//				}
 			}
 			if transaction.cached__isUnlocked == false {
 				assert(transaction.cached__lockedReason != nil)
