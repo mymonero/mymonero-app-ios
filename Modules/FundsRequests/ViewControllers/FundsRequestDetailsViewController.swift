@@ -97,7 +97,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 					valueToDisplayIfZero: nil
 				)
 				view.contentLabel.lineBreakMode = .byCharWrapping // flows better w/o awkward break
-				let url = self.fundsRequest.new_URI
+				let url = self.fundsRequest.new_URI(inMode: .addressAsAuthority) // clickable
 				view.set(text: url.absoluteString, url: url)
 				sectionView.add(fieldView: view)
 			}
@@ -215,7 +215,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		value += "------------"
 		value += "\r\n" // linebreak
 		value += NSLocalizedString("If you have MyMonero installed, use this link to send the funds: ", comment: "")
-		value += self.fundsRequest.new_URI.absoluteString
+		value += self.fundsRequest.new_URI(inMode: .addressAsAuthority).absoluteString // addr as authority b/c we want it to be clickable
 		value += "\r\n" // spacer
 		value += "\r\n" // linebreak
 		value += String(format:
@@ -239,7 +239,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 			[
 				NSAttributedStringKey.foregroundColor: linkColor
 			],
-			range: value_NSString.range(of: self.fundsRequest.new_URI.absoluteString)
+			range: value_NSString.range(of: self.fundsRequest.new_URI(inMode: .addressAsAuthority).absoluteString) // clickable addr
 		)
 		attributedString.addAttributes(
 			[

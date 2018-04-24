@@ -173,12 +173,17 @@ class FundsRequest: PersistableObject
 	}
 	func setup_qrCode_cgImage()
 	{
-		let uriStringData = self.new_URI.absoluteString.data(using: .utf8)
+		let noSlashes_uri = self.new_URI(
+			inMode: .addressAsFirstPathComponent
+		)
+		let qrCode_stringData = noSlashes_uri.absoluteString.data(
+			using: .utf8
+		)
 		guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
 			assert(false)
 			return
 		}
-		filter.setValue(uriStringData, forKey: "inputMessage")
+		filter.setValue(qrCode_stringData, forKey: "inputMessage")
 		filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
 		let outputImage = filter.outputImage!
 		let context = CIContext(options: nil)
@@ -226,7 +231,7 @@ class FundsRequest: PersistableObject
 	}
 	//
 	// Interface - Runtime - Accessors/Properties
-	var new_URI: URL
+	func new_URI(inMode uriMode: MoneroUtils.RequestURIs.URIMode) -> URL
 	{
 		return MoneroUtils.RequestURIs.new_URL(
 			address: self.to_address,
@@ -234,7 +239,8 @@ class FundsRequest: PersistableObject
 			description: self.description,
 			paymentId: self.payment_id,
 			message: self.message,
-			amountCurrency: self.amountCurrency
+			amountCurrency: self.amountCurrency,
+			uriMode: uriMode
 		)
 	}
 }

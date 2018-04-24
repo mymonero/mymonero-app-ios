@@ -38,6 +38,11 @@ extension MoneroUtils
 {
 	struct RequestURIs
 	{
+		enum URIMode
+		{
+			case addressAsAuthority
+			case addressAsFirstPathComponent
+		}
 		enum URIQueryItemNames: String
 		{
 			case amount = "tx_amount"
@@ -62,12 +67,17 @@ extension MoneroUtils
 			description: String?,
 			paymentId: MoneroPaymentID?,
 			message: String?,
-			amountCurrency: MoneroConvertableCurrencySymbol?
-		) -> URL
-		{
+			amountCurrency: MoneroConvertableCurrencySymbol?,
+			uriMode: URIMode
+		) -> URL {
 			var urlComponents = URLComponents()
 			urlComponents.scheme = MoneroConstants.currency_requestURIPrefix_sansColon
-			urlComponents.host = address
+			switch uriMode {
+				case .addressAsAuthority:
+					urlComponents.host = address
+				case .addressAsFirstPathComponent:
+					urlComponents.path = address
+			}
 			//
 			var queryItems = [URLQueryItem]()
 			if let value = amount, value != "" {
