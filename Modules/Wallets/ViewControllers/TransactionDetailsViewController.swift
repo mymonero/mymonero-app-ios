@@ -208,14 +208,19 @@ extension TransactionDetails
 			//
 			var validationMessage = ""
 			if transaction.isJustSentTransientTransactionRecord || transaction.cached__isConfirmed == false {
-				validationMessage += NSLocalizedString("Your Monero is on its way.", comment: "")
+				let floatAmount = self.transaction.approxFloatAmount
+				if floatAmount > 0 {
+					validationMessage += NSLocalizedString("Some Monero is arriving.", comment: "")
+				} else {
+					validationMessage += NSLocalizedString("Your Monero is on its way.", comment: "")
+				}
 			}
 			if transaction.cached__isUnlocked == false {
 				assert(transaction.cached__lockedReason != nil)
 				if validationMessage != "" {
 					validationMessage += "\n\n"
 				}
-				validationMessage += NSLocalizedString("Transaction currently locked. Reason: ", comment: "")
+				validationMessage += NSLocalizedString("Transaction currently locked: ", comment: "")
 				validationMessage += transaction.cached__lockedReason! // this is not necessarily a good localized way to concat strings
 			}
 			if validationMessage != "" {
