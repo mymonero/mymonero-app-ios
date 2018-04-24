@@ -766,6 +766,8 @@ extension SendFundsForm
 			self.amount_fieldset.inputField.isEnabled = false
 			self.amount_fieldset.currencyPickerButton.isEnabled = false
 			
+			self.priority_inputView.isEnabled = false
+			
 			self.sendTo_inputView.inputField.isEnabled = false
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
 				pillView.xButton.isEnabled = true
@@ -787,6 +789,8 @@ extension SendFundsForm
 			
 			self.amount_fieldset.inputField.isEnabled = true
 			self.amount_fieldset.currencyPickerButton.isEnabled = true
+			
+			self.priority_inputView.isEnabled = false
 			
 			self.sendTo_inputView.inputField.isEnabled = true
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
