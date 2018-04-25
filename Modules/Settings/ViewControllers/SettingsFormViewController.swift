@@ -156,7 +156,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			let view = UICommonComponents.Form.Switches.TitleAndControlField(
 				frame: .zero,
-				title: NSLocalizedString("Attempt Touch ID / Face ID", comment: ""),
+				title: NSLocalizedString("Use Touch ID / Face ID", comment: ""),
 				isSelected: false // for now - will update on VDA
 			)
 			view.toggled_fn =
@@ -168,7 +168,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					authentication__tryBiometric: thisSelf.tryBiometric_inputView.isSelected
 				)
 				if err_str != nil {
-					assert(false, "error while setting authentication__requireWhenSending")
+					assert(false, "error while setting authentication__tryBiometric")
 				}
 			}
 			view.set(
