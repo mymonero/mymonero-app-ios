@@ -119,6 +119,12 @@ extension UICommonComponents.Form.Switches
 			}
 		}
 		//
+		// Imperatives - Interface - Interactivity
+		func set(isEnabled: Bool)
+		{
+			self.switchControl.isEnabled = isEnabled
+		}
+		//
 		// Overrides - Layout
 		override func layoutSubviews()
 		{
@@ -148,7 +154,9 @@ extension UICommonComponents.Form.Switches
 		// Delegation
 		@objc func backgroundView_tapped()
 		{
-			self.switchControl.sendActions(for: .touchUpInside)
+			if self.switchControl.isEnabled { // we must check this
+				self.switchControl.sendActions(for: .touchUpInside)
+			}
 		}
 	}
 	class Control: UIButton
@@ -199,6 +207,8 @@ extension UICommonComponents.Form.Switches
 		}
 		func setup()
 		{
+			self.adjustsImageWhenDisabled = true
+			//
 			let image__off = ToggleMode.off.image
 			let image__on = ToggleMode.on.image
 			self.setImage(image__off, for: .normal)

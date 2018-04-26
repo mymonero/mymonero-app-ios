@@ -566,7 +566,7 @@ final class PasswordController
 		self.onceBooted
 		{ [unowned self] in
 			if self.hasUserEnteredValidPasswordYet == false {
-				let err_etr = "initiate_changePassword called but hasUserEnteredValidPasswordYet == false. This should be disallowed in the UI"
+				let err_etr = "initiate_verifyUserAuthenticationForAction called but hasUserEnteredValidPasswordYet == false. This should be disallowed in the UI"
 				assert(false, err_etr)
 				return
 			}

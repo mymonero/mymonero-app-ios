@@ -563,17 +563,23 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				self.changePasswordButton.isEnabled = false // can't change til entered
 				// self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				self.appTimeoutAfterS_inputView.set(isEnabled: false)
+				self.whenSendingMoney_inputView.set(isEnabled: false)
+				self.tryBiometric_inputView.set(isEnabled: false)
 				self.deleteButton.isEnabled = false
 			} else if PasswordController.shared.hasUserEnteredValidPasswordYet == false { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
 				self.changePasswordButton.isEnabled = false // not going to enable this b/c changing the pw before the app objects are in memory would mean they passwordController record would get out of step with the password used to save records to disk
 				// self.serverURLInputLayer.disabled = true
 				self.appTimeoutAfterS_inputView.set(isEnabled: false)
+				self.whenSendingMoney_inputView.set(isEnabled: false)
+				self.tryBiometric_inputView.set(isEnabled: false)
 				self.deleteButton.isEnabled = false
 			} else { // has entered PW - unlock
 				self.changePasswordButton.isEnabled = true
 				// self.serverURLInputLayer.disabled = false
 				self.appTimeoutAfterS_inputView.set(isEnabled: true)
+				self.whenSendingMoney_inputView.set(isEnabled: true)
+				self.tryBiometric_inputView.set(isEnabled: true)
 				self.deleteButton.isEnabled = true
 			}
 		}
