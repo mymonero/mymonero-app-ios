@@ -51,6 +51,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var displayCurrency_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
 	//
 	var authentication_label: UICommonComponents.Form.FieldLabel!
+	var authentication_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 	var whenSendingMoney_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	var tryBiometric_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	//
@@ -105,9 +106,26 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("AUTHENTICATION", comment: "")
+				title: NSLocalizedString("AUTHENTICATION", comment: ""),
+				sizeToFit: true
 			)
 			self.authentication_label = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.TooltipSpawningLinkButtonView(
+				tooltipText: String(
+					format: NSLocalizedString(
+						"An extra layer of security\nfor approving certain\nactions after you've\nunlocked the app",
+						comment: ""
+					)
+				)
+			)
+			view.willPresentTipView_fn =
+			{ [unowned self] in
+				self.view.resignCurrentFirstResponder() // if any
+			}
+			self.authentication_tooltipSpawn_buttonView = view
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -447,9 +465,19 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.authentication_label.frame = CGRect(
 				x: label_x,
 				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
-				width: fullWidth_label_w,
+				width: self.authentication_label.frame.size.width,
 				height: self.authentication_label.frame.size.height
 			)
+			do {
+				let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+				let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+				self.authentication_tooltipSpawn_buttonView.frame = CGRect(
+					x: self.authentication_label.frame.origin.x + self.authentication_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+					y: self.authentication_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.authentication_label.frame.size.height)/2,
+					width: tooltipSpawn_buttonView_w,
+					height: tooltipSpawn_buttonView_h
+				).integral
+			}
 			for (idx, switchView) in switchesToLayOut.enumerated() {
 				let mostPreviousView = idx == 0 ? self.authentication_label : switchesToLayOut[idx - 1]
 				switchView.frame = CGRect(
