@@ -63,8 +63,7 @@ extension WalletDetails
 			}
 			static func cellHeight(
 				with_contentContainerView_toFrame contentContainerView_toFrame: CGRect
-			) -> CGFloat
-			{
+			) -> CGFloat {
 				return contentContainerView_toFrame.size.height
 			}
 			//
@@ -127,16 +126,14 @@ extension WalletDetails
 			) -> (
 				selfFrame: CGRect,
 				isHiding: Bool
-			)
-			{
+			) {
 				return self.contentContainerView.toggleDisclosureAndPrepareToAnimate()
 			}
 			func animateToJustToggledDisclosureState(
 				animated: Bool,
 				isHiding: Bool,
 				to__contentContainerView_toFrame: CGRect
-			)
-			{
+			) {
 				self.contentContainerView.configureForJustToggledDisclosureState(
 					animated: animated
 				)
@@ -332,8 +329,7 @@ extension WalletDetails
 			func toggleDisclosureAndPrepareToAnimate() -> (
 				selfFrame: CGRect,
 				isHiding: Bool
-			)
-			{
+			) {
 				if (self.infoDisclosing_impactFeedbackGenerator == nil) {
 					self.infoDisclosing_impactFeedbackGenerator = UIImpactFeedbackGenerator()
 				}

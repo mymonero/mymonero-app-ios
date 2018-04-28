@@ -315,27 +315,47 @@ extension WalletDetails
 		// Imperatives - InfoDisclosing
 		var infoDisclosing_contentContainerView_toFrame: CGRect?
 		func toggleInfoDisclosureCell()
-		{ // not a huge fan of all this coupling but at least we can put it in a method
-			let (contentContainerView_toFrame, isHiding) = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate()
-			self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = true // prevent its layoutSubviews from racing with what we are doing here, but primarily b/c it will be redundant
-			do { // now animate the actual cell height
-				self.tableView.beginUpdates() // this opens its own animation context, so it must be outside of the .animate below… but because it must be outside, it seems to mess with the
-				do {
-					assert(self.infoDisclosing_contentContainerView_toFrame == nil)
-					self.infoDisclosing_contentContainerView_toFrame = contentContainerView_toFrame
+		{
+			func __really_proceed()
+			{
+				// not a huge fan of all this coupling but at least we can put it in a method
+				let (contentContainerView_toFrame, isHiding) = self.infoDisclosingCellView.toggleDisclosureAndPrepareToAnimate()
+				self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = true // prevent its layoutSubviews from racing with what we are doing here, but primarily b/c it will be redundant
+				do { // now animate the actual cell height
+					self.tableView.beginUpdates() // this opens its own animation context, so it must be outside of the .animate below… but because it must be outside, it seems to mess with the
+					do {
+						assert(self.infoDisclosing_contentContainerView_toFrame == nil)
+						self.infoDisclosing_contentContainerView_toFrame = contentContainerView_toFrame
+					}
+					self.tableView.endUpdates() // regardless of whether it finished
+					do {
+						assert(self.infoDisclosing_contentContainerView_toFrame != nil)
+						self.infoDisclosing_contentContainerView_toFrame = nil // zero
+					}
 				}
-				self.tableView.endUpdates() // regardless of whether it finished
-				do {
-					assert(self.infoDisclosing_contentContainerView_toFrame != nil)
-					self.infoDisclosing_contentContainerView_toFrame = nil // zero
+				self.infoDisclosingCellView.animateToJustToggledDisclosureState(
+					animated: true,
+					isHiding: isHiding,
+					to__contentContainerView_toFrame: contentContainerView_toFrame
+				)
+				self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = false
+			}
+			if SettingsController.shared.authentication__requireToShowWalletSecrets {
+				if self.infoDisclosingCellView.isDisclosed == false { // when toggling to 'disclosed'
+					PasswordController.shared.initiate_verifyUserAuthenticationForAction(
+						customNavigationBarTitle: NSLocalizedString("Authenticate to Open", comment: ""),
+						canceled_fn: {},
+						entryAttempt_succeeded_fn: {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute:
+							{ // this delay is purely for visual effect, waiting for pw entry to dismiss
+								__really_proceed()
+							})
+						}
+					)
+					return
 				}
 			}
-			self.infoDisclosingCellView.animateToJustToggledDisclosureState(
-				animated: true,
-				isHiding: isHiding,
-				to__contentContainerView_toFrame: contentContainerView_toFrame
-			)
-			self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = false
+			__really_proceed()
 		}
 		//
 		// Imperatives - Import modal

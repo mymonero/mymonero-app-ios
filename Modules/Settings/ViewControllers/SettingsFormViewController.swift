@@ -53,6 +53,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var authentication_label: UICommonComponents.Form.FieldLabel!
 	var authentication_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 	var whenSendingMoney_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
+	var toShowWalletSecrets_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	var tryBiometric_inputView: UICommonComponents.Form.Switches.TitleAndControlField!
 	//
 	var address_label: UICommonComponents.Form.FieldLabel!
@@ -169,6 +170,49 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 			assert(view.switchControl.shouldToggle_fn != nil) // maybe this needs to be redesigned so the switch doesn't have the control on whether to unlock, but the SettingsController does, and so the UI must update accordingly?
 			self.whenSendingMoney_inputView = view
+			self.scrollView.addSubview(view)
+		}
+		do {
+			let view = UICommonComponents.Form.Switches.TitleAndControlField(
+				frame: .zero,
+				title: NSLocalizedString("Require to show wallet secrets", comment: ""),
+				isSelected: false // for now - will update on VDA
+			)
+			view.toggled_fn =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				let err_str = SettingsController.shared.set(
+					authentication__requireToShowWalletSecrets: thisSelf.toShowWalletSecrets_inputView.isSelected
+				)
+				if err_str != nil {
+					assert(false, "error while setting authentication__requireToShowWalletSecrets")
+				}
+			}
+			view.set(
+				shouldToggle_fn: { (to_isSelected, async_fn) in
+					if to_isSelected == false { // if it's being turned OFF
+						// then they need to authenticate
+						PasswordController.shared.initiate_verifyUserAuthenticationForAction(
+							customNavigationBarTitle: NSLocalizedString("Authenticate to Disable Setting", comment: ""),
+							canceled_fn: {
+								async_fn(false) // disallowed
+							},
+							entryAttempt_succeeded_fn: {
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute:
+								{ // this delay is purely for visual effect, waiting for pw entry to dismiss
+									async_fn(true) // allowed
+								})
+							}
+						)
+					} else {
+						async_fn(true) // no auth needed
+					}
+				}
+			)
+			assert(view.switchControl.shouldToggle_fn != nil) // maybe this needs to be redesigned so the switch doesn't have the control on whether to unlock, but the SettingsController does, and so the UI must update accordingly?
+			self.toShowWalletSecrets_inputView = view
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -456,6 +500,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		let authorization_switchesToLayOut: [UICommonComponents.Form.Switches.TitleAndControlField] =
 		[
 			self.whenSendingMoney_inputView,
+			self.toShowWalletSecrets_inputView,
 			self.tryBiometric_inputView
 		]
 		do {
@@ -584,6 +629,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			self.appTimeoutAfterS_inputView.slider.setValueFromSettings()
 			//
 			self.whenSendingMoney_inputView.switchControl.isSelected = SettingsController.shared.authentication__requireWhenSending
+			self.toShowWalletSecrets_inputView.switchControl.isSelected = SettingsController.shared.authentication__requireToShowWalletSecrets
 			self.tryBiometric_inputView.switchControl.isSelected = SettingsController.shared.authentication__tryBiometric
 		}
 		do {
@@ -592,6 +638,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				// self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				self.appTimeoutAfterS_inputView.set(isEnabled: false)
 				self.whenSendingMoney_inputView.set(isEnabled: false)
+				self.toShowWalletSecrets_inputView.set(isEnabled: false)
 				self.tryBiometric_inputView.set(isEnabled: false)
 				self.deleteButton.isEnabled = false
 			} else if PasswordController.shared.hasUserEnteredValidPasswordYet == false { // has data but not unlocked app - prevent tampering
@@ -600,6 +647,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				// self.serverURLInputLayer.disabled = true
 				self.appTimeoutAfterS_inputView.set(isEnabled: false)
 				self.whenSendingMoney_inputView.set(isEnabled: false)
+				self.toShowWalletSecrets_inputView.set(isEnabled: false)
 				self.tryBiometric_inputView.set(isEnabled: false)
 				self.deleteButton.isEnabled = false
 			} else { // has entered PW - unlock
@@ -607,6 +655,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				// self.serverURLInputLayer.disabled = false
 				self.appTimeoutAfterS_inputView.set(isEnabled: true)
 				self.whenSendingMoney_inputView.set(isEnabled: true)
+				self.toShowWalletSecrets_inputView.set(isEnabled: true)
 				self.tryBiometric_inputView.set(isEnabled: true)
 				self.deleteButton.isEnabled = true
 			}
