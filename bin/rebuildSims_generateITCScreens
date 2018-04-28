@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SNAPSHOT_FORCE_DELETE=true fastlane snapshot reset_simulators &&
 
