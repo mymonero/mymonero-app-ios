@@ -222,7 +222,7 @@ extension SendFundsForm
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
 					tooltipText: String(
 						format: NSLocalizedString(
-							"Please double-check the\naccuracy of your recipient\ninformation because Monero\ntransfers are irreversible.",
+							"Please double-check\nyour recipient info as\nMonero transfers are\nnot yet reversible.",
 							comment: ""
 						)
 					)
