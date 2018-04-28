@@ -34,11 +34,17 @@
 //
 import UIKit
 //
-class SettingsFormViewController: UICommonComponents.FormViewController, SettingsAppTimeoutAfterSecondsSliderInteractionsDelegate
+class SettingsFormViewController: UICommonComponents.FormViewController, SettingsAppTimeoutAfterSecondsSliderInteractionsDelegate, DeleteEverythingRegistrant
 {
 	//
 	// Static - Shared
 	static let shared = SettingsFormViewController()
+	//
+	// Properties/Protocols - DeleteEverythingRegistrant
+	var instanceUUID = UUID()
+	func identifier() -> String { // satisfy DeleteEverythingRegistrant for isEqual
+		return self.instanceUUID.uuidString
+	}
 	//
 	// Properties - Views
 	var changePasswordButton = UICommonComponents.PushButton(pushButtonType: .utility)
@@ -73,6 +79,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	override func startObserving()
 	{
 		super.startObserving()
+		PasswordController.shared.addRegistrantForDeleteEverything(self)
 	}
 	override func setup_views()
 	{
@@ -339,7 +346,6 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			action: #selector(tapped_barButtonItem_about),
 			title_orNilForDefault: NSLocalizedString("About", comment: "")
 		)
-		
 	}
 	//
 	// Lifecycle - Teardown
@@ -348,6 +354,11 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		super.tearDown()
 		self.tearDown_timerToSave_durationUpdated()
 		self.tearDown_timerToSave_addressEditingChanged()
+	}
+	override func stopObserving()
+	{ // not that it will ever get called..
+		super.stopObserving()
+		PasswordController.shared.removeRegistrantForDeleteEverything(self)
 	}
 	//
 	// Accessors - Overrides
@@ -808,5 +819,16 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				}
 			}
 		)
+	}
+	//
+	// Protocol - DeleteEverythingRegistrant
+	func passwordController_DeleteEverything() -> String?
+	{
+		DispatchQueue.main.async
+		{ [unowned self] in
+			self.scrollView.setContentOffset(.zero, animated: false)
+		}
+		//
+		return nil // no error
 	}
 }

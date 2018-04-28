@@ -151,8 +151,8 @@ extension SendFundsForm
 					)
 				)
 				view.willPresentTipView_fn =
-					{ [unowned self] in
-						self.view.resignCurrentFirstResponder() // if any
+				{ [unowned self] in
+					self.view.resignCurrentFirstResponder() // if any
 				}
 				self.amount_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
