@@ -657,8 +657,11 @@ extension WalletDetails
 				DispatchQueue.main.asyncAfter(
 					deadline: .now() + coordinator.transitionDuration, // hopefully this is not too fragile of a way to do this? we want to prevent infoDisclosingCellView from handling the change in width for this orientation change in its layoutSubviews so we must wait until the transition is over (or rather until after self.infoDisclosingCellView has finished having its frame changed owing to this transition)
 					execute:
-					{
-						self.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = false
+					{ [weak self] in
+						guard let thisSelf = self else {
+							return
+						}
+						thisSelf.infoDisclosingCellView.isHavingContentContainerFrameManagedExternally = false
 					}
 				)
 			}
