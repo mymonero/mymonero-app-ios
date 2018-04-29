@@ -69,7 +69,7 @@ class ContactQRDisplayViewController: UICommonComponents.ScrollableValidatingInf
 			let view = UICommonComponents.FormAccessoryMessageLabel(
 				text: text
 			)
-			view.textAlignment = .justified
+			view.textAlignment = .center
 			view.numberOfLines = 0
 			view.lineBreakMode = .byTruncatingTail
 			self.informationalLabel = view
