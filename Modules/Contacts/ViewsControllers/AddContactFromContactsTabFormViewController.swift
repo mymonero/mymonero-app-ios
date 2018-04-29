@@ -36,4 +36,5 @@ import UIKit
 
 class AddContactFromContactsTabFormViewController: AddContactBaseFormViewController
 {
+	override var _overridable_wants_qrPickingButtons: Bool { return true }
 }

@@ -33,6 +33,8 @@
 //
 //
 import Foundation
+import CoreImage
+import UIKit
 
 class Contact: PersistableObject
 {
@@ -59,8 +61,13 @@ class Contact: PersistableObject
 	var address: String! // String because it could be an OA address
 	var payment_id: MoneroPaymentID?
 	var emoji: Emoji.EmojiCharacter!
+	//
+	// Properties - Transient
 	var cached_OAResolved_XMR_address: MoneroAddress?
 	var cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid: MoneroIntegratedAddress?
+	var qrCode_cgImage: CGImage!
+	var cached__qrCode_image_small: UIImage!
+	//
 	func new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid(
 		_ fn: @escaping (_ intAddr: MoneroIntegratedAddress?) -> Void
 	) {
@@ -150,7 +157,7 @@ class Contact: PersistableObject
 		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! Emoji.EmojiCharacter
 		self.cached_OAResolved_XMR_address = dictRepresentation[DictKey.cached_OAResolved_XMR_address.rawValue] as? String
 		//
-		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		self.setup()
 	}
 	func generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
 	{
@@ -193,7 +200,24 @@ class Contact: PersistableObject
 		self.emoji = emoji
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
 		//
-		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		self.setup()
+	}
+	func setup()
+	{
+		self.regeneratePropertiesDerivedFromAddressOrPid()
+	}
+	//
+	// Interface - Runtime - Accessors/Properties
+	func new_URI(inMode uriMode: MoneroUtils.URIs.URIMode) -> URL
+	{
+		// I would have created a URIs.Contacts but everything, including parsing, is the same anyway, so there wasn't a reason
+		return MoneroUtils.URIs.Requests.new_URL(
+			address: self.address,
+			amount: nil, description: nil,
+			paymentId: self.payment_id,
+			message: nil, amountCurrency: nil,
+			uriMode: uriMode
+		)
 	}
 	//
 	// Interface - Runtime - Accessors/Properties - Convenience
@@ -201,6 +225,22 @@ class Contact: PersistableObject
 		return OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
 			self.address
 		)
+	}
+	//
+	// Imperatives - Runtime - Cache generation
+	func regeneratePropertiesDerivedFromAddressOrPid()
+	{
+		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		//
+		self.generate_qrCode_cgImage()
+		self.cached__qrCode_image_small = QRCodeImages.new_qrCode_UIImage(fromCGImage: self.qrCode_cgImage, withQRSize: .small)
+	}
+	func generate_qrCode_cgImage()
+	{
+		let noSlashes_uri = self.new_URI(
+			inMode: .addressAsFirstPathComponent
+		)
+		self.qrCode_cgImage = QRCodeImages.new_qrCode_cgImage(withContentString: noSlashes_uri.absoluteString)
 	}
 	//
 	// Runtime - Imperatives - Update cases
@@ -221,8 +261,7 @@ class Contact: PersistableObject
 		}
 		self.payment_id = payment_id
 		//
-		// v---- This is not persisted, but this is a good time to generate it
-		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		self.regeneratePropertiesDerivedFromAddressOrPid()
 		//
 		let err_str = self.saveToDisk()
 		if err_str != nil {
@@ -241,7 +280,7 @@ class Contact: PersistableObject
 		self.payment_id = payment_id
 		self.cached_OAResolved_XMR_address = cached_OAResolved_XMR_address
 		//
-		self.generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		self.regeneratePropertiesDerivedFromAddressOrPid()
 		//
 		let err_str = self.saveToDisk()
 		if err_str != nil {

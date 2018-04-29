@@ -58,22 +58,6 @@ class FundsRequest: PersistableObject
 		case description = "description"
 		case amountCurrency = "amountCurrency"
 	}
-	enum QRSize: CGFloat
-	{
-		case small = 20
-		case medium = 96 // 2 * 8
-		case large = 272 // 320 - 2*24
-		//
-		var side: CGFloat {
-			return self.rawValue
-		}
-		var width: CGFloat {
-			return self.side
-		}
-		var height: CGFloat {
-			return self.side
-		}
-	}
 	//
 	// Properties - Persisted Values
 	var from_fullname: String?
@@ -153,8 +137,7 @@ class FundsRequest: PersistableObject
 		message: String?,
 		description: String?,
 		amountCurrency: CcyConversionRates.CurrencySymbol?
-	)
-	{
+	) {
 		self.init()
 		self.from_fullname = from_fullname
 		self.to_walletSwatchColor = to_walletSwatchColor
@@ -164,76 +147,26 @@ class FundsRequest: PersistableObject
 		self.message = message
 		self.description = description
 		self.amountCurrency = amountCurrency
+		//
 		self.setup()
 	}
 	func setup()
 	{
 		self.setup_qrCode_cgImage()
-		self.cached__qrCode_image_small = self.new_qrCodeImage(withQRSize: .small) // cache for table view access
+		self.cached__qrCode_image_small = QRCodeImages.new_qrCode_UIImage(fromCGImage: self.qrCode_cgImage, withQRSize: .small)
 	}
 	func setup_qrCode_cgImage()
 	{
 		let noSlashes_uri = self.new_URI(
 			inMode: .addressAsFirstPathComponent
 		)
-		let qrCode_stringData = noSlashes_uri.absoluteString.data(
-			using: .utf8
-		)
-		guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
-			assert(false)
-			return
-		}
-		filter.setValue(qrCode_stringData, forKey: "inputMessage")
-		filter.setValue("Q"/*quartile/25%*/, forKey: "inputCorrectionLevel")
-		let outputImage = filter.outputImage!
-		let context = CIContext(options: nil)
-		self.qrCode_cgImage = context.createCGImage(outputImage, from: outputImage.extent)!
-	}
-	//
-	// Accessors - Factories
-	func new_qrCodeImage(withQRSize qrSize: QRSize) -> UIImage
-	{
-		let targetSize = CGSize(
-			width: qrSize.width,
-			height: qrSize.height
-		)
-		UIGraphicsBeginImageContext(
-			CGSize(
-				width: targetSize.width * UIScreen.main.scale,
-				height: targetSize.height * UIScreen.main.scale
-			)
-		)
-		var preScaledImage: UIImage!
-		do {
-			let graphicsContext = UIGraphicsGetCurrentContext()!
-			graphicsContext.interpolationQuality = .none
-			let boundingBoxOfClipPath = graphicsContext.boundingBoxOfClipPath
-			graphicsContext.draw(
-				self.qrCode_cgImage,
-				in: CGRect(
-					x: 0,
-					y: 0,
-					width: boundingBoxOfClipPath.width,
-					height: boundingBoxOfClipPath.height
-				)
-			)
-			//
-			preScaledImage = UIGraphicsGetImageFromCurrentImageContext()!
-		}
-		UIGraphicsEndImageContext()
-		let scaled_qrCodeImage = UIImage(
-			cgImage: preScaledImage.cgImage!,
-			scale: 1.0/UIScreen.main.scale,
-			orientation: .downMirrored
-		)
-		
-		return scaled_qrCodeImage
+		self.qrCode_cgImage = QRCodeImages.new_qrCode_cgImage(withContentString: noSlashes_uri.absoluteString)
 	}
 	//
 	// Interface - Runtime - Accessors/Properties
-	func new_URI(inMode uriMode: MoneroUtils.RequestURIs.URIMode) -> URL
+	func new_URI(inMode uriMode: MoneroUtils.URIs.URIMode) -> URL
 	{
-		return MoneroUtils.RequestURIs.new_URL(
+		return MoneroUtils.URIs.Requests.new_URL(
 			address: self.to_address,
 			amount: self.amount,
 			description: self.description,

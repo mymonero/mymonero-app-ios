@@ -49,7 +49,7 @@ extension SendFundsForm
 		var key: String { return self.rawValue }
 	}
 	//
-	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant, UIImagePickerControllerDelegate, UINavigationControllerDelegate
+	class ViewController: UICommonComponents.FormViewController, DeleteEverythingRegistrant
 	{
 		//
 		// Static - Shared singleton
@@ -86,11 +86,7 @@ extension SendFundsForm
 		var priority_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
 		var priority_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
-		var useCamera_actionButtonView: UICommonComponents.ActionButton!
-		var chooseFile_actionButtonView: UICommonComponents.ActionButton!
-		//
-		var presented_imagePickerController: UIImagePickerController?
-		var presented_cameraViewController: QRCodeScanningCameraViewController?
+		var qrPicking_actionButtons: UICommonComponents.QRPickingActionButtons!
 		//
 		// Lifecycle - Init
 		override init()
@@ -453,22 +449,45 @@ extension SendFundsForm
 				self.priority_inputView = view
 				self.scrollView.addSubview(view)
 			}
-			//
 			do {
-				let iconImage = UIImage(named: "actionButton_iconImage__useCamera")!
-				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
-				view.addTarget(self, action: #selector(useCamera_tapped), for: .touchUpInside)
-				view.setTitle(NSLocalizedString("Use Camera", comment: ""), for: .normal)
-				self.useCamera_actionButtonView = view
-				self.view.addSubview(view) // not self.scrollView
-			}
-			do {
-				let iconImage = UIImage(named: "actionButton_iconImage__chooseFile")!
-				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
-				view.addTarget(self, action: #selector(chooseFile_tapped), for: .touchUpInside)
-				view.setTitle(NSLocalizedString("Choose file", comment: ""), for: .normal)
-				self.chooseFile_actionButtonView = view
-				self.view.addSubview(view) // not self.scrollView
+				let buttons = UICommonComponents.QRPickingActionButtons(
+					containingViewController: self,
+					attachingToView: self.view // not self.scrollView
+				)
+				buttons.havingPickedImage_shouldAllowPicking_fn =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return false
+					}
+					if thisSelf.isFormEnabled == false {
+						DDLog.Warn("SendFundsTab", "Disallowing QR code pick while form disabled")
+						return false
+					}
+					return true
+				}
+				buttons.willDecodePickedImage_fn =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.clearValidationMessage() // in case there was a parsing err etc displaying
+					thisSelf._clearForm() // may as well
+				}
+				buttons.didPick_fn =
+				{ [weak self] (uriString) in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.__shared_didPick(requestURIStringForAutofill: uriString)
+				}
+				buttons.didEndQRScanWithErrStr_fn =
+				{ [weak self] (localizedValidationMessage) in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.set(validationMessage: localizedValidationMessage, wantsXButton: true)
+				}
+				self.qrPicking_actionButtons = buttons
 			}
 			//
 			// initial configuration; now that references to both the fee estimate layer and the priority select control have been assigned…
@@ -531,8 +550,6 @@ extension SendFundsForm
 		override func tearDown()
 		{
 			super.tearDown()
-			self._tearDownAnyImagePickerController(animated: false)
-			self._tearDownAnyQRScanningCameraViewController(animated: false)
 		}
 		override func stopObserving()
 		{
@@ -564,29 +581,6 @@ extension SendFundsForm
 				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
 				object: nil
 			)
-		}
-		func _tearDownAnyImagePickerController(animated: Bool)
-		{
-			if let viewController = self.presented_imagePickerController {
-				if self.navigationController?.presentedViewController == viewController {
-					viewController.dismiss(animated: animated, completion: nil)
-				} else {
-					DDLog.Warn("SendFundsTab", "Asked to teardown image picker while it was non-nil but not presented.")
-				}
-				self.presented_imagePickerController = nil
-			}
-		}
-		func _tearDownAnyQRScanningCameraViewController(animated: Bool)
-		{
-			if let viewController = self.presented_cameraViewController {
-				let actualPresentedViewController = viewController.navigationController!
-				if self.navigationController?.presentedViewController == actualPresentedViewController {
-					actualPresentedViewController.dismiss(animated: animated, completion: nil)
-				} else {
-					DDLog.Warn("SendFundsTab", "Asked to teardown QR scanning camera vc while it was non-nil but not presented.")
-				}
-				self.presented_cameraViewController = nil
-			}
 		}
 		//
 		// Accessors - Overrides
@@ -775,8 +769,7 @@ extension SendFundsForm
 			self.manualPaymentID_inputView.isEnabled = false
 			self.addPaymentID_buttonView.isEnabled = false
 			//
-			self.useCamera_actionButtonView.isEnabled = false
-			self.chooseFile_actionButtonView.isEnabled = false
+			self.qrPicking_actionButtons.set(isEnabled: false)
 		}
 		override func reEnableForm()
 		{
@@ -799,8 +792,7 @@ extension SendFundsForm
 			self.manualPaymentID_inputView.isEnabled = true
 			self.addPaymentID_buttonView.isEnabled = true
 			//
-			self.useCamera_actionButtonView.isEnabled = true
-			self.chooseFile_actionButtonView.isEnabled = true
+			self.qrPicking_actionButtons.set(isEnabled: true)
 		}
 		var formSubmissionController: SendFundsForm.SubmissionController?
 		override func _tryToSubmitForm()
@@ -1224,8 +1216,7 @@ extension SendFundsForm
 			//
 			// non-scrolling:
 			let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin
-			self.useCamera_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
-			self.chooseFile_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
+			self.qrPicking_actionButtons.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
 		}
 		override func viewDidAppear(_ animated: Bool)
 		{
@@ -1253,8 +1244,7 @@ extension SendFundsForm
 			_ textField: UITextField,
 			shouldChangeCharactersIn range: NSRange,
 			replacementString string: String
-		) -> Bool
-		{
+		) -> Bool {
 			if textField == self.amount_fieldset.inputField { // to support filtering characters
 				return self.amount_fieldset.inputField.textField(
 					textField,
@@ -1277,147 +1267,7 @@ extension SendFundsForm
 			self.set_manualPaymentIDField(isHidden: false)
 		}
 		//
-		@objc func useCamera_tapped()
-		{
-			let viewController = QRCodeScanningCameraViewController()
-			if let error = viewController.didFatalErrorOnInit {
-				let alertController = UIAlertController(
-					title: error.localizedDescription,
-					message: error.userInfo["NSLocalizedRecoverySuggestion"] as? String ?? NSLocalizedString("Please ensure MyMonero can access your device camera via iOS Settings > Privacy.", comment: ""),
-					preferredStyle: .alert
-				)
-				alertController.addAction(
-					UIAlertAction(
-						title: NSLocalizedString("OK", comment: ""),
-						style: .default
-					) { (result: UIAlertAction) -> Void in
-					}
-				)
-				self.navigationController!.present(alertController, animated: true, completion: nil)
-				//
-				return // effectively discarding viewController
-			}
-			viewController.didCancel_fn =
-			{ [unowned self] in
-				self._tearDownAnyQRScanningCameraViewController(animated: true)
-			}
-			var hasOnceUsedScannedString = false // prevent redundant submits
-			viewController.didLocateQRCodeMessageString_fn =
-			{ [unowned self] (scannedMessageString) in
-				if hasOnceUsedScannedString == false {
-					hasOnceUsedScannedString = true
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) // delay here merely for visual effect
-					{ [unowned self] in
-						self._tearDownAnyQRScanningCameraViewController(animated: true)
-						self.__shared_didPick(requestURIStringForAutofill: scannedMessageString) // possibly wait til completion?
-					}					
-				}
-			}
-			self.presented_cameraViewController = viewController
-			let navigationController = UINavigationController(rootViewController: viewController)
-			self.navigationController!.present(
-				navigationController,
-				animated: true,
-				completion: nil
-			)
-		}
-		@objc func chooseFile_tapped()
-		{
-			guard UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) else {
-				let alertController = UIAlertController(
-					title: NSLocalizedString("Saved Photos Album not available", comment: ""),
-					message: NSLocalizedString(
-						"Please ensure you have allowed MyMonero to access your Photos.",
-						comment: ""
-					),
-					preferredStyle: .alert
-				)
-				alertController.addAction(
-					UIAlertAction(
-						title: NSLocalizedString("OK", comment: ""),
-						style: .default
-					) { (result: UIAlertAction) -> Void in
-					}
-				)
-				self.navigationController!.present(alertController, animated: true, completion: nil)
-				return
-			}
-			let pickerController = UIImagePickerController()
-			pickerController.view.backgroundColor = .contentBackgroundColor // prevent weird flashing on transitions
-			pickerController.navigationBar.tintColor = UIColor.systemStandard_navigationBar_tintColor // make it look at least slightly passable… would be nice if font size of btns could be reduced (next to such a small nav title font)… TODO: pimp out nav bar btns, including 'back', ala PushButton
-			pickerController.allowsEditing = false
-			pickerController.delegate = self
-			pickerController.modalPresentationStyle = .formSheet
-			self.presented_imagePickerController = pickerController
-			self.navigationController!.present(pickerController, animated: true, completion: nil)
-		}
-		//
-		// Delegation - UIImagePickerControllerDelegate
-		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
-		{
-			let picked_originalImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-			self._didPick(possibleQRCodeImage: picked_originalImage)
-			self._tearDownAnyImagePickerController(animated: true)
-		}
-		func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
-		{
-			self._tearDownAnyImagePickerController(animated: true)
-		}
-		//
-		// Delegation - QR code and URL picking
-		func _didPick(possibleQRCodeImage image: UIImage)
-		{
-			if self.isFormEnabled == false {
-				DDLog.Warn("SendFundsTab", "Disallowing QR code pick while form disabled")
-				return
-			}
-			self.clearValidationMessage() // in case there was a parsing err etc displaying
-			self._clearForm() // may as well
-			//
-			// now decode qr …
-			let ciImage = CIImage(cgImage: image.cgImage!)
-			var options: [String: Any] = [:]
-			do {
-				options[CIDetectorAccuracy] = CIDetectorAccuracyHigh
-				do {
-					let properties = ciImage.properties
-					let raw_orientation = properties[kCGImagePropertyOrientation as String]
-					let final_orientation = raw_orientation ?? 1 /* "If not present, a value of 1 is assumed." */
-					//
-					options[CIDetectorImageOrientation] = final_orientation
-				}
-			}
-			let context = CIContext()
-			let detector = CIDetector(
-				ofType: CIDetectorTypeQRCode,
-				context: context,
-				options: options
-			)!
-			let features = detector.features(in: ciImage, options: options)
-			if features.count == 0 {
-				self.set(
-					validationMessage: NSLocalizedString("Unable to find QR code data in image", comment: ""),
-					wantsXButton: true
-				)
-				return
-			}
-			if features.count > 2 {
-				self.set(
-					validationMessage: NSLocalizedString("Unexpectedly found multiple QR features in image. This may be a bug.", comment: ""),
-					wantsXButton: true
-				)
-			}
-			let feature = features.first! as! CIQRCodeFeature
-			let messageString = feature.messageString
-			if messageString == nil || messageString == "" {
-				self.set(
-					validationMessage: NSLocalizedString("Unable to find message string in image's QR code.", comment: ""),
-					wantsXButton: true
-				)
-				return
-			}
-			self.__shared_didPick(requestURIStringForAutofill: messageString!)
-		}
+		// Delegation - URL picking (also used by QR picking)
 		func __shared_didPick(requestURIStringForAutofill requestURIString: String)
 		{
 			self.clearValidationMessage() // in case there was a parsing err etc displaying
@@ -1425,7 +1275,7 @@ extension SendFundsForm
 			//
 			self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
 			//
-			let (err_str, optl_requestPayload) = MoneroUtils.RequestURIs.new_parsedRequest(fromURIString: requestURIString)
+			let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(fromURIString: requestURIString)
 			if err_str != nil {
 				self.set(
 					validationMessage: NSLocalizedString(
@@ -1555,7 +1405,7 @@ extension SendFundsForm
 			DispatchQueue.main.async
 			{ [unowned self] in
 				self._clearForm()
-				self._tearDownAnyImagePickerController(animated: false)
+				self.qrPicking_actionButtons.teardownAnyPickers()
 				// TODO/NOTE: This actually may be much better implemented as a property on the Settings controller as in the JS app
 				do { // special:
 					UserDefaults.standard.removeObject(
@@ -1573,7 +1423,7 @@ extension SendFundsForm
 		@objc func PasswordController_willDeconstructBootedStateAndClearPassword()
 		{
 			self._clearForm()
-			self._tearDownAnyImagePickerController(animated: false)
+			self.qrPicking_actionButtons.teardownAnyPickers()
 			//
 			// should already have popped to root thanks to root tab bar vc
 		}

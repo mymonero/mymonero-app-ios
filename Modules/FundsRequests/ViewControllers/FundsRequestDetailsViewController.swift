@@ -86,7 +86,10 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 						self.qrImageFieldView_tapped()
 					}
 				)
-				let image = self.fundsRequest.new_qrCodeImage(withQRSize: .medium) // generating a new image here - is this performant enough?
+				let image = QRCodeImages.new_qrCode_UIImage( // generating a new image here - is this performant enough?
+					fromCGImage: self.fundsRequest.qrCode_cgImage,
+					withQRSize: .medium
+				)
 				view.set(image: image)
 				sectionView.add(fieldView: view)
 			}
@@ -451,7 +454,7 @@ class QRImageButtonDisplayingFieldView: UICommonComponents.Details.ImageButtonDi
 	override func layOut_contentView(content_x: CGFloat, content_w: CGFloat)
 	{
 		// not going to call on super
-		let qrCodeImageSide = FundsRequest.QRSize.medium.side
+		let qrCodeImageSide = QRCodeImages.QRSize.medium.side
 		let qrCodeInsetFromMatteView: CGFloat = 3
 		let offsetFromImage = CGFloat(FundsRequestCellQRCodeMatteCells.imagePaddingInset) + qrCodeInsetFromMatteView
 		let qrCodeMatteViewSide: CGFloat = qrCodeImageSide + 2*offsetFromImage

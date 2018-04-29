@@ -33,6 +33,7 @@
 //
 //
 import UIKit
+import CoreImage
 
 class FundsRequestCellQRCodeMatteCells
 {

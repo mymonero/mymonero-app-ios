@@ -50,7 +50,12 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var address_label: UICommonComponents.Form.FieldLabel!
 	var address_inputView: UICommonComponents.FormTextViewContainerView!
 	//
+	var qrPicking_actionButtons: UICommonComponents.QRPickingActionButtons?
+	//
 	var resolving_activityIndicator: UICommonComponents.ResolvingActivityIndicatorView!
+	//
+	var useCamera_actionButtonView: UICommonComponents.ActionButton!
+	var chooseFile_actionButtonView: UICommonComponents.ActionButton!
 	//
 	var paymentID_label: UICommonComponents.Form.FieldLabel?
 	var paymentID_inputView: UICommonComponents.FormTextViewContainerView?
@@ -140,6 +145,45 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			view.isHidden = true
 			self.resolving_activityIndicator = view
 			self.scrollView.addSubview(view)
+		}
+		if self._overridable_wants_qrPickingButtons {
+			let buttons = UICommonComponents.QRPickingActionButtons(
+				containingViewController: self,
+				attachingToView: self.scrollView // not self.view
+			)
+			buttons.havingPickedImage_shouldAllowPicking_fn =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return false
+				}
+				if thisSelf.isFormEnabled == false {
+					DDLog.Warn("ContactForm", "Disallowing QR code pick while form disabled")
+					return false
+				}
+				return true
+			}
+			buttons.willDecodePickedImage_fn =
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.clearValidationMessage() // in case there was a parsing err etc displaying
+			}
+			buttons.didPick_fn =
+			{ [weak self] (uriString) in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.__shared_didPick(requestURIStringForAutofill: uriString)
+			}
+			buttons.didEndQRScanWithErrStr_fn =
+			{ [weak self] (localizedValidationMessage) in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.set(validationMessage: localizedValidationMessage, wantsXButton: true)
+			}
+			self.qrPicking_actionButtons = buttons
 		}
 		if self._overridable_wants_paymentIDField {
 			do {
@@ -254,6 +298,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	var _overridable_wantsDeleteRecordButton: Bool { return false }
 	var _overridable_wants_paymentIDField: Bool { return true }
 	var _overridable_wants_paymentID_fieldAccessoryMessageLabel: Bool { return true }
+	var _overridable_wants_qrPickingButtons: Bool { return false }
 	//
 	var _overridable_bottomMostView: UIView {
 		return self.deleteButton ?? self.paymentID_fieldAccessoryMessageLabel ?? self.paymentID_inputView ?? self.address_inputView
@@ -313,6 +358,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		self.emoji_inputView.isEnabled = false
 		self.address_inputView.set(isEnabled: false)
 		self.paymentID_inputView?.set(isEnabled: false)
+		self.qrPicking_actionButtons?.set(isEnabled: false)
 	}
 	override func reEnableForm()
 	{
@@ -328,6 +374,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		if self._overridable_wantsInputPermanentlyDisabled_paymentID != true {
 			self.paymentID_inputView?.set(isEnabled: true)
 		}
+		self.qrPicking_actionButtons?.set(isEnabled: true)
 	}
 	var formSubmissionController: ContactFormSubmissionController?
 	override func _tryToSubmitForm()
@@ -468,15 +515,22 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				x: label_x,
 				y: self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height + UICommonComponents.GraphicAndLabelActivityIndicatorView.marginAboveActivityIndicatorBelowFormInput,
 				width: fullWidth_label_w,
-				height: self.resolving_activityIndicator.new_height
+				height: self.qrPicking_actionButtons != nil ? self.resolving_activityIndicator.new_height_withoutVSpacing : self.resolving_activityIndicator.new_height
 			).integral
+		}
+		if self.qrPicking_actionButtons != nil {
+			let justPreviousView = self.resolving_activityIndicator.isHidden == false ? self.resolving_activityIndicator : self.address_inputView
+			let margin_h = (self.scrollView.frame.size.width - textField_w) / 2
+			self.qrPicking_actionButtons!.givenSuperview_layOut(
+				atY: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.ActionButton.topMargin,
+				withMarginH: margin_h
+			)
 		}
 		if self.paymentID_label != nil {
 			assert(self.paymentID_inputView != nil)
 			//
-			let addressFieldset_bottomEdge = self.resolving_activityIndicator.isHidden ?
-				self.address_inputView.frame.origin.y + self.address_inputView.frame.size.height
-			: self.resolving_activityIndicator.frame.origin.y + self.resolving_activityIndicator.frame.size.height
+			let justPreviousView_frame = self.qrPicking_actionButtons != nil ? self.qrPicking_actionButtons!.frame : self.resolving_activityIndicator.isHidden == false ? self.resolving_activityIndicator.frame : self.address_inputView.frame
+			let addressFieldset_bottomEdge = justPreviousView_frame.origin.y + justPreviousView_frame.size.height
 			//
 			self.paymentID_label!.frame = CGRect(
 				x: label_x,
@@ -562,6 +616,35 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	// Delegation - Internal - Overridable
 	func _overridable_didLayOutFormElementsButHasYetToSizeScrollableContent()
 	{
-		
+	}
+	//
+	// Delegation - URL picking (also used by QR picking)
+	func __shared_didPick(requestURIStringForAutofill requestURIString: String)
+	{
+		self.clearValidationMessage() // in case there was a parsing err etc displaying
+		//
+		let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(fromURIString: requestURIString)
+		if err_str != nil {
+			self.set(
+				validationMessage: NSLocalizedString(
+					"Unable to use the result of decoding that QR code: \(err_str!)",
+					comment: ""
+				),
+				wantsXButton: true
+			)
+			return
+		}
+		let requestPayload = optl_requestPayload!
+		do {
+			let target_address = requestPayload.address
+			assert(target_address != "") // b/c it should have been caught as a validation err on New_ParsedRequest_FromURIString
+			let payment_id_orNil = requestPayload.paymentID
+			
+			self.address_inputView.textView.text = target_address
+			if payment_id_orNil != nil {
+				self.paymentID_inputView?.textView.text = payment_id_orNil!
+			}
+		}
+		self.set_isFormSubmittable_needsUpdate() // now that we've updated values
 	}
 }

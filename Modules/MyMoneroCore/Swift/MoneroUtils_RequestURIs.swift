@@ -36,13 +36,19 @@ import Foundation
 //
 extension MoneroUtils
 {
-	struct RequestURIs
+	struct URIs
 	{
 		enum URIMode
 		{
 			case addressAsAuthority
 			case addressAsFirstPathComponent
 		}
+	}
+}
+extension MoneroUtils.URIs
+{
+	struct Requests
+	{
 		enum URIQueryItemNames: String
 		{
 			case amount = "tx_amount"
@@ -111,8 +117,7 @@ extension MoneroUtils
 		) -> (
 			err_str: String?,
 			parsedRequest: ParsedRequest?
-		)
-		{
+		) {
 			guard let urlComponents = URLComponents(string: uriString) else {
 				return (err_str: "Unrecognized URI format", parsedRequest: nil)
 			}

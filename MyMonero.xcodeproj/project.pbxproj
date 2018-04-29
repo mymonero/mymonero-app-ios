@@ -66,6 +66,8 @@
 		9F2BFF181EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */; };
 		9F2BFF191EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */; };
 		9F30470D1EC657CB00190268 /* MoneroTypes_Amounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30470C1EC657CB00190268 /* MoneroTypes_Amounts.swift */; };
+		9F308680209616C0006632C5 /* QRCodeImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F30867F209616C0006632C5 /* QRCodeImages.swift */; };
+		9F308682209627BA006632C5 /* ContactQRDisplayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F308681209627BA006632C5 /* ContactQRDisplayViewController.swift */; };
 		9F33E6E61F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */; };
 		9F33E6E71F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */; };
 		9F33E6E81F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */; };
@@ -94,6 +96,7 @@
 		9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F46F1D01F58E1A60046348C /* MoneroTypes.swift */; };
 		9F46F1D31F58EC250046348C /* MoneroUtils_PaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */; };
 		9F651660207A7066001BE504 /* MoneroUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65165F207A7065001BE504 /* MoneroUtils.swift */; };
+		9F6DB7612095485400ED7286 /* QRPickingActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DB7602095485400ED7286 /* QRPickingActionButtons.swift */; };
 		9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */; };
 		9F7298B91F329D8400CD59E1 /* UserIdle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B81F329D8400CD59E1 /* UserIdle.swift */; };
 		9F7298BB1F329EB900CD59E1 /* MMApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298BA1F329EB900CD59E1 /* MMApplication.swift */; };
@@ -328,6 +331,8 @@
 		9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroTypes_Amounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes_Amounts.swift; sourceTree = "<group>"; };
+		9F30867F209616C0006632C5 /* QRCodeImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeImages.swift; sourceTree = "<group>"; };
+		9F308681209627BA006632C5 /* ContactQRDisplayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactQRDisplayViewController.swift; sourceTree = "<group>"; };
 		9F33E6DE1F1A9F9C00610662 /* balanceDisplayBG_stretchable_blue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_blue@3x.png"; sourceTree = "<group>"; };
 		9F33E6DF1F1A9F9C00610662 /* balanceDisplayBG_stretchable_darkGrey@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_darkGrey@3x.png"; sourceTree = "<group>"; };
 		9F33E6E01F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "balanceDisplayBG_stretchable_lightGrey@3x.png"; sourceTree = "<group>"; };
@@ -358,6 +363,7 @@
 		9F46F1D01F58E1A60046348C /* MoneroTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes.swift; sourceTree = "<group>"; };
 		9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_PaymentIDs.swift; sourceTree = "<group>"; };
 		9F65165F207A7065001BE504 /* MoneroUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils.swift; sourceTree = "<group>"; };
+		9F6DB7602095485400ED7286 /* QRPickingActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRPickingActionButtons.swift; sourceTree = "<group>"; };
 		9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAppContactActionsCoordinator.swift; sourceTree = "<group>"; };
 		9F7298B81F329D8400CD59E1 /* UserIdle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserIdle.swift; sourceTree = "<group>"; };
 		9F7298BA1F329EB900CD59E1 /* MMApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MMApplication.swift; sourceTree = "<group>"; };
@@ -602,6 +608,7 @@
 				9F749FC31F98142B00B562D0 /* Amounts.swift */,
 				9FEFDD691F991B83001C3CFD /* CurrencyPicker.swift */,
 				9F065FC71F9FF98E0074A6B4 /* StringPicker.swift */,
+				9F6DB7602095485400ED7286 /* QRPickingActionButtons.swift */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -658,6 +665,7 @@
 		9F2A21DB1F2BD442005117DB /* QRCodes */ = {
 			isa = PBXGroup;
 			children = (
+				9F30867E209616B3006632C5 /* Shared */,
 				9F2A21DC1F2BD442005117DB /* ViewControllers */,
 			);
 			path = QRCodes;
@@ -714,6 +722,14 @@
 				9F2119161F5E0EC300B8FA0E /* ViewControllers */,
 			);
 			path = WalletWizard;
+			sourceTree = "<group>";
+		};
+		9F30867E209616B3006632C5 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				9F30867F209616C0006632C5 /* QRCodeImages.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		9F3826621F566A2E00800CA0 /* Headers */ = {
@@ -1174,6 +1190,7 @@
 				9F740D561F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift */,
 				9FA734291F076DB700C674D6 /* EditContactFormViewController.swift */,
 				9F9C59EE1F0C41FD003B9266 /* ContactDetailsViewController.swift */,
+				9F308681209627BA006632C5 /* ContactQRDisplayViewController.swift */,
 			);
 			path = ViewsControllers;
 			sourceTree = "<group>";
@@ -1660,6 +1677,7 @@
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
 				9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */,
 				9F3826681F5678AE00800CA0 /* DNSLookup.m in Sources */,
+				9F308682209627BA006632C5 /* ContactQRDisplayViewController.swift in Sources */,
 				9F9C59F71F0D8313003B9266 /* AddFundsRequestFormViewController.swift in Sources */,
 				9F0801441F188A690074B35A /* Homepage.swift in Sources */,
 				9F8E2F9F1EE883B100F89A1D /* ThemeController.swift in Sources */,
@@ -1688,6 +1706,7 @@
 				9F740D591F1702DF0017A20E /* FundsRequestDetailsViewController.swift in Sources */,
 				9F33E6F51F1EFCE700610662 /* WalletDetailsTransactionCell.swift in Sources */,
 				9F3826691F5678AE00800CA0 /* DNSLookupHandle.swift in Sources */,
+				9F308680209616C0006632C5 /* QRCodeImages.swift in Sources */,
 				9F9C59F31F0C4716003B9266 /* UIResponder+Current.swift in Sources */,
 				9FA7340E1F05AF8800C674D6 /* FundsRequestsListController.swift in Sources */,
 				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
@@ -1715,6 +1734,7 @@
 				9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */,
 				9FA734081F05AF4E00C674D6 /* WalletsTabNavigationViewController.swift in Sources */,
 				9F8E30141EED6F2600F89A1D /* PushButton.swift in Sources */,
+				9F6DB7612095485400ED7286 /* QRPickingActionButtons.swift in Sources */,
 				9F33E6F11F1ABEF300610662 /* WalletDetailsInfoDisclosingCell.swift in Sources */,
 				9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,

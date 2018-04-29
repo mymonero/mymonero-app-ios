@@ -88,7 +88,7 @@ extension UICommonComponents
 		{
 			let superview = self.superview!
 			let safeAreaInsets = superview.polyfilled_safeAreaInsets
-			let containerWidth = superview.frame.size.width - safeAreaInsets.left -  safeAreaInsets.right
+			let containerWidth = superview.frame.size.width - safeAreaInsets.left - safeAreaInsets.right
 			let width = (containerWidth - 2*margin_h)/2 - ActionButton.spaceBetweenSiblingButtons/2
 			let x = margin_h + (self.isLeftOfTwoButtons == true ? 0 : width + ActionButton.spaceBetweenSiblingButtons) + safeAreaInsets.left
 			self.frame = CGRect(

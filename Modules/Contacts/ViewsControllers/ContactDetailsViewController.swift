@@ -50,6 +50,8 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	var derived__integratedXMRAddress__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	var paymentID__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 	//
+	let sectionView_qrCode = UICommonComponents.Details.SectionView(sectionHeaderTitle: nil)
+	//
 	var send_actionButtonView: UICommonComponents.ActionButton!
 	var request_actionButtonView: UICommonComponents.ActionButton!
 	//
@@ -103,6 +105,26 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 					valueToDisplayIfZero: NSLocalizedString("None", comment: "")
 				)
 				self.paymentID__fieldView = view
+				sectionView.add(fieldView: view)
+			}
+			self.scrollView.addSubview(sectionView)
+		}
+		do {
+			let sectionView = self.sectionView_qrCode
+			do {
+				let view = QRImageButtonDisplayingFieldView(
+					labelVariant: self.fieldLabels_variant,
+					title: NSLocalizedString("QR Code", comment: ""),
+					tapped_fn:
+					{ [unowned self] in
+						self.qrImageFieldView_tapped()
+					}
+				)
+				let image = QRCodeImages.new_qrCode_UIImage( // generating a new image here - is this performant enough?
+					fromCGImage: self.contact.qrCode_cgImage,
+					withQRSize: .medium
+				)
+				view.set(image: image)
 				sectionView.add(fieldView: view)
 			}
 			self.scrollView.addSubview(sectionView)
@@ -209,8 +231,13 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 			withXOffset: section_x,
 			andYOffset: self.yOffsetForViewsBelowValidationMessageView
 		)
+		self.sectionView_qrCode.layOut(
+			withContainingWidth: section_w, // since width may have been updated…
+			withXOffset: section_x,
+			andYOffset: self.sectionView.frame.origin.y + self.sectionView.frame.size.height + UICommonComponents.Details.SectionView.interSectionSpacing
+		)
 		self.scrollableContentSizeDidChange(
-			withBottomView: self.sectionView,
+			withBottomView: self.sectionView_qrCode,
 			bottomPadding: 0
 		) // btm padding (for action btns) in .contentInset
 		//
@@ -256,5 +283,11 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	@objc func request_tapped()
 	{
 		WalletAppContactActionsCoordinator.Trigger_requestFunds(fromContact: self.contact)
+	}
+	func qrImageFieldView_tapped()
+	{
+		let controller = ContactQRDisplayViewController(contact: self.contact)
+		let navigationController = UINavigationController(rootViewController: controller)
+		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 }

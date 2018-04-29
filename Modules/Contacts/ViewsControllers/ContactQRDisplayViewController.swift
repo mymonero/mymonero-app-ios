@@ -1,8 +1,8 @@
 //
-//  FundsRequestQRDisplayViewController.swift
+//  ContactQRDisplayViewController.swift
 //  MyMonero
 //
-//  Created by Paul Shapiro on 8/16/17.
+//  Created by Paul Shapiro on 4/29/18.
 //  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
@@ -34,22 +34,22 @@
 //
 import UIKit
 
-class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidatingInfoViewController
+class ContactQRDisplayViewController: UICommonComponents.ScrollableValidatingInfoViewController
 {
 	//
 	// Constants
 	
 	//
 	// Properties
-	var fundsRequest: FundsRequest
+	var contact: Contact
 	//
 	var informationalLabel: UICommonComponents.FormAccessoryMessageLabel!
 	var imageView: UIImageView!
 	//
 	// Lifecycle - Init
-	init(fundsRequest: FundsRequest)
+	init(contact: Contact)
 	{
-		self.fundsRequest = fundsRequest
+		self.contact = contact
 		super.init()
 	}
 	required init?(coder aDecoder: NSCoder) {
@@ -60,33 +60,12 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		super.setup()
 		self.view.backgroundColor = .contentBackgroundColor
 		do {
-			let hasAmount = self.fundsRequest.amount != nil
-			let to_address = self.fundsRequest.to_address!
+			let to_address = self.contact.address!
 			var text: String
-			if hasAmount {
-				let xmrSymbol = CcyConversionRates.Currency.XMR.symbol
-				let ccySymbol = self.fundsRequest.amountCurrency ?? xmrSymbol // handles nil default
-				if ccySymbol == xmrSymbol {
-					text = String(
-						format: NSLocalizedString("Scan this code to send %@ %@ to %@.", comment: ""),
-						self.fundsRequest.amount!,
-						CcyConversionRates.Currency.XMR.symbol,
-						to_address
-					)
-				} else {
-					text = String(
-						format: NSLocalizedString("Scan this code to send %@ %@ in Monero to %@.", comment: ""),
-						self.fundsRequest.amount!,
-						self.fundsRequest.amountCurrency!, // actually the symbol
-						to_address
-					)
-				}
-			} else {
-				text = String(
-					format: NSLocalizedString("Scan this code to send Monero to %@.", comment: ""),
-					to_address
-				)
-			}
+			text = String(
+				format: NSLocalizedString("Scan to import %@.", comment: ""),
+				to_address
+			)
 			let view = UICommonComponents.FormAccessoryMessageLabel(
 				text: text
 			)
@@ -98,7 +77,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		}
 		do {
 			let image = QRCodeImages.new_qrCode_UIImage( // generating a new image here - is this performant enough?
-				fromCGImage: self.fundsRequest.qrCode_cgImage,
+				fromCGImage: self.contact.qrCode_cgImage,
 				withQRSize: .large
 			)
 			let view = UIImageView(image: image)
@@ -107,7 +86,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			self.scrollView.addSubview(self.imageView)
 		}
 		do {
-			self.navigationItem.title = NSLocalizedString("Scan Code to Pay", comment: "")
+			self.navigationItem.title = NSLocalizedString("Scan to Import Contact", comment: "")
 			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 				type: .cancel,
 				tapped_fn:
@@ -156,7 +135,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 				y: top_yOffset,
 				width: w,
 				height: 18
-			).integral
+				).integral
 		}
 		let qrSize: QRCodeImages.QRSize = .large
 		self.imageView.frame = CGRect(
@@ -164,7 +143,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			y: self.informationalLabel.frame.origin.y + self.informationalLabel.frame.size.height + 32,
 			width: qrSize.width,
 			height: qrSize.height
-		).integral
+			).integral
 		//
 		self.scrollableContentSizeDidChange(withBottomView: self.imageView, bottomPadding: 24)
 	}
