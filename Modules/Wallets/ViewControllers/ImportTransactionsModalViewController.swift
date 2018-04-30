@@ -398,13 +398,20 @@ extension ImportTransactionsModal
 			let parameters = ImportTransactionsModal.SubmissionController.Parameters(
 				fromWallet: fromWallet,
 				infoRequestParsingResult: result,
+				preSuccess_nonTerminal_validationMessageUpdate_fn:
+				{ [weak self] (localizedString) in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.set(validationMessage: localizedString, wantsXButton: false)
+				},
 				preSuccess_terminal_validationMessage_fn:
 				{ [weak self] (localized_errStr) in
 					guard let thisSelf = self else {
 						return
 					}
 					thisSelf.reEnableForm() // important
-					thisSelf.setValidationMessage(localized_errStr)
+					thisSelf.set(validationMessage: localized_errStr, wantsXButton: false)
 				},
 				canceled_fn:
 				{ [weak self] in

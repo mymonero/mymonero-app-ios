@@ -43,6 +43,7 @@ extension ImportTransactionsModal
 			let fromWallet: Wallet
 			let infoRequestParsingResult: HostedMonero.ParsedResult_ImportRequestInfoAndStatus
 			//
+			var preSuccess_nonTerminal_validationMessageUpdate_fn: (_ localizedString: String) -> Void
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void // aka error
 			var canceled_fn: () -> Void
 			var success_fn: () -> Void
@@ -66,11 +67,26 @@ extension ImportTransactionsModal
 			let target_address = self.parameters.infoRequestParsingResult.payment_address
 			let payment_id = self.parameters.infoRequestParsingResult.payment_id
 			let amount = self.parameters.infoRequestParsingResult.import_fee
+			//
+			let statusMessage_prefix = String(
+				format: NSLocalizedString("Sending %@ XMR…", comment: ""),
+				amount.localized_formattedString
+			)
+			self.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(statusMessage_prefix) // start with just prefix
+			//
 			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
 				amount: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
 				payment_id: payment_id,
 				priority: MoneroTransferSimplifiedPriority.defaultPriority, // .med
+				didUpdateProcessStep_fn:
+				{ [weak self] (processStep) in
+					guard let thisSelf = self else {
+						return
+					}
+					let str = statusMessage_prefix + " " + processStep.localizedDescription // TODO: localize this concatenationn
+					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
+				},
 				success_fn:
 				{ [weak self] (transactionHash, sentAmount) in
 					guard let thisSelf = self else {

@@ -59,6 +59,7 @@ extension SendFundsForm
 			let resolvedPaymentID_fieldIsVisible: Bool
 			//
 			// Process callbacks
+			var preSuccess_nonTerminal_validationMessageUpdate_fn: (_ localizedString: String) -> Void
 			var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
 			var preSuccess_passedValidation_willBeginSending: () -> Void
 			var canceled_fn: () -> Void
@@ -245,12 +246,25 @@ extension SendFundsForm
 			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 		) {
 			self.parameters.preSuccess_passedValidation_willBeginSending()
+			let statusMessage_prefix = String(
+				format: NSLocalizedString("Sending %@ XMR…", comment: ""),
+				MoneroAmount.new(withDouble: self.parameters.amount_submittableDouble).localized_formattedString
+			)
+			self.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(statusMessage_prefix) // start with just prefix
 			//
 			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
 				amount: self.parameters.amount_submittableDouble,
 				payment_id: payment_id,
 				priority: self.parameters.priority,
+				didUpdateProcessStep_fn:
+				{ [weak self] (processStep) in
+					guard let thisSelf = self else {
+						return
+					}
+					let str = statusMessage_prefix + " " + processStep.localizedDescription // TODO: localize this concatenation
+					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
+				},
 				success_fn:
 				{ [weak self] (transactionHash, sentAmount) in
 					guard let thisSelf = self else {

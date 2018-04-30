@@ -125,6 +125,33 @@ extension HostedMonero
 	
 	class FundsSender
 	{
+		enum ProcessStep
+		{
+			case none
+			case fetchingLatestBalance
+			case calculatingFee
+			case fetchingDecoyOutputs
+			case constructingTransaction // may go back to .calculatingFee
+			case submittingTransaction
+			//
+			var localizedDescription: String {
+				switch self {
+					case .none:
+						return "" // unexpected
+					case .fetchingLatestBalance:
+						return NSLocalizedString("Fetching latest balance.", comment: "")
+					case .calculatingFee:
+						return NSLocalizedString("Calculating fee.", comment: "")
+					case .fetchingDecoyOutputs:
+						return NSLocalizedString("Fetching decoy outputs.", comment: "")
+					case .constructingTransaction:
+						return NSLocalizedString("Constructing transaction.", comment: "")
+					case .submittingTransaction:
+						return NSLocalizedString("Submitting transaction.", comment: "")
+				}
+			}
+		}
+		//
 		var hasSendBeenInitiated: Bool = false
 		var isCanceled = false
 		//
@@ -135,10 +162,19 @@ extension HostedMonero
 		var wallet__public_keys: MoneroKeyDuo!
 		var payment_id: MoneroPaymentID?
 		var priority: MoneroTransferSimplifiedPriority!
+		//
+		var processStep: ProcessStep = .none
+		func updateProcessStep(to processStep: ProcessStep)
+		{
+			self.processStep = processStep
+			self.didUpdateProcessStep_fn?(processStep) // emit
+		}
+		//
 		// TODO: for cancelling?
 //		var preSuccess_obtainedSubmitTransactionRequestHandle: (
 //			_ requestHandle: APIClient.RequestHandle
 //		) -> Void
+		var didUpdateProcessStep_fn: ((_ processStep: ProcessStep) -> Void)?
 		var success_fn: ((
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
@@ -256,6 +292,7 @@ extension HostedMonero
 			func _proceedTo_getUnspentOutsUsableForMixin()
 			{
 				assert(self._current_request == nil)
+				self.updateProcessStep(to: .fetchingLatestBalance)
 				self._current_request = HostedMonero.APIClient.shared.UnspentOuts(
 					address: wallet__public_address,
 					view_key__private: wallet__private_keys.view,
@@ -300,6 +337,8 @@ extension HostedMonero
 				passedIn_attemptAt_network_minimumFee: MoneroAmount
 			) { // Now we need to establish some values for balance validation and to construct the transaction
 				DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
+				self.updateProcessStep(to: .calculatingFee)
+				//
 				var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
 				let _/*hostingService_chargeAmount*/ = HostedMonero.APIClient_HostConfig.HostingServiceChargeForTransaction(
 					with: attemptAt_network_minimumFee
@@ -430,6 +469,8 @@ extension HostedMonero
 				usingOuts: [MoneroOutputDescription],
 				feePerKB: MoneroAmount
 			) {
+				self.updateProcessStep(to: .fetchingDecoyOutputs)
+				//
 				DDLog.Info("HostedMonero", "fundTransferDescriptions: \(fundTransferDescriptions)")
 				// since final__mixin is always going to be > 0, since this function is not specced to support sweep_all…
 				assert(self._current_request == nil)
@@ -515,6 +556,7 @@ extension HostedMonero
 				realDestViewKey: MoneroKey?,
 				feePerKB: MoneroAmount
 			) {
+				self.updateProcessStep(to: .constructingTransaction)
 				assert(
 					final__pid_encrypt == false
 					|| (realDestViewKey != nil && MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
@@ -598,6 +640,7 @@ extension HostedMonero
 					DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
 					// status: submitting…
 					assert(thisSelf._current_request == nil)
+					thisSelf.updateProcessStep(to: .submittingTransaction)
 					thisSelf._current_request = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
 						address: thisSelf.wallet__public_address,
 						view_key__private: thisSelf.wallet__private_keys.view,

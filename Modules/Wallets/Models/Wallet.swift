@@ -910,6 +910,7 @@ class Wallet: PersistableObject
 		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 		payment_id: MoneroPaymentID?,
 		priority: MoneroTransferSimplifiedPriority,
+		didUpdateProcessStep_fn: @escaping ((_ processStep: HostedMonero.FundsSender.ProcessStep) -> Void),
 		success_fn: @escaping (
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
@@ -949,6 +950,7 @@ class Wallet: PersistableObject
 				thisSelf.__unlock_sending()
 				success_fn(tx_hash, tx_fee)
 			}
+			fundsSender.didUpdateProcessStep_fn = didUpdateProcessStep_fn
 			fundsSender.failWithErr_fn =
 			{ [weak self] err_str in
 				guard let thisSelf = self else {

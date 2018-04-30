@@ -852,31 +852,25 @@ extension SendFundsForm
 					resolvedPaymentID: resolvedPaymentID,
 					resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible,
 					//
+					preSuccess_nonTerminal_validationMessageUpdate_fn:
+					{ [unowned self] (localizedString) in
+						self.set(
+							validationMessage: localizedString,
+							wantsXButton: false // false b/c it's nonTerminal
+						)
+					},
 					preSuccess_terminal_validationMessage_fn:
 					{ [unowned self] (localizedString) in
 						self.set(
 							validationMessage: localizedString,
-							wantsXButton: true
+							wantsXButton: true // true because it's terminal
 						)
 						self.formSubmissionController = nil // must free as this is a terminal callback
 						self.set_isFormSubmittable_needsUpdate()
 						self.reEnableForm() // b/c we disabled it
 					},
 					preSuccess_passedValidation_willBeginSending:
-					{ [unowned self] in
-						let moneroAmountDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
-							selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
-						)!
-						let moneroAmount = MoneroAmount.new(
-							withDouble: moneroAmountDouble
-						)
-						self.set(
-							validationMessage: String(
-								format: NSLocalizedString("Sending %@ XMR…", comment: ""),
-								moneroAmount.localized_formattedString
-							),
-							wantsXButton: false
-						)
+					{
 					},
 					canceled_fn:
 					{ [weak self] in
