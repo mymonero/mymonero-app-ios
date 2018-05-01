@@ -36,18 +36,23 @@ import Foundation
 //
 class Wallet_HostPollingController
 {
+	//
+	// Properties - Internal
 	weak var wallet: Wallet? // prevent retain cycle since wallet owns self
+	var didUpdate_factorOf_isFetchingAnyUpdates_fn: (() -> Void)!
+	//
 	var timer: Timer!
 	//
 	var requestHandleFor_addressInfo: HostedMonero.APIClient.RequestHandle?
 	var requestHandleFor_addressTransactions: HostedMonero.APIClient.RequestHandle?
 	//
-	//
 	// Lifecycle - Init
-	//
-	init(wallet: Wallet)
-	{
+	init(
+		wallet: Wallet,
+		didUpdate_factorOf_isFetchingAnyUpdates_fn: (() -> Void)?
+	) {
 		self.wallet = wallet
+		self.didUpdate_factorOf_isFetchingAnyUpdates_fn = didUpdate_factorOf_isFetchingAnyUpdates_fn
 		self.setup()
 	}
 	func setup()
@@ -59,9 +64,7 @@ class Wallet_HostPollingController
 		self.performRequests()
 	}
 	//
-	//
 	// Lifecycle - Teardown
-	//
 	deinit
 	{
 		do {
@@ -78,11 +81,15 @@ class Wallet_HostPollingController
 				self.requestHandleFor_addressTransactions = nil
 			}
 		}
+		self._didUpdate_factorOf_isFetchingAnyUpdates() // unsure if emitting is desired here but it probably isn't harmful
 	}
 	//
+	// Accessors
+	var isFetchingAnyUpdates: Bool {
+		return self.requestHandleFor_addressInfo != nil || self.requestHandleFor_addressTransactions != nil
+	}
 	//
 	// Imperatives
-	//
 	func performRequests()
 	{
 		self._fetch_addressInfo()
@@ -124,6 +131,8 @@ class Wallet_HostPollingController
 					return
 				}
 				self.requestHandleFor_addressInfo = nil // first/immediately unlock this request fetch
+				self._didUpdate_factorOf_isFetchingAnyUpdates()
+				//
 				if err_str != nil {
 					return // already logged err
 				}
@@ -134,6 +143,7 @@ class Wallet_HostPollingController
 				wallet._HostPollingController_didFetch_addressInfo(parsedResult!)
 			}
 		)
+		self._didUpdate_factorOf_isFetchingAnyUpdates()
 	}
 	func _fetch_addressTransactions()
 	{
@@ -171,6 +181,8 @@ class Wallet_HostPollingController
 					return
 				}
 				self.requestHandleFor_addressTransactions = nil // first/immediately unlock this request fetch
+				self._didUpdate_factorOf_isFetchingAnyUpdates()
+				//
 				if err_str != nil {
 					return // already logged err
 				}
@@ -181,11 +193,24 @@ class Wallet_HostPollingController
 				wallet._HostPollingController_didFetch_addressTransactions(parsedResult!)
 			}
 		)
+		self._didUpdate_factorOf_isFetchingAnyUpdates()
 	}
 	//
+	// Delegation - isFetchingAnyUpdates
+	var lastRecorded_isFetchingAnyUpdates: Bool?
+	func _didUpdate_factorOf_isFetchingAnyUpdates() // must be called manually
+	{
+		let previous_lastRecorded_isFetchingAnyUpdates: Bool? = self.lastRecorded_isFetchingAnyUpdates
+		let current_isFetchingAnyUpdates = self.isFetchingAnyUpdates
+		self.lastRecorded_isFetchingAnyUpdates = current_isFetchingAnyUpdates
+		if previous_lastRecorded_isFetchingAnyUpdates == nil
+			|| previous_lastRecorded_isFetchingAnyUpdates != current_isFetchingAnyUpdates
+		{ // Emit
+			self.didUpdate_factorOf_isFetchingAnyUpdates_fn()
+		}
+	}
 	//
-	// Delegation
-	// 
+	// Delegation - Polling
 	@objc func __timerFired()
 	{
 		self.performRequests()

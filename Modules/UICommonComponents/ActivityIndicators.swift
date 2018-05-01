@@ -50,18 +50,16 @@ extension UICommonComponents
 		var delayBetweenLoops_scheduledTimer: Timer?
 		//
 		// Lifecycle
-		init()
+		init(appearance: GraphicActivityIndicatorPartBulbView.Appearance)
 		{
 			let frame = CGRect(x: 0, y: 0, width: GraphicActivityIndicatorView.width, height: max(GraphicActivityIndicatorPartBulbView.height_off, GraphicActivityIndicatorPartBulbView.height_on))
 			super.init(frame: frame)
-			do {
-				for _ in 0..<GraphicActivityIndicatorView.numberOf_bulbViews {
-					let bulbView = GraphicActivityIndicatorPartBulbView()
-					bulbViews.append(bulbView)
-					self.addSubview(bulbView)
-				}
+			//
+			for _ in 0..<GraphicActivityIndicatorView.numberOf_bulbViews {
+				let bulbView = GraphicActivityIndicatorPartBulbView(appearance: appearance)
+				bulbViews.append(bulbView)
+				self.addSubview(bulbView)
 			}
-			
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
@@ -125,7 +123,7 @@ extension UICommonComponents
 						bulbView.configureAs_on()
 					},
 					completion:
-					{ (finished) in
+					{ [unowned self] (finished) in
 						if finished {
 							UIView.animate(
 								withDuration: durationOfAnimationTo_off,
@@ -191,15 +189,51 @@ extension UICommonComponents
 		static let y_off: CGFloat = 3
 		static let y_on: CGFloat = 0
 		//
-		static let color_on = UIColor(rgb: 0x494749)
-		static let color_off = UIColor(rgb: 0x383638)
-		//
-		init()
+		static let color_on__normalBackground = UIColor(rgb: 0x494749)
+		static let color_off__normalBackground = UIColor(rgb: 0x383638)
+		static let color_on__accentBackground = UIColor(rgb: 0x7C7A7C)
+		static let color_off__accentBackground = UIColor(rgb: 0x5A585A)
+		enum Appearance
 		{
+			case onNormalBackground
+			case onAccentBackground
+			//
+			var color_on: UIColor {
+				switch self {
+					case .onNormalBackground:
+						return color_on__normalBackground
+					case .onAccentBackground:
+						return color_on__accentBackground
+				}
+			}
+			var color_off: UIColor {
+				switch self {
+					case .onNormalBackground:
+						return color_off__normalBackground
+					case .onAccentBackground:
+						return color_off__accentBackground
+				}
+			}
+			var shadowColor: UIColor {
+				switch self {
+					case .onNormalBackground:
+						return UIColor(red: 22.0/255.0, green: 20.0/255.0, blue: 22.0/255.0, alpha: 155.0/255.0)
+					case .onAccentBackground:
+						return UIColor(red: 33.0/255.0, green: 30.0/255.0, blue: 33.0/255.0, alpha: 135.0/255.0)
+				}
+			}
+		}
+		//
+		// Properties
+		var appearance: Appearance!
+		//
+		init(appearance: Appearance)
+		{
+			self.appearance = appearance
 			super.init(image: GraphicActivityIndicatorPartBulbView.image__decoration)
 			do {
 				let layer = self.layer
-				layer.shadowColor = UIColor(red: 22.0/255.0, green: 20.0/255.0, blue: 22.0/255.0, alpha: 155.0/255.0).cgColor
+				layer.shadowColor = self.appearance.shadowColor.cgColor
 				layer.shadowOpacity = 1
 				layer.shadowOffset = CGSize(width: 0, height: 1)
 				layer.shadowRadius = 1
@@ -218,7 +252,7 @@ extension UICommonComponents
 			self.configure(
 				withY: GraphicActivityIndicatorPartBulbView.y_on,
 				height: GraphicActivityIndicatorPartBulbView.height_on,
-				color: GraphicActivityIndicatorPartBulbView.color_on
+				color: self.appearance.color_on
 			)
 		}
 		func configureAs_off()
@@ -226,7 +260,7 @@ extension UICommonComponents
 			self.configure(
 				withY: GraphicActivityIndicatorPartBulbView.y_off,
 				height: GraphicActivityIndicatorPartBulbView.height_off,
-				color: GraphicActivityIndicatorPartBulbView.color_off
+				color: self.appearance.color_off
 			)
 		}
 		func configure(withY y: CGFloat, height: CGFloat, color: UIColor)
@@ -245,7 +279,7 @@ extension UICommonComponents
 		static let marginAboveActivityIndicatorBelowFormInput: CGFloat = 6
 		//
 		// Properties
-		var activityIndicator = GraphicActivityIndicatorView()
+		var activityIndicator = GraphicActivityIndicatorView(appearance: .onNormalBackground)
 		var label = Form.FieldLabel(title: "", sizeToFit: false)
 		//
 		// Lifecycle

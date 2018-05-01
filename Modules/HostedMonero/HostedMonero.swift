@@ -319,8 +319,7 @@ extension HostedMonero
 				_ err_str: String?,
 				_ result: ParsedResult_AddressTransactions?
 			) -> Void
-		) -> RequestHandle?
-		{
+		) -> RequestHandle? {
 			let parameters = self._new_parameters_forWalletRequest(
 				address: address,
 				view_key__private: view_key__private
@@ -340,8 +339,7 @@ extension HostedMonero
 					view_key__private: view_key__private,
 					spend_key__public: spend_key__public,
 					spend_key__private: spend_key__private
-				)
-				{ (err_str, result) in
+				) { (err_str, result) in
 					self._shared_onMain_callBackFromRequest(err_str, result, fn)
 				}
 			}
@@ -511,8 +509,7 @@ extension HostedMonero
 				_ response_data: Data?,
 				_ response_jsonDict: [String: Any]?
 			) -> Void
-		) -> RequestHandle?
-		{
+		) -> RequestHandle? {
 			let headers: HTTPHeaders =
 			[
 				"Accept": "application/json",

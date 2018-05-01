@@ -168,6 +168,8 @@ class Wallet: PersistableObject
 		case heightsUpdated		 = "Wallet_NotificationNames_heightsUpdated"
 		case transactionsChanged = "Wallet_NotificationNames_transactionsChanged"
 		//
+		case didChange_isFetchingAnyUpdates = "Wallet_NotificationNnames_didChange_isFetchingAnyUpdates"
+		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
@@ -623,9 +625,13 @@ class Wallet: PersistableObject
 		)
 	}
 	//
-	//
 	// Interface - Runtime - Accessors/Properties
-	//
+	var isFetchingAnyUpdates: Bool {
+		if self.hostPollingController == nil {
+			return false
+		}
+		return self.hostPollingController!.isFetchingAnyUpdates
+	}
 	var hasEverFetched_accountInfo: Bool
 	{
 		return self.dateThatLast_fetchedAccountInfo != nil
@@ -714,16 +720,14 @@ class Wallet: PersistableObject
 	// Runtime - Imperatives - Private - Booting
 	func _setStateThatFailedToBoot(
 		withErrStr err_str: String?
-	)
-	{
+	) {
 		self.didFailToBoot_flag = true
 		self.didFailToBoot_errStr = err_str
 	}
 	func __trampolineFor_failedToBootWith_fnAndErrStr(
 		fn: (_ err_str: String?) -> Void,
 		err_str: String?
-	)
-	{
+	) {
 		self._setStateThatFailedToBoot(withErrStr: err_str)
 		DispatchQueue.main.async {
 			NotificationCenter.default.post(name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self, userInfo: nil)
@@ -732,8 +736,7 @@ class Wallet: PersistableObject
 	}
 	func _trampolineFor_successfullyBooted(
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{
+	) {
 		func __proceed_havingActuallyBooted()
 		{
 //			DDLog.Done("Wallets", "Successfully booted \(self)")
@@ -783,7 +786,20 @@ class Wallet: PersistableObject
 	}
 	func _atRuntime_setup_hostPollingController()
 	{
-		self.hostPollingController = Wallet_HostPollingController(wallet: self)
+		self.hostPollingController = Wallet_HostPollingController(
+			wallet: self,
+			didUpdate_factorOf_isFetchingAnyUpdates_fn:
+			{ [unowned self] in
+				DispatchQueue.main.async
+				{ [unowned self] in
+					NotificationCenter.default.post(
+						name: Wallet.NotificationNames.didChange_isFetchingAnyUpdates.notificationName,
+						object: self,
+						userInfo: nil
+					)
+				}
+			}
+		)
 	}
 	func _boot_byLoggingIn(
 		address: MoneroAddress,
@@ -793,8 +809,7 @@ class Wallet: PersistableObject
 		wasAGeneratedWallet: Bool,
 		persistEvenIfLoginFailed_forServerChange: Bool,
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{
+	) {
 		self.isLoggingIn = true
 		//
 		MyMoneroCore.shared.New_VerifiedComponentsForLogIn(
@@ -1001,7 +1016,6 @@ class Wallet: PersistableObject
 	func _HostPollingController_didFetch_addressInfo(
 		_ parsedResult: HostedMonero.ParsedResult_AddressInfo
 	) -> Void {
-		//
 		let xmrToCcyRatesByCcy = parsedResult.xmrToCcyRatesByCcy
 		DispatchQueue.main.async { // just to let wallet stuff finish first
 			CcyConversionRates.Controller.shared.set_xmrToCcyRatesByCcy(
