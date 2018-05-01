@@ -128,8 +128,8 @@ extension UICommonComponents
 		// Imperatives - Interactivity
 		func set(isEnabled: Bool)
 		{
-			self.useCamera_actionButtonView.isEnabled = false
-			self.chooseFile_actionButtonView.isEnabled = false
+			self.useCamera_actionButtonView.isEnabled = isEnabled
+			self.chooseFile_actionButtonView.isEnabled = isEnabled
 		}
 		//
 		// Imperatives - Layout
