@@ -789,12 +789,18 @@ class Wallet: PersistableObject
 		self.hostPollingController = Wallet_HostPollingController(
 			wallet: self,
 			didUpdate_factorOf_isFetchingAnyUpdates_fn:
-			{ [unowned self] in
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
 				DispatchQueue.main.async
-				{ [unowned self] in
+				{ [weak thisSelf] in
+					guard let thisSelf1 = thisSelf else {
+						return
+					}
 					NotificationCenter.default.post(
 						name: Wallet.NotificationNames.didChange_isFetchingAnyUpdates.notificationName,
-						object: self,
+						object: thisSelf1,
 						userInfo: nil
 					)
 				}
