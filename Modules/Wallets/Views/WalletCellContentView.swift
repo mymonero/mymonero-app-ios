@@ -71,6 +71,8 @@ class WalletCellContentView: UIView
 			view.textColor = UIColor(rgb: 0x9E9C9E)
 			view.font = UIFont.middlingRegularMonospace
 			view.numberOfLines = 1
+			view.minimumScaleFactor = 0.4
+			view.adjustsFontSizeToFitWidth = true // for small screen sizes
 			self.addSubview(view)
 			self.subtitleLabel =  view
 		}
@@ -325,6 +327,7 @@ class WalletCellContentView: UIView
 			width: labels_width,
 			height: 16 // TODO: size with font for accessibility?
 		).integral
+		//
 		self.subtitleLabel.frame = CGRect(
 			x: labels_x,
 			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 1,
