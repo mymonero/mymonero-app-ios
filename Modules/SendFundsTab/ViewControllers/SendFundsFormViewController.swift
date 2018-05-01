@@ -701,7 +701,7 @@ extension SendFundsForm
 		// Imperatives - Configuration - Fee estimate label
 		func configure_networkFeeEstimate_label()
 		{
-			let feePerKB_Amount = MoneroAmount("209000000")! // constant for now pending polling fee_per_kb on account info
+			let feePerKB_Amount = MoneroAmount("187630000")! // constant for now pending polling fee_per_kb on account info
 			let priority = self.selected_priority
 			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
 			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
