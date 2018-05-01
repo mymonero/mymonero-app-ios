@@ -975,8 +975,7 @@ extension SendFundsForm
 								CcyConversionRates.Currency.XMR.symbol
 							),
 							style: .destructive // or is red negative b/c the action is also constructive? (use .default)
-							)
-						{ (result: UIAlertAction) -> Void in
+						) { (result: UIAlertAction) -> Void in
 							// must be sure to save state so alert is now not required until a DeleteEverything
 							UserDefaults.standard.set(
 								true,
@@ -990,16 +989,46 @@ extension SendFundsForm
 						UIAlertAction(
 							title: NSLocalizedString("Cancel", comment: ""),
 							style: .default
-							)
-						{ (result: UIAlertAction) -> Void in
+						) { (result: UIAlertAction) -> Void in
 							// bail
 							// shouldn't need to re-enable form b/c we did alert branch/check before disabling form
 						}
 					)
 					self.navigationController!.present(alertController, animated: true, completion: nil)
 					return // early return pending alert result
+				} else {
+					let alertController = UIAlertController(
+						title: NSLocalizedString("Confirm Amount", comment: ""),
+						message: String(
+							format: NSLocalizedString(
+								"Send %@ %@?",
+								comment: ""
+							),
+							MoneroAmount.shared_localized_doubleFormatter().string(for: amount_submittableDouble!)!,
+							CcyConversionRates.Currency.XMR.symbol
+						),
+						preferredStyle: .alert
+					)
+					alertController.addAction(
+						UIAlertAction(
+							title: NSLocalizedString("Cancel", comment: ""),
+							style: .default
+						) { (result: UIAlertAction) -> Void in
+							// bail
+							// shouldn't need to re-enable form b/c we did alert branch/check before disabling form
+						}
+					)
+					alertController.addAction(
+						UIAlertAction(
+							title: NSLocalizedString("Send", comment: ""),
+							style: .default
+						) { (result: UIAlertAction) -> Void in
+							__proceedTo_disableFormAndExecute()
+						}
+					)
+					self.navigationController!.present(alertController, animated: true, completion: nil)
+					return // early return pending alert result
 				}
-				// fall through
 			}
 			// fall through
 			__proceedTo_disableFormAndExecute()
