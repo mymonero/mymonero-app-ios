@@ -141,8 +141,7 @@ class ForgotPasswordViewController: UIViewController
 			UIAlertAction(
 				title: NSLocalizedString("Delete Everything", comment: ""),
 				style: .destructive
-			)
-			{ (result: UIAlertAction) -> Void in
+			) { (result: UIAlertAction) -> Void in
 				PasswordController.shared.initiateDeleteEverything()
 			}
 		)
@@ -150,8 +149,7 @@ class ForgotPasswordViewController: UIViewController
 			UIAlertAction(
 				title: NSLocalizedString("Cancel", comment: ""),
 				style: .default
-			)
-			{ (result: UIAlertAction) -> Void in
+			) { (result: UIAlertAction) -> Void in
 			}
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)

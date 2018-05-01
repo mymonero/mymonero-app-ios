@@ -250,8 +250,7 @@ class AddWalletWizardModalNavigationController: UINavigationController
 						UIAlertAction(
 							title: NSLocalizedString("OK", comment: ""),
 							style: .default
-							)
-						{ (result: UIAlertAction) -> Void in
+						) { (result: UIAlertAction) -> Void in
 						}
 					)
 					self.present(alertController, animated: true, completion: nil)

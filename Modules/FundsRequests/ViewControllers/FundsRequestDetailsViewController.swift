@@ -316,24 +316,22 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 		)
 		alertController.addAction(
 			UIAlertAction(
+				title: NSLocalizedString("Cancel", comment: ""),
+				style: .default
+			) { (result: UIAlertAction) -> Void in
+			}
+		)
+		alertController.addAction(
+			UIAlertAction(
 				title: NSLocalizedString("Delete", comment: ""),
 				style: .destructive
-				)
-			{ (result: UIAlertAction) -> Void in
+			) { (result: UIAlertAction) -> Void in
 				let err_str = FundsRequestsListController.shared.givenBooted_delete(listedObject: self.fundsRequest)
 				if err_str != nil {
 					self.setValidationMessage(err_str!)
 					return
 				}
 				// wait for wasDeleted()
-			}
-		)
-		alertController.addAction(
-			UIAlertAction(
-				title: NSLocalizedString("Cancel", comment: ""),
-				style: .default
-				)
-			{ (result: UIAlertAction) -> Void in
 			}
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)

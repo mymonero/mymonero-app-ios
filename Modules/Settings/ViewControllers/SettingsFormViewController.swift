@@ -708,8 +708,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			UIAlertAction(
 				title: NSLocalizedString("Delete Everything", comment: ""),
 				style: .destructive
-				)
-			{ (result: UIAlertAction) -> Void in
+			) { (result: UIAlertAction) -> Void in
 				PasswordController.shared.initiateDeleteEverything()
 			}
 		)
@@ -717,8 +716,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			UIAlertAction(
 				title: NSLocalizedString("Cancel", comment: ""),
 				style: .default
-				)
-			{ (result: UIAlertAction) -> Void in
+			) { (result: UIAlertAction) -> Void in
 			}
 		)
 		self.navigationController!.present(alertController, animated: true, completion: nil)
