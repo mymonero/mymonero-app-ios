@@ -208,6 +208,17 @@ extension UICommonComponents.Form
 		{
 		}
 		//
+		// Accessors - Overrides
+		override func point(inside point: CGPoint, with event: UIEvent?) -> Bool
+		{
+			for (_, subview) in self.subviews.enumerated() {
+				if subview.hitTest(self.convert(point, to: subview), with: event) != nil {
+					return true
+				}
+			}
+			return false // do not accept touches on self - this way, touches will be passed through to form w/o excluding subviews that want to be interactive
+		}
+		//
 		// Accessors
 		var isResolving: Bool {
 			// different, consistent ways to check this…
