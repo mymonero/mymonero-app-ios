@@ -282,19 +282,25 @@ extension EditWallet
 			generator.notificationOccurred(.warning)
 			//
 			let alertController = UIAlertController(
-				title: NSLocalizedString("Remove this wallet?", comment: ""),
+				title: NSLocalizedString("Logging Out", comment: ""),
 				message: NSLocalizedString(
-					"You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?",
+					"You are about to log out of a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need your mnemonic to recover access to this wallet.\n\nAre you sure you want to log out of this wallet?",
 					comment: ""
 				),
 				preferredStyle: .alert
 			)
 			alertController.addAction(
 				UIAlertAction(
-					title: NSLocalizedString("Remove", comment: ""),
+					title: NSLocalizedString("Cancel", comment: ""),
+					style: .default
+				) { (result: UIAlertAction) -> Void in
+				}
+			)
+			alertController.addAction(
+				UIAlertAction(
+					title: NSLocalizedString("Log out", comment: ""),
 					style: .destructive
-				)
-				{ (result: UIAlertAction) -> Void in
+				) { (result: UIAlertAction) -> Void in
 					let err_str = WalletsListController.shared.givenBooted_delete(listedObject: self.wallet)
 					if err_str != nil {
 						self.setValidationMessage(err_str!)
@@ -303,14 +309,6 @@ extension EditWallet
 					assert(self.navigationController!.presentingViewController != nil)
 					// we always expect self to be presented modally
 					self.navigationController?.dismiss(animated: true, completion: nil)
-				}
-			)
-			alertController.addAction(
-				UIAlertAction(
-					title: NSLocalizedString("Cancel", comment: ""),
-					style: .default
-				)
-				{ (result: UIAlertAction) -> Void in
 				}
 			)
 			self.navigationController!.present(alertController, animated: true, completion: nil)
