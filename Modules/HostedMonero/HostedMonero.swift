@@ -554,24 +554,21 @@ extension HostedMonero
 						DDLog.Error("HostedMonero", "\(url) \(statusCode)")
 						var errStr = error.localizedDescription
 						if let data = response.data {
-							if data != nil {
-								var errDataJSON: [String: Any]
-								do {
-									errDataJSON = try JSONSerialization.jsonObject(with: data) as! [String: Any]
-									if let embeddedErrorMessage = errDataJSON["Error"] as? String {
-										errStr = String(
-											format: NSLocalizedString(
-												"Error code %d - %@",
-												comment: ""
-											),
-											statusCode,
-											embeddedErrorMessage
-										)
-									} else {
-									}
-								} catch {
+							var errDataJSON: [String: Any]
+							do {
+								errDataJSON = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+								if let embeddedErrorMessage = errDataJSON["Error"] as? String {
+									errStr = String(
+										format: NSLocalizedString(
+											"Error code %d - %@",
+											comment: ""
+										),
+										statusCode,
+										embeddedErrorMessage
+									)
+								} else {
 								}
-							} else {
+							} catch {
 							}
 						} else {
 						}
