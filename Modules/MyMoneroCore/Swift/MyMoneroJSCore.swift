@@ -53,6 +53,15 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	var webView: WKWebView!
 	var hasBooted = false
 	//
+	enum NetType: UInt32
+	{
+		case MAINNET = 0
+		//
+		var jsRepresentation: UInt32 {
+			return self.rawValue
+		}
+	}
+	//
 	init(window: UIWindow)
 	{
 		self.window = window
@@ -113,7 +122,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 	func NewlyCreatedWallet(_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void)
 	{
 		let wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
-		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"" ])
+		self._callSync(.wallet, "NewlyCreatedWallet", [ "\"\(wordsetName.rawValue)\"", "\(NetType.MAINNET.jsRepresentation)" ])
 		{ [unowned self] (err_str, any) in
 			if let err_str = err_str {
 				fn(err_str, nil)
@@ -128,8 +137,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ account_seed: String,
 		_ wordsetName: MoneroMnemonicWordsetName,
 		_ fn: @escaping (_ err_str: String?, MoneroSeedAsMnemonic?) -> Void
-	)
-	{
+	) {
 		self._callSync(.wallet, "MnemonicStringFromSeed", [ "\"\(account_seed)\"", "\"\(wordsetName.rawValue)\"" ])
 		{ (err_str, any) in
 			if let err_str = err_str {
@@ -144,9 +152,8 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ mnemonicString: MoneroSeedAsMnemonic,
 		_ wordsetName: MoneroMnemonicWordsetName,
 		_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void
-	)
-	{
-		self._callSync(.wallet, "SeedAndKeysFromMnemonic_sync", [ "\"\(mnemonicString)\"", "\"\(wordsetName.rawValue)\"" ])
+	) {
+		self._callSync(.wallet, "SeedAndKeysFromMnemonic_sync", [ "\"\(mnemonicString)\"", "\"\(wordsetName.rawValue)\"", "\(NetType.MAINNET.jsRepresentation)" ])
 		{ (err_str, any) in
 			if let err_str = err_str {
 				fn(err_str, nil)
@@ -172,7 +179,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		_ address: String,
 		_ fn: @escaping (_ err_str: String?, _ decodedAddressComponents: MoneroDecodedAddressComponents?) -> Void
 	) {
-		self._callSync(.core, "decode_address", [ "\"\(address)\"" ])
+		self._callSync(.core, "decode_address", [ "\"\(address)\"", "\(NetType.MAINNET.jsRepresentation)" ])
 		{ (err_str, any) in
 			if let err_str = err_str {
 				fn(err_str, nil)
@@ -204,6 +211,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		let args =
 		[
 			"\"\(address)\"",
+			"\(NetType.MAINNET.jsRepresentation)",
 			"\"\(view_key)\"",
 			"\(spend_key_orNilForViewOnly != nil ? "\"\(spend_key_orNilForViewOnly!)\"" : "undefined")",
 			"\(seed_orNil != nil ? "\"\(seed_orNil!)\"" : "undefined")",
@@ -270,7 +278,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				fn("No result of public_addr found on result of random_scalar.", nil)
 				return
 			}
-			self._callSync(.core, "create_address", [ scalar ])
+			self._callSync(.core, "create_address", [ scalar, "\(NetType.MAINNET.jsRepresentation)" ])
 			{ (err_str, any) in
 				if let err_str = err_str {
 					fn("Error creating address with random scalar: \(err_str)", nil)
@@ -337,6 +345,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			ifPIDEncrypt_realDestViewKey != nil ? ifPIDEncrypt_realDestViewKey!.jsRepresentationString : "undefined", // undefined rather than "undefined" - tho the undefined case here should be able to be a garbage value
 			"\(unlock_time)",
 			"\(isRingCT != nil ? isRingCT! : true)",
+			"\(NetType.MAINNET.jsRepresentation)"
 		]
 		// might be nice to assert arg length here or centrally via some fn name -> length map
 		self._callSync(.core, "create_transaction", args)
@@ -359,8 +368,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			_ serialized_signedTx: MoneroSerializedSignedTransaction?,
 			_ tx_hash: String?
 		) -> Void
-	) -> Void
-	{
+	) -> Void {
 		let json_String = __jsonStringForArg(fromJSONDict: signedTx)
 		self._callSync(.core, "serialize_rct_tx_with_hash", [ json_String ])
 		{ (err_str, any) in
@@ -396,7 +404,8 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		let args: [String] =
 		[
 			standardAddress.jsRepresentationString,
-			shortPaymentID.jsRepresentationString
+			shortPaymentID.jsRepresentationString,
+			"\(NetType.MAINNET.jsRepresentation)"
 		]
 		// might be nice to assert arg length here or centrally via some fn name -> length map
 		self._callSync(.core, "new__int_addr_from_addr_and_short_pid", args)
@@ -413,9 +422,7 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 		}
 	}
 	//
-	//
 	// Internal - Accessors - Parsing/Factories
-	//
 	func _new_moneroWalletDescription_byParsing_dict(
 		_ dict: [String: AnyObject],
 		_ optl_passThrough_mnemonicString: MoneroSeedAsMnemonic?

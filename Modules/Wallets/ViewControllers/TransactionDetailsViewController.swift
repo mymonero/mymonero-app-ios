@@ -304,10 +304,10 @@ extension TransactionDetails
 				#else
 					shouldTrip = true
 				#endif
-				assert(shouldTrip == false, "Didn't find same transaction in already open details view. Likely a server issue.")
-				#if !MOCK_SUCCESSOFTXSUBMISSION
-					assert(false)
-				#endif
+				if shouldTrip {
+					DDLog.Warn("TransactionDetails", "Didn't find same transaction in already open details view. Likely a server issue.")
+				}
+//				assert(shouldTrip == false, "Didn't find same transaction in already open details view. Likely a server issue.")
 				return // or else just prevent fallthrough
 			}
 			let updated_transaction = mutable__updated_transaction!
