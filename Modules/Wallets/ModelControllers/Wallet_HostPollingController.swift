@@ -57,8 +57,7 @@ class Wallet_HostPollingController
 	}
 	func setup()
 	{
-		// start polling:
-		self.timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(__timerFired), userInfo: nil, repeats: true)
+		self.startPollingTimer()
 		// ^ just immediately going to jump into the runtime - so only instantiate self when you're ready to do this
 		//
 		self.performRequests()
@@ -67,10 +66,7 @@ class Wallet_HostPollingController
 	// Lifecycle - Teardown
 	deinit
 	{
-		do {
-			self.timer.invalidate()
-			self.timer = nil
-		}
+		self.invalidateTimer()
 		do {
 			if let requestHandle = self.requestHandleFor_addressInfo {
 				requestHandle.cancel()
@@ -88,13 +84,27 @@ class Wallet_HostPollingController
 	var isFetchingAnyUpdates: Bool {
 		return self.requestHandleFor_addressInfo != nil || self.requestHandleFor_addressTransactions != nil
 	}
+	static let manualRefreshCoolDownMinimumTimeInterval: TimeInterval = 10
+	static let pollingTimerPeriod: TimeInterval = 30
 	//
-	// Imperatives
+	// Imperatives - Timer
+	func startPollingTimer()
+	{
+		self.timer = Timer.scheduledTimer(timeInterval: Wallet_HostPollingController.pollingTimerPeriod, target: self, selector: #selector(__timerFired), userInfo: nil, repeats: true)
+	}
+	func invalidateTimer()
+	{
+		self.timer.invalidate()
+		self.timer = nil
+	}
+	//
+	// Imperatives - Requests
 	func performRequests()
 	{
 		self._fetch_addressInfo()
 		self._fetch_addressTransactions()
 	}
+	var _dateOfLast_fetch_addressInfo: Date?
 	func _fetch_addressInfo()
 	{
 		if self.requestHandleFor_addressInfo != nil {
@@ -130,6 +140,7 @@ class Wallet_HostPollingController
 					assert(false, "Already canceled")
 					return
 				}
+				self._dateOfLast_fetch_addressInfo = Date()
 				self.requestHandleFor_addressInfo = nil // first/immediately unlock this request fetch
 				self._didUpdate_factorOf_isFetchingAnyUpdates()
 				//
@@ -145,6 +156,7 @@ class Wallet_HostPollingController
 		)
 		self._didUpdate_factorOf_isFetchingAnyUpdates()
 	}
+	var _dateOfLast_fetch_addressTransactions: Date?
 	func _fetch_addressTransactions()
 	{
 		if self.requestHandleFor_addressTransactions != nil {
@@ -180,6 +192,7 @@ class Wallet_HostPollingController
 					assert(false, "Already canceled")
 					return
 				}
+				self._dateOfLast_fetch_addressTransactions = Date()
 				self.requestHandleFor_addressTransactions = nil // first/immediately unlock this request fetch
 				self._didUpdate_factorOf_isFetchingAnyUpdates()
 				//
@@ -194,6 +207,24 @@ class Wallet_HostPollingController
 			}
 		)
 		self._didUpdate_factorOf_isFetchingAnyUpdates()
+	}
+	//
+	// Imperatives - Manual refresh
+	func requestFromUI_manualRefresh()
+	{
+		if self.requestHandleFor_addressInfo != nil || self.requestHandleFor_addressTransactions != nil {
+			return // still refreshing.. no need
+		}
+		// now since addressInfo and addressTransactions are nearly happening at the same time (with failures and delays unlikely), I'm just going to use time since addressTransactions to approximate length since last collective refresh
+		let hasBeenLongEnoughSinceLastRefreshToRefresh: Bool = self._dateOfLast_fetch_addressTransactions == nil /* we know a request is not _currently_ happening, so nil date means one has never happened */
+			|| abs(self._dateOfLast_fetch_addressTransactions!.timeIntervalSinceNow/*negative*/) >= Wallet_HostPollingController.manualRefreshCoolDownMinimumTimeInterval
+		if hasBeenLongEnoughSinceLastRefreshToRefresh {
+			// and here we again know we don't have any requests to cancel
+			self.performRequests() // approved manual refresh
+			//
+			self.invalidateTimer() // clear and reset timer to push next fresh out by timer period
+			self.startPollingTimer()
+		}
 	}
 	//
 	// Delegation - isFetchingAnyUpdates

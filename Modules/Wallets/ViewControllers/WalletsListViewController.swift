@@ -126,4 +126,16 @@ class WalletsListViewController: ListViewController
 	{
 		self._presentAddWalletWizard(inTaskMode: .pickCreateOrUseExisting)
 	}
+	//
+	// Delegation - View
+	override func viewDidAppear(_ animated: Bool)
+	{
+		super.viewDidAppear(animated)
+		//
+		self.listController.records.forEach
+		{ (object) in
+			let wallet = object as! Wallet
+			wallet.requestManualUserRefresh()
+		}
+	}
 }

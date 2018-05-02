@@ -895,14 +895,22 @@ class Wallet: PersistableObject
 		}
 	}
 	//
+	// Imperatives
+	func requestManualUserRefresh()
+	{
+		if let controller = self.hostPollingController {
+			controller.requestFromUI_manualRefresh()
+		} else {
+			DDLog.Warn("Wallet", "Manual refresh requested before hostPollingController set up.")
+			// not booted yet.. ignoring
+		}
+	}
 	//
 	// Runtime (Booted) - Imperatives - Updates
-	//
 	func SetValuesAndSave(
 		walletLabel: String,
 		swatchColor: SwatchColor
-	) -> String? // err_str -- maybe port to 'throws'
-	{
+	) -> String? { // err_str -- maybe port to 'throws'
 		let isChanging__walletLabel = self.walletLabel != walletLabel
 		let isChanging__swatchColor = self.swatchColor != swatchColor
 		self.walletLabel = walletLabel
@@ -1016,9 +1024,7 @@ class Wallet: PersistableObject
 		ScreenSleep.reEnable_screenSleep()
 	}
 	//
-	//
 	// HostPollingController - Delegation / Protocol
-	// 
 	func _HostPollingController_didFetch_addressInfo(
 		_ parsedResult: HostedMonero.ParsedResult_AddressInfo
 	) -> Void {
@@ -1139,16 +1145,13 @@ class Wallet: PersistableObject
 		}
 	}
 	//
-	//
 	// Delegation - Internal - Data value property update events
-	//
 	func ___didReceiveActualChangeTo_balance(
 		// Not actually using these args currently…
 		old_totalReceived: MoneroAmount?,
 		old_totalSent: MoneroAmount?,
 		old_lockedBalance: MoneroAmount?
-	)
-	{
+	) {
 		NotificationCenter.default.post(
 			name: Notification.Name(NotificationNames.balanceChanged.rawValue),
 			object: self
@@ -1157,8 +1160,7 @@ class Wallet: PersistableObject
 	func ___didReceiveActualChangeTo_spentOutputs(
 		// Not actually using this arg currently…
 		old_spentOutputs: [MoneroSpentOutputDescription]?
-	)
-	{
+	) {
 		NotificationCenter.default.post(
 			name: Notification.Name(NotificationNames.spentOutputsChanged.rawValue),
 			object: self
@@ -1173,8 +1175,7 @@ class Wallet: PersistableObject
 	}
 	func ___didReceiveActualChangeTo_transactions(
 		old_transactions: [MoneroHistoricalTransactionRecord]?
-	)
-	{
+	) {
 		NotificationCenter.default.post(
 			name: Notification.Name(NotificationNames.transactionsChanged.rawValue),
 			object: self

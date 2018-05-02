@@ -616,6 +616,7 @@ extension WalletDetails
 					}
 				}
 			}
+			self.wallet.requestManualUserRefresh()
 		}
 		override func viewWillDisappear(_ animated: Bool)
 		{

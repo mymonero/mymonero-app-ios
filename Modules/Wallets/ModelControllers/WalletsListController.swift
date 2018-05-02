@@ -95,9 +95,7 @@ class WalletsListController: PersistedObjectListController
 		return inUseSwatches
 	}
 	//
-	//
 	// Booted - Imperatives - Public - Wallets list
-	//
 	func CreateNewWallet_NoBootNoListAdd(
 		_ fn: @escaping (_ err: String?, _ walletInstance: Wallet?) -> Void
 	) -> Void { // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
