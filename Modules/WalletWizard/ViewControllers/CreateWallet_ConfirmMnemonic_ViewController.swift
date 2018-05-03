@@ -113,7 +113,7 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			view.numberOfLines = 0
 			view.font = UIFont.smallRegularMonospace
 			view.textColor = UIColor(rgb: 0xF97777)
-			view.text = NSLocalizedString("That’s not right. You can try again or start over with a new mnemonic.", comment: "")
+			view.text = NSLocalizedString("That’s not right. You can try again or start over with a new mnemonic.", comment: "") // NOTE: there is a no break space char btwn "new" and "mnemonic"
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -329,9 +329,9 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 		if self.incorrectMnemonicMessageLabel.isHidden == false {
 			let w: CGFloat = 250
 			let x = self.selectedWordsView.frame.origin.x + (self.selectedWordsView.frame.size.width - w)/2
-			let y = self.selectedWordsView.frame.origin.y + self.selectedWordsView.frame.size.height
-			let h: CGFloat = 40 // rough estimate (should be ok in this case) which contains extra btm padding
-			self.incorrectMnemonicMessageLabel.frame = CGRect(x: x, y: y, width: w, height: h).integral
+			let y = self.selectedWordsView.frame.origin.y + self.selectedWordsView.frame.size.height + 8
+			self.incorrectMnemonicMessageLabel.frame = CGRect(x: x, y: y, width: w, height: 0).integral
+			self.incorrectMnemonicMessageLabel.sizeToFit()
 			//
 			assert(self.tryAgain_actionButtonView.isHidden == false)
 			assert(self.startOver_actionButtonView.isHidden == false)
@@ -462,11 +462,11 @@ extension CreateWallet_ConfirmMnemonic
 			withLeftCapWidth: 4,
 			topCapHeight: 4
 		)
-		static let visual__h: CGFloat = 21
+		static let visual__h: CGFloat = 30
 		static let h = visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
-		static let visual__interWordView_margin_h: CGFloat = 8
+		static let visual__interWordView_margin_h: CGFloat = 10
 		static let interWordView_margin_h = visual__interWordView_margin_h - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_h
-		static let visual__interWordView_margin_v: CGFloat = 8
+		static let visual__interWordView_margin_v: CGFloat = 10
 		static let interWordView_margin_v = visual__interWordView_margin_v - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 		//
 		// Properties

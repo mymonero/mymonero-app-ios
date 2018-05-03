@@ -109,7 +109,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		do {
 			self.navigationItem.title = NSLocalizedString("Scan Code to Pay", comment: "")
 			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .cancel,
+				type: .go,
 				tapped_fn:
 				{ [unowned self] in
 					self.navigationController!.dismiss(

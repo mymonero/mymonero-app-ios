@@ -47,7 +47,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	}
 	//
 	// Properties - Views
-	var changePasswordButton = UICommonComponents.PushButton(pushButtonType: .utility)
+	var changePasswordButton = UICommonComponents.InlineButton(inlineButtonType: .utility)
 	//
 	var appTimeoutAfterS_label: UICommonComponents.Form.FieldLabel!
 	var appTimeoutAfterS_inputView: SettingsAppTimeoutAfterSecondsSliderInputView!
@@ -341,7 +341,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		super.setup_navigation()
 		self.navigationItem.title = NSLocalizedString("Preferences", comment: "")
 		self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .cancel,
+			type: .openModal,
 			target: self,
 			action: #selector(tapped_barButtonItem_about),
 			title_orNilForDefault: NSLocalizedString("About", comment: "")
@@ -468,7 +468,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		//
-		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 21
+		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16
 		//
 		let label_x = self.new__label_x
 		let input_x = self.new__input_x
@@ -477,15 +477,12 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 //		let edgeFlushInput_w = textField_w - 2*UICommonComponents.FormInputCells.imagePadding_x // re-compensate to arrive at value that causes element to actually be visually aligned with inputs and design metrics
 		let fullWidth_label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		//
-		do {
-			self.changePasswordButton.sizeToFit()
-			self.changePasswordButton.frame = CGRect(
-				x: input_x,
-				y: top_yOffset,
-				width: self.changePasswordButton.frame.size.width + 2*10 + 2*UICommonComponents.FormInputCells.imagePadding_x,
-				height: 26 + 2*UICommonComponents.FormInputCells.imagePadding_y
-			).integral
-		}
+		self.changePasswordButton.frame = CGRect(
+			x: input_x,
+			y: top_yOffset,
+			width: textField_w,
+			height: UICommonComponents.InlineButton.fixedHeight
+		).integral
 		//
 		do {
 			self.appTimeoutAfterS_label!.frame = CGRect(
@@ -520,7 +517,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			let marginUnderSwitchesFieldsetTitleAboveFirstField: CGFloat = 7
 			self.authentication_label.frame = CGRect(
 				x: label_x,
-				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets,
+				y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + spacingBetweenFieldsets + (UIFont.shouldStepDownLargerFontSizes ? 16 : 21) /* this k is a special case because we're just under the appTimeoutAfterS_fieldAccessoryMessageLabel */,
 				width: self.authentication_label.frame.size.width,
 				height: self.authentication_label.frame.size.height
 			)

@@ -241,6 +241,7 @@
 		9FCE96CA1F04130200A5837D /* terms_checkbox@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */; };
 		9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */; };
 		9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */; };
+		9FCEB21D209B9C5D0018EABE /* InlineButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCEB21C209B9C5D0018EABE /* InlineButtons.swift */; };
 		9FD354171F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */; };
 		9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */; };
 		9FD70E091F1988FB000FE675 /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD70E081F1988FB000FE675 /* Tables.swift */; };
@@ -510,6 +511,7 @@
 		9FCE96C81F04130200A5837D /* terms_checkbox@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "terms_checkbox@3x.png"; sourceTree = "<group>"; };
 		9FCE96CB1F04131600A5837D /* actionButton_iconImage__startOver@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__startOver@3x.png"; sourceTree = "<group>"; };
 		9FCE96CC1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "actionButton_iconImage__tryAgain@3x.png"; sourceTree = "<group>"; };
+		9FCEB21C209B9C5D0018EABE /* InlineButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineButtons.swift; sourceTree = "<group>"; };
 		9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_error_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textField_bg_immutable_noErr_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FD70E081F1988FB000FE675 /* Tables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
@@ -588,6 +590,7 @@
 				9F1D002D1EE345DF00A4B3A5 /* Forms.swift */,
 				9F1D002F1EE345E500A4B3A5 /* Details.swift */,
 				9FD70E081F1988FB000FE675 /* Tables.swift */,
+				9FCEB21C209B9C5D0018EABE /* InlineButtons.swift */,
 				9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */,
 				9F2BFE731EEEDEE3006B2F7D /* HighlightableCells.swift */,
 				9F8E30131EED6F2600F89A1D /* PushButton.swift */,
@@ -1694,6 +1697,7 @@
 				9F33E6F71F1FE28100610662 /* WalletDetailsTransactionsSectionHeader.swift in Sources */,
 				9F749FC41F98142B00B562D0 /* Amounts.swift in Sources */,
 				9F2BFEE21EF382CB006B2F7D /* FundsRequestsListViewCell.swift in Sources */,
+				9FCEB21D209B9C5D0018EABE /* InlineButtons.swift in Sources */,
 				9F2BFEE01EF382BD006B2F7D /* ContactsListViewCell.swift in Sources */,
 				9FA734051F05AF4E00C674D6 /* Wallet_HostPollingController.swift in Sources */,
 				9F33E6FF1F213B8A00610662 /* ImportTransactionsModalViewController.swift in Sources */,

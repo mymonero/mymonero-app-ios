@@ -38,6 +38,17 @@ extension UICommonComponents
 {
 	class ActionButton: UICommonComponents.PushButton
 	{
+		//
+		// Properties - Derived - Overrides
+		override var _overridable_font: UIFont {
+			return UIFont.shouldStepDownLargerFontSizes ? .smallSemiboldSansSerif : .largeSemiboldSansSerif
+		}
+		// Interface - Properties - Convenience
+		static var new_titleEdgeInsets_withIcon: UIEdgeInsets {
+			return UIEdgeInsetsMake(0, 4, 0, 0)
+		}
+		//
+		// Properties
 		var isLeftOfTwoButtons: Bool!
 		var margins: UIEdgeInsets
 		{
@@ -50,7 +61,7 @@ extension UICommonComponents
 		}
 		static var spaceBetweenSiblingButtons: CGFloat = 8
 		//
-		static var buttonHeight: CGFloat = (UIFont.shouldStepDownLargerFontSizes ? 32 : 40) + 2 // in different width, using smaller font size; +2 because the grey image has shadow around it, and we add extra space for that in the blue and disabled images
+		static var buttonHeight: CGFloat = (UIFont.shouldStepDownLargerFontSizes ? 34 : 42) + 2 // in different width, using smaller font size; +2 because the grey image has shadow around it, and we add extra space for that in the blue and disabled images
 		static var topMargin: CGFloat = 8
 		static var bottomMargin: CGFloat = 8
 		//
@@ -60,6 +71,7 @@ extension UICommonComponents
 		//
 		var iconImage: UIImage?
 		//
+		// Imperatives - Init
 		init(pushButtonType: PushButtonType, isLeftOfTwoButtons: Bool)
 		{
 			self.isLeftOfTwoButtons = isLeftOfTwoButtons

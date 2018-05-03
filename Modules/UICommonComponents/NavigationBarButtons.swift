@@ -44,7 +44,9 @@ extension UICommonComponents
 			case add
 			case cancel
 			case save
+			case go
 			case send
+			case openModal
 			case edit
 			case valueDisplayLabel
 		}
@@ -86,8 +88,9 @@ extension UICommonComponents
 				case .add:
 					buttonType = .progressActionSolidButton
 					break
-			// TODO: make back another style?
-				case .cancel, .edit, .back, .save, .send:
+				case .cancel, // cancel actually seems to look better in blue
+					 .back,
+					 .edit, .save, .send, .go, .openModal:
 					buttonType = .systemStandard
 					break
 				case .valueDisplayLabel: // to be exhaustive
@@ -130,6 +133,14 @@ extension UICommonComponents
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Edit", comment: ""), for: .normal)
 					sizeToFitAndAddPadding = true
 					break
+				case .go:
+					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Go", comment: ""), for: .normal)
+					sizeToFitAndAddPadding = true
+					break
+				case .openModal:
+					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Open", comment: ""), for: .normal)
+					sizeToFitAndAddPadding = true
+					break
 				case .valueDisplayLabel: // to be exhaustive
 					assert(false)
 					break
@@ -166,6 +177,7 @@ extension UICommonComponents
 		enum NavigationButtonType
 		{
 			case systemStandard
+//			case undoing // 'Cancel' seems to look better in blue -PS
 			case progressActionSolidButton
 			case destructive
 		}
@@ -183,24 +195,27 @@ extension UICommonComponents
 			let disabledColor = UIColor(rgb: 0x6B696B)
 			switch self.navigationButtonType
 			{
-			case .systemStandard:
-				color = UIColor(rgb: 0x00C6FF)
-				break
-			case .progressActionSolidButton:
-				color = UIColor(rgb: 0x161416)
-				self.adjustsImageWhenHighlighted = false // looks better IMO -PS
-				let image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
-				let highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
-				
-				let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
-				self.setBackgroundImage(image, for: .normal)
-				self.setBackgroundImage(disabledImage, for: .disabled)
-				self.setBackgroundImage(highlightedImage, for: .highlighted)
-				//
-				break
-			case .destructive:
-				color = UIColor.standaloneValidationTextOrDestructiveLinkContentColor
-				break
+				case .systemStandard:
+					color = UIColor(rgb: 0x00C6FF)
+					break
+//				case .undoing:
+//					color = UIColor(rgb: 0xFCFBFC)
+//					break
+				case .progressActionSolidButton:
+					color = UIColor(rgb: 0x161416)
+					self.adjustsImageWhenHighlighted = false // looks better IMO -PS
+					let image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
+					let highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
+					
+					let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
+					self.setBackgroundImage(image, for: .normal)
+					self.setBackgroundImage(disabledImage, for: .disabled)
+					self.setBackgroundImage(highlightedImage, for: .highlighted)
+					//
+					break
+				case .destructive:
+					color = UIColor.standaloneValidationTextOrDestructiveLinkContentColor
+					break
 			}
 			self.titleLabel!.font = font
 			self.setTitleColor(color, for: .normal)

@@ -88,7 +88,7 @@ class ContactQRDisplayViewController: UICommonComponents.ScrollableValidatingInf
 		do {
 			self.navigationItem.title = NSLocalizedString("Scan to Import Contact", comment: "")
 			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .cancel,
+				type: .go,
 				tapped_fn:
 				{ [unowned self] in
 					self.navigationController!.dismiss(

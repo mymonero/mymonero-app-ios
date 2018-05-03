@@ -135,6 +135,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
 				view.addTarget(self, action: #selector(send_tapped), for: .touchUpInside)
 				view.setTitle(NSLocalizedString("Send", comment: ""), for: .normal)
+				view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 				self.send_actionButtonView = view
 				self.view.addSubview(view)
 			}
@@ -143,6 +144,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
 				view.addTarget(self, action: #selector(request_tapped), for: .touchUpInside)
 				view.setTitle(NSLocalizedString("Request", comment: ""), for: .normal)
+				view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 				self.request_actionButtonView = view
 				self.view.addSubview(view)
 			}

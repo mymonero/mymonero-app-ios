@@ -78,6 +78,7 @@ extension UICommonComponents
 				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
 				view.addTarget(self, action: #selector(useCamera_tapped), for: .touchUpInside)
 				view.setTitle(NSLocalizedString("Use Camera", comment: ""), for: .normal)
+				view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 				self.useCamera_actionButtonView = view
 				self.superview.addSubview(view) // not self.scrollView
 			}
@@ -86,6 +87,7 @@ extension UICommonComponents
 				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
 				view.addTarget(self, action: #selector(chooseFile_tapped), for: .touchUpInside)
 				view.setTitle(NSLocalizedString("Choose file", comment: ""), for: .normal)
+				view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 				self.chooseFile_actionButtonView = view
 				self.superview.addSubview(view) // not self.scrollView
 			}

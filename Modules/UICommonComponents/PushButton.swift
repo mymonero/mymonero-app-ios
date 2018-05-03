@@ -38,6 +38,12 @@ extension UICommonComponents
 {
 	class PushButton: UIButton
 	{
+		//
+		// Properties - Derived - Overridable
+		var _overridable_font: UIFont {
+			return UIFont.shouldStepDownLargerFontSizes ? .smallSemiboldSansSerif : .middlingSemiboldSansSerif
+		}
+		//
 		enum PushButtonType
 		{
 			case utility
@@ -58,8 +64,7 @@ extension UICommonComponents
 			var image: UIImage!
 			let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
 			var highlightedImage: UIImage!
-			let font: UIFont = UIFont.shouldStepDownLargerFontSizes ? .smallSemiboldSansSerif : .middlingSemiboldSansSerif
-
+			let font = self._overridable_font
 			var color: UIColor!
 			let disabledColor = UIColor(rgb: 0x6B696B)
 			switch self.pushButtonType

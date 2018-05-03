@@ -121,19 +121,19 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		var list: [TitleAndDescription] = []
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Creating a wallet", comment: ""),
-			description: NSLocalizedString("Each Monero wallet gets a unique word-sequence called a mnemonic.", comment: "")
+			description: NSLocalizedString("Each Monero wallet gets a unique word-sequence called a mnemonic.", comment: "") // NOTE: non break space
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Write down your mnemonic", comment: ""),
-			description: NSLocalizedString("It's the only way to regain access to your funds if you delete the app.", comment: "")
+			description: NSLocalizedString("It's the only way to regain access to your funds if you delete the app.", comment: "") // NOTE: non break space
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Keep it secret and safe", comment: ""),
-			description: NSLocalizedString("If you save it to an insecure location, it may be viewable by other apps.", comment: "")
+			description: NSLocalizedString("If you save it to an insecure location, it may be viewable by other apps.", comment: "") // NOTE: non break space
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Use it like an actual wallet", comment: ""),
-			description: NSLocalizedString("For keeping large amounts long-term, make a cold-storage wallet instead.", comment: "")
+			description: NSLocalizedString("For keeping large amounts long-term, make a cold-storage wallet instead.", comment: "") // NOTE: non break space
 		))
 		//
 		return list
@@ -186,11 +186,11 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 	override func viewDidLayoutSubviews()
 	{
 		super.viewDidLayoutSubviews()
-		let topMargin: CGFloat = 40
+		let topMargin: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 24 : 40
 		let content_w: CGFloat = 240
 		let content_x = (self.scrollView.frame.size.width - content_w) / 2
 		do {
-			let marginBelowDescriptionLabel: CGFloat = 28
+			let marginBelowDescriptionLabel: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 24 : 28
 			var lastYOffset = topMargin
 			for (_, labelDuo) in self.labelDuos.enumerated() {
 				labelDuo.titleLabel.frame = CGRect(x: 0, y: 0, width: content_w, height: 0)
@@ -214,18 +214,19 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 			}
 		}
 		let bottomMostLabel = self.labelDuos.last!.descriptionLabel
+		let rule_margin_y: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 16 : 24
 		do {
 			self.horizontalRuleView.frame = CGRect(
 				x: content_x,
-				y: bottomMostLabel.frame.origin.y + bottomMostLabel.frame.size.height + 24,
+				y: bottomMostLabel.frame.origin.y + bottomMostLabel.frame.size.height + rule_margin_y,
 				width: content_w,
 				height: 1.0/UIScreen.main.scale
 			)
 		}
 		do {
 			let width = 105 + 2 * UICommonComponents.FormInputCells.imagePadding_x
-			let y: CGFloat = self.horizontalRuleView.frame.origin.y + self.horizontalRuleView.frame.size.height + 24
-			let height = 32 + 2 * UICommonComponents.FormInputCells.imagePadding_y
+			let y: CGFloat = self.horizontalRuleView.frame.origin.y + self.horizontalRuleView.frame.size.height + rule_margin_y
+			let height = 34 + 2 * UICommonComponents.FormInputCells.imagePadding_y
 			self.agreeCheckboxButton.frame = CGRect(x: content_x, y: y, width: width, height: height).integral
 		}
 		self.scrollableContentSizeDidChange(withBottomView: self.agreeCheckboxButton, bottomPadding: 18)

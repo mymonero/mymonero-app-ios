@@ -146,8 +146,9 @@ extension UICommonComponents
 		{
 			//
 			// Properties - Static
+			static let fixedFont = UIFont.smallRegularMonospace
 			static let x: CGFloat = 32
-			static let h: CGFloat = 15
+			static let h: CGFloat = fixedFont.lineHeight
 			//
 			static let visual_marginBelow: CGFloat = 9
 			static let marginBelowLabelAboveSectionContentContainerView: CGFloat = SectionLabel.visual_marginBelow
@@ -170,7 +171,7 @@ extension UICommonComponents
 			}
 			func setup()
 			{
-				self.font = UIFont.smallRegularMonospace
+				self.font = SectionLabel.fixedFont
 				self.textColor = UIColor(rgb: 0x9E9C9E)
 				self.numberOfLines = 1
 			}
@@ -906,7 +907,7 @@ extension UICommonComponents
 			static let fixedFont_middling = UIFont.middlingSemiboldSansSerif
 			static let fixedHeight: CGFloat = FieldLabel.fixedFont_middling.lineHeight // using the larger - would be nice to make this an accessor fn which takes variant
 			//
-			static let visual_marginBelow: CGFloat = 9
+			static let visual_marginBelow: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 8 : 9
 			static let marginBelowLabelAboveTextInputView: CGFloat = Form.FieldLabel.visual_marginBelow - FormInputCells.imagePadding_y
 			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 			//
