@@ -204,8 +204,8 @@ extension WalletDetails
 							finalized_main_string = ""
 							finalized_paddingZeros_string = "00" + locale_decimalSeparator + String(repeating: "0", count: display_coinUnitPlaces)
 						} else {
-							finalized_main_string = balance_aspect_integer + locale_decimalSeparator
-							finalized_paddingZeros_string = String(repeating: "0", count: display_coinUnitPlaces)
+							finalized_main_string = balance_aspect_integer + locale_decimalSeparator + "0"
+							finalized_paddingZeros_string = String(repeating: "0", count: display_coinUnitPlaces - 1/*for ".0"*/)
 						}
 					} else if raw_balanceString__components.count == 2 {
 						finalized_main_string = raw_balanceString
