@@ -101,12 +101,9 @@ extension UICommonComponents
 			if target != nil && action != nil {
 				view.addTarget(target!, action: action!, for: .touchUpInside)
 			}
-			var sizeToFitAndAddPadding = false
+			var sizeToFit = false
 			var or_useWidth_notIncludingImagePadding: CGFloat?
-			let imagePaddingForShadow_h = UICommonComponents.PushButtonCells.imagePaddingForShadow_h
-			let imagePaddingForShadow_v = UICommonComponents.PushButtonCells.imagePaddingForShadow_v
-			switch type
-			{
+			switch type {
 				case .back:
 					view.setImage(UIImage(named: "backButtonIcon"), for: .normal)
 					or_useWidth_notIncludingImagePadding = 44 // was 24; usability
@@ -114,50 +111,50 @@ extension UICommonComponents
 					break
 				case .add:
 					view.setImage(UIImage(named: "addButtonIcon_10"), for: .normal)
-					or_useWidth_notIncludingImagePadding = 26
+					or_useWidth_notIncludingImagePadding = 28
 					view.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
 					break
 				case .cancel:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Cancel", comment: ""), for: .normal)
-					sizeToFitAndAddPadding = true
+					sizeToFit = true
 					break
 				case .save:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Save", comment: ""), for: .normal)
-					sizeToFitAndAddPadding = true
+					sizeToFit = true
 					break
 				case .send:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Send", comment: ""), for: .normal)
-					sizeToFitAndAddPadding = true
+					sizeToFit = true
 					break
 				case .edit:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Edit", comment: ""), for: .normal)
-					sizeToFitAndAddPadding = true
+					sizeToFit = true
 					break
 				case .go:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Go", comment: ""), for: .normal)
-					sizeToFitAndAddPadding = true
+					sizeToFit = true
 					break
 				case .openModal:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Open", comment: ""), for: .normal)
-					sizeToFitAndAddPadding = true
+					sizeToFit = true
 					break
 				case .valueDisplayLabel: // to be exhaustive
 					assert(false)
 					break
 			}
 			var frame: CGRect!
-			if sizeToFitAndAddPadding {
+			if sizeToFit {
 				view.sizeToFit()
 				//
-				let padding_x: CGFloat = 8
 				frame = view.frame // after sizeToFit()
-				frame.size.width += 2*padding_x + 2*imagePaddingForShadow_h
+				frame.size.width += 2*8
 			} else {
 				frame = view.frame
 				if let width = or_useWidth_notIncludingImagePadding {
-					frame.size.width = width + 2*imagePaddingForShadow_h
+					frame.size.width = width
 				}
 			}
+			let imagePaddingForShadow_v = UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 			frame.size.height = 24 + 2*imagePaddingForShadow_v
 			view.frame = frame
 			self.customView = view
