@@ -54,7 +54,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	var appTimeoutAfterS_fieldAccessoryMessageLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
 	//
 	var displayCurrency_label: UICommonComponents.Form.FieldLabel!
-	var displayCurrency_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
+	var displayCurrency_inputView: UICommonComponents.Form.StringPicker.PickerButtonFieldView!
 	//
 	var authentication_label: UICommonComponents.Form.FieldLabel!
 	var authentication_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
@@ -129,6 +129,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					)
 				)
 			)
+			view.tooltipDirectionFromOrigin = .right
 			view.willPresentTipView_fn =
 			{ [unowned self] in
 				self.view.resignCurrentFirstResponder() // if any
@@ -268,16 +269,30 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("DISPLAY CURRENCY", comment: "")
+				title: NSLocalizedString("DISPLAY", comment: "")
 			)
 			self.displayCurrency_label = view
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.Form.StringPicker.PickerButtonView(
+			let view = UICommonComponents.Form.StringPicker.PickerButtonFieldView(
+				title: NSLocalizedString("Currency", comment: ""),
 				selectedValue: SettingsController.shared.displayCurrencySymbol,
 				allValues: CcyConversionRates.Currency.lazy_allCurrencySymbols
 			)
+			view.picker_inputField_didBeginEditing =
+			{ [weak self] (inputField) in
+				DispatchQueue.main.asyncAfter( // slightly janky
+					deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
+				) { [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					if inputField.isFirstResponder { // jic
+						thisSelf.scrollInputViewToVisible(thisSelf.displayCurrency_inputView)
+					}
+				}
+			}
 			view.selectedValue_fn =
 			{ [weak self] in
 				guard let thisSelf = self else {
@@ -551,12 +566,11 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				width: fullWidth_label_w,
 				height: self.displayCurrency_label.frame.size.height
 			)
-			let fixed_dropdownWidth: CGFloat = 8*17 + 1 // disclosure arrow visual alignment with change pw content right edge
 			self.displayCurrency_inputView.frame = CGRect(
 				x: input_x,
 				y: self.displayCurrency_label.frame.origin.y + self.displayCurrency_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-				width: min(textField_w, fixed_dropdownWidth), // obvs the latter
-				height: self.displayCurrency_inputView.frame.size.height
+				width: textField_w,
+				height: self.displayCurrency_inputView.fixedHeight
 			)
 		}
 		//

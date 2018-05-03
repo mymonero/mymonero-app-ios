@@ -40,15 +40,13 @@ extension UICommonComponents.Form
 }
 extension UICommonComponents.Form.StringPicker
 {
-	class PickerButtonView: UICommonComponents.PushButton, UITextFieldDelegate
+	class PickerButtonFieldView: UIView, UITextFieldDelegate, UIGestureRecognizerDelegate
 	{
 		//
-		// Interface - Constants
-		static let visual__h: CGFloat = UICommonComponents.FormInputField.visual__height
-		static let h = PickerButtonView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
-		//
-		static let visual__arrowRightPadding: CGFloat = 12
-		static let label_insets_left: CGFloat = 12
+		// Interface - Accessors
+		var fixedHeight: CGFloat {
+			return 40
+		}
 		//
 		// Properties
 		var allValues: [String]
@@ -56,14 +54,19 @@ extension UICommonComponents.Form.StringPicker
 		var tapped_fn: (() -> Void)?
 		var picker_inputField_didBeginEditing: ((_ textField: UITextField) -> Void)?
 		var selectedValue_fn: (() -> Void)?
-		
+		//
+		var touchInterceptingFieldBackgroundView: UIView!
+		var titleLabel: FieldTitleLabel!
+		var valueLabel: FieldTitleLabel!
+		let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
+		var separatorView: UICommonComponents.Details.FieldSeparatorView!
+		//
 		var selectedValue: String?
 		var pickerView: UICommonComponents.Form.StringPicker.PickerView!
 		var picker_inputField: UITextField!
-		var contentView: UILabel!
 		//
 		// Lifecycle - Init
-		init(selectedValue: String?, allValues: [String])
+		init(title: String, selectedValue: String?, allValues: [String])
 		{
 			self.allValues = allValues
 			//
@@ -73,14 +76,46 @@ extension UICommonComponents.Form.StringPicker
 				self.selectedValue = self.allValues.first
 			}
 			//
-			super.init(pushButtonType: .utility)
+			super.init(frame: .zero)
+			self.setup(title: title)
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
 		}
-		override func setup()
+		func setup(title: String)
 		{
-			super.setup()
+			do {
+				let view = UIView(frame: .zero)
+				self.touchInterceptingFieldBackgroundView = view
+				self.addSubview(view)
+				//
+				let recognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundView_tapped))
+				recognizer.delegate = self
+				view.addGestureRecognizer(recognizer)
+			}
+			do {
+				let view = FieldTitleLabel(title: title)
+				view.isUserInteractionEnabled = false // so as not to intercept touches
+				self.titleLabel = view
+				self.addSubview(view)
+			}
+			do {
+				let view = FieldTitleLabel(title: "") // set via configure call below
+				view.textColor = UIColor(rgb: 0xFFFFFF)
+				view.isUserInteractionEnabled = false // so as not to intercept touches
+				view.textAlignment = .right
+				self.valueLabel = view
+				self.addSubview(view)
+			}
+			self.addSubview(self.accessoryChevronView)
+			do {
+				let view = UICommonComponents.Details.FieldSeparatorView(
+					mode: .contentBackgroundAccent_subtle
+				)
+				view.isUserInteractionEnabled = false // so as not to intercept touches
+				self.separatorView = view
+				self.addSubview(view)
+			}
 			//
 			do {
 				let view = PickerView(allValues: self.allValues)
@@ -89,11 +124,11 @@ extension UICommonComponents.Form.StringPicker
 				}
 				//
 				view.didSelect_fn =
-				{ [unowned self] (value) in
-					self.set(
-						selectedValue: value,
-						skipSettingOnPickerView: true // because we got this from the picker view - avoid inf loop
-					)
+					{ [unowned self] (value) in
+						self.set(
+							selectedValue: value,
+							skipSettingOnPickerView: true // because we got this from the picker view - avoid inf loop
+						)
 				}
 				view.reloaded_fn =
 				{ [unowned self] in
@@ -102,11 +137,10 @@ extension UICommonComponents.Form.StringPicker
 							let values = self.allValues
 							if values.count == 0 { // e.g. booted state deconstructed
 								self.selectedValue = nil
+								self.configureWithSelectedValue()
 								if self.picker_inputField.isFirstResponder {
 									self.picker_inputField.resignFirstResponder()
 								}
-								//
-								self.contentView.text = ""
 								//
 								return
 							}
@@ -115,14 +149,13 @@ extension UICommonComponents.Form.StringPicker
 						}
 						let picker_selectedValue = self.pickerView.selectedValue
 						if picker_selectedValue == nil {
-							self.contentView.text = "" // might as well call it even tho it will have been handled
+							self.configureWithSelectedValue() // might as well call it even tho it will have been handled
 							return
 						}
 						let selectedValue = picker_selectedValue!
 						if self.selectedValue == nil || self.selectedValue! != selectedValue {
 							self.selectedValue = selectedValue
-							//
-							self.contentView.text = selectedValue
+							self.configureWithSelectedValue()
 						} else {
 							DDLog.Warn("UICommonComponents.StringPicker", "reloaded but was same")
 						}
@@ -137,65 +170,58 @@ extension UICommonComponents.Form.StringPicker
 				self.picker_inputField = view
 				self.addSubview(view)
 			}
-			do {
-				let view = UILabel(frame: .zero)
-				self.contentView = view
-				view.textColor = UIColor(rgb: 0xFCFBFC)
-				view.font = UIFont.middlingMediumSansSerif
-				view.numberOfLines = 1
-				view.isUserInteractionEnabled = false // pass touches through to self
-				self.addSubview(view)
-			}
-			if self.selectedValue != nil {
-				self.configure(withValue: self.selectedValue!)
-			}
-			//
-			let image = UIImage(named: "dropdown-arrow-down")!
-			self.setImage(image, for: .normal)
-			//
-			self.contentHorizontalAlignment = .left
-			self.titleEdgeInsets = UIEdgeInsetsMake(0, 1, 0, 0)
-			//
-			self.frame = CGRect(
-				x: 0,
-				y: 0,
-				width: 0,
-				height: PickerButtonView.h
-			)
-			//
-			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+			self.configureWithSelectedValue()
 		}
 		//
-		// Internal - Accessors
-		//
-		// Imperatives - Overrides
+		// Overrides - Layout
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
 			//
-			let iconImageColumn_w = self.image(for: .normal)!.size.width + PickerButtonView.visual__arrowRightPadding
-			self.contentView.frame = CGRect(
-				x: UICommonComponents.PushButtonCells.imagePaddingForShadow_h + type(of: self).label_insets_left,
-				y: UICommonComponents.PushButtonCells.imagePaddingForShadow_v,
-				width: self.frame.size.width - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w - type(of: self).label_insets_left,
-				height: self.frame.size.height - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
-			)
+			self.touchInterceptingFieldBackgroundView.frame = self.bounds
 			//
-			self.imageEdgeInsets = UIEdgeInsetsMake(
-				1,
-				self.frame.size.width - UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w,
-				0,
-				PickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
-			)
+			let arrow_w = self.accessoryChevronView.frame.size.width
+			let arrow_margin_left: CGFloat = 17
+			let arrow_margin_right: CGFloat = 11
+			let arrow_x = self.bounds.size.width - arrow_w - arrow_margin_right
+			//
+			let valueLabel_w: CGFloat = 100
+			let valueLabel_x = arrow_x - valueLabel_w - arrow_margin_left
+			//
+			self.titleLabel.frame = CGRect(
+				x: CGFloat.form_label_margin_x - CGFloat.form_input_margin_x, // b/c self is already positioned by the consumer at the properly inset input_x
+				y: 10,
+				width: self.bounds.size.width - valueLabel_x - 4,
+				height: type(of: self.titleLabel).fixedHeight
+			).integral
+			self.valueLabel.frame = CGRect(
+				x: valueLabel_x,
+				y: 10,
+				width: valueLabel_w,
+				height: type(of: self.valueLabel).fixedHeight
+			).integral
+			self.accessoryChevronView.frame = CGRect(
+				x: arrow_x,
+				y: (self.frame.size.height - self.accessoryChevronView.frame.size.height)/2 - 2,
+				width: self.accessoryChevronView.frame.size.width,
+				height: self.accessoryChevronView.frame.size.height
+			).integral
+			//
+			self.separatorView.frame = CGRect(x: 0, y: self.bounds.size.height - self.separatorView.frame.size.height, width: self.bounds.size.width, height: self.separatorView.frame.size.height)
 		}
 		//
 		// Imperatives - Config
+		var isEnabled: Bool = true
+		func set(isEnabled: Bool)
+		{
+			self.isEnabled = isEnabled
+		}
 		func set(
 			selectedValue value: String,
 			skipSettingOnPickerView: Bool = false // leave as false if you're setting from anywhere but the PickerView
 		) {
 			self.selectedValue = value
-			self.configure(withValue: value)
+			self.configureWithSelectedValue()
 			if skipSettingOnPickerView == false {
 				self.pickerView.selectWithoutYielding(value: value)
 			}
@@ -204,14 +230,21 @@ extension UICommonComponents.Form.StringPicker
 			}
 		}
 		//
+		func configureWithSelectedValue()
+		{
+			self.configure(withValue: self.selectedValue ?? "")
+		}
 		func configure(withValue value: String)
 		{
-			self.contentView.text = value
+			self.valueLabel.text = value
 		}
 		//
 		// Delegation - Interactions
-		@objc func tapped()
+		@objc func backgroundView_tapped()
 		{
+			if isEnabled == false {
+				return
+			}
 			// the popover should be guaranteed not to be showing here…
 			if let tapped_fn = self.tapped_fn {
 				tapped_fn()
@@ -231,6 +264,27 @@ extension UICommonComponents.Form.StringPicker
 			}
 		}
 	}
+	class FieldTitleLabel: UICommonComponents.Form.FieldLabel
+	{
+		//
+		// Properties - Static
+		//
+		// Lifecycle - Init
+		init(title: String)
+		{
+			super.init(title: title, sizeToFit: true)
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		override func setup()
+		{
+			self.font = UIFont.middlingRegularMonospace
+			self.textColor = UIColor(rgb: 0x8D8B8D)
+		}
+	}
+	
+	//
 	//
 	class PickerView: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource
 	{
@@ -338,8 +392,7 @@ extension UICommonComponents.Form.StringPicker
 			viewForRow row: Int,
 			forComponent component: Int,
 			reusing view: UIView?
-		) -> UIView
-		{
+		) -> UIView {
 			var mutable_view: UIView? = view
 			if mutable_view == nil {
 				mutable_view = PickerCellView()

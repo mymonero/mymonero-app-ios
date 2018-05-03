@@ -83,7 +83,7 @@ extension SendFundsForm
 		var manualPaymentID_inputView: UICommonComponents.FormInputField!
 		//
 		var priority_label: UICommonComponents.Form.FieldLabel!
-		var priority_inputView: UICommonComponents.Form.StringPicker.PickerButtonView!
+		var priority_inputView: UICommonComponents.Form.StringPicker.PickerButtonFieldView!
 		var priority_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var qrPicking_actionButtons: UICommonComponents.QRPickingActionButtons!
@@ -401,7 +401,7 @@ extension SendFundsForm
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("PRIORITY", comment: ""),
+					title: NSLocalizedString("TRANSFER", comment: ""),
 					sizeToFit: true
 				)
 				self.priority_label = view
@@ -422,7 +422,8 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.Form.StringPicker.PickerButtonView(
+				let view = UICommonComponents.Form.StringPicker.PickerButtonFieldView(
+					title: NSLocalizedString("Priority", comment: ""),
 					selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
 					allValues: MoneroTransferSimplifiedPriority.allValues_humanReadableCapitalizedStrings
 				)
@@ -760,7 +761,7 @@ extension SendFundsForm
 			self.amount_fieldset.inputField.isEnabled = false
 			self.amount_fieldset.currencyPickerButton.isEnabled = false
 			
-			self.priority_inputView.isEnabled = false
+			self.priority_inputView.set(isEnabled: false)
 			
 			self.sendTo_inputView.inputField.isEnabled = false
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
@@ -783,7 +784,7 @@ extension SendFundsForm
 			self.amount_fieldset.inputField.isEnabled = true
 			self.amount_fieldset.currencyPickerButton.isEnabled = true
 			
-			self.priority_inputView.isEnabled = true
+			self.priority_inputView.set(isEnabled: true)
 			
 			self.sendTo_inputView.inputField.isEnabled = true
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
@@ -1221,12 +1222,11 @@ extension SendFundsForm
 					).integral
 				}
 				//
-				let fixed_dropdownWidth: CGFloat = 8*17 + 1
 				self.priority_inputView.frame = CGRect(
 					x: input_x,
 					y: self.priority_label.frame.origin.y + self.priority_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-					width: min(textField_w, fixed_dropdownWidth), // obvs the latter
-					height: self.priority_inputView.frame.size.height
+					width: textField_w,
+					height: self.priority_inputView.fixedHeight
 				)
 			}
 			//
