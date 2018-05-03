@@ -44,7 +44,7 @@ extension UICommonComponents
 			return 24
 		}
 		//
-		static let marginAboveLabelForUnderneathField_textInputView__visualSqueezing_y: CGFloat = 12
+		static let marginAboveLabelForUnderneathField_textInputView__visualSqueezing_y: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 14 : 24
 		static let visuallySqueezed_marginAboveLabelForUnderneathField_textInputView = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView - marginAboveLabelForUnderneathField_textInputView__visualSqueezing_y
 		//
 		enum Mode

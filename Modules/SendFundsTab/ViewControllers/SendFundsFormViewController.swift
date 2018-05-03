@@ -1071,6 +1071,8 @@ extension SendFundsForm
 			let textField_w = self.new__textField_w
 			let fullWidth_label_w = self.new__fieldLabel_w
 			//
+			let interSectionSpacing = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
+			//
 			do {
 				self.fromWallet_label.frame = CGRect(
 					x: label_x,
@@ -1098,7 +1100,7 @@ extension SendFundsForm
 			do {
 				self.amount_label.frame = CGRect(
 					x: label_x,
-					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + interSectionSpacing,
 					width: self.amount_label.frame.size.width,
 					height: self.amount_label.frame.size.height
 				).integral
@@ -1143,7 +1145,7 @@ extension SendFundsForm
 			do {
 				self.sendTo_label.frame = CGRect(
 					x: label_x,
-					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
+					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + interSectionSpacing,
 					width: 18,
 					height: self.sendTo_label.frame.size.height
 				).integral
@@ -1181,7 +1183,7 @@ extension SendFundsForm
 				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
 				self.manualPaymentID_label.frame = CGRect(
 					x: label_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + interSectionSpacing,
 					width: fullWidth_label_w,
 					height: self.manualPaymentID_label.frame.size.height
 				).integral
@@ -1207,7 +1209,7 @@ extension SendFundsForm
 				//
 				self.priority_label.frame = CGRect(
 					x: label_x,
-					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + interSectionSpacing,
 					width: self.priority_label.frame.size.width,
 					height: self.priority_label.frame.size.height
 				).integral

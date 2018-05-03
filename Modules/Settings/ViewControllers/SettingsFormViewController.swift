@@ -483,7 +483,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		//
-		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16
+		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 4
 		//
 		let label_x = self.new__label_x
 		let input_x = self.new__input_x

@@ -626,7 +626,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				x: label_x,
 				y: self.toWallet_inputView.frame.origin.y
 					+ ceil(self.toWallet_inputView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
-					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 8 /* special case for extra visual separation */,
+					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: fullWidth_label_w,
 				height: self.toWallet_label.frame.size.height
 				).integral
@@ -688,7 +688,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		if self.createNewContact_buttonView.isHidden == false {
 			self.createNewContact_buttonView!.frame = CGRect(
 				x: label_x,
-				y: self.requestFrom_inputView.frame.origin.y + self.requestFrom_inputView.frame.size.height + 8,
+				y: self.requestFrom_inputView.frame.origin.y + self.requestFrom_inputView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
 				width: self.createNewContact_buttonView!.frame.size.width,
 				height: self.createNewContact_buttonView!.frame.size.height
 			)
@@ -704,7 +704,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			}
 			self.addPaymentID_buttonView!.frame = CGRect(
 				x: label_x,
-				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + 8,
+				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
 				width: self.addPaymentID_buttonView!.frame.size.width,
 				height: self.addPaymentID_buttonView!.frame.size.height
 			)

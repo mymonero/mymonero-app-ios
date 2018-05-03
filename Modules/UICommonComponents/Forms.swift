@@ -444,7 +444,7 @@ extension UICommonComponents
 			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 			//
 			static let visual_marginAboveLabelForUnderneathField: CGFloat = 22
-			static let marginAboveLabelForUnderneathField_textInputView: CGFloat = Form.FieldLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y
+			static let marginAboveLabelForUnderneathField_textInputView: CGFloat = Form.FieldLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y + (UIFont.shouldStepDownLargerFontSizes ? 0 : 12)
 			//
 			// Lifecycle - Init
 			init(title: String, sizeToFit: Bool? = false)
