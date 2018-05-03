@@ -53,7 +53,7 @@ class ContactCellContentView: UIView
 	{
 		do {
 			let view = UILabel()
-			view.font = UIFont.systemFont(ofSize: 13)
+			view.font = UIFont.systemFont(ofSize: 16)
 			view.numberOfLines = 1
 			self.addSubview(view)
 			self.emojiLabel =  view
@@ -159,9 +159,9 @@ class ContactCellContentView: UIView
 		super.layoutSubviews()
 		self.emojiLabel.frame = CGRect(
 			x: 17,
-			y: 17,
-			width: 20,
-			height: 21
+			y: 15,
+			width: 24,
+			height: 25
 		)
 		let labels_x: CGFloat = 50
 		let labels_rightMargin: CGFloat = 40
@@ -174,7 +174,7 @@ class ContactCellContentView: UIView
 		).integral
 		self.subtitleLabel.frame = CGRect(
 			x: labels_x,
-			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 1,
+			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 2,
 			width: labels_width,
 			height: 20 // TODO: size with font for accessibility? NOTE: must support emoji, currently, for locked icon
 		).integral

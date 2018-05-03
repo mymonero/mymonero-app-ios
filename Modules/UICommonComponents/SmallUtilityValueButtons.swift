@@ -62,6 +62,7 @@ extension UICommonComponents
 		{
 			self.setTitle(NSLocalizedString("COPY", comment: ""), for: .normal)
 			self.titleLabel!.font = UIFont.smallBoldSansSerif
+			self.contentHorizontalAlignment = .right // so that SHARE btns right-align with COPY btns
 			self.setTitleColor(.utilityOrConstructiveLinkColor, for: .normal)
 			self.setTitleColor(.disabledAndSemiVisibleLinkColor, for: .disabled)
 			self.addTarget(self, action: #selector(did_touchUpInside), for: .touchUpInside)

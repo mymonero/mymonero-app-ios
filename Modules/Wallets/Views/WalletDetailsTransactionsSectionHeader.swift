@@ -97,7 +97,7 @@ extension WalletDetails
 				self.addSubview(view)
 				break
 			case .importTransactionsButton:
-				let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("IMPORT TRANSACTIONS", comment: ""))
+				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .larger, title: NSLocalizedString("IMPORT TRANSACTIONS", comment: ""))
 				view.addTarget(self, action: #selector(importTransactions_tapped), for: .touchUpInside)
 				view.frame = CGRect(
 					x: CGFloat.form_label_margin_x,
@@ -143,7 +143,7 @@ extension WalletDetails
 			//
 			switch self.mode {
 				case .scanningIndicator:
-					let isLargerFormatScreen = self.frame.size.width > 320
+					let isLargerFormatScreen = self.frame.size.width > 320 // should be equivalent to !UIFont.shouldStepDownLargerFontSizes
 					let text = isLargerFormatScreen
 						? NSLocalizedString("SCANNING BLOCKCHAIN…", comment: "") // ambiguous w/o " BLOCKCHAIN"
 						: NSLocalizedString("SCANNING…", comment: "") // just not enough space

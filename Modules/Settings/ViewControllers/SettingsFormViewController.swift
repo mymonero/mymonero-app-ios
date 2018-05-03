@@ -114,7 +114,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("AUTHENTICATION", comment: ""),
+				title: NSLocalizedString("AUTHENTICATE", comment: ""),
 				sizeToFit: true
 			)
 			self.authentication_label = view
@@ -139,7 +139,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			let view = UICommonComponents.Form.Switches.TitleAndControlField(
 				frame: .zero,
-				title: NSLocalizedString("Require when sending", comment: ""),
+				title: NSLocalizedString("When sending", comment: ""),
 				isSelected: false // for now - will update on VDA
 			)
 			view.toggled_fn =
@@ -159,7 +159,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					if to_isSelected == false { // if it's being turned OFF
 						// then they need to authenticate
 						PasswordController.shared.initiate_verifyUserAuthenticationForAction(
-							customNavigationBarTitle: NSLocalizedString("Authenticate to Disable Setting", comment: ""),
+							customNavigationBarTitle: NSLocalizedString("Authenticate", comment: ""),
 							canceled_fn: {
 								async_fn(false) // disallowed
 							},
@@ -182,7 +182,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			let view = UICommonComponents.Form.Switches.TitleAndControlField(
 				frame: .zero,
-				title: NSLocalizedString("Require to show wallet secrets", comment: ""),
+				title: NSLocalizedString("To show wallet secrets", comment: ""),
 				isSelected: false // for now - will update on VDA
 			)
 			view.toggled_fn =
@@ -202,7 +202,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					if to_isSelected == false { // if it's being turned OFF
 						// then they need to authenticate
 						PasswordController.shared.initiate_verifyUserAuthenticationForAction(
-							customNavigationBarTitle: NSLocalizedString("Authenticate to Disable Setting", comment: ""),
+							customNavigationBarTitle: NSLocalizedString("Authenticate", comment: ""),
 							canceled_fn: {
 								async_fn(false) // disallowed
 							},
@@ -225,7 +225,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		do {
 			let view = UICommonComponents.Form.Switches.TitleAndControlField(
 				frame: .zero,
-				title: NSLocalizedString("Use Touch ID / Face ID", comment: ""),
+				title: NSLocalizedString("Use Touch/Face ID", comment: ""),
 				isSelected: false // for now - will update on VDA
 			)
 			view.toggled_fn =
@@ -245,7 +245,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					if to_isSelected == true { // if it's being turned ON
 						// then they need to authenticate b/c this is a loosening of security
 						PasswordController.shared.initiate_verifyUserAuthenticationForAction(
-							customNavigationBarTitle: NSLocalizedString("Authenticate to Enable Setting", comment: ""),
+							customNavigationBarTitle: NSLocalizedString("Authenticate", comment: ""),
 							canceled_fn: {
 								async_fn(false) // disallowed
 							},
@@ -297,7 +297,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("SERVER ADDRESS", comment: "")
+				title: NSLocalizedString("SERVER URL", comment: "")
 			)
 			self.address_label = view
 			self.scrollView.addSubview(view)
@@ -328,7 +328,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		}
 		//
 		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "DELETE EVERYTHING")
+			let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, size: .larger, title: "DELETE EVERYTHING")
 			view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
 			self.deleteButton = view
 			self.scrollView.addSubview(view)
@@ -468,7 +468,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		//
 		let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 		//
-		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 16
+		let spacingBetweenFieldsets: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 21
 		//
 		let label_x = self.new__label_x
 		let input_x = self.new__input_x
@@ -606,7 +606,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		}
 		//
 		let bottomMostView = self.deleteButton
-		let bottomPadding: CGFloat = 18
+		let bottomPadding: CGFloat = spacingBetweenFieldsets
 		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView!,
 			bottomPadding: bottomPadding
@@ -629,7 +629,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.text = String(
 				format: NSLocalizedString(
-					"Amount of idle time before your %@ is required again",
+					"Idle time before your %@ is required",
 					comment: ""
 				),
 				PasswordController.shared.passwordType.humanReadableString

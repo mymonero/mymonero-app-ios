@@ -37,7 +37,7 @@ import UIKit
 class WalletsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "WalletsListViewCell"
-	static let contentViewHeight: CGFloat = 80
+	static let contentViewHeight: CGFloat = 82
 	static let contentView_margin_h: CGFloat = 16
 	static let cellSpacing: CGFloat = 12
 	static let cellHeight: CGFloat = contentViewHeight + cellSpacing
@@ -206,7 +206,7 @@ class WalletsListViewCell: UITableViewCell
 			).integral
 		} else {
 			assert(self.activityIndicator.isHidden == false)
-			let visualAlignment_x: CGFloat = 3
+			let visualAlignment_x: CGFloat = 0
 			let visualAlignment_y = abs(UICommonComponents.GraphicActivityIndicatorPartBulbView.y_off - UICommonComponents.GraphicActivityIndicatorPartBulbView.y_on)
 			self.activityIndicator.frame = CGRect(
 				x: frame.size.width - self.activityIndicator.frame.size.width - 16 + visualAlignment_x,

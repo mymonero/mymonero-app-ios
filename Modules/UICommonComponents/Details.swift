@@ -106,8 +106,7 @@ extension UICommonComponents
 				withContainingWidth containingWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
-			)
-			{
+			) {
 				self.layOutSubviews(
 					withContainingWidth: containingWidth,
 					withXOffset: xOffset,
@@ -124,8 +123,7 @@ extension UICommonComponents
 				withContainingWidth containingWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
-			)
-			{
+			) {
 				var contentContainerView_yOffset: CGFloat = 0
 				if let view = self.titleLabel {
 					view.frame = CGRect(
@@ -149,9 +147,9 @@ extension UICommonComponents
 			//
 			// Properties - Static
 			static let x: CGFloat = 32
-			static let h: CGFloat = 13
+			static let h: CGFloat = 15
 			//
-			static let visual_marginBelow: CGFloat = 7
+			static let visual_marginBelow: CGFloat = 9
 			static let marginBelowLabelAboveSectionContentContainerView: CGFloat = SectionLabel.visual_marginBelow
 			//
 			// Lifecycle - Init
@@ -351,8 +349,7 @@ extension UICommonComponents
 				withContainerWidth containerWidth: CGFloat, // containER width does not account for contentOffsets
 				withXOffset xOffset: CGFloat, // again, without contentOffset.left
 				andYOffset yOffset: CGFloat // also w/o contentOffset.top
-			)
-			{
+			) {
 				assert(false, "Override and implement this")
 			}
 		}
@@ -437,8 +434,7 @@ extension UICommonComponents
 			override func set(
 				text: String?,
 				ifNonNil_overridingTextAndZeroValue_attributedDisplayText: NSAttributedString?
-			)
-			{
+			) {
 				super.set(
 					text: text,
 					ifNonNil_overridingTextAndZeroValue_attributedDisplayText: ifNonNil_overridingTextAndZeroValue_attributedDisplayText
@@ -467,7 +463,7 @@ extension UICommonComponents
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(17, 16, 17, 16)
+				return UIEdgeInsetsMake(13, 16, 17, 16)
 			}
 			//
 			// Properties
@@ -533,8 +529,7 @@ extension UICommonComponents
 			func set( // Overridable, but call on super
 				text: String?,
 				ifNonNil_overridingTextAndZeroValue_attributedDisplayText: NSAttributedString?
-			)
-			{
+			) {
 				var displayValue: String
 				do { // this block is not (yet) aware of ifNonNil_overridingTextAndZeroValue_attributedDisplayText
 					if let text = text, text != "" {
@@ -556,8 +551,7 @@ extension UICommonComponents
 				withContainerWidth containerWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
-			)
-			{
+			) {
 				let contentInsets = self.contentInsets
 
 				let content_x: CGFloat = contentInsets.left
@@ -571,7 +565,7 @@ extension UICommonComponents
 				)
 				if let view = self.valueButton {
 					view.frame = CGRect(
-						x: containerWidth - contentInsets.right - view.frame.size.width + SmallUtilityCopyValueButton.usabilityPadding_h,
+						x: containerWidth - contentInsets.right - SmallUtilityCopyValueButton.w(),
 						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
 						width: SmallUtilityCopyValueButton.w(),
 						height: SmallUtilityCopyValueButton.h
@@ -616,8 +610,7 @@ extension UICommonComponents
 				labelVariant: FieldLabel.Variant,
 				title: String,
 				valueToDisplayIfZero: String?
-			)
-			{
+			) {
 				self.labelVariant = labelVariant
 				self.fieldTitle = title
 				self.valueToDisplayIfZero = valueToDisplayIfZero
@@ -674,14 +667,13 @@ extension UICommonComponents
 			func layOut(
 				withContainerWidth containerWidth: CGFloat,
 				contentInsets: UIEdgeInsets
-			)
-			{
+			) {
 				let content_x: CGFloat = contentInsets.left
 				let content_rightMargin: CGFloat = contentInsets.right
 				let content_w = containerWidth - content_x - content_rightMargin
 				self.titleLabel.frame = CGRect(
 					x: content_x,
-					y: contentInsets.top + 1,
+					y: contentInsets.top,
 					width: content_w,
 					height: self.titleLabel.frame.size.height // it already has a fixed height
 				)
@@ -698,12 +690,11 @@ extension UICommonComponents
 				content_x: CGFloat,
 				y: CGFloat,
 				content_w: CGFloat
-			)
-			{
+			) {
 				let margin_x: CGFloat = 63 // may be improved by being obtained from a sized titleLabel
 				self.contentLabel.frame = CGRect(
 					x: content_x + margin_x,
-					y: y,
+					y: y + 1,
 					width: content_w - margin_x,
 					height: 15
 				)
@@ -714,7 +705,7 @@ extension UICommonComponents
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(15, 16, 15, 16)
+				return UIEdgeInsetsMake(13, 16, 17, 16)
 			}
 			//
 			// Properties
@@ -761,8 +752,7 @@ extension UICommonComponents
 				withContainerWidth containerWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
-			)
-			{
+			) {
 				let contentInsets = self.contentInsets
 				self.contentView.layOut(
 					withContainerWidth: containerWidth,
@@ -783,7 +773,7 @@ extension UICommonComponents
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(17, 16, 17, 16)
+				return UIEdgeInsetsMake(13, 16, 17, 16)
 			}
 			//
 			// Properties
@@ -804,8 +794,7 @@ extension UICommonComponents
 				labelVariant: FieldLabel.Variant,
 				title: String,
 				tapped_fn: (() -> Void)?
-			)
-			{
+			) {
 				self.labelVariant = labelVariant
 				self.fieldTitle = title
 				self.tapped_fn = tapped_fn
@@ -854,8 +843,7 @@ extension UICommonComponents
 				withContainerWidth containerWidth: CGFloat,
 				withXOffset xOffset: CGFloat,
 				andYOffset yOffset: CGFloat
-			)
-			{
+			) {
 				let contentInsets = self.contentInsets
 
 				let content_x: CGFloat = contentInsets.left
@@ -869,10 +857,10 @@ extension UICommonComponents
 				)
 				if let view = self.valueButton {
 					view.frame = CGRect(
-						x: containerWidth - contentInsets.right - view.frame.size.width + SmallUtilityShareValueButton.usabilityPadding_h,
-						y: self.titleLabel.frame.origin.y - (SmallUtilityShareValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
-						width: SmallUtilityShareValueButton.w(),
-						height: SmallUtilityShareValueButton.h
+						x: containerWidth - contentInsets.right - SmallUtilityCopyValueButton.w(),
+						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+						width: SmallUtilityCopyValueButton.w(),
+						height: SmallUtilityCopyValueButton.h
 					).integral
 				}
 				self.layOut_contentView(content_x: content_x, content_w: content_w)
@@ -914,9 +902,11 @@ extension UICommonComponents
 			}
 			//
 			// Properties - Static
-			static let fixedHeight: CGFloat = 13
+			static let fixedFont_small = UIFont.middlingSemiboldSansSerif
+			static let fixedFont_middling = UIFont.middlingSemiboldSansSerif
+			static let fixedHeight: CGFloat = FieldLabel.fixedFont_middling.lineHeight // using the larger - would be nice to make this an accessor fn which takes variant
 			//
-			static let visual_marginBelow: CGFloat = 7
+			static let visual_marginBelow: CGFloat = 9
 			static let marginBelowLabelAboveTextInputView: CGFloat = Form.FieldLabel.visual_marginBelow - FormInputCells.imagePadding_y
 			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 			//
@@ -945,7 +935,7 @@ extension UICommonComponents
 			}
 			func setup()
 			{
-				self.font = self.variant == .small ? UIFont.smallSemiboldSansSerif : UIFont.middlingSemiboldSansSerif
+				self.font = self.variant == .small ? FieldLabel.fixedFont_small : FieldLabel.fixedFont_middling
 				self.textColor = UIColor(rgb: 0xDFDEDF)
 				self.numberOfLines = 1
 			}

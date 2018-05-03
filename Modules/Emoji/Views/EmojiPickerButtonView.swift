@@ -41,7 +41,7 @@ struct EmojiUI
 		//
 		// Constants
 		static let visual__w: CGFloat = 58
-		static let visual__h: CGFloat = 31
+		static let visual__h: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 36 : 44
 		static let w = EmojiPickerButtonView.visual__w + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_h
 		static let h = EmojiPickerButtonView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 		//
@@ -74,6 +74,7 @@ struct EmojiUI
 			//
 			self.contentHorizontalAlignment = .left
 			self.titleEdgeInsets = UIEdgeInsetsMake(0, 1, 0, 0)
+			self.titleLabel!.font = UIFont.shouldStepDownLargerFontSizes ? .middlingSemiboldSansSerif : .largeSemiboldSansSerif
 			//
 			self.frame = CGRect(
 				x: 0, y: 0,

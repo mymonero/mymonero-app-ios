@@ -65,7 +65,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 			self.scrollView.addSubview(view)
 		}
 		if self.isForAuthorizingAppActionOnly != true { // no need to show if true
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("Forgot?", comment: ""))
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("Forgot?", comment: ""))
 			view.addTarget(self, action: #selector(tapped_forgotButton), for: .touchUpInside)
 			view.contentHorizontalAlignment = .right // so we can just set the width to whatever
 			self.forgot_linkButtonView = view

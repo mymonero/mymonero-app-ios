@@ -205,8 +205,7 @@ extension UICommonComponents
 			toBeVisible_frame__absolute: CGRect,
 			atEdge scrollEdge: UICommonComponents.Form.InputScrollEdge,
 			finished_fn: @escaping (() -> Void)
-		)
-		{
+		) {
 			let visibleScroll_rect = self.visibleScroll_rect
 			if visibleScroll_rect.contains(toBeVisible_frame__absolute) { // already fully contained - do not scroll
 				return
@@ -437,9 +436,10 @@ extension UICommonComponents
 		{
 			//
 			// Properties - Static
-			static let fixedHeight: CGFloat = 13
+			static let fixedFont = UIFont.smallBoldMonospace
+			static let fixedHeight: CGFloat = FieldLabel.fixedFont.lineHeight
 			//
-			static let visual_marginBelow: CGFloat = 7
+			static let visual_marginBelow: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 9 : 10
 			static let marginBelowLabelAboveTextInputView: CGFloat = Form.FieldLabel.visual_marginBelow - FormInputCells.imagePadding_y
 			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
 			//
@@ -467,7 +467,7 @@ extension UICommonComponents
 			}
 			func setup()
 			{
-				self.font = UIFont.smallRegularMonospace
+				self.font = FieldLabel.fixedFont
 				self.isUserInteractionEnabled = false // do not intercept touches destined for the form background tap recognizer
 				self.textColor = UIColor(rgb: 0xF8F7F8)
 				self.numberOfLines = 1
@@ -743,10 +743,12 @@ extension UICommonComponents
 	{
 		//
 		// Common - Constants
-		static let visual__height: CGFloat = 32
+		static let visual__height: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 36 : 44
 		static let height: CGFloat = FormInputField.visual__height + 2*FormInputCells.imagePadding_y
 		//
-		static let font_default = UIFont.middlingLightMonospace
+		static let font_default = UIFont.shouldStepDownLargerFontSizes
+			? UIFont.subMiddlingRegularMonospace /* slightly improve truncation of long placeholders on iPhone SE */
+			: UIFont.middlingRegularMonospace
 		//
 		static let textInsets = UIEdgeInsetsMake(8, 10, 8, 10)
 		//
@@ -817,7 +819,7 @@ extension UICommonComponents
 			string.addAttributes(
 				[
 					NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x6B696B),
-					NSAttributedStringKey.font: UIFont.middlingRegularMonospace // light is too light
+					NSAttributedStringKey.font: FormInputField.font_default
 				],
 				range: range
 			)

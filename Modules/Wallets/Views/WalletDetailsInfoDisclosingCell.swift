@@ -163,7 +163,7 @@ extension WalletDetails
 		class _InfoDisclosing_LongStringFieldView: UICommonComponents.Details.CopyableLongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(17, 44, 17, 16)
+				return UIEdgeInsetsMake(13, 44, 17, 16)
 			}
 		}
 		class InfoDisclosing_CopyableLongStringFieldView: _InfoDisclosing_LongStringFieldView
@@ -178,7 +178,7 @@ extension WalletDetails
 		class _InfoDisclosing_Truncated_LongStringFieldView: _InfoDisclosing_LongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(17, 44, 12, 16)
+				return UIEdgeInsetsMake(13, 44, 12, 16)
 			}
 			override func setup()
 			{
@@ -192,12 +192,11 @@ extension WalletDetails
 			override func layOut_contentLabel(
 				content_x: CGFloat,
 				content_w: CGFloat
-			)
-			{
+			) {
 				let xOffsetInContent: CGFloat = 73 // 73 is hardcoded right-side of 'Address' title label … too fragile?
 				self.contentLabel.frame = CGRect(
 					x: content_x + xOffsetInContent,
-					y: self.titleLabel.frame.origin.y - 3,
+					y: self.titleLabel.frame.origin.y,
 					width: content_w - xOffsetInContent,
 					height: 19
 				)
@@ -216,7 +215,7 @@ extension WalletDetails
 		{
 			//
 			// Constants
-			static let height__closed: CGFloat = 47
+			static let height__closed: CGFloat = 49
 			//
 			// Properties
 			var isDisclosed = false
@@ -407,8 +406,7 @@ extension WalletDetails
 			func sizeAndLayOutSubviews_returningSelfFrame(
 				givenFieldViews: [UICommonComponents.Details.FieldView],
 				alsoLayOutSharedSeparatorViewsForDisplay: Bool
-			) -> CGRect
-			{
+			) -> CGRect {
 				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 					withContainingWidth: self.superview!.frame.size.width,
 					andYOffset: 0,
@@ -420,8 +418,7 @@ extension WalletDetails
 			//
 			func sizeAndLayOutSubviews_returningSelfFrame(
 				withContainingWidth containingWidth: CGFloat
-			) -> CGRect
-			{
+			) -> CGRect {
 				return self.sizeAndLayOutSubviews_returningSelfFrame(
 					withContainingWidth: containingWidth,
 					givenFieldViews: self.fieldViews,
@@ -432,8 +429,7 @@ extension WalletDetails
 				withContainingWidth containingWidth: CGFloat,
 				givenFieldViews: [UICommonComponents.Details.FieldView],
 				alsoLayOutSharedSeparatorViewsForDisplay: Bool
-			) -> CGRect
-			{
+			) -> CGRect {
 				let selfFrame = self.sizeAndLayOutGivenFieldViews_andReturnMeasuredSelfFrame(
 					withContainingWidth: containingWidth,
 					andYOffset: 0,
@@ -449,7 +445,7 @@ extension WalletDetails
 				super.layoutSubviews()
 				self.arrowIconView.center = CGPoint( // bounds is already set
 					x: 19 + self.arrowIconView.frame.size.width/2,
-					y: 19 + self.arrowIconView.frame.size.height/2
+					y: ContentContainerView.height__closed/2 - 1 // dunno why -k is necessary
 				)
 			}
 		}

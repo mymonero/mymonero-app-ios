@@ -223,7 +223,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "DELETE CONTACT")
+				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, size: .larger, title: "DELETE CONTACT")
 				view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
 				self.deleteButton = view
 				self.scrollView.addSubview(view)
@@ -491,7 +491,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			).integral
 			self.emoji_inputView.frame = CGRect(
 				x: emojiField_x - UICommonComponents.PushButtonCells.imagePaddingForShadow_h,
-				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton + 1, // +1 to align vertically - should not technically be necessary but there's some height weirdness with the text field
+				y: self.name_label.frame.origin.y + self.name_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 				width: self.emoji_inputView.frame.size.width,
 				height: self.emoji_inputView.frame.size.height
 			).integral

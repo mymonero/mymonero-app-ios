@@ -110,10 +110,10 @@ class AboutMyMoneroViewController: UIViewController
 		//
 		let image_h = self.logo_imageView.frame.size.height
 		let versionLabel_h: CGFloat = 18
-		let viewSourceButton_h: CGFloat = 18
+		let viewSourceButton_h: CGFloat = 20
 		//
 		let imageToVersion_h: CGFloat = 13
-		let versionToSourceLinkButton_h: CGFloat = 0
+		let versionToSourceLinkButton_h: CGFloat = 2
 		let contentBlock_h =
 			image_h + imageToVersion_h
 				+ versionLabel_h + versionToSourceLinkButton_h

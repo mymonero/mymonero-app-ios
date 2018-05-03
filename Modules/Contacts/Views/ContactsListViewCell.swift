@@ -37,7 +37,7 @@ import UIKit
 class ContactsListViewCell: UITableViewCell
 {
 	static let reuseIdentifier = "ContactsListViewCell"
-	static let contentViewHeight: CGFloat = 70
+	static let contentViewHeight: CGFloat = 74
 	static let contentView_margin_h: CGFloat = 16
 	static func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
 	{

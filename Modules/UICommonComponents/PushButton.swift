@@ -58,29 +58,27 @@ extension UICommonComponents
 			var image: UIImage!
 			let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
 			var highlightedImage: UIImage!
-			var font: UIFont!
+			let font: UIFont = UIFont.shouldStepDownLargerFontSizes ? .smallSemiboldSansSerif : .middlingSemiboldSansSerif
+
 			var color: UIColor!
 			let disabledColor = UIColor(rgb: 0x6B696B)
 			switch self.pushButtonType
 			{
-			case .utility:
-				image = UICommonComponents.PushButtonCells.Variant.utility.stretchableImage
-				highlightedImage = UICommonComponents.PushButtonCells.Variant.utility_highlighted.stretchableImage
-				font = .middlingSemiboldSansSerif
-				color = UIColor(rgb: 0xFCFBFC)
-				break
-			case .action:
-				image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
-				highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
-				font = .middlingSemiboldSansSerif
-				color = UIColor(rgb: 0x161416)
-				break
-			case .destructive:
-				image = UICommonComponents.PushButtonCells.Variant.destructive.stretchableImage
-				highlightedImage = UICommonComponents.PushButtonCells.Variant.destructive_highlighted.stretchableImage
-				font = .middlingSemiboldSansSerif
-				color = UIColor(rgb: 0x161416)
-				break
+				case .utility:
+					image = UICommonComponents.PushButtonCells.Variant.utility.stretchableImage
+					highlightedImage = UICommonComponents.PushButtonCells.Variant.utility_highlighted.stretchableImage
+					color = UIColor(rgb: 0xFCFBFC)
+					break
+				case .action:
+					image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
+					highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
+					color = UIColor(rgb: 0x161416)
+					break
+				case .destructive:
+					image = UICommonComponents.PushButtonCells.Variant.destructive.stretchableImage
+					highlightedImage = UICommonComponents.PushButtonCells.Variant.destructive_highlighted.stretchableImage
+					color = UIColor(rgb: 0x161416)
+					break
 			}
 			self.setBackgroundImage(image, for: .normal)
 			self.setBackgroundImage(disabledImage, for: .disabled)

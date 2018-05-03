@@ -53,10 +53,16 @@ extension UICommonComponents
 			case mono_destructive
 			case sansSerif_default
 		}
+		enum Size
+		{
+			case larger
+			case normal
+		}
 		//
 		// Init
 		var mode: Mode!
-		init(mode: Mode, title: String)
+		var size: Size!
+		init(mode: Mode, size: Size, title: String)
 		{
 			let frame = CGRect(
 				x: 0,
@@ -66,6 +72,7 @@ extension UICommonComponents
 			)
 			super.init(frame: frame)
 			self.mode = mode
+			self.size = size
 			self.setTitleText(to: title)
 		}
 		required init?(coder aDecoder: NSCoder)
@@ -78,12 +85,13 @@ extension UICommonComponents
 			let color_normal = self.mode == .mono_destructive
 				? UIColor.standaloneValidationTextOrDestructiveLinkContentColor
 				: UIColor.utilityOrConstructiveLinkColor
+			let font = self.size == .larger ? UIFont.middlingBoldMonospace : UIFont.smallRegularMonospace
 			let normal_attributedTitle = NSAttributedString(
 				string: title,
 				attributes:
 				[
 					NSAttributedStringKey.foregroundColor: color_normal,
-					NSAttributedStringKey.font: UIFont.smallRegularMonospace,
+					NSAttributedStringKey.font: font,
 					NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleNone.rawValue
 				]
 			)
@@ -92,7 +100,7 @@ extension UICommonComponents
 				attributes:
 				[
 					NSAttributedStringKey.foregroundColor: color_normal,
-					NSAttributedStringKey.font: UIFont.smallRegularMonospace,
+					NSAttributedStringKey.font: font,
 					NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleSingle.rawValue
 				]
 			)
@@ -101,7 +109,7 @@ extension UICommonComponents
 				attributes:
 				[
 					NSAttributedStringKey.foregroundColor: UIColor.disabledLinkColor,
-					NSAttributedStringKey.font: UIFont.smallRegularMonospace,
+					NSAttributedStringKey.font: font,
 					NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleNone.rawValue
 				]
 			)

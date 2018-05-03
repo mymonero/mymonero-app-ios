@@ -50,7 +50,7 @@ extension UICommonComponents
 		}
 		static var spaceBetweenSiblingButtons: CGFloat = 8
 		//
-		static var buttonHeight: CGFloat = 32+2 // +2 because the grey image has shadow around it, and we add extra space for that in the blue and disabled images
+		static var buttonHeight: CGFloat = (UIFont.shouldStepDownLargerFontSizes ? 32 : 40) + 2 // in different width, using smaller font size; +2 because the grey image has shadow around it, and we add extra space for that in the blue and disabled images
 		static var topMargin: CGFloat = 8
 		static var bottomMargin: CGFloat = 8
 		//

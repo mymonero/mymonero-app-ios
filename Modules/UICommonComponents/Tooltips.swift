@@ -60,6 +60,7 @@ extension UICommonComponents
 			self.tooltipText = tooltipText
 			super.init(
 				mode: .mono_default,
+				size: .normal,
 				title: NSLocalizedString("?", comment: "")
 			)
 			self.setup()
@@ -134,7 +135,7 @@ extension UICommonComponents
 			self._isPresenting = true
 			let tip = PopTip()
 			do {
-				tip.font = .smallRegularSansSerif
+				tip.font = .middlingRegularSansSerif
 				tip.textColor = UIColor(rgb: 0x161416)
 				tip.bubbleColor = UIColor(rgb: 0xFCFBFC)
 				tip.cornerRadius = 5

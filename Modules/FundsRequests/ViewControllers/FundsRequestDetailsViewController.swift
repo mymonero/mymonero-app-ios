@@ -123,7 +123,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 			self.scrollView.addSubview(sectionView)
 		}
 		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "DELETE REQUEST")
+			let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, size: .larger, title: "DELETE REQUEST")
 			view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
 			self.deleteButton = view
 			self.scrollView.addSubview(view)

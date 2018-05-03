@@ -330,7 +330,7 @@ class WalletCellContentView: UIView
 		//
 		self.subtitleLabel.frame = CGRect(
 			x: labels_x,
-			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 1,
+			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + (self.sizeClass == .large48 ? 2 : 1),
 			width: labels_width,
 			height: 20 // TODO: size with font for accessibility? NOTE: must support emoji, currently, for locked icon
 		).integral

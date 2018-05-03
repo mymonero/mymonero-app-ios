@@ -52,7 +52,7 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 	}
 	//
 	// Constants
-	static let h: CGFloat = 60
+	static let h: CGFloat = 64
 	//
 	static let textForValue__never = NSLocalizedString("Never", comment: "")
 	//
@@ -89,7 +89,7 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 	func _new_minMaxLabel(type: MinMaxLabelType) -> UILabel
 	{
 		let view = UILabel()
-		view.font = UIFont.smallRegularMonospace
+		view.font = UIFont.middlingRegularMonospace
 		view.isUserInteractionEnabled = false // do not intercept touches destined for the form background tap recognizer
 		view.textColor = UIColor(rgb: 0x8d8b8d)
 		view.numberOfLines = 1
@@ -112,7 +112,7 @@ class SettingsAppTimeoutAfterSecondsSliderInputView: UIView
 		super.layoutSubviews()
 		self.layout_minMaxLabels()
 		do {
-			let sliderTrackSidePadding_x: CGFloat = 6
+			let sliderTrackSidePadding_x: CGFloat = 10
 			let x = self.minLabel.frame.origin.x + self.minLabel.frame.size.width + sliderTrackSidePadding_x
 			let rightEdge_x = self.maxLabel.frame.origin.x - sliderTrackSidePadding_x
 			let y: CGFloat = 22
@@ -210,7 +210,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 			self.minimumValue = Float(type(of: self).duration__min)
 			self.maximumValue = Float(type(of: self).duration__max)
 			//
-			let trackImage = UIImage(named: "slider_track")!.stretchableImage(withLeftCapWidth: 1, topCapHeight: 1)
+			let trackImage = UIImage(named: "slider_track")!.stretchableImage(withLeftCapWidth: 2, topCapHeight: 3)
 			self.setMaximumTrackImage(trackImage, for: .normal)
 			self.setMaximumTrackImage(trackImage, for: .highlighted)
 			self.setMinimumTrackImage(trackImage, for: .normal)
@@ -224,8 +224,9 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 		}
 		do {
 			let view = self.durationLabel
+			view.font = UIFont.middlingRegularMonospace // rather than bold
 			let h = UICommonComponents.Form.FieldLabel.fixedHeight
-			view.frame = CGRect(x: 0, y: -8, width: 0, height: h) // must set y and h for sizeToFit() and layoutSubviews()
+			view.frame = CGRect(x: 0, y: -16, width: 0, height: h) // must set y and h for sizeToFit() and layoutSubviews()
 			view.textAlignment = NSTextAlignment.center
 			self.addSubview(view)
 		}

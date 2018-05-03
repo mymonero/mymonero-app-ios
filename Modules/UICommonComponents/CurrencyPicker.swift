@@ -49,7 +49,7 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		static let disclosureArrow_margin_right: CGFloat = 6
 		static let disclosureArrow_margin_left: CGFloat = 6
 		static let selectText_margin_left: CGFloat = 7
-		static let selectText_w: CGFloat = 28
+		static let selectText_w: CGFloat = 30
 		static let fixedWidth: CGFloat
 			= selectText_margin_left + selectText_w + disclosureArrow_margin_left + disclosureArrow_w + disclosureArrow_margin_right
 		//

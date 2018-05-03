@@ -370,7 +370,7 @@ extension SendFundsForm
 			}
 			//
 			do {
-				let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
+				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
 				view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
 				self.addPaymentID_buttonView = view
 				self.scrollView.addSubview(view)
@@ -701,7 +701,7 @@ extension SendFundsForm
 		// Imperatives - Configuration - Fee estimate label
 		func configure_networkFeeEstimate_label()
 		{
-			let feePerKB_Amount = MoneroAmount("187630000")! // constant for now pending polling fee_per_kb on account info
+			let feePerKB_Amount = MoneroAmount("187000000")! // constant for now pending polling fee_per_kb on account info
 			let priority = self.selected_priority
 			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
 			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
@@ -1143,7 +1143,7 @@ extension SendFundsForm
 				self.sendTo_label.frame = CGRect(
 					x: label_x,
 					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField,
-					width: 13,
+					width: 18,
 					height: self.sendTo_label.frame.size.height
 				).integral
 				do {

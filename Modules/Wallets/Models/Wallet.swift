@@ -995,7 +995,7 @@ class Wallet: PersistableObject
 			__really_proceed()
 		} else {
 			PasswordController.shared.initiate_verifyUserAuthenticationForAction(
-				customNavigationBarTitle: NSLocalizedString("Authenticate to Send", comment: ""),
+				customNavigationBarTitle: NSLocalizedString("Authenticate", comment: ""),
 				canceled_fn: {
 					canceled_fn()
 				},

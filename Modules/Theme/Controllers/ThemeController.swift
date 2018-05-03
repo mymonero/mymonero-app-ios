@@ -71,7 +71,7 @@ class ThemeController
 		UINavigationBar.appearance().isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars - TODO: possible to deprecate this for future proofing w/o too-significant UI overhaul?
 		UINavigationBar.appearance().titleTextAttributes =
 		[
-			NSAttributedStringKey.font: UIFont.middlingBoldSansSerif,
+			NSAttributedStringKey.font: UIFont.navigationBarBoldSansSerif,
 			NSAttributedStringKey.foregroundColor: UIColor.normalNavigationBarTitleColor
 		]
 		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
@@ -91,8 +91,7 @@ class ThemeController
 	func styleViewController_navigationBarTitleTextAttributes(
 		viewController: UIViewController,
 		titleTextColor: UIColor? // nil to reset
-	)
-	{
+	) {
 		if viewController.navigationController == nil {
 			DDLog.Warn("Theme", "Asked to \(#function) for viewController \(viewController.debugDescription) but viewController.navigationController=nil.")
 			return
@@ -100,7 +99,7 @@ class ThemeController
 		let navigationBar = viewController.navigationController!.navigationBar
 		navigationBar.titleTextAttributes =
 		[
-			NSAttributedStringKey.font: UIFont.middlingBoldSansSerif,
+			NSAttributedStringKey.font: UIFont.navigationBarBoldSansSerif,
 			NSAttributedStringKey.foregroundColor: titleTextColor ?? UIColor.normalNavigationBarTitleColor
 		]
 
@@ -134,7 +133,8 @@ extension UIColor
 	//
 	static var standaloneValidationTextOrDestructiveLinkContentColor: UIColor
 	{
-		return UIColor(rgb: 0xF97777)
+		return UIColor(red: 249.0/255.0, green: 119.0/255.0, blue: 119.0/255.0, alpha: 1)
+//		return UIColor(rgb: 0xF97777)
 	}
 	static var utilityOrConstructiveLinkColor: UIColor
 	{
@@ -174,82 +174,91 @@ extension UIFont
 		return "Native-Bold"
 	}
 	//
-	static var visualSizeIncreased_smallRegularMonospace: UIFont // a special case
-	{
-		return UIFont(name: self.regularMonospaceFontName, size: 12)!
-	}
 	static var smallLightMonospace: UIFont
-	{
-		return UIFont(name: self.lightMonospaceFontName, size: 11)!
-	}
-	static var smallRegularMonospace: UIFont
-	{
-		return UIFont(name: self.regularMonospaceFontName, size: 11)!
-	}
-	static var smallBoldMonospace: UIFont
-	{
-		return UIFont(name: self.boldMonospaceFontName, size: 11)!
-	}
-	static var middlingLightMonospace: UIFont
 	{
 		return UIFont(name: self.lightMonospaceFontName, size: 13)!
 	}
-	static var middlingRegularMonospace: UIFont
+	static var smallRegularMonospace: UIFont
 	{
 		return UIFont(name: self.regularMonospaceFontName, size: 13)!
 	}
+	static var smallBoldMonospace: UIFont
+	{
+		return UIFont(name: self.boldMonospaceFontName, size: 13)!
+	}
+	static var middlingLightMonospace: UIFont
+	{
+		return UIFont(name: self.lightMonospaceFontName, size: 15)!
+	}
+	static var middlingRegularMonospace: UIFont
+	{
+		return UIFont(name: self.regularMonospaceFontName, size: 15)!
+	}
 	static var subMiddlingRegularMonospace: UIFont
 	{ // still not 100% sold on this… it's not in the mds MVP design
-		return UIFont(name: self.regularMonospaceFontName, size: 12)!
+		return UIFont(name: self.regularMonospaceFontName, size: 14)!
 	}
 	static var subMiddlingBoldMonospace: UIFont
 	{ // still not 100% sold on this… it's not in the mds MVP design
-		return UIFont(name: self.boldMonospaceFontName, size: 12)!
+		return UIFont(name: self.boldMonospaceFontName, size: 14)!
 	}
 	static var middlingBoldMonospace: UIFont
 	{
-		return UIFont(name: self.boldMonospaceFontName, size: 13)!
+		return UIFont(name: self.boldMonospaceFontName, size: 15)!
 	}
 	//
 	// Sans Serif - (systemFont should be "San Francisco")
 	static var smallRegularSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.regular)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.regular)
 	}
 	static var smallSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.semibold)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.semibold)
 	}
 	static var smallMediumSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.medium)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.medium)
 	}
 	static var smallBoldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 11, weight: UIFont.Weight.bold)
+		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.bold)
 	}
 	static var middlingBoldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.bold)
+		return UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.bold)
 	}
 	static var middlingMediumSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.medium)
+		return UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.medium)
 	}
 	static var middlingSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.semibold)
+		return UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.semibold)
 	}
 	static var middlingRegularSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.regular)
+		return UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.regular)
 	}
 	static var middlingButtonContentSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 13, weight: UIFont.Weight.semibold)
+		return UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.semibold)
+	}
+	static var navigationBarBoldSansSerif: UIFont
+	{
+		let size: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 15 : 17 
+		return UIFont.systemFont(ofSize: size, weight: UIFont.Weight.bold)
+	}
+	static var largeSemiboldSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.semibold)
 	}
 	static var keyboardContentSemiboldSansSerif: UIFont
 	{
-		return UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.semibold)
+		return UIFont.largeSemiboldSansSerif
+	}
+	//
+	static var shouldStepDownLargerFontSizes: Bool {
+		return UIScreen.main.bounds.size.width <= 320
 	}
 }

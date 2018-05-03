@@ -113,7 +113,7 @@ class EmojiPickerCollectionViewCell: UICollectionViewCell
 		self.backgroundColor = .clear // unfortunately. b/c background of collection view is not a solid color
 		//
 		let view = self.label
-		view.font = UIFont.systemFont(ofSize: 24)
+		view.font = UIFont.systemFont(ofSize: 27)
 		view.textAlignment = .center
 		self.addSubview(view)
 	}

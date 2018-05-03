@@ -343,7 +343,7 @@ extension WalletDetails
 			if SettingsController.shared.authentication__requireToShowWalletSecrets {
 				if self.infoDisclosingCellView.isDisclosed == false { // when toggling to 'disclosed'
 					PasswordController.shared.initiate_verifyUserAuthenticationForAction(
-						customNavigationBarTitle: NSLocalizedString("Authenticate to Open", comment: ""),
+						customNavigationBarTitle: NSLocalizedString("Authenticate", comment: ""),
 						canceled_fn: {},
 						entryAttempt_succeeded_fn: {
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute:

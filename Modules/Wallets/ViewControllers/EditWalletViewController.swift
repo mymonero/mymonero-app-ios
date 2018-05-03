@@ -111,7 +111,7 @@ extension EditWallet
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, title: "REMOVE WALLET")
+				let view = UICommonComponents.LinkButtonView(mode: .mono_destructive, size: .larger, title: "REMOVE WALLET")
 				view.addTarget(self, action: #selector(deleteButton_tapped), for: .touchUpInside)
 				self.deleteButton = view
 				self.scrollView.addSubview(view)

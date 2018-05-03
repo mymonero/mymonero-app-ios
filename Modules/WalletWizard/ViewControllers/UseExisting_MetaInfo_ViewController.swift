@@ -243,7 +243,7 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, title: "") // title will be set in configureWith_loginWithMode()
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: "") // title will be set in configureWith_loginWithMode()
 			view.addTarget(self, action: #selector(orUse_button_tapped), for: .touchUpInside)
 			self.orUse_button = view
 			self.scrollView.addSubview(view)
@@ -699,19 +699,28 @@ class UseExisting_MetaInfo_ViewController: AddWalletWizardScreen_MetaInfo_BaseVi
 				break
 		}
 		do {
+			let orUse_label_x = label_x
+			let orUse_label_y = viewAbove_orUse_label.frame.origin.y + viewAbove_orUse_label.frame.size.height
+			let orUse_label_w: CGFloat = 56
 			self.orUse_label.frame = CGRect(
-				x: label_x,
-				y: viewAbove_orUse_label.frame.origin.y + viewAbove_orUse_label.frame.size.height - 1, // -1 cause we set height to 24
-				width: 46,
+				x: orUse_label_x,
+				y: orUse_label_y,
+				width: orUse_label_w,
 				height: 24
 			).integral
 			self.orUse_button.frame = CGRect(
-				x: self.orUse_label.frame.origin.x + self.orUse_label.frame.size.width + 6,
-				y: self.orUse_label.frame.origin.y,
+				x: orUse_label_x + orUse_label_w + 6,
+				y: orUse_label_y,
 				width: 0,
 				height: 24
 			)
 			self.orUse_button.sizeToFit()
+			self.orUse_button.frame = CGRect(
+				x: self.orUse_button.frame.origin.x,
+				y: self.orUse_button.frame.origin.y,
+				width: self.orUse_button.frame.size.width,
+				height: 24 // must re-set this or orUse_label y align off
+			)
 		}
 		self.layOut_walletLabelAndSwatchFields(
 			atYOffset: self.orUse_label.frame.origin.y + self.orUse_label.frame.size.height,

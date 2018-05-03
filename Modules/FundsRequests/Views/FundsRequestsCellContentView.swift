@@ -251,7 +251,7 @@ class FundsRequestsCellContentView: UIView
 		}
 		self.memoLabel.frame = CGRect(
 			x: labels_x,
-			y: self.amountLabel.frame.origin.y + self.amountLabel.frame.size.height + 1,
+			y: self.amountLabel.frame.origin.y + self.amountLabel.frame.size.height + 2,
 			width: labels_width,
 			height: 20
 		).integral

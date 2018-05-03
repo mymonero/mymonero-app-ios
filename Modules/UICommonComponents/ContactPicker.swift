@@ -1159,10 +1159,10 @@ extension UICommonComponents.Form
 	{
 		//
 		// Constants
-		static let visual__h: CGFloat = 31
+		static let visual__h: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 31 : 35
 		static let h = SelectedContactPillView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
 		
-		static let emoji_w: CGFloat = 35
+		static let emoji_w: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 35 : 37
 		static let xButton_leftMargin: CGFloat = 7
 		static let xButton_side = SelectedContactPillView.visual__h
 		//
@@ -1192,7 +1192,7 @@ extension UICommonComponents.Form
 			}
 			do {
 				let view = self.emojiLabel
-				view.font = UIFont.systemFont(ofSize: 13)
+				view.font = UIFont.systemFont(ofSize: UIFont.shouldStepDownLargerFontSizes ? 13 : 15)
 				view.numberOfLines = 1
 				view.textAlignment = .center
 				self.addSubview(view)

@@ -96,7 +96,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 			)
 			view.addTarget(self, action: #selector(agreeCheckboxButton_tapped), for: .touchUpInside)
 			view.setTitle(NSLocalizedString("GOT IT!", comment: ""), for: .normal)
-			view.titleLabel!.font = UIFont.visualSizeIncreased_smallRegularMonospace // instead of just smallRegularMonospace because that appears too small, visually. not exactly sure why.
+			view.titleLabel!.font = UIFont.middlingRegularMonospace
 			view.setTitleColor(UIColor(rgb: 0xF8F7F8), for: .normal)
 			view.titleEdgeInsets = UIEdgeInsetsMake(
 				inset_v - 1,
@@ -223,7 +223,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 			)
 		}
 		do {
-			let width = 96 + 2 * UICommonComponents.FormInputCells.imagePadding_x
+			let width = 105 + 2 * UICommonComponents.FormInputCells.imagePadding_x
 			let y: CGFloat = self.horizontalRuleView.frame.origin.y + self.horizontalRuleView.frame.size.height + 24
 			let height = 32 + 2 * UICommonComponents.FormInputCells.imagePadding_y
 			self.agreeCheckboxButton.frame = CGRect(x: content_x, y: y, width: width, height: height).integral

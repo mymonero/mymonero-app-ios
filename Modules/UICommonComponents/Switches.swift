@@ -64,7 +64,7 @@ extension UICommonComponents.Form.Switches
 		//
 		// Properties
 		var touchInterceptingFieldBackgroundView: UIView!
-		var titleLabel: UICommonComponents.FormFieldAccessoryMessageLabel!
+		var titleLabel: FieldTitleLabel!
 		var switchControl: UICommonComponents.Form.Switches.Control!
 		var separatorView: UICommonComponents.Details.FieldSeparatorView!
 		//
@@ -89,10 +89,7 @@ extension UICommonComponents.Form.Switches
 				view.addGestureRecognizer(recognizer)
 			}
 			do {
-				let view = UICommonComponents.FormFieldAccessoryMessageLabel(
-					text: title,
-					displayMode: .normal
-				)
+				let view = FieldTitleLabel(title: title)
 				view.isUserInteractionEnabled = false // so as not to intercept touches
 				self.titleLabel = view
 				self.addSubview(view)
@@ -138,12 +135,12 @@ extension UICommonComponents.Form.Switches
 			//
 			self.titleLabel.frame = CGRect(
 				x: CGFloat.form_label_margin_x - CGFloat.form_input_margin_x, // b/c self is already positioned by the consumer at the properly inset input_x
-				y: 14,
+				y: 10,
 				width: self.bounds.size.width - minimumSwitchSectionWidth,
-				height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+				height: self.titleLabel.frame.size.height // sizes to fit
 			).integral
 			self.switchControl.frame = CGRect(
-				x: self.bounds.size.width - switchControl_width - 8/*design insets.right*/,
+				x: self.bounds.size.width - switchControl_width - 4/*design insets.right*/,
 				y: (self.bounds.size.height - switchControl_height)/2, // or 17 per design
 				width: switchControl_width,
 				height: switchControl_height
@@ -157,6 +154,25 @@ extension UICommonComponents.Form.Switches
 			if self.switchControl.isEnabled { // we must check this
 				self.switchControl.sendActions(for: .touchUpInside)
 			}
+		}
+	}
+	class FieldTitleLabel: UICommonComponents.Form.FieldLabel
+	{
+		//
+		// Properties - Static
+		//
+		// Lifecycle - Init
+		init(title: String)
+		{
+			super.init(title: title, sizeToFit: true)
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		override func setup()
+		{
+			self.font = UIFont.middlingRegularMonospace
+			self.textColor = UIColor(rgb: 0x8D8B8D)
 		}
 	}
 	class Control: UIButton
