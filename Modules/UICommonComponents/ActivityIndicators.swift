@@ -369,7 +369,7 @@ extension UICommonComponents
 			)
 			self.label.frame = CGRect(
 				x: self.activityIndicator.frame.origin.x + self.activityIndicator.frame.size.width + GraphicAndLabelActivityIndicatorView.spaceBetweenGraphicAndLabel,
-				y: -1, // because it's larger now
+				y: -2, // because it's larger now
 				width: self.label.frame.size.width,
 				height: self.label.frame.size.height
 			)
