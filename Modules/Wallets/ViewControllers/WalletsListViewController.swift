@@ -109,6 +109,11 @@ class WalletsListViewController: ListViewController
 		//
 		return cell!
 	}
+	func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
+	{
+		let walletCell = cell as! WalletsListViewCell
+		walletCell._willBecomeVisible()
+	}
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
 	{
 		self.tableView.deselectRow(at: indexPath, animated: true)
@@ -136,6 +141,10 @@ class WalletsListViewController: ListViewController
 		{ (object) in
 			let wallet = object as! Wallet
 			wallet.requestManualUserRefresh()
+		}
+		self.tableView.visibleCells.forEach { (cell) in
+			let walletCell = cell as! WalletsListViewCell
+			walletCell._willBecomeVisible()
 		}
 	}
 }

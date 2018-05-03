@@ -106,8 +106,8 @@ extension UICommonComponents
 			{
 				case .back:
 					view.setImage(UIImage(named: "backButtonIcon"), for: .normal)
-					or_useWidth_notIncludingImagePadding = 26
-					view.imageEdgeInsets = UIEdgeInsetsMake(0, -imagePaddingForShadow_h, 0, imagePaddingForShadow_h)
+					or_useWidth_notIncludingImagePadding = 44 // was 24; usability
+					view.imageEdgeInsets = UIEdgeInsetsMake(0, -16, 0, 0)
 					break
 				case .add:
 					view.setImage(UIImage(named: "addButtonIcon_10"), for: .normal)

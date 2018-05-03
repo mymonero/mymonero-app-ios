@@ -89,9 +89,10 @@ extension UICommonComponents
 		var isAnimating = false
 		func startAnimating()
 		{
+			assert(Thread.isMainThread)
 			if self.isAnimating {
+				// TODO: assert that has animations or timer
 				assert(false)
-				return
 			}
 			self.isAnimating = true
 			self._animateNextLoop()
@@ -99,6 +100,7 @@ extension UICommonComponents
 		var isAnimatingALoop = false
 		func _animateNextLoop()
 		{
+			assert(Thread.isMainThread)
 			if self.isAnimating == false {
 				return // terminate; may have been called after a cancel
 			}
@@ -110,6 +112,9 @@ extension UICommonComponents
 			let durationOfAnimationTo_on = 0.15
 			let durationOfAnimationTo_off = 0.3
 			let delayBetweenLoops: TimeInterval = 0.05
+			
+			// TODO: rework this to make it resilient to restarting if necessary
+			
 			for (idx, bulbView) in bulbViews.enumerated() {
 //				bulbView.layer.removeAllAnimations() // in case
 				//
@@ -159,9 +164,12 @@ extension UICommonComponents
 		}
 		func stopAnimating()
 		{
+			assert(Thread.isMainThread)
 			if self.isAnimating == false {
+				// TODO: assert that has NO animations and NO timer
 				return
 			}
+			// TODO: assert that has animations or timer
 			if let timer = self.delayBetweenLoops_scheduledTimer {
 				timer.invalidate()
 				self.delayBetweenLoops_scheduledTimer = nil // important to prevent crashes on deinit
@@ -332,7 +340,9 @@ extension UICommonComponents
 				return
 			}
 			self.isHidden = false
-			self.activityIndicator.startAnimating()
+			if !self.activityIndicator.isAnimating {
+				self.activityIndicator.startAnimating()
+			}
 		}
 		func hide()
 		{
@@ -342,7 +352,9 @@ extension UICommonComponents
 				return
 			}
 			self.isHidden = true
-			self.activityIndicator.stopAnimating()
+			if self.activityIndicator.isAnimating {
+				self.activityIndicator.stopAnimating()
+			}
 		}
 		//
 		// Overrides - Imperatives

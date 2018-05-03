@@ -60,16 +60,19 @@ class ThemeController
 	}
 	func configureAppearance()
 	{
+		UINavigationBar.appearance().tintColor = UIColor.utilityOrConstructiveLinkColor
+		//
 		self.configureAppearance_navigationBar()
 		self.configureAppearance_PKHUD()
 		self.configureAppearance_keyboard()
 	}
 	func configureAppearance_navigationBar()
 	{
-		UINavigationBar.appearance().barTintColor = UIColor.contentBackgroundColor
-		UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
-		UINavigationBar.appearance().isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars - TODO: possible to deprecate this for future proofing w/o too-significant UI overhaul?
-		UINavigationBar.appearance().titleTextAttributes =
+		let appearance = UINavigationBar.appearance()
+		appearance.barTintColor = UIColor.contentBackgroundColor
+		appearance.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
+		appearance.isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars - TODO: possible to deprecate this for future proofing w/o too-significant UI overhaul?
+		appearance.titleTextAttributes =
 		[
 			NSAttributedStringKey.font: UIFont.navigationBarBoldSansSerif,
 			NSAttributedStringKey.foregroundColor: UIColor.normalNavigationBarTitleColor
@@ -77,7 +80,7 @@ class ThemeController
 		if UIFont.shouldStepDownLargerFontSizes {
 			UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
 		}
-		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
+		appearance.shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
 	}
 	func configureAppearance_PKHUD()
 	{
@@ -140,7 +143,7 @@ extension UIColor
 	}
 	static var utilityOrConstructiveLinkColor: UIColor
 	{
-		return UIColor(rgb: 0x11BBEC) // 0x00C6FF ?
+		return UIColor(rgb: 0x00C6FF)
 	}
 	static var disabledLinkColor: UIColor
 	{

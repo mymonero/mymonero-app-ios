@@ -162,19 +162,21 @@ class WalletsListViewCell: UITableViewCell
 	// - - - Activity Indicator
 	func _show_activityIndicator()
 	{
-		if self.activityIndicator.isHidden == false {
-			return
+		if self.activityIndicator.isHidden {
+			self.activityIndicator.isHidden = false
 		}
-		self.activityIndicator.isHidden = false
-		self.activityIndicator.startAnimating()
+		if self.activityIndicator.isAnimating == false {
+			self.activityIndicator.startAnimating()
+		}
 	}
 	func _hide_activityIndicator()
 	{
-		if self.activityIndicator.isHidden == true {
-			return
+		if !self.activityIndicator.isHidden {
+			self.activityIndicator.isHidden = true
 		}
-		self.activityIndicator.isHidden = true
-		self.activityIndicator.stopAnimating()
+		if self.activityIndicator.isAnimating {
+			self.activityIndicator.stopAnimating()
+		}
 	}
 	//
 	// Overrides - Imperatives - Layout
@@ -233,5 +235,11 @@ class WalletsListViewCell: UITableViewCell
 		self._stopObserving( // stopObserving specific object - self.object will be nil by now - but also call specific method for this as it has addtl check
 			objectBeingDeinitialized: objectBeingDeinitialized
 		)
+	}
+	//
+	// Delegation - Module-private delegation methods
+	func _willBecomeVisible()
+	{
+		// TODO: see if re-triggering activity indicator animation is necesary here
 	}
 }
