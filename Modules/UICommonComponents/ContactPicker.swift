@@ -1188,10 +1188,12 @@ extension UICommonComponents.Form
 		{
 			do {
 				let view = self.backgroundImageView
+				view.isUserInteractionEnabled = false
 				self.addSubview(view)
 			}
 			do {
 				let view = self.emojiLabel
+				view.isUserInteractionEnabled = false
 				view.font = UIFont.systemFont(ofSize: UIFont.shouldStepDownLargerFontSizes ? 13 : 15)
 				view.numberOfLines = 1
 				view.textAlignment = .center
@@ -1199,6 +1201,7 @@ extension UICommonComponents.Form
 			}
 			do {
 				let view = self.nameLabel
+				view.isUserInteractionEnabled = false
 				view.font = UIFont.middlingBoldMonospace
 				view.textAlignment = .left
 				view.numberOfLines = 1
@@ -1247,6 +1250,17 @@ extension UICommonComponents.Form
 			)
 			NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: contact)
 			NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: contact)
+		}
+		//
+		// Accessors - Overrides
+		override func point(inside point: CGPoint, with event: UIEvent?) -> Bool
+		{
+			for (_, subview) in self.subviews.enumerated() {
+				if subview.hitTest(self.convert(point, to: subview), with: event) != nil {
+					return true
+				}
+			}
+			return false // do not accept touches on self - this way, touches will be passed through to form w/o excluding subviews that want to be interactive
 		}
 		//
 		// Imperatives - Configuration
