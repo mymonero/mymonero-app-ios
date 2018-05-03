@@ -63,7 +63,7 @@ extension SendFundsForm
 		//
 		// Properties - Initial - Runtime
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
-		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
+		var fromWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
 		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
@@ -108,7 +108,7 @@ extension SendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			do {
-				let view = UICommonComponents.WalletPickerButtonView(selectedWallet: nil)
+				let view = UICommonComponents.WalletPickerButtonFieldView(selectedWallet: nil)
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -756,7 +756,7 @@ extension SendFundsForm
 			//
 //			self.scrollView.isScrollEnabled = false
 			//
-			self.fromWallet_inputView.isEnabled = false
+			self.fromWallet_inputView.set(isEnabled: false)
 			
 			self.amount_fieldset.inputField.isEnabled = false
 			self.amount_fieldset.currencyPickerButton.isEnabled = false
@@ -779,7 +779,7 @@ extension SendFundsForm
 			// allowing scroll so user can check while sending despite no cancel support existing yet
 //			self.scrollView.isScrollEnabled = true
 			//
-			self.fromWallet_inputView.isEnabled = true
+			self.fromWallet_inputView.set(isEnabled: true)
 			
 			self.amount_fieldset.inputField.isEnabled = true
 			self.amount_fieldset.currencyPickerButton.isEnabled = true
@@ -1092,7 +1092,7 @@ extension SendFundsForm
 					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
-					height: self.fromWallet_inputView.frame.size.height
+					height: type(of: self.fromWallet_inputView).fixedHeight
 				).integral
 			}
 			do {

@@ -51,7 +51,7 @@ extension ImportTransactionsModal
 		//
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
-		var fromWallet_inputView: UICommonComponents.WalletPickerButtonView!
+		var fromWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
@@ -133,7 +133,7 @@ extension ImportTransactionsModal
 			}
 			do {
 				// TODO? attempt to pick sensible wallet based on balance?
-				let view = UICommonComponents.WalletPickerButtonView(selectedWallet: nil)
+				let view = UICommonComponents.WalletPickerButtonFieldView(selectedWallet: nil)
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -314,7 +314,7 @@ extension ImportTransactionsModal
 				self.informationalLabel.setMessageText(
 					String(
 						format: NSLocalizedString(
-							"This requires a one-time import fee of %@ XMR",
+							"This requires a one-time import fee of %@ XMR", // no break spaces btwn of and amt and amt and ccy 
 							comment: ""
 						),
 						formatted_importFee
@@ -536,7 +536,7 @@ extension ImportTransactionsModal
 					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
-					height: self.fromWallet_inputView.frame.size.height
+					height: type(of: self.fromWallet_inputView).fixedHeight
 				).integral
 			}
 			do {

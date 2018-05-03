@@ -36,39 +36,51 @@ import UIKit
 
 extension UICommonComponents
 {
-	class WalletPickerButtonView: UICommonComponents.PushButton
+	class WalletPickerButtonFieldView: UIView, UIGestureRecognizerDelegate
 	{
 		//
-		static let visual__h: CGFloat = 66
-		static let h = WalletPickerButtonView.visual__h + 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
+		static var fixedHeight: CGFloat = 66
 		//
 		static let visual__arrowRightPadding: CGFloat = 16
 		//
 		// Properties
 		var tapped_fn: (() -> Void)?
+		var picker_inputField_didBeginEditing: ((_ textField: UITextField) -> Void)?
 		var selectedWallet: Wallet? // weak might be a good idea but strong should be ok here b/c we unpick the selectedWallet when wallets reloads on logged-in runtime teardown
 		var pickerView: WalletPickerView!
 		var picker_inputField: UITextField!
+
+		var touchInterceptingFieldBackgroundView: UIView!
 		var contentView = WalletCellContentView(sizeClass: .medium32)
+		let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
+		var separatorView: UICommonComponents.Details.FieldSeparatorView!		
 		//
 		// Lifecycle - Init
 		init(selectedWallet: Wallet?)
 		{
+			super.init(frame: .zero)
 //			assert(WalletsListController.shared.records.count > 0) // not actually going to assert this, b/c the Send view will need to be able to have this set up w/o any wallets being available yet
 			if selectedWallet != nil {
 				self.selectedWallet = selectedWallet!
 			} else {
 				self.selectedWallet = WalletsListController.shared.records.first as? Wallet
 			}
-			super.init(pushButtonType: .utility)
+			self.setup()
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
 		}
-		override func setup()
+		func setup()
 		{
-			super.setup()
-			//
+			do {
+				let view = UIView(frame: .zero)
+				self.touchInterceptingFieldBackgroundView = view
+				self.addSubview(view)
+				//
+				let recognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundView_tapped))
+				recognizer.delegate = self
+				view.addGestureRecognizer(recognizer)
+			}
 			do {
 				let view = WalletPickerView()
 				view.didSelect_fn =
@@ -111,6 +123,15 @@ extension UICommonComponents
 				}
 				self.pickerView = view
 			}
+			self.addSubview(self.accessoryChevronView)
+			do {
+				let view = UICommonComponents.Details.FieldSeparatorView(
+					mode: .contentBackgroundAccent_subtle
+				)
+				view.isUserInteractionEnabled = false // so as not to intercept touches
+				self.separatorView = view
+				self.addSubview(view)
+			}
 			do {
 				let view = UITextField(frame: .zero) // invisible - and possibly wouldn't work if hidden
 				view.inputView = pickerView
@@ -125,44 +146,43 @@ extension UICommonComponents
 			if self.selectedWallet != nil {
 				self.configure(withRecord: self.selectedWallet!)
 			}
-			//
-			let image = UIImage(named: "dropdown-arrow-down")!
-			self.setImage(image, for: .normal)
-			//
-			self.contentHorizontalAlignment = .left
-			self.titleEdgeInsets = UIEdgeInsetsMake(0, 1, 0, 0)
-			//
-			self.frame = CGRect(
-				x: 0,
-				y: 0,
-				width: 0,
-				height: WalletPickerButtonView.h
-			)
-			//
-			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
 		}
 		//
 		// Accessors
+		//
+		// Imperatives - Interactivity
+		var isEnabled: Bool = true
+		func set(isEnabled: Bool)
+		{
+			self.isEnabled = isEnabled
+		}
 		//
 		// Imperatives - Overrides
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
 			//
-			let iconImageColumn_w = self.image(for: .normal)!.size.width + WalletPickerButtonView.visual__arrowRightPadding
+			let arrow_w = self.accessoryChevronView.frame.size.width
+//			let arrow_margin_left: CGFloat = 17
+			let arrow_margin_right: CGFloat = 11
+			let arrow_x = self.bounds.size.width - arrow_w - arrow_margin_right
+
+			self.touchInterceptingFieldBackgroundView.frame = self.bounds
 			self.contentView.frame = CGRect(
-				x: UICommonComponents.PushButtonCells.imagePaddingForShadow_h,
-				y: UICommonComponents.PushButtonCells.imagePaddingForShadow_v,
-				width: self.frame.size.width - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w,
-				height: self.frame.size.height - 2*UICommonComponents.PushButtonCells.imagePaddingForShadow_v
+				x: 0,
+				y: 0,
+				width: arrow_x,
+				height: self.bounds.size.height
 			)
+			NSLog("self.contentView.frame \(self.contentView.frame)")
+			self.accessoryChevronView.frame = CGRect(
+				x: arrow_x,
+				y: (self.frame.size.height - self.accessoryChevronView.frame.size.height)/2 - 2,
+				width: self.accessoryChevronView.frame.size.width,
+				height: self.accessoryChevronView.frame.size.height
+				).integral
 			//
-			self.imageEdgeInsets = UIEdgeInsetsMake(
-				1,
-				self.frame.size.width - UICommonComponents.PushButtonCells.imagePaddingForShadow_h - iconImageColumn_w,
-				0,
-				WalletPickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
-			)
+			self.separatorView.frame = CGRect(x: 0, y: self.bounds.size.height - self.separatorView.frame.size.height, width: self.bounds.size.width, height: self.separatorView.frame.size.height)
 		}
 		//
 		// Imperatives - Config
@@ -184,8 +204,11 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Interactions
-		@objc func tapped()
+		@objc func backgroundView_tapped()
 		{
+			if self.isEnabled == false {
+				return
+			}
 			// the popover should be guaranteed not to be showing here…
 			if let tapped_fn = self.tapped_fn {
 				tapped_fn()
@@ -194,6 +217,14 @@ extension UICommonComponents
 				self.picker_inputField.resignFirstResponder()
 			} else {
 				self.picker_inputField.becomeFirstResponder()
+			}
+		}
+		//
+		// Delegation - UITextField
+		func textFieldDidBeginEditing(_ textField: UITextField)
+		{
+			if textField == self.picker_inputField {
+				self.picker_inputField_didBeginEditing?(textField)
 			}
 		}
 	}
@@ -294,7 +325,7 @@ extension UICommonComponents
 		}
 		func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat
 		{
-			return WalletPickerButtonView.h - 6 // i dunno where the 6 is coming from
+			return WalletPickerButtonFieldView.fixedHeight - 6 // i dunno where the 6 is coming from
 		}
 		func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
 		{

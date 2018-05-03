@@ -39,9 +39,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	//
 	// Properties - Set-up
 	var toWallet_label: UICommonComponents.Form.FieldLabel!
-	var toWallet_inputView: UICommonComponents.WalletPickerButtonView!
-	//
-	var belowToWallet_separatorView: UICommonComponents.Details.FieldSeparatorView!
+	var toWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
 	//
 	var amount_label: UICommonComponents.Form.FieldLabel!
 	var amount_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
@@ -101,14 +99,8 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.WalletPickerButtonView(selectedWallet: nil)
+			let view = UICommonComponents.WalletPickerButtonFieldView(selectedWallet: nil)
 			self.toWallet_inputView = view
-			self.scrollView.addSubview(view)
-		}
-		//
-		do {
-			let view = UICommonComponents.Details.FieldSeparatorView(mode: .contentBackgroundAccent)
-			self.belowToWallet_separatorView = view
 			self.scrollView.addSubview(view)
 		}
 		//
@@ -473,7 +465,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		self.scrollView.isScrollEnabled = false
 		//
-		self.toWallet_inputView.isEnabled = false
+		self.toWallet_inputView.set(isEnabled: false)
 		
 		self.amount_fieldset.inputField.isEnabled = false
 		self.amount_fieldset.currencyPickerButton.isEnabled = false
@@ -491,7 +483,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		self.scrollView.isScrollEnabled = true
 		//
-		self.toWallet_inputView.isEnabled = true
+		self.toWallet_inputView.set(isEnabled: true)
 		
 		self.amount_fieldset.inputField.isEnabled = true
 		self.amount_fieldset.currencyPickerButton.isEnabled = true
@@ -626,23 +618,15 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				x: input_x,
 				y: self.toWallet_label.frame.origin.y + self.toWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 				width: textField_w,
-				height: self.toWallet_inputView.frame.size.height
+				height: type(of: self.toWallet_inputView).fixedHeight
 			).integral
-		}
-		do {
-			self.belowToWallet_separatorView.frame = CGRect(
-				x: input_x,
-				y: self.toWallet_inputView.frame.origin.y + self.toWallet_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.visual_marginAboveLabelForUnderneathField, // estimate margin
-				width: textField_w,
-				height: self.belowToWallet_separatorView.frame.size.height
-			)
 		}
 		do {
 			self.amount_label.frame = CGRect(
 				x: label_x,
-				y: self.belowToWallet_separatorView.frame.origin.y
-					+ ceil(self.belowToWallet_separatorView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
-					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+				y: self.toWallet_inputView.frame.origin.y
+					+ ceil(self.toWallet_inputView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
+					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + 8 /* special case for extra visual separation */,
 				width: fullWidth_label_w,
 				height: self.toWallet_label.frame.size.height
 				).integral
