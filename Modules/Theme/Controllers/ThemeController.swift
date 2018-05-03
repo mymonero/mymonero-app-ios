@@ -74,7 +74,9 @@ class ThemeController
 			NSAttributedStringKey.font: UIFont.navigationBarBoldSansSerif,
 			NSAttributedStringKey.foregroundColor: UIColor.normalNavigationBarTitleColor
 		]
-		UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
+		if UIFont.shouldStepDownLargerFontSizes {
+			UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
+		}
 		UINavigationBar.appearance().shadowImage = UIImage() // remove shadow - would be good to place shadow back on view's scroll (may do manually)
 	}
 	func configureAppearance_PKHUD()
@@ -138,7 +140,7 @@ extension UIColor
 	}
 	static var utilityOrConstructiveLinkColor: UIColor
 	{
-		return UIColor(rgb: 0x11BBEC)
+		return UIColor(rgb: 0x11BBEC) // 0x00C6FF ?
 	}
 	static var disabledLinkColor: UIColor
 	{
@@ -252,6 +254,14 @@ extension UIFont
 	static var largeSemiboldSansSerif: UIFont
 	{
 		return UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.semibold)
+	}
+	static var largeMediumSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.medium)
+	}
+	static var largeRegularSansSerif: UIFont
+	{
+		return UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular)
 	}
 	static var keyboardContentSemiboldSansSerif: UIFont
 	{

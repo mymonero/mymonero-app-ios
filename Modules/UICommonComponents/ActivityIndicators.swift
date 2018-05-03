@@ -307,6 +307,10 @@ extension UICommonComponents
 			return height
 		}
 		var new_height_withoutVSpacing: CGFloat {
+			// validate too-early call
+			assert(self.label.frame != .zero)
+			assert(self.activityIndicator.frame != .zero)
+			//
 			return max(
 				self.label.frame.origin.y + self.label.frame.size.height,
 				self.activityIndicator.frame.origin.y + self.activityIndicator.frame.size.height
@@ -353,7 +357,7 @@ extension UICommonComponents
 			)
 			self.label.frame = CGRect(
 				x: self.activityIndicator.frame.origin.x + self.activityIndicator.frame.size.width + GraphicAndLabelActivityIndicatorView.spaceBetweenGraphicAndLabel,
-				y: 0,
+				y: -1, // because it's larger now
 				width: self.label.frame.size.width,
 				height: self.label.frame.size.height
 			)
@@ -365,8 +369,13 @@ extension UICommonComponents
 		override func setup()
 		{
 			super.setup()
-			self.accessoryLabel.textAlignment = .right
-			self.addSubview(accessoryLabel)
+			//
+			let view = self.accessoryLabel
+			view.textAlignment = .right
+			view.font = UIFont.smallLightMonospace // lighter than bold
+			view.adjustsFontSizeToFitWidth = true // for smaller screens
+			view.minimumScaleFactor = 0.4
+			self.addSubview(view)
 		}
 		//
 		// Imperatives
@@ -380,10 +389,12 @@ extension UICommonComponents
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
+			//
+			let left = self.label.frame.origin.x + self.label.frame.size.width
 			self.accessoryLabel.frame = CGRect(
-				x: 0,
+				x: left,
 				y: self.label.frame.origin.y,
-				width: self.frame.size.width,
+				width: self.frame.size.width - left,
 				height: self.accessoryLabel.frame.size.height
 			)
 		}

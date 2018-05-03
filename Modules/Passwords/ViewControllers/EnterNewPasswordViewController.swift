@@ -67,7 +67,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		}
 		do {
 			let view = UICommonComponents.FormFieldAccessoryMessageLabel(
-				text: NSLocalizedString("This app-wide password (or PIN) will be used to encrypt your data on your device, and to lock your app when you are idle. Don't forget it!\nSix character minimum.", comment: "")
+				text: NSLocalizedString("Used to encrypt your on-device data, and to lock your app when idle. Don't forget it!\nSix character minimum.", comment: "") // NOTE: there is a no-break unicode space between "forget" and "it"!
 			)
 			self.fieldAccessoryMessageLabel = view
 			self.scrollView.addSubview(view)
@@ -97,9 +97,9 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		super.setup_navigation()
 		var navigationTitle: String!
 		if self.isForChangingPassword == true {
-			navigationTitle = "Create New PIN or Password"
+			navigationTitle = NSLocalizedString("New PIN/Password", comment: "")
 		} else {
-			navigationTitle = "Create PIN or Password"
+			navigationTitle = NSLocalizedString("Create PIN/Password", comment: "")
 		}
 		self.navigationItem.title = navigationTitle
 		self.navigationItem.leftBarButtonItem = self._new_leftBarButtonItem()
@@ -225,12 +225,13 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 		let input_x = self.new__input_x
 		//
 		let topPadding: CGFloat = 20
+		let label_w = self.new__fieldLabel_w // already has customInsets subtracted
 		let textField_w = self.new__textField_w // already has customInsets subtracted
 		do {
 			self.password_label.frame = CGRect(
 				x: label_x,
 				y: topPadding,
-				width: textField_w,
+				width: label_w,
 				height: self.password_label.frame.size.height
 			).integral
 			self.password_inputView.frame = CGRect(
@@ -244,7 +245,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			self.fieldAccessoryMessageLabel.frame = CGRect(
 				x: label_x,
 				y: self.password_inputView.frame.origin.y + self.password_inputView.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
-				width: textField_w,
+				width: label_w,
 				height: 0
 			).integral
 			self.fieldAccessoryMessageLabel.sizeToFit()
@@ -253,7 +254,7 @@ class EnterNewPasswordViewController: PasswordEntryScreenBaseViewController
 			self.confirmPassword_label.frame = CGRect(
 				x: label_x,
 				y: self.fieldAccessoryMessageLabel.frame.origin.y + self.fieldAccessoryMessageLabel.frame.size.height + 30,
-				width: textField_w,
+				width: label_w,
 				height: self.confirmPassword_label.frame.size.height
 			).integral
 			self.confirmPassword_inputView.frame = CGRect(

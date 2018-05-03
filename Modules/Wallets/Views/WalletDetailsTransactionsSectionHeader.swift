@@ -143,10 +143,10 @@ extension WalletDetails
 			//
 			switch self.mode {
 				case .scanningIndicator:
-					let isLargerFormatScreen = self.frame.size.width > 320 // should be equivalent to !UIFont.shouldStepDownLargerFontSizes
-					let text = isLargerFormatScreen
+//					let isLargerFormatScreen = self.frame.size.width > 320 // should be equivalent to !UIFont.shouldStepDownLargerFontSizes
+					let text = NSLocalizedString("SCANNING…", comment: "") /*should suffice given 'blocks behind' label*/ /*isLargerFormatScreen
 						? NSLocalizedString("SCANNING BLOCKCHAIN…", comment: "") // ambiguous w/o " BLOCKCHAIN"
-						: NSLocalizedString("SCANNING…", comment: "") // just not enough space
+						: NSLocalizedString("SCANNING…", comment: "") // just not enough space*/
 					if self.indicatorView.label.text != text {
 						self.indicatorView.set(
 							labelText: text

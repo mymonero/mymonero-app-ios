@@ -566,7 +566,7 @@ extension UICommonComponents
 				if let view = self.valueButton {
 					view.frame = CGRect(
 						x: containerWidth - contentInsets.right - SmallUtilityCopyValueButton.w(),
-						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2 + 1, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
 						width: SmallUtilityCopyValueButton.w(),
 						height: SmallUtilityCopyValueButton.h
 					).integral
@@ -858,7 +858,7 @@ extension UICommonComponents
 				if let view = self.valueButton {
 					view.frame = CGRect(
 						x: containerWidth - contentInsets.right - SmallUtilityCopyValueButton.w(),
-						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+						y: self.titleLabel.frame.origin.y - (SmallUtilityCopyValueButton.h - self.titleLabel.frame.size.height)/2 + 1, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
 						width: SmallUtilityCopyValueButton.w(),
 						height: SmallUtilityCopyValueButton.h
 					).integral

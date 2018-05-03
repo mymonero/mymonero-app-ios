@@ -77,22 +77,24 @@ extension UICommonComponents
 				view.textColor = UIColor(rgb: 0x9E9C9E)
 				view.sizeToFit()
 				self.customView = view
+				//
 				return
 			}
-			var pushButtonType: UICommonComponents.PushButton.PushButtonType!
+			var buttonType: NavigationBarButton.NavigationButtonType!
 			switch type
 			{
-				case .add, .save, .send:
-					pushButtonType = .action
+				case .add:
+					buttonType = .progressActionSolidButton
 					break
-				case .cancel, .edit, .back:
-					pushButtonType = .utility
+			// TODO: make back another style?
+				case .cancel, .edit, .back, .save, .send:
+					buttonType = .systemStandard
 					break
 				case .valueDisplayLabel: // to be exhaustive
 					assert(false)
 					break
 			}
-			let view = UICommonComponents.PushButton(pushButtonType: pushButtonType)
+			let view = NavigationBarButton(navigationButtonType: buttonType)
 			if target != nil && action != nil {
 				view.addTarget(target!, action: action!, for: .touchUpInside)
 			}
@@ -127,7 +129,7 @@ extension UICommonComponents
 				case .edit:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Edit", comment: ""), for: .normal)
 					sizeToFitAndAddPadding = true
-				break
+					break
 				case .valueDisplayLabel: // to be exhaustive
 					assert(false)
 					break
@@ -156,6 +158,57 @@ extension UICommonComponents
 		@objc func _forFn_tapped()
 		{
 			self.tapped_fn!()
+		}
+	}
+	//
+	class NavigationBarButton: UIButton
+	{
+		enum NavigationButtonType
+		{
+			case systemStandard
+			case progressActionSolidButton
+			case destructive
+		}
+		var navigationButtonType: NavigationButtonType
+		init(navigationButtonType: NavigationButtonType)
+		{
+			self.navigationButtonType = navigationButtonType
+			super.init(frame: .zero)
+			self.setup()
+		}
+		func setup()
+		{
+			let font: UIFont = UIFont.shouldStepDownLargerFontSizes ? .middlingSemiboldSansSerif : .largeMediumSansSerif
+			var color: UIColor!
+			let disabledColor = UIColor(rgb: 0x6B696B)
+			switch self.navigationButtonType
+			{
+			case .systemStandard:
+				color = UIColor(rgb: 0x00C6FF)
+				break
+			case .progressActionSolidButton:
+				color = UIColor(rgb: 0x161416)
+				self.adjustsImageWhenHighlighted = false // looks better IMO -PS
+				let image = UICommonComponents.PushButtonCells.Variant.action.stretchableImage
+				let highlightedImage = UICommonComponents.PushButtonCells.Variant.action_highlighted.stretchableImage
+				
+				let disabledImage = UICommonComponents.PushButtonCells.Variant.disabled.stretchableImage
+				self.setBackgroundImage(image, for: .normal)
+				self.setBackgroundImage(disabledImage, for: .disabled)
+				self.setBackgroundImage(highlightedImage, for: .highlighted)
+				//
+				break
+			case .destructive:
+				color = UIColor.standaloneValidationTextOrDestructiveLinkContentColor
+				break
+			}
+			self.titleLabel!.font = font
+			self.setTitleColor(color, for: .normal)
+			self.setTitleColor(disabledColor, for: .disabled)
+		}
+		required init?(coder aDecoder: NSCoder)
+		{
+			fatalError("init(coder:) has not been implemented")
 		}
 	}
 }
