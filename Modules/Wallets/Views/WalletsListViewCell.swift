@@ -240,6 +240,6 @@ class WalletsListViewCell: UITableViewCell
 	// Delegation - Module-private delegation methods
 	func _willBecomeVisible()
 	{
-		// TODO: see if re-triggering activity indicator animation is necesary here
+		self.configureAccessoryViews() // this will handle retriggering animation if necessary
 	}
 }
