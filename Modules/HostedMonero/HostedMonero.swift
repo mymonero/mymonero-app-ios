@@ -259,7 +259,7 @@ extension HostedMonero
 			//
 			let endpoint = HostedMoneroAPI_Endpoint.LogIn
 			let requestHandle = self._request(endpoint, parameters)
-			{ (err_str, response_data, response_jsonDict) in
+			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
@@ -301,8 +301,7 @@ extension HostedMonero
 					view_key__private: view_key__private,
 					spend_key__public: spend_key__public,
 					spend_key__private: spend_key__private
-				)
-				{ (err_str, result) in
+				) { [unowned self] (err_str, result) in
 					self._shared_onMain_callBackFromRequest(err_str, result, fn)
 				}
 
@@ -339,7 +338,7 @@ extension HostedMonero
 					view_key__private: view_key__private,
 					spend_key__public: spend_key__public,
 					spend_key__private: spend_key__private
-				) { (err_str, result) in
+				) { [unowned self] (err_str, result) in
 					self._shared_onMain_callBackFromRequest(err_str, result, fn)
 				}
 			}
@@ -354,8 +353,7 @@ extension HostedMonero
 				_ err_str: String?,
 				_ result: ParsedResult_ImportRequestInfoAndStatus?
 			) -> Void
-		) -> RequestHandle?
-		{
+		) -> RequestHandle? {
 			let parameters: [String: Any] =
 			[
 				"address": address,
@@ -414,7 +412,7 @@ extension HostedMonero
 					view_key__private: view_key__private,
 					spend_key__public: spend_key__public,
 					spend_key__private: spend_key__private
-				) { (err_str, result) in
+				) { [unowned self] (err_str, result) in
 					self._shared_onMain_callBackFromRequest(err_str, result, fn)
 				}
 			}
@@ -426,8 +424,7 @@ extension HostedMonero
 				_ err_str: String?,
 				_ result: ParsedResult_RandomOuts?
 			) -> Void
-		) -> RequestHandle?
-		{
+		) -> RequestHandle? {
 			let mixinSize = MyMoneroCore.fixedMixin
 			if (mixinSize < 0) {
 				fn("Invalid mixin - must be >= 0", nil)
@@ -445,7 +442,7 @@ extension HostedMonero
 			]
 			let endpoint = HostedMoneroAPI_Endpoint.RandomOuts
 			let requestHandle = self._request(endpoint, parameters)
-			{ (err_str, response_data, response_jsonDict) in
+			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
@@ -475,8 +472,7 @@ extension HostedMonero
 				_ err_str: String?, // if nil, succeeded
 				_ nilResult: Any? // merely for callback conformance (janky :\) - disregard arg
 			) -> Void
-		) -> RequestHandle?
-		{
+		) -> RequestHandle? {
 			#if DEBUG
 				#if MOCK_SUCCESSOFTXSUBMISSION
 					DDLog.Warn("HostedMonero", "Merely returning mocked success response instead of actually submitting transaction to the server.")
@@ -493,7 +489,7 @@ extension HostedMonero
 			]
 			let endpoint = HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction
 			let requestHandle = self._request(endpoint, parameters)
-			{ (err_str, response_data, response_jsonDict) in
+			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 			}
 			return requestHandle
@@ -545,7 +541,7 @@ extension HostedMonero
 	//			withCredentials: true // CORS
 			).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
 			.responseJSON
-			{ response in
+			{ /*[unowned self]*/ response in
 				let statusCode = response.response?.statusCode ?? -1
 				switch response.result
 				{
