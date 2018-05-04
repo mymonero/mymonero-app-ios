@@ -551,10 +551,15 @@ extension WalletDetails
 				assert(headerView == self.transactionsSectionHeaderView)
 				let view = self.transactionsSectionHeaderView!
 				if view.mode == .scanningIndicator {
+					assert(view.superview == nil)
 					if view.indicatorView.isHidden { // for very first time
 						view.indicatorView.show() // will also start it animating
-					} else if view.indicatorView.activityIndicator.isAnimating == false { // already visible but not animating!
-						view.indicatorView.activityIndicator.startAnimating()
+					}
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // fixed delay unfortunately fragile .. any better solution? I don't actually fully get why this is necessary.. lack of superview? then why does .isHidden->.show() case work w/o this call?
+						// if still not animating
+						if 						view.indicatorView.activityIndicator.isAnimating == false {
+							view.indicatorView.activityIndicator.startAnimating()
+						}
 					}
 				}
 			}
@@ -566,7 +571,7 @@ extension WalletDetails
 				let view = self.transactionsSectionHeaderView!
 				if view.mode == .scanningIndicator {
 					if view.indicatorView.activityIndicator.isAnimating == true {
-						view.indicatorView.activityIndicator.stopAnimating()
+						view.indicatorView.activityIndicator.stopAnimating() // optimization
 					}
 				}
 			}
@@ -607,24 +612,28 @@ extension WalletDetails
 		override func viewDidAppear(_ animated: Bool)
 		{
 			super.viewDidAppear(animated)
-			if let view = self.transactionsSectionHeaderView {
-				if view.mode == .scanningIndicator {
-					if view.indicatorView.activityIndicator.isAnimating == false {
-						if view.superview != nil { // if actually visible
-							view.indicatorView.activityIndicator.startAnimating()
+			self.wallet.requestManualUserRefresh()
+			do { // this may not actually be necessary:
+				if let view = self.transactionsSectionHeaderView {
+					if view.mode == .scanningIndicator {
+						if view.indicatorView.activityIndicator.isAnimating == false {
+							if view.superview != nil { // if actually visible
+								view.indicatorView.activityIndicator.startAnimating()
+							}
 						}
 					}
 				}
 			}
-			self.wallet.requestManualUserRefresh()
 		}
 		override func viewWillDisappear(_ animated: Bool)
 		{
 			super.viewWillDisappear(animated)
-			if let view = self.transactionsSectionHeaderView {
-				if view.mode == .scanningIndicator {
-					if view.indicatorView.activityIndicator.isAnimating == true {
-						view.indicatorView.activityIndicator.stopAnimating()
+			do { // this may not actually be necessary:
+				if let view = self.transactionsSectionHeaderView {
+					if view.mode == .scanningIndicator {
+						if view.indicatorView.activityIndicator.isAnimating == true {
+							view.indicatorView.activityIndicator.stopAnimating()
+						}
 					}
 				}
 			}

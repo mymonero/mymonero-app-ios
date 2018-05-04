@@ -94,10 +94,9 @@ extension UICommonComponents
 		func startAnimating()
 		{
 			assert(Thread.isMainThread)
-			if self.isAnimating {
-				// TODO: assert that has animations or timer
-				assert(false)
-			}
+			assert(self.isAnimating == false)
+			assert(self.isAnimatingALoop == false)
+			//
 			self.isAnimating = true
 			self._animateNextLoop()
 		}
@@ -105,13 +104,8 @@ extension UICommonComponents
 		func _animateNextLoop()
 		{
 			assert(Thread.isMainThread)
-			if self.isAnimating == false {
-				return // terminate; may have been called after a cancel
-			}
-			if self.isAnimatingALoop {
-				assert(false)
-				return // terminate; may have been called after a cancel
-			}
+			assert(self.isAnimating)
+			assert(!self.isAnimatingALoop)
 			self.isAnimatingALoop = true
 			//
 			let durationOfAnimationTo_on = 0.15
@@ -174,6 +168,9 @@ extension UICommonComponents
 				}
 				thisSelf.isAnimatingALoop = false
 				if finished { // continue animating
+					if thisSelf.isAnimating == false {
+						return // this happens for some reason...
+					}
 					thisSelf._animateNextLoop()
 				} else { // clean up state by marking as having stopped animating (is this safe? better way?)
 					thisSelf.isAnimating = false
@@ -183,10 +180,8 @@ extension UICommonComponents
 		func stopAnimating()
 		{
 			assert(Thread.isMainThread)
-			if self.isAnimating == false {
-				// TODO: assert that has NO animations and NO timer
-				return
-			}
+			assert(self.isAnimating)
+			assert(self.isAnimatingALoop)
 			// TODO: assert that has animations or timer
 			for (_, bulbView) in bulbViews.enumerated() {
 				bulbView.layer.removeAllAnimations()
