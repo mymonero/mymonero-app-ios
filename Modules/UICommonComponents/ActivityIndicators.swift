@@ -47,7 +47,6 @@ extension UICommonComponents
 		//
 		// Properties
 		var bulbViews: [GraphicActivityIndicatorPartBulbView] = []
-		var delayBetweenLoops_scheduledTimer: Timer?
 		//
 		// Lifecycle
 		init(appearance: GraphicActivityIndicatorPartBulbView.Appearance)
@@ -60,6 +59,7 @@ extension UICommonComponents
 				bulbViews.append(bulbView)
 				self.addSubview(bulbView)
 			}
+			self.layoutBulbViews()
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
@@ -75,6 +75,10 @@ extension UICommonComponents
 		override func layoutSubviews()
 		{
 			super.layoutSubviews()
+			self.layoutBulbViews()
+		}
+		func layoutBulbViews()
+		{
 			for (idx, bulbView) in bulbViews.enumerated() {
 				bulbView.frame = CGRect(
 					x: CGFloat(idx) * (GraphicActivityIndicatorPartBulbView.width + GraphicActivityIndicatorPartBulbView.interBulbSpacing),
@@ -109,57 +113,71 @@ extension UICommonComponents
 				return // terminate; may have been called after a cancel
 			}
 			self.isAnimatingALoop = true
+			//
 			let durationOfAnimationTo_on = 0.15
 			let durationOfAnimationTo_off = 0.3
+			let durationOffsetBetweenBulbStartTimes: TimeInterval = 0.05
 			let delayBetweenLoops: TimeInterval = 0.05
-			
-			// TODO: rework this to make it resilient to restarting if necessary
-			
-			for (idx, bulbView) in bulbViews.enumerated() {
-//				bulbView.layer.removeAllAnimations() // in case
-				//
-				let bulbAnimationDelay: TimeInterval = TimeInterval(idx) * (durationOfAnimationTo_on + 0.05)
-				UIView.animate(
-					withDuration: durationOfAnimationTo_on,
-					delay: bulbAnimationDelay,
-					options: [.curveEaseInOut],
-					animations:
-					{
-						bulbView.configureAs_on()
-					},
-					completion:
-					{ [unowned self] (finished) in
-						if finished {
-							UIView.animate(
-								withDuration: durationOfAnimationTo_off,
-								delay: 0,
-								options: [.curveEaseInOut],
-								animations:
-								{
-									bulbView.configureAs_off()
-								},
-								completion:
-								{ [unowned self] (finished) in
-									if finished {
-										if idx == GraphicActivityIndicatorView.numberOf_bulbViews - 1 {
-											let scheduledTimer = Timer.scheduledTimer(
-												withTimeInterval: delayBetweenLoops,
-												repeats: false,
-												block:
-												{ [unowned self] (timer) in
-													self.delayBetweenLoops_scheduledTimer = nil
-													self.isAnimatingALoop = false
-													self._animateNextLoop()
-												}
-											)
-											self.delayBetweenLoops_scheduledTimer = scheduledTimer
-										}
-									}
-								}
-							)
-						}
+			func absolute_animationDelayForBulb(atIdx idx: Int) -> TimeInterval
+			{
+				return TimeInterval(idx) * (durationOfAnimationTo_on + durationOffsetBetweenBulbStartTimes)
+			}
+			func relative_easeInOutQuad_t(fromRelativeT t: TimeInterval) -> TimeInterval
+			{
+				if (t < 0.5) {
+					return 2 * t * t;
+				} else {
+					return -1 + (4 - 2 * t) * t;
+				}
+			}
+			let startDelayOfLastBulbView = absolute_animationDelayForBulb(atIdx: self.bulbViews.count - 1)
+			let finishTimeOfLastBulbView = startDelayOfLastBulbView + durationOfAnimationTo_on + durationOfAnimationTo_off
+			//
+			// TODO: fix this up to mirror CSS animation.. use constants 0.75 bulb duration; 0.2 bulb delay from last; 0, 20, 60, 100% points
+			let totalDuration = finishTimeOfLastBulbView
+			let relative_delayBetweenLoops = delayBetweenLoops / totalDuration
+			let relative_durationOfAnimationTo_on = durationOfAnimationTo_on / totalDuration
+			let relative_durationOfAnimationTo_off = durationOfAnimationTo_off / totalDuration
+			//
+			UIView.animateKeyframes(
+				withDuration: totalDuration,
+				delay: 0,
+				options: [
+					.beginFromCurrentState,
+					.calculationModeLinear // curve calculated manually
+				],
+				animations: { [weak self] in
+					guard let thisSelf = self else {
+						return
 					}
-				)
+					for (idx, bulbView) in thisSelf.bulbViews.enumerated() {
+						let bulb_relative_startTime_on = relative_delayBetweenLoops + absolute_animationDelayForBulb(atIdx: idx)/totalDuration
+						UIView.addKeyframe(
+							withRelativeStartTime: relative_easeInOutQuad_t(fromRelativeT: bulb_relative_startTime_on),
+							relativeDuration: relative_easeInOutQuad_t(fromRelativeT: relative_durationOfAnimationTo_on),
+							animations: {
+								bulbView.configureAs_on()
+							}
+						)
+						UIView.addKeyframe(
+							withRelativeStartTime: relative_easeInOutQuad_t(fromRelativeT: bulb_relative_startTime_on + relative_durationOfAnimationTo_on),
+							relativeDuration: relative_easeInOutQuad_t(fromRelativeT:relative_durationOfAnimationTo_off),
+							animations: {
+								bulbView.configureAs_off()
+							}
+						)
+					}
+				}
+			) { [weak self] (finished) in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.isAnimatingALoop = false
+				if finished { // continue animating
+					thisSelf._animateNextLoop()
+				} else { // clean up state by marking as having stopped animating (is this safe? better way?)
+					thisSelf.isAnimating = false
+				}
 			}
 		}
 		func stopAnimating()
@@ -170,10 +188,6 @@ extension UICommonComponents
 				return
 			}
 			// TODO: assert that has animations or timer
-			if let timer = self.delayBetweenLoops_scheduledTimer {
-				timer.invalidate()
-				self.delayBetweenLoops_scheduledTimer = nil // important to prevent crashes on deinit
-			}
 			for (_, bulbView) in bulbViews.enumerated() {
 				bulbView.layer.removeAllAnimations()
 				bulbView.configureAs_off()
@@ -194,7 +208,7 @@ extension UICommonComponents
 		static let height_off: CGFloat = 8
 		static let height_on: CGFloat = 8
 		//
-		static let y_off: CGFloat = 3
+		static let y_off: CGFloat = 2
 		static let y_on: CGFloat = 0
 		//
 		static let color_on__normalBackground = UIColor(rgb: 0x494749)
