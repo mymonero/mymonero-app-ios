@@ -681,12 +681,12 @@ struct MoneroSpentOutputDescription: Equatable
 }
 @objc class MoneroRandomOutputDescription: NSObject
 {
-	let globalIndex: String // seems to be a string in this case - just calling that out here so no parsing mistakes are made
+	let globalIndex: Int // supplied by old/existing API as string
 	let public_key: MoneroTransactionPubKey
 	let rct: String?
 	//
 	init(
-		globalIndex: String,
+		globalIndex: Int,
 		public_key: MoneroTransactionPubKey,
 		rct: String?
 	) {
@@ -701,8 +701,18 @@ struct MoneroSpentOutputDescription: Equatable
 	}
 	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomOutputDescription
 	{
+		var globalIndex: Int!
+		do {
+			if let asString = dict["global_index"] as? String {
+				globalIndex = Int(asString)!
+			} else if let asInt = dict["global_index"] as? Int {
+				globalIndex = asInt
+			} else {
+				fatalError("Unparseable global_index")
+			}
+		}
 		let outputDescription = MoneroRandomOutputDescription(
-			globalIndex: dict["global_index"] as! String,
+			globalIndex: globalIndex,
 			public_key: dict["public_key"] as! MoneroTransactionPubKey,
 			rct: dict["rct"] as? String
 		)
@@ -716,7 +726,7 @@ struct MoneroSpentOutputDescription: Equatable
 		let prefix = "{"
 		let suffix = "}"
 		var keysAndValuesString = ""
-		keysAndValuesString += "\"global_index\": \"\(globalIndex)\"" // since it's a string in this case (for RandomOuts), we should wrap in escaped quotes
+		keysAndValuesString += "\"global_index\": \"\(globalIndex)\"" // since it's been a string (for RandomOuts), we should wrap in escaped quotes - FIXME: may be able to pass an Int
 		keysAndValuesString += ", \"public_key\": \(public_key.jsRepresentationString)"
 		if let rct = rct, rct != "" {
 			keysAndValuesString += ", \"rct\": \"\(rct)\""
