@@ -266,6 +266,9 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	{
 		return false // default
 	}
+	var overridable_wantsRecordsAppendedNotPrepended: Bool {
+		return false // default
+	}
 	//
 	// Runtime - Accessors - Private - Lookups - Documents & instances
 	func _new_idsOfPersistedRecords() -> (err_str: String?, ids: [DocumentPersister.DocumentId]?)
@@ -330,7 +333,11 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func overridable_booting_didReconstitute(listedObjectInstance: PersistableObject) {} // somewhat intentionally ignores errors and values which would be returned asynchronously, e.g. by way of a callback/block
 	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: PersistableObject)
 	{
-		self.records.insert(listedObject, at: 0) // so we add it to the top
+		if self.overridable_wantsRecordsAppendedNotPrepended {
+			self.records.append(listedObject)
+		} else {
+			self.records.insert(listedObject, at: 0) // so we add it to the top
+		}
 //		self.overridable_startObserving_record(recordInstance) // TODO if necessary - but shouldn't be at the moment - if implemented, be sure to add corresponding stopObserving where necessary
 		//
 		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true {

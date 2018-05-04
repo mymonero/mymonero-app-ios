@@ -64,20 +64,6 @@ class WalletsListController: PersistedObjectListController
 		NotificationCenter.default.removeObserver(self, name: SettingsController.NotificationNames_Changed.specificAPIAddressURLAuthority.notificationName, object: nil)
 	}
 	//
-	// Runtime - Imperatives - Overrides
-	override func overridable_sortRecords()
-	{
-		self.records = self.records.sorted(by: { (l, r) -> Bool in
-			if l.insertedAt_date == nil {
-				return false
-			}
-			if r.insertedAt_date == nil {
-				return true
-			}
-			return l.insertedAt_date! > r.insertedAt_date!
-		})
-	}
-	//
 	// Runtime - Accessors - Derived properties
 	var givenBooted_swatchesInUse: [Wallet.SwatchColor]
 	{
@@ -93,6 +79,28 @@ class WalletsListController: PersistedObjectListController
 			}
 		}
 		return inUseSwatches
+	}
+	//
+	// Accessors - Overrides
+	override var overridable_wantsRecordsAppendedNotPrepended: Bool {
+		return true
+	}
+	override func overridable_shouldSortOnEveryRecordAdditionAtRuntime() -> Bool {
+		return true
+	}
+	//
+	// Runtime - Imperatives - Overrides
+	override func overridable_sortRecords()
+	{
+		self.records = self.records.sorted(by: { (l, r) -> Bool in
+			if l.insertedAt_date == nil {
+				return false
+			}
+			if r.insertedAt_date == nil {
+				return true
+			}
+			return l.insertedAt_date! <= r.insertedAt_date!
+		})
 	}
 	//
 	// Booted - Imperatives - Public - Wallets list
@@ -317,6 +325,8 @@ class WalletsListController: PersistedObjectListController
 	// Delegation - Notifications
 	@objc func SettingsController__NotificationNames_Changed__specificAPIAddressURLAuthority()
 	{
+		// NOTE: crashes during this function cause wallets to be lost... should probably find a better way to do this
+		
 		// 'log out' all wallets by grabbing their keys (info to reconstitute them), deleting them, then reconstituting and booting them
 		// I opted to do this here rather than within the wallet itself b/c if a wallet is currently logging in then it has to manage cancelling that, etc. - was easier and possibly simpler to just use List CRUD apis instead.
 		if self.hasBooted == false {
