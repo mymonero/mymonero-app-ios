@@ -45,7 +45,7 @@ extension UICommonComponents
 		}
 		// Interface - Properties - Convenience
 		static var new_titleEdgeInsets_withIcon: UIEdgeInsets {
-			return UIEdgeInsetsMake(0, 4, 0, 0)
+			return UIEdgeInsetsMake(0, 2, 0, 0)
 		}
 		//
 		// Properties
