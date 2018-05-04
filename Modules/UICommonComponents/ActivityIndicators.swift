@@ -296,23 +296,27 @@ extension UICommonComponents
 		static let marginAboveActivityIndicatorBelowFormInput: CGFloat = 6
 		//
 		// Properties
-		var activityIndicator = GraphicActivityIndicatorView(appearance: .onNormalBackground)
+		var activityIndicator: GraphicActivityIndicatorView!
 		var label = Form.FieldLabel(title: "", sizeToFit: false)
 		//
 		// Lifecycle
-		init()
+		init(appearance: GraphicActivityIndicatorPartBulbView.Appearance = .onNormalBackground)
 		{
 			super.init(frame: .zero)
-			self.setup()
+			self.setup(appearance: appearance)
 //			self.giveBorder()
 //			self.borderSubviews()
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
 		}
-		func setup()
+		func setup(appearance: GraphicActivityIndicatorPartBulbView.Appearance)
 		{
-			self.addSubview(activityIndicator)
+			do {
+				let view = GraphicActivityIndicatorView(appearance: .onNormalBackground)
+				self.activityIndicator = view
+				self.addSubview(activityIndicator)
+			}
 			self.addSubview(label)
 		}
 		//
@@ -387,9 +391,9 @@ extension UICommonComponents
 	class GraphicAndTwoUpLabelsActivityIndicatorView: GraphicAndLabelActivityIndicatorView
 	{
 		var accessoryLabel = Form.FieldLabel(title: "", sizeToFit: false)
-		override func setup()
+		override func setup(appearance: GraphicActivityIndicatorPartBulbView.Appearance)
 		{
-			super.setup()
+			super.setup(appearance: appearance)
 			//
 			let view = self.accessoryLabel
 			view.textAlignment = .right
@@ -423,9 +427,9 @@ extension UICommonComponents
 	//
 	class ResolvingActivityIndicatorView: GraphicAndLabelActivityIndicatorView
 	{
-		override init()
+		override init(appearance: GraphicActivityIndicatorPartBulbView.Appearance = .onNormalBackground)
 		{
-			super.init()
+			super.init(appearance: appearance)
 			self.set(labelText: NSLocalizedString("RESOLVING…", comment: ""))
 		}
 		required init?(coder aDecoder: NSCoder) {
