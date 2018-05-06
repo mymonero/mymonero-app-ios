@@ -557,7 +557,7 @@ extension WalletDetails
 					}
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // fixed delay unfortunately fragile .. any better solution? I don't actually fully get why this is necessary.. lack of superview? then why does .isHidden->.show() case work w/o this call?
 						// if still not animating
-						if 						view.indicatorView.activityIndicator.isAnimating == false {
+						if view.indicatorView.activityIndicator.isAnimating == false {
 							view.indicatorView.activityIndicator.startAnimating()
 						}
 					}
