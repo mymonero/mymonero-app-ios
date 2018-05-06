@@ -423,19 +423,49 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		didError: Bool,
 		savableValue: String?
 	) {
-		var value = self.sanitizedInputValue__address // use even nil b/c it means use mymonero.com api
-		if value == "" {
+		var mutable_value = self.sanitizedInputValue__address // use even nil b/c it means use mymonero.com api
+		// ^- this has had its whitespace trimmed
+		if mutable_value == "" {
 			assert(false)
-			value = nil
+			mutable_value = nil
 		}
 		var preSubmission_validationError: String?
 		do {
-			if value != nil {
-				if value!.contains(".") == false && value!.contains(":") == false && value!.contains("localhost") == false {
+			if mutable_value != nil {
+				if mutable_value!.contains(".") == false
+					&& mutable_value!.contains(":") == false
+					&& mutable_value!.contains("localhost") == false {
 					preSubmission_validationError = String(
 						format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
 						HostedMonero.APIClient.mymonero_apiAddress_authority
 					)
+				} else { // important else
+					//
+					// strip http:// and https:// prefix here.. there's got to be a better (system) way to do this..
+					// ... probably not a good idea to naively strip "*://" prefix ... or is it?
+					let strippablePrefixes =
+					[
+						"https://",
+						"http://",
+						"//" // we can strip it for https anyway
+					]
+					for (_, prefix) in strippablePrefixes.enumerated() {
+						if mutable_value!.hasPrefix(prefix) {
+							mutable_value = String(mutable_value!.dropFirst(prefix.count)) // overwriting
+						}
+					}
+					//
+					// last-ditch, check fabricated URL parsing - however note that this doesn't get us a huge amount - mostly checking things like whitespace in host
+					let _urlString = "\(HostedMonero.APIClient.apiAddress_scheme)://\(mutable_value!)"
+					let url = URL(string: _urlString)
+					if url == nil {
+						preSubmission_validationError = String(
+							format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
+							HostedMonero.APIClient.mymonero_apiAddress_authority
+						)
+					} else {
+						// still valid so far...
+					}
 				}
 			}
 		}
@@ -449,9 +479,9 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 			return (didError: true, savableValue: nil) // didError
 		}
 		//
-		// TODO: verify that this is a legit server somehow here before writing value
-		//
-		return (didError: false, savableValue: value) // didError = false
+		// TODO: better verification this is a legit server somehow here before writing value
+		let final_value = mutable_value
+		return (didError: false, savableValue: final_value) // didError = false
 	}
 	//
 	// Runtime - Imperatives - Overrides
