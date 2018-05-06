@@ -167,7 +167,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 	typealias SliderSecondsValue = TimeInterval
 	enum SteppingCategory: SliderSecondsValue
 	{
-		case subMinute = 5
+		case subMinute = 15 // rather than 5 - slightly better for mobile
 		case minutes = 60
 		//
 		var secondsPerStep: SliderSecondsValue {
@@ -175,7 +175,7 @@ class SettingsAppTimeoutAfterSecondsSlider: UISlider
 		}
 	}
 	//
-	static let duration__min: SliderSecondsValue = 5
+	static let duration__min: SliderSecondsValue = 15 // should this be 30 instead?
 	static let duration__max: SliderSecondsValue = 60 * 10 // aka 'Never'; lower on mobile… but maybe we should change this based on whether we're plugged in? possible todo
 	static let duration__never = SettingsAppTimeoutAfterSecondsSlider.duration__max
 	//
