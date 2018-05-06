@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-SNAPSHOT_FORCE_DELETE=true fastlane snapshot reset_simulators &&
+read -p "This will delete and rebuild your Simulator devices. Are you sure? (Y/N) " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	SNAPSHOT_FORCE_DELETE=true fastlane snapshot reset_simulators &&
 
-fastlane snapshot --stop_after_first_error && 
+	fastlane snapshot --stop_after_first_error && 
 
-cd ./screenshots && 
+	cd ./screenshots && 
 
-fastlane frameit black
+	fastlane frameit black
+fi
+
