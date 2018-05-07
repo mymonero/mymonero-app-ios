@@ -737,7 +737,7 @@ extension CreateWallet_ConfirmMnemonic
 					wordHandle: wordHandle,
 					mode: .inSelectable_butNotYetSelected,
 					tapped_fn:
-					{ (wordView) in
+					{ [unowned self] (wordView) in
 						if self.selectedWordsView.isEnabled == false {
 							DDLog.Warn("WalletWizard", "Word selected but disabled.")
 							return
