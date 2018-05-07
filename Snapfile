@@ -2,11 +2,11 @@
 
 # A list of devices you want to take the screenshots from
 devices([
-	"iPhone X",
-	"iPhone 8",
-	"iPhone 8 Plus",
-	"iPhone SE",
-	"iPad (5th generation)"
+	"iPhone X"#,
+	# "iPhone 8",
+	# "iPhone 8 Plus",
+	# "iPhone SE",
+	# "iPad Pro (12.9-inch)"
 ])
 
 languages([
@@ -18,13 +18,19 @@ languages([
 
 # The name of the scheme which contains the UI Tests
 scheme "MyMonero"
+workspace "./MyMonero.xcworkspace"
+# app_identifier "com.mymonero.mymonero-app-testing" #using the same bundle ID as app store
+# ios_version "11.3"  # will this need to be set?
+
+# clear_previous_screenshots true
+number_of_retries 0 # it's not going to be able to clear the Sim between retries (apparently) so it's not useful
+# reinstall_app true #may get tripped up otherwise?
+stop_after_first_error true
+concurrent_simulators false #can it handle it?
+# clean true #may get tripped up otherwise?
+# erase_simulator true #may get tripped up otherwise?
 
 output_directory "./screenshots"
-
-clear_previous_screenshots true
-concurrent_simulators false # doesn't seem to be able to handle it just yet
-
-workspace "./MyMonero.xcworkspace"
 
 # For more information about all available options run
 # snapshot --help

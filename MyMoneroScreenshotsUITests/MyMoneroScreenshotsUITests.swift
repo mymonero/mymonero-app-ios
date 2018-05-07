@@ -104,7 +104,7 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			secureTextField_2.tap()
 			secureTextField_2.typeText("qweqwe")
 			//
-			self.tapNext(inApp: app, atBarTitle: "Create PIN or Password")
+			self.tapNext(inApp: app, atBarTitle: "Create PIN/Password")
 		}
 		//
 		app.cells.element(boundBy: 0).tap() // tap on wallet list cell

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-read -p "This will delete and rebuild your Simulator devices. Are you sure? (Y/N) " -n 1 -r
+read -p "This will delete and rebuild your Simulator devices. Are you sure? (y/n) " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 	SNAPSHOT_FORCE_DELETE=true fastlane snapshot reset_simulators &&
 
-	fastlane snapshot --stop_after_first_error && 
+	fastlane snapshot --verbose && 
 
 	cd ./screenshots && 
 
