@@ -69,7 +69,7 @@ class WalletsListViewController: ListViewController
 		if self.listController.hasBooted == false || self.listController.records.count == 0 {
 			return NSLocalizedString("MyMonero", comment: "")
 		}
-		return NSLocalizedString("My Monero Wallets", comment: "")
+		return NSLocalizedString("Wallets", comment: "")
 	}
 	override func new_emptyStateView() -> UIView?
 	{
