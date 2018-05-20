@@ -87,8 +87,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		documentJSONs: [DocumentJSON]?
-	)
-	{
+	) {
 		let fileDescriptions = ids.map{
 			DocumentFileDescription(
 				inCollectionName: collectionName,
@@ -107,8 +106,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		documentsData: [Data]?
-	)
-	{
+	) {
 		let fileDescriptions = ids.map{
 			DocumentFileDescription(
 				inCollectionName: collectionName,
@@ -125,8 +123,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		ids: [DocumentId]?
-	)
-	{
+	) {
 		let (err_str, fileDescriptions) = self._read_documentFileDescriptions(inCollectionNamed: collectionName)
 		if err_str != nil {
 			return (err_str, nil)
@@ -144,8 +141,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		documentJSONs: [DocumentJSON]?
-	)
-	{
+	) {
 		let (err_str, fileDescriptions) = self._read_documentFileDescriptions(inCollectionNamed: collectionName)
 		if err_str != nil {
 			return (err_str, nil)
@@ -164,8 +160,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		insertedDocument: DocumentJSON? // returned because it may now contain a _id field
-	)
-	{
+	) {
 		var final_document = document // mutable copy
 		var id = document["_id"] as? DocumentId
 		if id == nil {
@@ -193,8 +188,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		insertedDocument: DocumentJSON? // returned because it may now contain a _id field
-	)
-	{
+	) {
 		let fileDescription = DocumentFileDescription(
 			inCollectionName: collectionName,
 			documentId: id
@@ -221,8 +215,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		upsertedDocument: DocumentJSON? // returned because it may now contain a _id field
-	)
-	{
+	) {
 		let fileDescription = DocumentFileDescription(
 			inCollectionName: collectionName,
 			documentId: id
@@ -247,8 +240,7 @@ class DocumentPersister
 		documentFileWithData fileData: Data, // if you're using this for Documents, be sure to set field _id to id within your fileData
 		withId id: DocumentId, // consumer must supply the document ID since we can't make assumptions about fileData
 		toCollectionNamed collectionName: CollectionName
-		) -> String? // err_str
-	{
+	) -> String? { // err_str
 		let fileDescription = DocumentFileDescription(
 			inCollectionName: collectionName,
 			documentId: id
@@ -267,8 +259,7 @@ class DocumentPersister
 	func RemoveDocuments(
 		inCollectionNamed collectionName: CollectionName,
 		withIds ids: [DocumentId]
-	) -> (err_str: String?, numRemoved: Int?)
-	{
+	) -> (err_str: String?, numRemoved: Int?) {
 		var numRemoved = 0
 		for (_, id) in ids.enumerated() {
 			let fileDescription = DocumentFileDescription(
@@ -287,8 +278,7 @@ class DocumentPersister
 	}
 	func RemoveAllDocuments(
 		inCollectionNamed collectionName: CollectionName
-	) -> (err_str: String?, numRemoved: Int?)
-	{
+	) -> (err_str: String?, numRemoved: Int?) {
 		let (err_str, ids) = self.IdsOfAllDocuments(inCollectionNamed: collectionName)
 		if err_str != nil {
 			return (err_str, nil)
@@ -305,8 +295,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		documentJSONs: [DocumentJSON]?
-	)
-	{
+	) {
 		var documentJSONs = [DocumentJSON]()
 		guard let documentFileDescriptions = documentFileDescriptions, documentFileDescriptions.count > 0 else {
 			return (nil, documentJSONs)
@@ -326,8 +315,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		documentsData: [Data]?
-	)
-	{
+	) {
 		var documentsData = [Data]()
 		guard let documentFileDescriptions = documentFileDescriptions, documentFileDescriptions.count > 0 else {
 			return (nil, documentsData)
@@ -347,8 +335,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		documentJSON: DocumentJSON?
-	)
-	{
+	) {
 		let (err_str, fileData) = self.__read_existentDocumentData(withDocumentFileDescription: documentFileDescription)
 		if err_str != nil {
 			return (err_str, nil)
@@ -366,8 +353,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		data: Data?
-	)
-	{
+	) {
 		let expected_fileURL = documentFileDescription.new_fileURL
 		var fileData: Data
 		do {
@@ -436,8 +422,7 @@ class DocumentPersister
 	func _write_fileDescriptionDocumentData(
 		fileDescription: DocumentFileDescription,
 		jsonToWrite: DocumentJSON
-	) throws
-	{
+	) throws {
 		let json_Data =  try JSONSerialization.data(
 			withJSONObject: jsonToWrite,
 			options: []
@@ -448,16 +433,14 @@ class DocumentPersister
 	func _write_fileDescriptionDocumentData(
 		fileDescription: DocumentFileDescription,
 		fileData: Data
-	) throws
-	{
+	) throws {
 		let fileURL = fileDescription.new_fileURL
 		try __write_dataToFileURL(fileURL, fileData)
 	}
 	func __write_dataToFileURL(
 		_ fileURL: URL,
 		_ fileData: Data
-	) throws
-	{
+	) throws {
 		try fileData.write(to: fileURL, options: .atomic)
 	}
 }
