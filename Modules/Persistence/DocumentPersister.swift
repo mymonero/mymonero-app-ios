@@ -46,18 +46,14 @@ class DocumentPersister
 		var inCollectionName: CollectionName
 		var documentId: DocumentId
 		static let fileKeyComponentDelimiterString = "__" // not -, because those exist in uuids
-		var new_fileKey: String
-		{
+		var new_fileKey: String {
 			return "\(self.inCollectionName)\(DocumentFileDescription.fileKeyComponentDelimiterString)\(self.documentId)"
 		}
 		static let filenameExt = "MMDBDoc.json" // just trying to pick something fairly unique, and short
-		var new_filename: String
-		{
+		var new_filename: String {
 			return "\(self.new_fileKey).\(DocumentFileDescription.filenameExt)"
 		}
-		var new_fileURL: URL
-		{
-			
+		var new_fileURL: URL {
 			let fileURL = DocumentPersister.documentFiles_parentDirectory_URL.appendingPathComponent(self.new_filename)
 			
 			return fileURL
@@ -151,36 +147,7 @@ class DocumentPersister
 		return self._read_existentDocumentJSONs(withDocumentFileDescriptions: fileDescriptions)
 	}
 	//
-	//
 	// Interface - Runtime - Imperatives
-	//
-	func Insert(
-		document: DocumentJSON,
-		intoCollectionNamed collectionName: CollectionName
-	) -> (
-		err_str: String?,
-		insertedDocument: DocumentJSON? // returned because it may now contain a _id field
-	) {
-		var final_document = document // mutable copy
-		var id = document["_id"] as? DocumentId
-		if id == nil {
-			id = DocumentPersister.new_DocumentId()
-			final_document["_id"] = id
-		}
-		let fileDescription = DocumentFileDescription(
-			inCollectionName: collectionName,
-			documentId: id!
-		)
-		do {
-			try self._write_fileDescriptionDocumentData(
-				fileDescription: fileDescription,
-				jsonToWrite: final_document
-			)
-		} catch let e {
-			return (e.localizedDescription, nil)
-		}
-		return (nil, final_document)
-	}
 	func UpdateDocument(
 		withId id: DocumentId,
 		inCollectionNamed collectionName: CollectionName,
@@ -368,8 +335,7 @@ class DocumentPersister
 	) -> (
 		err_str: String?,
 		fileDescriptions: [DocumentFileDescription]?
-	)
-	{
+	) {
 		var fileDescriptions = [DocumentFileDescription]()
 		let parentDirectory_URL = DocumentPersister.documentFiles_parentDirectory_URL
 		do {
