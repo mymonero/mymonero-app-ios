@@ -101,9 +101,16 @@ final class PasswordController
 		case PIN = "PIN" // 6-digit numerical PIN/code
 		case password = "password" // free-form, string password
 		static var lengthOfPIN: Int { return 6 }
-		var humanReadableString: String
-		{ // TODO: return localized
+		var humanReadableString: String { // TODO: return localized
 			return self.rawValue
+		}
+		var incorrectEntry_humanReadableString: String {
+			switch self {
+				case .PIN:
+					return NSLocalizedString("Incorrect PIN", comment: "")
+				case .password:
+					return NSLocalizedString("Incorrect password", comment: "")
+			}
 		}
 		var capitalized_humanReadableString: String
 		{ // this is done instead of calling .capitalize as that will convert the remainder to lowercase characters
@@ -276,12 +283,7 @@ final class PasswordController
 		return self.hasUserEnteredValidPasswordYet == true && self.isAlreadyGettingExistingOrNewPWFromUser == true
 	}
 	var new_incorrectPasswordValidationErrorMessageString: String {
-		let humanReadable_passwordType = self.passwordType!.humanReadableString
-		// TODO: ensure above localized ^
-		return String(format:
-			NSLocalizedString("Incorrect %@", comment: ""),
-			humanReadable_passwordType
-		)
+		return self.passwordType!.incorrectEntry_humanReadableString
 	}
 	//
 	// Accessors - Common
