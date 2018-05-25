@@ -236,9 +236,7 @@ final class PasswordController
 			assert(false)
 			return
 		}
-		func _proceedTo_load(
-			documentJSON: DocumentPersister.DocumentJSON
-		)
+		func _proceedTo_load(documentJSON: DocumentPersister.DocumentJSON)
 		{
 			self._id = documentJSON[DictKey._id.rawValue] as? DocumentPersister.DocumentId
 			let passwordType_rawValue = documentJSON[DictKey.passwordType.rawValue] as? String ?? PasswordType.password.rawValue
@@ -263,15 +261,11 @@ final class PasswordController
 			[
 				DictKey.passwordType.rawValue: PasswordType.password // default (at least for now)
 			]
-			_proceedTo_load(
-				documentJSON: fabricated_documentJSON
-			)
+			_proceedTo_load(documentJSON: fabricated_documentJSON)
 			return
 		}
 		let documentJSON = documentJSONs![0]
-		_proceedTo_load(
-			documentJSON: documentJSON
-		)
+		_proceedTo_load(documentJSON: documentJSON)
 	}
 	//
 	// Accessors - Runtime - Derived properties
