@@ -311,9 +311,19 @@ extension SendFundsForm
 				{ [unowned self] (detectedEmbedded_paymentID) in
 					assert(Thread.isMainThread)
 					self.set_isFormSubmittable_needsUpdate()
-					if detectedEmbedded_paymentID != nil { // i.e. integrated address supplying one - we show it as 'detected'
-						self.set_addPaymentID_buttonView(isHidden: true)
+					if detectedEmbedded_paymentID != nil {
+						self.set_addPaymentID_buttonView(isHidden: true) // i.e. integrated address supplying one - we show it as 'detected'
 						self.hideAndClear_manualPaymentIDField()
+					} else {
+						if self.manualPaymentID_inputView.isHidden {
+							self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid/partial addr or valid std xmr addr
+						}
+					}
+				}
+				view.finishedValidatingTextInput_foundInvalidMoneroAddress_fn =
+				{ [unowned self] in
+					if self.manualPaymentID_inputView.isHidden {
+						self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid address
 					}
 				}
 				view.willBeginResolvingPossibleOATextInput_fn =
@@ -678,9 +688,18 @@ extension SendFundsForm
 		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
 		{
-			self.manualPaymentID_label.isHidden = isHidden
-			self.manualPaymentID_inputView.isHidden = isHidden
-			self.view.setNeedsLayout()
+			var touched: Bool = false
+			if self.manualPaymentID_label.isHidden != isHidden {
+				touched = true
+				self.manualPaymentID_label.isHidden = isHidden
+			}
+			if self.manualPaymentID_inputView.isHidden != isHidden {
+				touched = true
+				self.manualPaymentID_inputView.isHidden = isHidden
+			}
+			if touched {
+				self.view.setNeedsLayout()
+			}
 		}
 		func show_manualPaymentIDField(withValue paymentID: String?)
 		{
@@ -690,7 +709,9 @@ extension SendFundsForm
 		func hideAndClear_manualPaymentIDField()
 		{
 			self.set_manualPaymentIDField(isHidden: true)
-			self.manualPaymentID_inputView.text = ""
+			if self.manualPaymentID_inputView.text != "" {
+				self.manualPaymentID_inputView.text = ""
+			}
 		}
 		//
 		func set_addPaymentID_buttonView(isHidden: Bool)
