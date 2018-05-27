@@ -41,7 +41,6 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	struct InitializationParameters
 	{
 		var enteredAddressValue: String // not nil; this ought to also always be the .address we save to the Contact
-		var isXMRAddressIntegrated: Bool
 		var integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 		var resolvedAddress: MoneroAddress?
 		var sentWith_paymentID: MoneroPaymentID? // nil for integrated addr
@@ -49,6 +48,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	//
 	// Parameters - Initial
 	var parameters: InitializationParameters
+	var isEnteredAddress_integrated: Bool
 	var isEnteredAddress_OA: Bool
 	//
 	var detected_iconAndMessageView: UICommonComponents.DetectedIconAndMessageView?
@@ -61,9 +61,14 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	init(parameters: InitializationParameters)
 	{
 		self.parameters = parameters
-		do {
-			self.isEnteredAddress_OA = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.parameters.enteredAddressValue)
-		}
+		//
+		self.isEnteredAddress_OA = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
+			self.parameters.enteredAddressValue
+		)
+		self.isEnteredAddress_integrated = MyMoneroCore.shared_objCppBridge.isIntegratedAddress(
+			self.parameters.enteredAddressValue
+		)
+		//
 		super.init()
 	}
 	required init?(coder aDecoder: NSCoder) {
@@ -71,11 +76,6 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	}
 	override func setup()
 	{
-		do {
-			if self.parameters.isXMRAddressIntegrated {
-				assert(self.parameters.sentWith_paymentID == nil) // it ought to be guaranteed to be nil for integrated addresses
-			}
-		}
 		super.setup()
 	}
 	override func setup_views()
@@ -103,10 +103,10 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		if self.paymentID_inputView != nil {
 			self.paymentID_inputView!.set(isEnabled: false)
 			self.paymentID_inputView!.isImmutable = true
-			self.paymentID_inputView!.textView.text = self.parameters.sentWith_paymentID ?? self.parameters.integratedAddressPIDForDisplay_orNil
+			self.paymentID_inputView!.textView.text = self.parameters.integratedAddressPIDForDisplay_orNil ?? self.parameters.sentWith_paymentID
 		}
 		//
-		let wantsDetectedIndicator = self.parameters.isXMRAddressIntegrated // either integrated
+		let wantsDetectedIndicator = self.isEnteredAddress_integrated // either integrated
 			|| (self.isEnteredAddress_OA && self._overridable_wants_paymentID_fieldAccessoryMessageLabel) // or OA and we are going to show the field
 		if wantsDetectedIndicator {
 			let view = UICommonComponents.DetectedIconAndMessageView()
@@ -155,6 +155,9 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	}
 	override var sanitizedInputValue__paymentID: MoneroPaymentID? {
 		// causing this to ignore field input and use values directly to avoid integrated addr pid submission
+		if self.isEnteredAddress_integrated {
+			return nil // no need to save one - the actual entered value is an integrated address
+		}
 		return self.parameters.sentWith_paymentID // and not the integrated addr pid which is only for display		
 	}
 	override var _overridable_bottomMostView: UIView { // support layout this out while preserving scroll size etc

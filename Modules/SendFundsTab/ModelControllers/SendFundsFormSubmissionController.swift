@@ -65,7 +65,8 @@ extension SendFundsForm
 			var canceled_fn: () -> Void
 			var success_fn: (
 				_ mockedTransaction: MoneroHistoricalTransactionRecord,
-				_ isXMRAddressIntegrated: Bool,
+				_ sentTo_address: MoneroAddress, // this may differ from enteredAddress.. e.g. std addr + short pid -> int addr
+				_ isXMRAddressIntegrated: Bool, // regarding sentTo_address
 				_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 			) -> Void
 		}
@@ -314,7 +315,7 @@ extension SendFundsForm
 				spent_outputs: nil, // TODO: is this ok?
 				timestamp: Date(), // faking this
 				hash: transactionHash,
-				paymentId: sentWith_paymentID, // transaction.paymentId will therefore be nil for integrated addresses
+				paymentId: sentWith_paymentID ?? integratedAddressPIDForDisplay_orNil, // transaction.paymentId will be nil for integrated addresses but we show it here anyway and, in the situation where they used a std xmr addr and a short pid, an int addr would get fabricated anyway, leaving sentWith_paymentID nil even though user is expecting a pid - so we want to make sure it gets saved in either case
 				mixin: MyMoneroCore.fixedMixin,
 				mempool: false, // TODO: is this correct?
 				unlock_time: 0,
@@ -342,6 +343,7 @@ extension SendFundsForm
 			}
 			self.parameters.success_fn(
 				mockedTransaction,
+				sentTo_address,
 				isXMRAddressIntegrated,
 				integratedAddressPIDForDisplay_orNil
 			)

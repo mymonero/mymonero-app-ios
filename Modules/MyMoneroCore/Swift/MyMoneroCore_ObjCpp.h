@@ -1,8 +1,8 @@
 //
-//  Bridging-Header.h
+//  MyMoneroCore_ObjCpp.h
 //  MyMonero
 //
-//  Created by Paul Shapiro on 8/29/17.
+//  Created by Paul Shapiro on 11/22/17.
 //  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
@@ -32,13 +32,31 @@
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //
+#import <Foundation/Foundation.h>
+//
+@interface Monero_DecodedAddress_RetVals: NSObject
 
+@property (nonatomic, copy) NSString *errStr_orNil;
 
-#ifndef MyMonero_BridgingHeader_h
-#define MyMonero_BridgingHeader_h
+@property (nonatomic, copy) NSString *pub_viewKey_NSString;
+@property (nonatomic, copy) NSString *pub_spendKey_NSString;
+@property (nonatomic) BOOL isSubaddress;
+@property (nonatomic, copy) NSString *paymentID_NSString_orNil;
 
-#import "DNSLookup.h"
-#import "MyMoneroCore_ObjCpp.h"
-
-#endif /* MyMonero_BridgingHeader_h */
-
+@end
+//
+@interface MyMoneroCore_ObjCpp : NSObject
+//
+// Return value dictionary keys
++ (NSString *)retValDictKey__ErrStr;
++ (NSString *)retValDictKey__Value; // used for single value returns… you should force-cast the type… e.g. "as! String" for -mnemonicStringFromSeedHex:…
+//
+//
++ (Monero_DecodedAddress_RetVals *)decodedAddress:(NSString *)addressString isTestnet:(BOOL)isTestnet;
++ (BOOL)isSubAddress:(NSString *)addressString isTestnet:(BOOL)isTestnet;
++ (BOOL)isIntegratedAddress:(NSString *)addressString isTestnet:(BOOL)isTestnet;
+//
+//+ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID isTestnet:(BOOL)isTestnet;
+//+ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID; // mainnet
+//
+@end

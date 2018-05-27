@@ -11,6 +11,7 @@ def common_pods
 	pod 'PKHUD', '~> 5.0'
 	pod 'AMPopTip', '~> 3.2.1'
 	pod 'Popover', '~> 1.2.0'
+	pod 'ofxiOSBoost', '~> 1.60.0'
 end
 
 target 'MyMonero' do

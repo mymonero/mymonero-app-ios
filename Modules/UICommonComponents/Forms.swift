@@ -555,7 +555,7 @@ extension UICommonComponents
 			}
 		}
 		//
-		static let visual__height: CGFloat = 64
+		static let visual__height: CGFloat = 68
 		static let height: CGFloat = FormTextViewContainerView.visual__height + 2*UICommonComponents.FormInputCells.imagePadding_y
 		//
 		func heightThatFits(width fixedWidth: CGFloat) -> CGFloat

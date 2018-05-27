@@ -40,7 +40,7 @@ class Contact: PersistableObject
 {
 	enum NotificationNames: String
 	{
-		case infoUpdated		= "Contact_NotificationNames_infoUpdated"
+		case infoUpdated = "Contact_NotificationNames_infoUpdated"
 		case cached_derived_integratedXMRAddress_wasDerived = "Contact_NotificationNames_cached_derived_integratedXMRAddress_wasDerived"
 		//
 		var notificationName: NSNotification.Name {

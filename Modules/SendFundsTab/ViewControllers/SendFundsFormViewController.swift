@@ -887,6 +887,7 @@ extension SendFundsForm
 					success_fn:
 					{ [unowned self] (
 						mockedTransaction,
+						sentTo_address,
 						isXMRAddressIntegrated,
 						integratedAddressPIDForDisplay_orNil
 					) in
@@ -910,11 +911,10 @@ extension SendFundsForm
 									execute:
 									{ [unowned self] in
 										let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
-											enteredAddressValue: enteredAddressValue!, // ! b/c selected contact was nil
-											isXMRAddressIntegrated: isXMRAddressIntegrated,
-											integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
+											enteredAddressValue: enteredAddressValue!,
+											integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
 											resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
-											sentWith_paymentID: mockedTransaction.paymentId
+											sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress 
 										)
 										let viewController = AddContactFromSendFundsTabFormViewController(
 											parameters: parameters
