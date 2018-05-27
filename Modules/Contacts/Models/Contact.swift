@@ -80,43 +80,37 @@ class Contact: PersistableObject
 			fn(nil) // must be a long payment ID
 			return
 		}
-		MyMoneroCore.shared.DecodeAddress(self.address)
-		{ [weak self] (err_str, decodedAddress) in
-			guard let thisSelf = self else {
-				return // released
-			}
+		let (err_str, decodedAddress) = MyMoneroCore.shared_objCppBridge.decoded(address: self.address)
+		if err_str != nil {
+			fn(nil)
+			return
+		}
+		let intPaymentId = decodedAddress!.intPaymentId
+		if intPaymentId != nil && intPaymentId != "" {
+			fn(nil) // b/c we don't want to show a derived int addr if we already have the int addr
+			return
+		}
+		var address: MoneroIntegratedAddress?
+		if self.hasOpenAliasAddress {
+			address = self.cached_OAResolved_XMR_address!
+		} else {
+			address = self.address
+		}
+		if address == nil || address == "" {
+			fn(nil) // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
+			return
+		}
+		//
+		// now we know we have a std xmr addr and a short pid
+		MyMoneroCore.shared.New_IntegratedAddress(
+			fromStandardAddress: address!,
+			shortPaymentID: payment_id!
+		) { (err_str, integratedAddress) in
 			if err_str != nil {
-				fn(nil)
-				return
+				fatalError(err_str!)
 			}
-			let intPaymentId = decodedAddress!.intPaymentId
-			if intPaymentId != nil && intPaymentId != "" {
-				fn(nil) // b/c we don't want to show a derived int addr if we already have the int addr
-				return
-			}
-			var address: MoneroIntegratedAddress?
-			if thisSelf.hasOpenAliasAddress {
-				address = thisSelf.cached_OAResolved_XMR_address!
-			} else {
-				address = thisSelf.address
-			}
-			if address == nil || address == "" {
-				fn(nil) // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
-				return
-			}
-			//
-			// now we know we have a std xmr addr and a short pid
-			MyMoneroCore.shared.New_IntegratedAddress(
-				fromStandardAddress: address!,
-				shortPaymentID: payment_id!
-			) { (err_str, integratedAddress) in
-				if err_str != nil {
-					fatalError(err_str!)
-				}
-				//
-				fn(integratedAddress)
-				return
-			}
+			fn(integratedAddress)
+			return
 		}
 	}
 	//

@@ -133,43 +133,17 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 	}
 	func _handleValidated_xmrAddressSubmission()
 	{
-		let oaRecord_address = self.parameters.address
-		MyMoneroCore.shared.DecodeAddress(oaRecord_address)
-		{ [unowned self] (err_str, decodedAddressComponents) in
-			if let _ = err_str {
-				self.parameters.preSuccess_terminal_validationMessage_fn(
-					NSLocalizedString("Please enter a valid Monero address", comment: "") // not using the error here cause it can be pretty unhelpful to the lay user
-				)
-				return
-			}
-			let integratedAddress_paymentId = decodedAddressComponents!.intPaymentId
-			let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
-			if isIntegratedAddress != true { // is NOT an integrated addr - normal wallet addr
-				if self.parameters.paymentID == nil || self.parameters.paymentID! == "" {
-					MyMoneroCore.shared.New_PaymentID(
-						{ [unowned self] (err_str, generated_paymentID) in
-							if err_str != nil {
-								self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
-								return
-							}
-							let paymentID = generated_paymentID!
-							self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
-							self.__proceedTo_persistContact(
-								withPaymentID: paymentID,
-								cached_OAResolved_XMR_address: nil
-							)
-					})
-					return
-				}
-				// else, simply use the entered paymentID
-				self.__proceedTo_persistContact(
-					withPaymentID: self.parameters.paymentID!, // and it's not necessary but ! added to be explicit
-					cached_OAResolved_XMR_address: nil
-				)
-				return
-				
-			}
-			// else, IS integrated address
+		let xmrAddress = self.parameters.address
+		let (err_str, decodedAddressComponents) = MyMoneroCore.shared_objCppBridge.decoded(address: xmrAddress)
+		if let _ = err_str {
+			self.parameters.preSuccess_terminal_validationMessage_fn(
+				NSLocalizedString("Please enter a valid Monero address", comment: "") // not using the error here cause it can be pretty unhelpful to the lay user
+			)
+			return
+		}
+		let integratedAddress_paymentId = decodedAddressComponents!.intPaymentId
+		let isIntegratedAddress = integratedAddress_paymentId != nil && integratedAddress_paymentId! != "" ? true : false
+		if isIntegratedAddress {
 			let paymentID: MoneroPaymentID? = integratedAddress_paymentId // allowing this to be saved - but mostly for display purposes (to parity with design)
 			self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID) // display this
 			self.__proceedTo_persistContact(
@@ -178,6 +152,37 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 			)
 			return
 		}
+		// not an integrated addr.. subaddress?
+		if decodedAddressComponents!.isSubaddress {
+			self.__proceedTo_persistContact(
+				withPaymentID: nil, // subaddr is not compatible with PID so we must return nil
+				cached_OAResolved_XMR_address: nil
+			)
+			return
+		}
+		//
+		// not a subaddr either - normal wallet addr
+		if self.parameters.paymentID == nil || self.parameters.paymentID! == "" {
+			MyMoneroCore.shared.New_PaymentID(
+				{ [unowned self] (err_str, generated_paymentID) in
+					if err_str != nil {
+						self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
+						return
+					}
+					let paymentID = generated_paymentID!
+					self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
+					self.__proceedTo_persistContact(
+						withPaymentID: paymentID,
+						cached_OAResolved_XMR_address: nil
+					)
+			})
+			return
+		}
+		// else, simply use the entered paymentID
+		self.__proceedTo_persistContact(
+			withPaymentID: self.parameters.paymentID!, // and it's not necessary but ! added to be explicit
+			cached_OAResolved_XMR_address: nil
+		)
 	}
 	func _handleValidated_oaAddressSubmission()
 	{

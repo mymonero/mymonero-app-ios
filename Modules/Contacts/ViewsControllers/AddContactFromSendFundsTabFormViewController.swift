@@ -49,6 +49,7 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	// Parameters - Initial
 	var parameters: InitializationParameters
 	var isEnteredAddress_integrated: Bool
+	var isEnteredValue_subAddress: Bool
 	var isEnteredAddress_OA: Bool
 	//
 	var detected_iconAndMessageView: UICommonComponents.DetectedIconAndMessageView?
@@ -62,12 +63,19 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	{
 		self.parameters = parameters
 		//
-		self.isEnteredAddress_OA = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
+		let isEnteredAddress_OA = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(
 			self.parameters.enteredAddressValue
 		)
-		self.isEnteredAddress_integrated = MyMoneroCore.shared_objCppBridge.isIntegratedAddress(
+		self.isEnteredAddress_OA = isEnteredAddress_OA
+		//
+		let isEnteredAddress_integrated = MyMoneroCore.shared_objCppBridge.isIntegratedAddress(
 			self.parameters.enteredAddressValue
 		)
+		self.isEnteredAddress_integrated = isEnteredAddress_integrated
+		//
+		self.isEnteredValue_subAddress = isEnteredAddress_OA == false && isEnteredAddress_integrated == false
+			? MyMoneroCore.shared_objCppBridge.isSubAddress(self.parameters.enteredAddressValue)
+			: false
 		//
 		super.init()
 	}
@@ -154,11 +162,14 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		return true
 	}
 	override var sanitizedInputValue__paymentID: MoneroPaymentID? {
+		if self.isEnteredValue_subAddress {
+			return nil // just a partial failsafe to stop pids somehow getting saved - though, we should also cover OA subaddress records possibly coming with a pid
+		}
 		// causing this to ignore field input and use values directly to avoid integrated addr pid submission
 		if self.isEnteredAddress_integrated {
 			return nil // no need to save one - the actual entered value is an integrated address
 		}
-		return self.parameters.sentWith_paymentID // and not the integrated addr pid which is only for display		
+		return self.parameters.sentWith_paymentID // and not the integrated addr pid which is only for display
 	}
 	override var _overridable_bottomMostView: UIView { // support layout this out while preserving scroll size etc
 		return self.detected_iconAndMessageView ?? super._overridable_bottomMostView

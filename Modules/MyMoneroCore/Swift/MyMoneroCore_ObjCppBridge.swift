@@ -76,7 +76,8 @@ extension MyMoneroCore
 			)
 			let components = MoneroDecodedAddressComponents(
 				publicKeys: keypair,
-				intPaymentId: paymentID_NSString_orNil
+				intPaymentId: paymentID_NSString_orNil,
+				isSubaddress: retVals.isSubaddress
 			)
 			return (nil, components)
 		}

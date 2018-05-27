@@ -94,10 +94,16 @@ typealias MoneroKey = MoneroTypeString
 typealias MoneroConvertableCurrencySymbol = String
 let MoneroConvertableCurrencySymbol_for_XMR = "XMR"
 //
+struct MoneroDecodedAddressComponents_JS
+{ // being phased out
+	var publicKeys: MoneroKeyDuo
+	var intPaymentId: MoneroPaymentID? // would be encrypted, i.e. an integrated address
+}
 struct MoneroDecodedAddressComponents
 {
 	var publicKeys: MoneroKeyDuo
 	var intPaymentId: MoneroPaymentID? // would be encrypted, i.e. an integrated address
+	var isSubaddress: Bool
 }
 @objc class MoneroKeyDuo: NSObject // heavier-weight than I'd like but too useful for ObjC bridge
 {

@@ -246,77 +246,66 @@ extension HostedMonero
 			}
 			var final__payment_id = payment_id == "" ? nil : payment_id
 			var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
-			MyMoneroCore.shared.DecodeAddress(target_address)
-			{ [weak self] (err_str, decodedAddressComponents) in
-				guard let thisSelf = self else {
+			let (err_str, decodedAddressComponents) = MyMoneroCore.shared_objCppBridge.decoded(address: target_address)
+			if let _ = err_str {
+				self.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
+				return
+			}
+			guard let _ = decodedAddressComponents else {
+				self.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components.", comment: ""))
+				return
+			}
+			let isIntegratedAddress = decodedAddressComponents!.intPaymentId != nil
+			if self.payment_id != nil && self.payment_id != "" {
+				if isIntegratedAddress { // is integrated address
+					self.failWithErr_fn?(NSLocalizedString("Payment ID must be blank when using an Integrated Address", comment: ""))
 					return
 				}
-				if thisSelf.isCanceled {
+				if decodedAddressComponents!.isSubaddress {
+					self.failWithErr_fn?(NSLocalizedString("Payment ID must be blank when using a Subaddress", comment: ""))
 					return
 				}
-				if let _ = err_str {
-					thisSelf.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
+			}
+			if isIntegratedAddress {
+				final__payment_id = decodedAddressComponents!.intPaymentId
+				final__pid_encrypt = true // we do want to encrypt if using an integrated address
+				assert(MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
+			} else {
+				if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
+					self.failWithErr_fn?(NSLocalizedString("The payment ID you've entered is not valid", comment: ""))
 					return
 				}
-				guard let decodedAddressComponents = decodedAddressComponents else {
-					thisSelf.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components.", comment: ""))
-					return
+				if final__payment_id != nil {
+					final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short) // if it's a short pid, encrypt
 				}
-				if decodedAddressComponents.intPaymentId != nil && thisSelf.payment_id != nil {
-					thisSelf.failWithErr_fn?(NSLocalizedString("Payment ID field must be blank when using an Integrated Address", comment: ""))
-					return
-				}
-				if decodedAddressComponents.intPaymentId != nil {
-					final__payment_id = decodedAddressComponents.intPaymentId
-					final__pid_encrypt = true // we do want to encrypt if using an integrated address
-					assert(
-						MoneroUtils.PaymentIDs.isAValid(
-							paymentId: final__payment_id!,
-							ofVariant: .short
-						)
-					)
-				} else {
-					if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
-						thisSelf.failWithErr_fn?(NSLocalizedString("The payment ID you've entered is not valid", comment: ""))
+			}
+			//
+			// now _proceedTo_getUnspentOutsUsableForMixin
+			assert(self._current_request == nil)
+			self.updateProcessStep(to: .fetchingLatestBalance)
+			self._current_request = HostedMonero.APIClient.shared.UnspentOuts(
+				address: wallet__public_address,
+				view_key__private: wallet__private_keys.view,
+				spend_key__public: wallet__public_keys.spend,
+				spend_key__private: wallet__private_keys.spend,
+				{ [weak self] (err_str, result) in
+					guard let thisSelf = self else {
 						return
 					}
-					if final__payment_id != nil {
-						final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(
-							paymentId: final__payment_id!,
-							ofVariant: .short // if it's a short pid, encrypt
-						)
+					thisSelf._current_request = nil
+					if thisSelf.isCanceled {
+						return
 					}
+					if let err_str = err_str {
+						thisSelf.failWithErr_fn?(err_str)
+						return
+					}
+					_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
+						original_unusedOuts: result!.unusedOutputs,
+						feePerKB: result!.feePerKB
+					)
 				}
-				_proceedTo_getUnspentOutsUsableForMixin()
-			}
-			func _proceedTo_getUnspentOutsUsableForMixin()
-			{
-				assert(self._current_request == nil)
-				self.updateProcessStep(to: .fetchingLatestBalance)
-				self._current_request = HostedMonero.APIClient.shared.UnspentOuts(
-					address: wallet__public_address,
-					view_key__private: wallet__private_keys.view,
-					spend_key__public: wallet__public_keys.spend,
-					spend_key__private: wallet__private_keys.spend,
-					{ [weak self] (err_str, result) in
-						guard let thisSelf = self else {
-							return
-						}
-						thisSelf._current_request = nil
-						if thisSelf.isCanceled {
-							return
-						}
-						if let err_str = err_str {
-							thisSelf.failWithErr_fn?(err_str)
-							return
-						}
-						_proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
-							original_unusedOuts: result!.unusedOutputs,
-							feePerKB: result!.feePerKB
-						)
-					}
-				)
-			}
+			)
 			func _proceedTo_constructTransferListAndSendFundsWithUnusedUnspentOuts(
 				original_unusedOuts: [MoneroOutputDescription],
 				feePerKB: MoneroAmount
@@ -523,29 +512,21 @@ extension HostedMonero
 					)
 				}
 				if final__pid_encrypt == true { // need to get viewkey for encrypting here, because of splitting and sorting
-					MyMoneroCore.shared.DecodeAddress(target_address)
-					{ [weak self] (err_str, decodedAddressComponents) in
-						guard let thisSelf = self else {
-							return
-						}
-						if thisSelf.isCanceled {
-							return
-						}
-						if let _ = err_str {
-							thisSelf.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
-							return
-						}
-						guard let decodedAddressComponents = decodedAddressComponents else {
-							thisSelf.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components while creating transaction.", comment: ""))
-							return
-						}
-						let realDestViewKey = decodedAddressComponents.publicKeys.view
-						DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
-						___proceed(realDestViewKey: realDestViewKey)
+					let (err_str, decodedAddressComponents) = MyMoneroCore.shared_objCppBridge.decoded(address: target_address)
+					if let _ = err_str {
+						self.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
+						return
 					}
-					return
+					guard let _ = decodedAddressComponents else {
+						self.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components while creating transaction.", comment: ""))
+						return
+					}
+					let realDestViewKey = decodedAddressComponents!.publicKeys.view
+					DDLog.Info("HostedMonero", "got realDestViewKey \(realDestViewKey)")
+					___proceed(realDestViewKey: realDestViewKey)
+				} else {
+					___proceed(realDestViewKey: nil)
 				}
-				___proceed(realDestViewKey: nil)
 			}
 			func __proceedTo_createTxAndAttemptToSend(
 				original_unusedOuts: [MoneroOutputDescription],
