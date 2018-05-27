@@ -200,22 +200,20 @@ struct OpenAliasDNSLookups
 				//
 				// now verify address is decodable for currency
 				assert(currency == .monero) // only one supported at the moment
-				MyMoneroCore.shared.DecodeAddress(resolvedAddressDescription.recipient_address)
-				{ (err_str, decodedAddressComponents) in
-					if let _ = err_str {
-						fn(NSLocalizedString("Domain's TXT records had OpenAlias prefix but not a valid Monero address.", comment: ""), nil)
-						return
-					}
-					let validResolvedDescription = ValidResolvedAddressDescription(
-						recipient_address: resolvedAddressDescription.recipient_address,
-						recipient_name: resolvedAddressDescription.recipient_name,
-						payment_id: resolvedAddressDescription.payment_id,
-						tx_description: resolvedAddressDescription.tx_description,
-						//
-						dnssec_status: dnssecStatus
-					)
-					fn(nil, validResolvedDescription)
+				let (decode__err_str, _) = MyMoneroCore.shared_objCppBridge.decoded(address: resolvedAddressDescription.recipient_address)
+				if let _ = decode__err_str {
+					fn(NSLocalizedString("Domain's TXT records had OpenAlias prefix but not a valid Monero address.", comment: ""), nil)
+					return
 				}
+				let validResolvedDescription = ValidResolvedAddressDescription(
+					recipient_address: resolvedAddressDescription.recipient_address,
+					recipient_name: resolvedAddressDescription.recipient_name,
+					payment_id: resolvedAddressDescription.payment_id,
+					tx_description: resolvedAddressDescription.tx_description,
+					//
+					dnssec_status: dnssecStatus
+				)
+				fn(nil, validResolvedDescription)
 			}
 		)
 		return lookupHandle

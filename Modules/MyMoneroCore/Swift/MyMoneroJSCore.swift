@@ -175,31 +175,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, description)
 		}
 	}
-	func DecodeAddress(
-		_ address: String,
-		_ fn: @escaping (_ err_str: String?, _ decodedAddressComponents: MoneroDecodedAddressComponents_JS?) -> Void
-	) {
-		self._callSync(.core, "decode_address", [ "\"\(address)\"", "\(NetType.MAINNET.jsRepresentation)" ])
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn(err_str, nil)
-				return
-			}
-			let dict = any as! [String: AnyObject]
-			let view = dict["view"] as! MoneroKey
-			let spend = dict["spend"] as! MoneroKey
-			var intPaymentId = dict["intPaymentId"] as? MoneroPaymentID
-			if intPaymentId == "" { // normalize
-				intPaymentId = nil
-			}
-			let keypair = MoneroKeyDuo(view: view, spend: spend)
-			let components = MoneroDecodedAddressComponents_JS(
-				publicKeys: keypair,
-				intPaymentId: intPaymentId
-			)
-			fn(nil, components)
-		}
-	}
 	func New_VerifiedComponentsForLogIn(
 		_ address: MoneroAddress,
 		_ view_key: MoneroKey,

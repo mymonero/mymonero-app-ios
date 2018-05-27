@@ -94,11 +94,6 @@ typealias MoneroKey = MoneroTypeString
 typealias MoneroConvertableCurrencySymbol = String
 let MoneroConvertableCurrencySymbol_for_XMR = "XMR"
 //
-struct MoneroDecodedAddressComponents_JS
-{ // being phased out
-	var publicKeys: MoneroKeyDuo
-	var intPaymentId: MoneroPaymentID? // would be encrypted, i.e. an integrated address
-}
 struct MoneroDecodedAddressComponents
 {
 	var publicKeys: MoneroKeyDuo
