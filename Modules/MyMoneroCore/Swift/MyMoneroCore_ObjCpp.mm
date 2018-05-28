@@ -38,6 +38,8 @@
 #include "string_tools.h"
 using namespace epee;
 //
+#include "monero_paymentID_utils.hpp"
+//
 //
 // Accessory types
 //
@@ -104,39 +106,38 @@ using namespace epee;
 	return retVals.paymentID_NSString_orNil != nil;
 }
 
-//
-//+ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID isTestnet:(BOOL)isTestnet
-//{
-//	std::string payment_id__string = std::string(short_paymentID.UTF8String);
-//	crypto::hash8 payment_id_short;
-//	bool didParse = monero_paymentID_utils::parse_short_payment_id(payment_id__string, payment_id_short);
-//	if (!didParse) {
-//		return nil;
-//	}
-//	cryptonote::address_parse_info info;
-//	bool didSucceed = cryptonote::get_account_address_from_str(info, isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET, std::string(std_address_NSString.UTF8String));
-//	if (didSucceed == false) {
-//		return nil;
-//	}
-//	if (info.has_payment_id != false) {
-//		// could even throw / fatalError here
-//		return nil; // that was not a std_address!
-//	}
-//	std::string int_address_string = cryptonote::get_account_integrated_address_as_str(
-//		isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET,
-//		info.address,
-//		payment_id_short
-//	);
-//	NSString *int_address_NSString = [NSString stringWithUTF8String:int_address_string.c_str()];
-//	//
-//	return int_address_NSString;
-//}
-//+ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID // mainnet
-//{
-//	return [self
-//		new_integratedAddrFromStdAddr:std_address_NSString
-//		andShortPID:short_paymentID
-//		isTestnet:NO];
-//}
-//
++ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID isTestnet:(BOOL)isTestnet
+{
+	std::string payment_id__string = std::string(short_paymentID.UTF8String);
+	crypto::hash8 payment_id_short;
+	bool didParse = monero_paymentID_utils::parse_short_payment_id(payment_id__string, payment_id_short);
+	if (!didParse) {
+		return nil;
+	}
+	cryptonote::address_parse_info info;
+	bool didSucceed = cryptonote::get_account_address_from_str(info, isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET, std::string(std_address_NSString.UTF8String));
+	if (didSucceed == false) {
+		return nil;
+	}
+	if (info.has_payment_id != false) {
+		// could even throw / fatalError here
+		return nil; // that was not a std_address!
+	}
+	std::string int_address_string = cryptonote::get_account_integrated_address_as_str(
+		isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET,
+		info.address,
+		payment_id_short
+	);
+	NSString *int_address_NSString = [NSString stringWithUTF8String:int_address_string.c_str()];
+	//
+	return int_address_NSString;
+}
++ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID // mainnet
+{
+	return [self
+		new_integratedAddrFromStdAddr:std_address_NSString
+		andShortPID:short_paymentID
+		isTestnet:NO];
+}
+
 @end

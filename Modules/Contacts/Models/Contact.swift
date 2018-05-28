@@ -41,7 +41,6 @@ class Contact: PersistableObject
 	enum NotificationNames: String
 	{
 		case infoUpdated = "Contact_NotificationNames_infoUpdated"
-		case cached_derived_integratedXMRAddress_wasDerived = "Contact_NotificationNames_cached_derived_integratedXMRAddress_wasDerived"
 		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
@@ -68,27 +67,22 @@ class Contact: PersistableObject
 	var qrCode_cgImage: CGImage!
 	var cached__qrCode_image_small: UIImage!
 	//
-	func new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid(
-		_ fn: @escaping (_ intAddr: MoneroIntegratedAddress?) -> Void
-	) {
+	func new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid() -> MoneroIntegratedAddress?
+	{
 		let payment_id: MoneroPaymentID? = self.payment_id
 		if payment_id == nil || payment_id == "" {
-			fn(nil) // no possible derived int address
-			return
+			return nil // no possible derived int address
 		}
 		if MoneroUtils.PaymentIDs.isAValid(paymentId: payment_id!, ofVariant: .short) == false {
-			fn(nil) // must be a long payment ID
-			return
+			return nil // must be a long payment ID
 		}
 		let (err_str, decodedAddress) = MyMoneroCore.shared_objCppBridge.decoded(address: self.address)
 		if err_str != nil {
-			fn(nil)
-			return
+			return nil
 		}
 		let intPaymentId = decodedAddress!.intPaymentId
 		if intPaymentId != nil && intPaymentId != "" {
-			fn(nil) // b/c we don't want to show a derived int addr if we already have the int addr
-			return
+			return nil // b/c we don't want to show a derived int addr if we already have the int addr
 		}
 		var address: MoneroIntegratedAddress?
 		if self.hasOpenAliasAddress {
@@ -97,21 +91,15 @@ class Contact: PersistableObject
 			address = self.address
 		}
 		if address == nil || address == "" {
-			fn(nil) // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
-			return
+			return nil // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
 		}
 		//
 		// now we know we have a std xmr addr and a short pid
-		MyMoneroCore.shared.New_IntegratedAddress(
+		let integratedAddress_orNil = MyMoneroCore.shared_objCppBridge.New_IntegratedAddress(
 			fromStandardAddress: address!,
-			shortPaymentID: payment_id!
-		) { (err_str, integratedAddress) in
-			if err_str != nil {
-				fatalError(err_str!)
-			}
-			fn(integratedAddress)
-			return
-		}
+			short_paymentID: payment_id!
+		)
+		return integratedAddress_orNil
 	}
 	//
 	// 'Protocols' - Persistable Object
@@ -155,24 +143,12 @@ class Contact: PersistableObject
 	}
 	func generate_cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
 	{
-		// FIXME: make this synchronous to avoid all this coordination silliness
 		//
 		// NOTE: just going to invalidate it off the bat - too complicated otherwise
 		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = nil //
 		//
-		self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid
-		{ [weak self] (intAddr) in
-			guard let thisSelf = self else {
-				return
-			}
-			thisSelf.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = intAddr
-			//
-			// IMPORTANT: Consumers should observe this and redundantly configure UI etc on its appearance (they must wait asynchronously for it to appear after init until we can get its implementation synchronous (via e.g. native code)
-			NotificationCenter.default.post(
-				name: NotificationNames.cached_derived_integratedXMRAddress_wasDerived.notificationName,
-				object: thisSelf
-			)
-		}
+		let intAddr = self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = intAddr
 	}
 	//
 	// Lifecycle - Init - For adding new

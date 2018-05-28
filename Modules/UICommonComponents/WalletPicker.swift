@@ -174,7 +174,6 @@ extension UICommonComponents
 				width: arrow_x,
 				height: self.bounds.size.height
 			)
-			NSLog("self.contentView.frame \(self.contentView.frame)")
 			self.accessoryChevronView.frame = CGRect(
 				x: arrow_x,
 				y: (self.frame.size.height - self.accessoryChevronView.frame.size.height)/2 - 2,

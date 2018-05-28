@@ -1,8 +1,8 @@
 //
-//  MyMoneroCore_ObjCpp.h
+//  monero_paymentID_utils.hpp
 //  MyMonero
 //
-//  Created by Paul Shapiro on 11/22/17.
+//  Created by Paul Shapiro on 12/1/17.
 //  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
@@ -32,31 +32,23 @@
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //
-#import <Foundation/Foundation.h>
-//
-@interface Monero_DecodedAddress_RetVals: NSObject
 
-@property (nonatomic, copy) NSString *errStr_orNil;
+#ifndef monero_paymentID_utils_hpp
+#define monero_paymentID_utils_hpp
 
-@property (nonatomic, copy) NSString *pub_viewKey_NSString;
-@property (nonatomic, copy) NSString *pub_spendKey_NSString;
-@property (nonatomic) BOOL isSubaddress;
-@property (nonatomic, copy) NSString *paymentID_NSString_orNil;
+#include <stdio.h>
+#include "crypto.h"
 
-@end
-//
-@interface MyMoneroCore_ObjCpp : NSObject
-//
-// Return value dictionary keys
-+ (NSString *)retValDictKey__ErrStr;
-+ (NSString *)retValDictKey__Value; // used for single value returns… you should force-cast the type… e.g. "as! String" for -mnemonicStringFromSeedHex:…
-//
-//
-+ (Monero_DecodedAddress_RetVals *)decodedAddress:(NSString *)addressString isTestnet:(BOOL)isTestnet;
-+ (BOOL)isSubAddress:(NSString *)addressString isTestnet:(BOOL)isTestnet;
-+ (BOOL)isIntegratedAddress:(NSString *)addressString isTestnet:(BOOL)isTestnet;
-//
-+ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID isTestnet:(BOOL)isTestnet;
-+ (NSString *)new_integratedAddrFromStdAddr:(NSString *)std_address_NSString andShortPID:(NSString *)short_paymentID; // mainnet
-//
-@end
+namespace monero_paymentID_utils
+{
+//	//
+//	// Generating Payment IDs
+//	crypto::hash8 new_short_plain_paymentID(); // This is favored - its length will be detected and encrypted automatically on send
+	//
+	// Parsing and Detecting Payment IDs
+	bool parse_long_payment_id(const std::string& payment_id_str, crypto::hash& payment_id);
+	bool parse_short_payment_id(const std::string& payment_id_str, crypto::hash8& payment_id);
+	bool parse_payment_id(const std::string& payment_id_str, crypto::hash& payment_id);
+}
+
+#endif /* monero_paymentID_utils_hpp */

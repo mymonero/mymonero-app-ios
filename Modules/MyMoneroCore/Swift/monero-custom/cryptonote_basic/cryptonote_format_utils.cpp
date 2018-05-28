@@ -54,5 +54,26 @@ using namespace crypto;
 
 namespace cryptonote
 {
+	//---------------------------------------------------------------
+	void get_blob_hash(const blobdata& blob, crypto::hash& res)
+	{
+		cn_fast_hash(blob.data(), blob.size(), res);
+	}
+	//---------------------------------------------------------------
+	crypto::hash get_blob_hash(const blobdata& blob)
+	{
+		crypto::hash h = null_hash;
+		get_blob_hash(blob, h);
+		return h;
+	}
+	//---------------------------------------------------------------
+	std::string short_hash_str(const crypto::hash& h)
+	{
+		std::string res = string_tools::pod_to_hex(h);
+		CHECK_AND_ASSERT_MES(res.size() == 64, res, "wrong hash256 with string_tools::pod_to_hex conversion");
+		auto erased_pos = res.erase(8, 48);
+		res.insert(8, "....");
+		return res;
+	}
 
 }

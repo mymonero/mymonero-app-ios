@@ -171,14 +171,12 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 		super.startObserving()
 		NotificationCenter.default.addObserver(self, selector: #selector(willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.contact)
 		NotificationCenter.default.addObserver(self, selector: #selector(infoUpdated), name: Contact.NotificationNames.infoUpdated.notificationName, object: self.contact)
-		NotificationCenter.default.addObserver(self, selector: #selector(cached_derived_integratedXMRAddress_wasDerived), name: Contact.NotificationNames.cached_derived_integratedXMRAddress_wasDerived.notificationName, object: self.contact)
 	}
 	override func stopObserving()
 	{
 		super.stopObserving()
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.contact)
 		NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.infoUpdated.notificationName, object: self.contact)
-		NotificationCenter.default.removeObserver(self, name: Contact.NotificationNames.cached_derived_integratedXMRAddress_wasDerived.notificationName, object: self.contact)
 	}
 	//
 	// Accessors - Overrides
@@ -267,11 +265,6 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 		self.navigationController!.popViewController(animated: true)
 	}
 	@objc func infoUpdated()
-	{
-		self.set_navigationTitle()
-		self.configureSectionsWithObject()
-	}
-	@objc func cached_derived_integratedXMRAddress_wasDerived()
 	{
 		self.set_navigationTitle()
 		self.configureSectionsWithObject()

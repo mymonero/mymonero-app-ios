@@ -367,35 +367,6 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 			fn(nil, serialized_signedTx, tx_hash)
 		}
 	}
-	func New_IntegratedAddress(
-		fromStandardAddress standardAddress: MoneroStandardAddress,
-		shortPaymentID: MoneroShortPaymentID,
-		_ fn: @escaping (
-			_ err_str: String?,
-			_ fabricated_integratedAddress: MoneroIntegratedAddress?
-		) -> Void
-	) -> Void {
-		// Serialize all arguments into good inputs to .core.create_transaction
-		let args: [String] =
-		[
-			standardAddress.jsRepresentationString,
-			shortPaymentID.jsRepresentationString,
-			"\(NetType.MAINNET.jsRepresentation)"
-		]
-		// might be nice to assert arg length here or centrally via some fn name -> length map
-		self._callSync(.core, "new__int_addr_from_addr_and_short_pid", args)
-		{ (err_str, any) in
-			if let err_str = err_str {
-				fn("Error creating integrated address: \(err_str)", nil)
-				return
-			}
-			guard let fabricated_integratedAddress = any as? MoneroIntegratedAddress else {
-				fn("Couldn't create integrated address from standard address and short payment ID", nil)
-				return
-			}
-			fn(nil, fabricated_integratedAddress)
-		}
-	}
 	//
 	// Internal - Accessors - Parsing/Factories
 	func _new_moneroWalletDescription_byParsing_dict(

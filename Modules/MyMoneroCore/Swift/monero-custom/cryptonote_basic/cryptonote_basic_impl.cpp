@@ -191,4 +191,17 @@ namespace cryptonote {
 		
 		return true;
 	}
+	//-----------------------------------------------------------------------
+	std::string get_account_integrated_address_as_str(
+		network_type nettype
+		, account_public_address const & adr
+		, crypto::hash8 const & payment_id
+	) {
+		uint64_t integrated_address_prefix = nettype == TESTNET ? config::testnet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX : nettype == STAGENET ? config::stagenet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX : config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX;
+		
+		integrated_address iadr = {
+			adr, payment_id
+		};
+		return tools::base58::encode_addr(integrated_address_prefix, t_serializable_object_to_blob(iadr));
+	}
 }

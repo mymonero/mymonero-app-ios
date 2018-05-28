@@ -89,15 +89,15 @@ extension MyMoneroCore
 		{
 			return MyMoneroCore_ObjCpp.isIntegratedAddress(string, isTestnet: false)
 		}
-//		func New_IntegratedAddress(
-//			fromStandardAddress standardAddress: MoneroStandardAddress,
-//			short_paymentID: MoneroShortPaymentID
-//		) -> MoneroIntegratedAddress? {
-//			return MyMoneroCore_ObjCpp.new_integratedAddr(
-//				fromStdAddr: standardAddress,
-//				andShortPID: short_paymentID
-//			)
-//		}
+		func New_IntegratedAddress(
+			fromStandardAddress standardAddress: MoneroStandardAddress,
+			short_paymentID: MoneroShortPaymentID
+		) -> MoneroIntegratedAddress? {
+			return MyMoneroCore_ObjCpp.new_integratedAddr(
+				fromStdAddr: standardAddress,
+				andShortPID: short_paymentID
+			)
+		}
 	}
 }
 

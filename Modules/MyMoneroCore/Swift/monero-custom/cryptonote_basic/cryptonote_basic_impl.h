@@ -65,6 +65,13 @@ namespace cryptonote {
 	uint8_t get_account_address_checksum(const public_address_outer_blob& bl);
 	uint8_t get_account_integrated_address_checksum(const public_integrated_address_outer_blob& bl);
 
+	std::string get_account_integrated_address_as_str(
+													  network_type nettype
+													  , const account_public_address& adr
+													  , const crypto::hash8& payment_id
+													  );
+	
+
 	
   bool get_account_address_from_str(
       address_parse_info& info
