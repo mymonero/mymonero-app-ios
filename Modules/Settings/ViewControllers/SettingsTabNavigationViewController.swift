@@ -34,7 +34,7 @@
 //
 import UIKit
 
-class SettingsTabNavigationViewController: UINavigationController
+class SettingsTabNavigationViewController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	//
 	// Properties

@@ -362,7 +362,7 @@ extension WalletDetails
 		func present_importTransactionsModal()
 		{
 			let viewController = ImportTransactionsModal.ViewController(wallet: self.wallet)
-			let navigationController = UINavigationController(rootViewController: viewController)
+			let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 			navigationController.modalPresentationStyle = .formSheet
 			self.navigationController!.present(navigationController, animated: true, completion: nil)
 		}
@@ -377,7 +377,7 @@ extension WalletDetails
 		@objc func tapped_rightBarButtonItem()
 		{
 			let viewController = EditWallet.ViewController(wallet: self.wallet)
-			let navigationController = UINavigationController(rootViewController: viewController)
+			let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 			navigationController.modalPresentationStyle = .formSheet
 			self.navigationController!.present(navigationController, animated: true, completion: nil)
 		}

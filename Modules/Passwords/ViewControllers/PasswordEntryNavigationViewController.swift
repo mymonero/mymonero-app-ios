@@ -45,7 +45,7 @@ protocol PasswordEntryModalPresentationDelegate
 	)
 	
 }
-class PasswordEntryNavigationViewController: UINavigationController
+class PasswordEntryNavigationViewController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	//
 	// Constants

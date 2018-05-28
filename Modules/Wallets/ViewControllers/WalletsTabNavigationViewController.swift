@@ -34,7 +34,7 @@
 //
 import UIKit
 
-class WalletsTabNavigationViewController: UINavigationController
+class WalletsTabNavigationViewController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	init()
 	{

@@ -105,7 +105,7 @@ class FundsRequestsListViewController: ListViewController
 			contact: contact, // which might be nil
 			selectedWallet: wallet // also might be nil
 		)
-		let modalViewController = UINavigationController(rootViewController: viewController)
+		let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 		modalViewController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(modalViewController, animated: true, completion: nil)
 	}

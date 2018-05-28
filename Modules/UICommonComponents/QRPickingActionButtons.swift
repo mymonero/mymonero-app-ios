@@ -185,7 +185,7 @@ extension UICommonComponents
 					}
 			}
 			self.presented_cameraViewController = viewController
-			let navigationController = UINavigationController(rootViewController: viewController)
+			let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 			self.containingViewController.navigationController!.present(
 				navigationController,
 				animated: true,

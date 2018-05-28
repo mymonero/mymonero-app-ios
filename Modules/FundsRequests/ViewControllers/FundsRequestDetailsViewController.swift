@@ -354,7 +354,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	func qrImageFieldView_tapped()
 	{
 		let controller = FundsRequestQRDisplayViewController(fundsRequest: self.fundsRequest)
-		let navigationController = UINavigationController(rootViewController: controller)
+		let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: controller)
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 }

@@ -34,7 +34,7 @@
 //
 import UIKit
 
-class ContactsTabNavigationViewController: UINavigationController
+class ContactsTabNavigationViewController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	init()
 	{

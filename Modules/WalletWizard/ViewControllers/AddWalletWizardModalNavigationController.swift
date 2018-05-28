@@ -34,7 +34,7 @@
 //
 import UIKit
 
-class AddWalletWizardModalNavigationController: UINavigationController
+class AddWalletWizardModalNavigationController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	//
 	// Types/Constants

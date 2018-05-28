@@ -106,7 +106,7 @@ class ContactsListViewController: ListViewController
 	@objc func addButton_tapped()
 	{
 		let viewController = AddContactFromContactsTabFormViewController()
-		let modalViewController = UINavigationController(rootViewController: viewController)
+		let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 		modalViewController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(modalViewController, animated: true, completion: nil)
 	}

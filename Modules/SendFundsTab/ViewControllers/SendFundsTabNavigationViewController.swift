@@ -34,7 +34,7 @@
 //
 import UIKit
 
-class SendFundsTabNavigationViewController: UINavigationController
+class SendFundsTabNavigationViewController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	let sendFundsViewController = SendFundsForm.ViewController()
 	//

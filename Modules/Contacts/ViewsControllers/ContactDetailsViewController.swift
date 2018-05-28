@@ -251,7 +251,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	@objc func tapped_rightBarButtonItem()
 	{
 		let viewController = EditContactFormViewController(withContact: self.contact)
-		let presenting_viewController = UINavigationController(rootViewController: viewController)
+		let presenting_viewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 		presenting_viewController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(presenting_viewController, animated: true, completion: nil)
 	}
@@ -282,7 +282,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 	func qrImageFieldView_tapped()
 	{
 		let controller = ContactQRDisplayViewController(contact: self.contact)
-		let navigationController = UINavigationController(rootViewController: controller)
+		let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: controller)
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	}
 }

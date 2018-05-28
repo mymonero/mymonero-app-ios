@@ -722,7 +722,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 	@objc func tapped_barButtonItem_about()
 	{
 		let viewController = AboutMyMoneroViewController()
-		let navigationController = UINavigationController(rootViewController: viewController)
+		let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 		navigationController.modalPresentationStyle = .formSheet
 		self.navigationController!.present(navigationController, animated: true, completion: nil)
 	} 

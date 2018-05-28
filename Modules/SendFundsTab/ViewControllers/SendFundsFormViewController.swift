@@ -939,7 +939,7 @@ extension SendFundsForm
 										let viewController = AddContactFromSendFundsTabFormViewController(
 											parameters: parameters
 										)
-										let navigationController = UINavigationController(rootViewController: viewController)
+										let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 										navigationController.modalPresentationStyle = .formSheet
 										self.navigationController!.present(navigationController, animated: true, completion: nil)
 									}

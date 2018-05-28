@@ -34,7 +34,7 @@
 //
 import UIKit
 
-class FundsRequestsTabNavigationViewController: UINavigationController
+class FundsRequestsTabNavigationViewController: UICommonComponents.NavigationControllers.SwipeableNavigationController
 {
 	init()
 	{
