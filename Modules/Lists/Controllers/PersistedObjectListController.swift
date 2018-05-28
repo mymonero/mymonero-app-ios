@@ -35,7 +35,7 @@
 import Foundation
 import RNCryptor
 //
-class PersistedObjectListController: DeleteEverythingRegistrant
+class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordRegistrant
 {
 	// constants
 	enum Notifications_Boot: String
@@ -102,13 +102,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func startObserving_passwordController()
 	{
 		self.passwordController.addRegistrantForDeleteEverything(self)
+		self.passwordController.addRegistrantForChangePassword(self)
 		//
-		NotificationCenter.default.addObserver(
-			self,
-			selector: #selector(PasswordController_changedPassword),
-			name: PasswordController.NotificationNames.changedPassword.notificationName,
-			object: PasswordController.shared
-		)
 		NotificationCenter.default.addObserver(
 			self,
 			selector: #selector(PasswordController_willDeconstructBootedStateAndClearPassword),
@@ -243,12 +238,8 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 	func _stopObserving_passwordController()
 	{
 		self.passwordController.removeRegistrantForDeleteEverything(self)
+		self.passwordController.removeRegistrantForChangePassword(self)
 		//
-		NotificationCenter.default.removeObserver(
-			self,
-			name: PasswordController.NotificationNames.changedPassword.notificationName,
-			object: PasswordController.shared
-		)
 		NotificationCenter.default.removeObserver(
 			self,
 			name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
@@ -376,28 +367,29 @@ class PersistedObjectListController: DeleteEverythingRegistrant
 		return err_str
 	}
 	//
-	// Delegation - Notifications - Password Controller
-	@objc func PasswordController_changedPassword()
-	{
+	// Delegation - ChangePasswordRegistrant
+	func passwordController_ChangePassword() -> String?
+	{ // err
 		if self.hasBooted != true {
 			DDLog.Warn("Lists", "\(self) asked to change password but not yet booted.")
-			return // critical: not ready to get this
+			return "Asked to change password but not yet booted" // critical: not ready to get this
 		}
 		// change all record passwords by re-saving
 		for (_, record) in self.records.enumerated() {
 			if record.didFailToInitialize_flag != true && record.didFailToBoot_flag != true {
 				let err_str = record.saveToDisk()
-				if err_str != nil {
-					// err_str is logged
-					// TODO: is there any sensible strategy to handle failures here?
-					assert(false)
+				if err_str != nil { // err_str is logged
+					return err_str
 				}
 			} else {
 				DDLog.Error("Lists", "This record failed to boot. Not messing with its saved data")
-				assert(false)
+				assert(false) // not considering this a runtime error.. app can deal with it.. plus we don't want to abort a save just for this - if we did, change pw revert would not work anyway
 			}
 		}
+		return nil // success
 	}
+	//
+	// Delegation - Notifications - Password Controller
 	@objc func PasswordController_willDeconstructBootedStateAndClearPassword()
 	{
 		self.records = [] // flash

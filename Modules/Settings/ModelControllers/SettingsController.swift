@@ -34,7 +34,7 @@
 //
 import Foundation
 
-class SettingsController: DeleteEverythingRegistrant
+class SettingsController: DeleteEverythingRegistrant, ChangePasswordRegistrant
 {
 	enum NotificationNames_Changed: String
 	{
@@ -125,6 +125,7 @@ class SettingsController: DeleteEverythingRegistrant
 	func setup()
 	{
 		PasswordController.shared.addRegistrantForDeleteEverything(self)
+		PasswordController.shared.addRegistrantForChangePassword(self)
 		//
 		let (err_str, documentJSONs) = DocumentPersister.shared.AllDocuments(inCollectionNamed: self.collectionName)
 		if err_str != nil {
@@ -198,6 +199,7 @@ class SettingsController: DeleteEverythingRegistrant
 	func stopObserving()
 	{
 		PasswordController.shared.removeRegistrantForDeleteEverything(self)
+		PasswordController.shared.removeRegistrantForChangePassword(self)
 	}
 	//
 	// Imperatives - Setting values
@@ -386,5 +388,15 @@ class SettingsController: DeleteEverythingRegistrant
 		let err_str = self.set(valuesByDictKey: defaults_valuesByKey)
 		//
 		return err_str
+	}
+	//
+	// Delegation - ChangePasswordRegistrant
+	func passwordController_ChangePassword() -> String?
+	{
+		if self.hasBooted != true {
+			DDLog.Warn("Settings", "\(self) asked to change password but not yet booted.")
+			return "Asked to change password but not yet booted" // not ready to get this
+		}
+		return self.saveToDisk()
 	}
 }

@@ -36,27 +36,48 @@ import Foundation
 import RNCryptor
 import LocalAuthentication
 //
+//
+protocol PasswordControllerEventParticipant: class
+{
+	func identifier() -> String // To support isEqual
+}
+func isEqual(_ l: PasswordControllerEventParticipant, _ r: PasswordControllerEventParticipant) -> Bool
+{
+	return l.identifier() == r.identifier()
+}
+//
 // TODO: namespace within Passwords
-protocol DeleteEverythingRegistrant: class
+protocol DeleteEverythingRegistrant: PasswordControllerEventParticipant
 {
 	func passwordController_DeleteEverything() -> String? // return err_str:String if error. at time of writing, this was able to be kept synchronous.
-	//
-	// To support isEqual
-	func identifier() -> String
 }
 struct WeakRefTo_DeleteEverythingRegistrant
 {
 	weak var value: DeleteEverythingRegistrant?
 }
-func isEqual(_ l: DeleteEverythingRegistrant, _ r: DeleteEverythingRegistrant) -> Bool
-{
-	return l.identifier() == r.identifier()
-}
 func isEqual(
 	_ l: WeakRefTo_DeleteEverythingRegistrant,
 	_ r: WeakRefTo_DeleteEverythingRegistrant
-) -> Bool
+) -> Bool {
+	if l.value == nil && r.value == nil {
+		return true
+	}
+	return l.value?.identifier() == r.value?.identifier()
+}
+//
+protocol ChangePasswordRegistrant: PasswordControllerEventParticipant
 {
+	// Implement this function to support change-password events as well as revert-from-failed-change-password
+	func passwordController_ChangePassword() -> String? // return err_str:String if error - it will abort and try to revert the changepassword process. at time of writing, this was able to be kept synchronous.
+}
+struct WeakRefTo_ChangePasswordRegistrant
+{
+	weak var value: ChangePasswordRegistrant?
+}
+func isEqual(
+	_ l: WeakRefTo_ChangePasswordRegistrant,
+	_ r: WeakRefTo_ChangePasswordRegistrant
+) -> Bool {
 	if l.value == nil && r.value == nil {
 		return true
 	}
@@ -138,7 +159,7 @@ final class PasswordController
 	enum NotificationNames: String
 	{
 		case setFirstPasswordDuringThisRuntime = "PasswordController_NotificationNames_SetFirstPasswordDuringThisRuntime"
-		case changedPassword = "PasswordController_NotificationNames_ChangedPassword"
+		case registrantsAllChangedPassword = "PasswordController_NotificationNames_registrantsAllChangedPassword" // not really used anymore - never use for critical things
 		//
 		case obtainedNewPassword = "PasswordController_Runtime_NotificationNames_ObtainedNewPassword"
 		case obtainedCorrectExistingPassword = "PasswordController_Runtime_NotificationNames_ObtainedCorrectExistingPassword"
@@ -487,6 +508,38 @@ final class PasswordController
 	}
 	//
 	// Runtime - Imperatives - Password change
+	
+	//
+	// Runtime - Imperatives - Delete everything
+	var weakRefsTo_changePasswordRegistrants: [WeakRefTo_ChangePasswordRegistrant] = []
+	func addRegistrantForChangePassword(
+		_ registrant: ChangePasswordRegistrant
+	) -> Void {
+		//		DDLog.Info("Passwords", "Adding registrant for 'ChangePassword': \(registrant)")
+		self.weakRefsTo_changePasswordRegistrants.append(
+			WeakRefTo_ChangePasswordRegistrant(value: registrant)
+		)
+	}
+	func removeRegistrantForChangePassword(
+		_ registrant: ChangePasswordRegistrant
+	) -> Void {
+		var index: Int?
+		for (this_index, this_weakRefTo_registrant) in self.weakRefsTo_changePasswordRegistrants.enumerated() {
+			if this_weakRefTo_registrant.value == nil {
+				continue // skip - has dealloced somewhere
+			}
+			if isEqual(registrant, this_weakRefTo_registrant.value!) {
+				index = this_index
+				break
+			}
+		}
+		if index == nil {
+			assert(false, "registrant is not registered")
+			return
+		}
+		DDLog.Info("Passwords", "Removing registrant for 'ChangePassword': \(registrant)")
+		self.weakRefsTo_changePasswordRegistrants.remove(at: index!)
+	}
 	func initiate_changePassword()
 	{
 		self.onceBooted
@@ -788,6 +841,10 @@ final class PasswordController
 	func obtainNewPasswordFromUser(isForChangePassword: Bool)
 	{
 		let wasFirstSetOfPasswordAtRuntime = self.hasUserEnteredValidPasswordYet == false // it's ok if we derive this here instead of in obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet
+		// for possible revert:
+		let old_password = self.password // this may be undefined
+		let old_passwordType = self.passwordType
+		//
 		self.passwordEntryDelegate!.getUserToEnterNewPasswordAndType(isForChangePassword: isForChangePassword)
 		{ [unowned self] (didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword) in
 			if didCancel_orNil == true {
@@ -866,7 +923,9 @@ final class PasswordController
 			let err_str = self.saveToDisk()
 			if err_str != nil {
 				self.unguard_getNewOrExistingPassword()
-				self.password = nil // they'll have to try again
+				assert(wasFirstSetOfPasswordAtRuntime == false || self.password == nil)
+				self.password = old_password // they'll have to try again - and revert to old pw rather than nil for changePassword (should be nil for first pw set)
+				self.passwordType = old_passwordType
 				NotificationCenter.default.post(
 					name: NotificationNames.erroredWhileSettingNewPassword.notificationName,
 					object: self,
@@ -874,25 +933,75 @@ final class PasswordController
 				)
 				return
 			}
-			self.unguard_getNewOrExistingPassword()
-			// detecting & emiting first set or change
+			// detecting & emiting first set or handling result of change saves
 			if wasFirstSetOfPasswordAtRuntime == true {
+				self.unguard_getNewOrExistingPassword()
+				// specific emit
 				NotificationCenter.default.post(
 					name: NotificationNames.setFirstPasswordDuringThisRuntime.notificationName,
 					object: self
 				)
-			} else {
+				// general purpose emit
 				NotificationCenter.default.post(
-					name: NotificationNames.changedPassword.notificationName,
+					name: NotificationNames.obtainedNewPassword.notificationName,
 					object: self
 				)
+				//
+				return // prevent fallthrough
 			}
-			// general purpose emit
+			// then, it's a change password
+			let changePassword_err_orNil = self._changePassword_tellRegistrants_doChangePassword() // returns error
+			if changePassword_err_orNil == nil { // actual success - we can return early
+				self.unguard_getNewOrExistingPassword()
+				//
+				NotificationCenter.default.post(
+					name: NotificationNames.registrantsAllChangedPassword.notificationName,
+					object: self
+				)
+				// general purpose emit
+				NotificationCenter.default.post(
+					name: NotificationNames.obtainedNewPassword.notificationName,
+					object: self
+				)
+				//
+				return
+			}
+			// try to revert save files to old password...
+			self.password = old_password // first revert, so consumers can read reverted value
+			self.passwordType = old_passwordType
+			//
+			let revert_save_errStr_orNil = self.saveToDisk()
+			if revert_save_errStr_orNil != nil {
+				assert(false, "Couldn't saveToDisk to revert failed changePassword") // in debug mode, treat this as fatal
+			} else { // continue trying to revert
+				let revert_registrantsChangePw_err_orNil = self._changePassword_tellRegistrants_doChangePassword() // this may well fail
+				if revert_registrantsChangePw_err_orNil != nil {
+					assert(false, "Some registrants couldn't revert failed changePassword") // in debug mode, treat this as fatal
+				} else {
+					// revert successful
+				}
+			}
+			// finally, notify of error while changing password
+			self.unguard_getNewOrExistingPassword() // important
 			NotificationCenter.default.post(
-				name: NotificationNames.obtainedNewPassword.notificationName,
-				object: self
+				name: NotificationNames.erroredWhileSettingNewPassword.notificationName,
+				object: self,
+				userInfo: [ Notification_UserInfo_Keys.err_str.rawValue: changePassword_err_orNil! ] // the original changePassword_err_orNil
 			)
 		}
+	}
+	func _changePassword_tellRegistrants_doChangePassword() -> String? // err_str
+	{
+		for (_, weakRefTo_registrant) in self.weakRefsTo_changePasswordRegistrants.enumerated() {
+			guard let registrant = weakRefTo_registrant.value else {
+				continue // skip ; has dealloced somehow
+			}
+			let err_str = registrant.passwordController_ChangePassword()
+			if err_str != nil {
+				return err_str
+			}
+		}
+		return nil
 	}
 	//
 	//
