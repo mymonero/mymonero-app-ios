@@ -100,7 +100,6 @@ final class PasswordController
 	{
 		case PIN = "PIN" // 6-digit numerical PIN/code
 		case password = "password" // free-form, string password
-		static var lengthOfPIN: Int { return 6 }
 		var humanReadableString: String { // TODO: return localized
 			return self.rawValue
 		}
@@ -121,11 +120,9 @@ final class PasswordController
 		}
 		static func new(detectedFromPassword password: Password) -> PasswordType
 		{
-			if password.count == PasswordType.lengthOfPIN { // if is 6 chars…
-				let numbers = CharacterSet(charactersIn: "0123456789")
-				if password.trimmingCharacters(in: numbers) == "" { // and contains only numbers
-					return .PIN
-				}
+			let numbers = CharacterSet(charactersIn: "0123456789")
+			if password.trimmingCharacters(in: numbers) == "" { // and contains only numbers
+				return .PIN
 			}
 			return .password
 		}
@@ -804,9 +801,9 @@ final class PasswordController
 			//
 			// I. Validate features of pw before trying and accepting
 			if userSelectedTypeOfPassword == .PIN {
-				if obtainedPasswordString!.count != 6 { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
+				if obtainedPasswordString!.count < 6 { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 					self.unguard_getNewOrExistingPassword()
-					let err_str = "Please enter a 6-digit PIN."
+					let err_str = "Please enter a longer PIN."
 					NotificationCenter.default.post(
 						name: NotificationNames.erroredWhileSettingNewPassword.notificationName,
 						object: self,
