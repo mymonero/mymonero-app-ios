@@ -138,9 +138,15 @@ class ContactCellContentView: UIView
 	func _configureUI()
 	{
 		assert(self.object != nil)
-		self.emojiLabel.text = self.object!.emoji
-		self.titleLabel.text = self.object!.fullname
-		self.subtitleLabel.text = self.object!.address
+		if self.object!.didFailToInitialize_flag == true || self.object!.didFailToBoot_flag == true { // unlikely but possible
+			self.emojiLabel.text = "❌"
+			self.titleLabel.text = NSLocalizedString("Error: Contact Support", comment: "")
+			self.subtitleLabel.text = self.object!.didFailToBoot_errStr ?? ""
+		} else {
+			self.emojiLabel.text = self.object!.emoji
+			self.titleLabel.text = self.object!.fullname
+			self.subtitleLabel.text = self.object!.address
+		}
 	}
 	//
 	func startObserving_object()

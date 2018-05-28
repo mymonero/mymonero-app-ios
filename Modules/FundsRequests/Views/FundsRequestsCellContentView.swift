@@ -173,21 +173,31 @@ class FundsRequestsCellContentView: UIView
 	{
 		assert(self.object != nil)
 		let object = self.object!
-		self.iconView.configure(withSwatchColor: object.to_walletSwatchColor)
-		if self.displayMode == .withQRCode {
-			self.qrCodeImageView!.image = object.cached__qrCode_image_small
-		}
-		var amountLabel_text: String = ""
-		if object.amount != nil {
-			amountLabel_text += object.amount!
-			amountLabel_text += " "
-			amountLabel_text += object.amountCurrency ?? "XMR"
+		if self.object!.didFailToInitialize_flag == true || self.object!.didFailToBoot_flag == true { // unlikely but possible
+			self.iconView.configure(withSwatchColor: .blue)
+			if self.displayMode == .withQRCode {
+				self.qrCodeImageView!.image = nil
+			}
+			self.amountLabel.text = NSLocalizedString("Error: Contact Support", comment: "")
+			self.senderLabel.text = ""
+			self.memoLabel.text = self.object!.didFailToBoot_errStr ?? ""
 		} else {
-			amountLabel_text = NSLocalizedString("Any amount", comment: "")
+			self.iconView.configure(withSwatchColor: object.to_walletSwatchColor)
+			if self.displayMode == .withQRCode {
+				self.qrCodeImageView!.image = object.cached__qrCode_image_small
+			}
+			var amountLabel_text: String = ""
+			if object.amount != nil {
+				amountLabel_text += object.amount!
+				amountLabel_text += " "
+				amountLabel_text += object.amountCurrency ?? "XMR"
+			} else {
+				amountLabel_text = NSLocalizedString("Any amount", comment: "")
+			}
+			self.amountLabel.text = amountLabel_text
+			self.senderLabel.text = object.from_fullname ?? "" // appears to be better not to show 'N/A' in else case
+			self.memoLabel.text = object.message ?? object.description ?? ""
 		}
-		self.amountLabel.text = amountLabel_text
-		self.senderLabel.text = object.from_fullname ?? "" // appears to be better not to show 'N/A' in else case
-		self.memoLabel.text = object.message ?? object.description ?? ""
 	}
 	//
 	func startObserving_object()
