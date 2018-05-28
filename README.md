@@ -68,9 +68,11 @@ Suggestions and feedback are very welcome!
 
 ### Developing
 
-If you have an improvement to the MyMonero iOS app source code and would like to have your code considered for usage in the production MyMonero iOS app, we'll be happy to review any pull requests. 
+**NOTE:** Not every enhancement or GitHub issue which applies to this repository has been created in this repo in situations where the same item needs to be done for the MyMonero JS app as well. For a complete picture of open items for the iOS app, please also look at Issues labeled "[All app platforms](https://github.com/mymonero/mymonero-app-js/issues?q=is%3Aissue+is%3Aopen+label%3A%22all+app+platforms%22)" on the [JS app repo](https://github.com/mymonero/mymonero-app-js).
 
-The maintainer will merge nearly anything which is not destructive, which is on-brand from a design standpoint, and generally production-ready in terms of its code quality, case coverage, problem-solution fit, UI implementation parity with exact design, security, performance, et al. The maintainer enjoys collaborating with contributors to the MyMonero iOS and JS apps over IRC private message and the #mymonero room on freenode.net (Come say hello!), so PR'd submissions do not have to be at all complete or perfect on their first submission. (To submit a draft PR for review, simply mark it as '[DO NOT MERGE]')
+If you have an improvement to the MyMonero iOS app source code and would like to have your code considered for usage in the production MyMonero iOS app, we'll be happy to review any pull requests and ship your code in the production app. 
+
+The maintainer will merge nearly anything which is not destructive, which is on-brand from a design standpoint, and generally production-ready in terms of its code quality, case coverage, problem-solution fit, UI implementation parity with exact design, security, performance, et al. Contributors to the MyMonero iOS and JS apps frequently collaborate over IRC private message and in the #mymonero room on freenode.net (Come say hello!), so PR'd submissions do not have to be at all complete or perfect on their first submission. (To submit a draft PR for review, simply mark it as '[DO NOT MERGE]')
 
 
 ### Donating
