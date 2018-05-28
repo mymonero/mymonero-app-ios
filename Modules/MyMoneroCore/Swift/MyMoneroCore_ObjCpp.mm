@@ -119,6 +119,13 @@ using namespace epee;
 	if (didSucceed == false) {
 		return nil;
 	}
+	if (info.is_subaddress) {
+		NSString *msg = [NSString stringWithFormat:@"%@ must not be called with a subaddress", NSStringFromSelector(_cmd)];
+		NSAssert(false, msg);
+		[NSException raise:@"Illegal address value" format:@"%@", msg];
+		//
+		return nil;
+	}
 	if (info.has_payment_id != false) {
 		// could even throw / fatalError here
 		return nil; // that was not a std_address!

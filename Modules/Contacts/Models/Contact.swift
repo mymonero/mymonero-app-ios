@@ -67,7 +67,7 @@ class Contact: PersistableObject
 	var qrCode_cgImage: CGImage!
 	var cached__qrCode_image_small: UIImage!
 	//
-	func new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid() -> MoneroIntegratedAddress?
+	func new__cached_derived_integratedXMRAddress_orNil() -> MoneroIntegratedAddress?
 	{
 		let payment_id: MoneroPaymentID? = self.payment_id
 		if payment_id == nil || payment_id == "" {
@@ -83,6 +83,9 @@ class Contact: PersistableObject
 		let intPaymentId = decodedAddress!.intPaymentId
 		if intPaymentId != nil && intPaymentId != "" {
 			return nil // b/c we don't want to show a derived int addr if we already have the int addr
+		}
+		if decodedAddress!.isSubaddress {
+			return nil // must not be allowed - important
 		}
 		var address: MoneroIntegratedAddress?
 		if self.hasOpenAliasAddress {
@@ -147,7 +150,7 @@ class Contact: PersistableObject
 		// NOTE: just going to invalidate it off the bat - too complicated otherwise
 		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = nil //
 		//
-		let intAddr = self.new__cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		let intAddr = self.new__cached_derived_integratedXMRAddress_orNil()
 		self.cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid = intAddr
 	}
 	//
