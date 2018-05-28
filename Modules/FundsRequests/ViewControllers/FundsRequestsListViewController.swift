@@ -82,8 +82,7 @@ class FundsRequestsListViewController: ListViewController
 	func presentOrConfigureExistingCreateRequestFormView(
 		withContact contact: Contact?,
 		selectedWallet wallet: Wallet?
-	)
-	{
+	) {
 		if let presentedViewController = self.navigationController!.presentedViewController {
 			guard let presented_addFundsRequestFormViewController = presentedViewController as? AddFundsRequestFormViewController else {
 				DDLog.Warn("FundsRequests", "Presented view is not a AddFundsRequestFormViewController. Bailing")

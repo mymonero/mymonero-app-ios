@@ -258,14 +258,13 @@ extension SendFundsForm
 					}
 				}
 				view.didUpdateHeight_fn =
-				{
+				{ [unowned self] in
 					self.view.setNeedsLayout() // to get following subviews' layouts to update
 					//
 					// scroll to field in case, e.g., results table updated
 					DispatchQueue.main.asyncAfter(
 						deadline: .now() + 0.1
-					)
-					{ [unowned self] in
+					) { [unowned self] in
 						if self.isWaitingOnFieldBeginEditingScrollTo_sendTo == true {
 							return // semi-janky -- but is used to prevent potential double scroll oddness
 						}
@@ -327,7 +326,7 @@ extension SendFundsForm
 					}
 				}
 				view.willBeginResolvingPossibleOATextInput_fn =
-				{
+				{ [unowned self] in
 					assert(Thread.isMainThread)
 					self.hideAndClear_manualPaymentIDField()
 					self.set_addPaymentID_buttonView(isHidden: true)
@@ -1306,11 +1305,14 @@ extension SendFundsForm
 		{
 			self.aFormSubmissionButtonWasPressed()
 		}
-		//
 		@objc func addPaymentID_tapped()
 		{
 			self.set_addPaymentID_buttonView(isHidden: true)
 			self.set_manualPaymentIDField(isHidden: false)
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
+			{ [unowned self] in
+				self.manualPaymentID_inputView.becomeFirstResponder()
+			}
 		}
 		//
 		// Delegation - URL picking (also used by QR picking)

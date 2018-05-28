@@ -65,21 +65,18 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	required init(
 		contact: Contact?,
 		selectedWallet: Wallet?
-	)
-	{
+	) {
 		super.init()
 		// ^ this will call setup (synchronously)
 		if contact != nil {
-			DispatchQueue.main.asyncAfter( // wait or else animation on resolving indicator will fail
-				deadline: .now() + 0.2,
-				execute:
-				{ [weak self] in
-					guard let thisSelf = self else {
-						return
-					}
-					thisSelf.requestFrom_inputView.pick(contact: contact!)
+			// wait or else animation on resolving indicator will fail
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute:
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
 				}
-			)
+				thisSelf.requestFrom_inputView.pick(contact: contact!)
+			})
 		}
 		if selectedWallet != nil {
 			self.toWallet_inputView.set(selectedWallet: selectedWallet!)
@@ -197,14 +194,13 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 				}
 			}
 			view.didUpdateHeight_fn =
-			{
+			{ [unowned self] in
 				self.view.setNeedsLayout() // to get following subviews' layouts to update
 				//
 				// scroll to field in case, e.g., results table updated
 				DispatchQueue.main.asyncAfter(
 					deadline: .now() + 0.1
-				)
-				{ [unowned self] in
+				) { [unowned self] in
 					if self.isWaitingOnFieldBeginEditingScrollTo_requestFrom == true {
 						return // semi-janky -- but is used to prevent potential double scroll oddness
 					}
@@ -443,8 +439,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	public func reconfigureFormAtRuntime_havingElsewhereSelected(
 		requestFromContact contact: Contact?,
 		receiveToWallet wallet: Wallet?
-	)
-	{
+	) {
 		self.amount_fieldset.clear() // figure that since this method is called when user is trying to initiate a new request, we should clear the amount
 		//
 		if contact != nil {
@@ -779,8 +774,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		_ textField: UITextField,
 		shouldChangeCharactersIn range: NSRange,
 		replacementString string: String
-	) -> Bool
-	{
+	) -> Bool {
 		if textField == self.amount_fieldset.inputField { // to support filtering characters
 			return self.amount_fieldset.inputField.textField(
 				textField,
@@ -818,5 +812,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	{
 		self.set_manualPaymentIDField(isHidden: false)
 		self.addPaymentID_buttonView.isHidden = true
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) // to be slightly less jarring
+		{ [unowned self] in
+			self.manualPaymentID_inputView.becomeFirstResponder()
+		}
 	}
 }
