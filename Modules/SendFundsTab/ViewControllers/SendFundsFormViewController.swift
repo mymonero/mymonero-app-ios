@@ -163,7 +163,8 @@ extension SendFundsForm
 						),
 						CcyConversionRates.Currency.XMR.symbol,
 						SendFundsForm.rateAPI_domain // not .authority - don't need subdomain
-					)
+					),
+					wantsMAXbutton: true
 				)
 				let inputField = view.inputField
 				inputField.delegate = self
@@ -177,6 +178,13 @@ extension SendFundsForm
 					}
 					thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
 					// TODO: do we need to update anything else here?
+				}
+				view.didUpdateMAXButtonToggleState_fn =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.set_isFormSubmittable_needsUpdate()
 				}
 				self.amount_fieldset = view
 				self.scrollView.addSubview(view)
@@ -608,8 +616,11 @@ extension SendFundsForm
 			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
 				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
 			)
-			if submittableMoneroAmountDouble_orNil == nil { // amount is required
-				return false
+			if submittableMoneroAmountDouble_orNil == nil {
+				let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
+				if isSweeping == false { // amount is required unless sweeping
+					return false
+				}
 			}
 			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
 				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
@@ -821,9 +832,7 @@ extension SendFundsForm
 			self.clearValidationMessage()
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
-			//
-			let isSweeping = false // TODO
-			
+			let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
 			let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
 			let amount_submittableDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
 				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
@@ -1069,6 +1078,7 @@ extension SendFundsForm
 				self.hideAndClear_manualPaymentIDField()
 				self.set_addPaymentID_buttonView(isHidden: false)
 			}
+			self.priority_inputView.set(selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString, skipSettingOnPickerView: false) // reset to default .. this will cause configure_networkFeeEstimate_label to be called to reconfigure fee
 		}
 		//
 		// Delegation - Form submission success
@@ -1129,7 +1139,7 @@ extension SendFundsForm
 					height: self.amount_label.frame.size.height
 				).integral
 				do {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.amount_tooltipSpawn_buttonView.frame = CGRect(
 						x: self.amount_label.frame.origin.x + self.amount_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
@@ -1156,7 +1166,7 @@ extension SendFundsForm
 					final__networkFeeEstimate_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
 					self.networkFeeEstimate_label.frame = final__networkFeeEstimate_label_frame // kinda sucks to set this three times in this method. any alternative?
 					//
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
 						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,

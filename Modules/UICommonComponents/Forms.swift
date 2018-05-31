@@ -812,13 +812,13 @@ extension UICommonComponents
 		}
 		//
 		// Imperatives - Placeholder
-		func set(placeholder text: String)
+		func set(placeholder text: String, overrideColor: UIColor? = nil)
 		{
 			let string = NSMutableAttributedString(string: text)
 			let range = NSRange(location: 0, length: text.count)
 			string.addAttributes(
 				[
-					NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x6B696B),
+					NSAttributedStringKey.foregroundColor: overrideColor ?? UIColor(rgb: 0x6B696B),
 					NSAttributedStringKey.font: FormInputField.font_default
 				],
 				range: range

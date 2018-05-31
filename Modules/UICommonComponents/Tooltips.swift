@@ -41,7 +41,7 @@ extension UICommonComponents
 	{
 		//
 		// Constants
-		static let usabilityExpanded_w: CGFloat = 28
+		static let usabilityExpanded_w: CGFloat = 30
 		static let usabilityExpanded_h: CGFloat = 32
 		static let tooltip_maxWidth: CGFloat = 230 - 12 // seems to be asking for the text width instead,  -k
 		//		let maxWidth: CGFloat = 230

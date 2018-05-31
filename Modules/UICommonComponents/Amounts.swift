@@ -41,9 +41,7 @@ extension UICommonComponents.Form
 //
 extension UICommonComponents.Form.Amounts
 {
-	//
-	//
-	// Fieldset
+	static var valueLayer_amountPlaceholderText = "00\(Locale.current.decimalSeparator ?? ".")00"
 	//
 	class InputFieldsetView: UIView
 	{ // aka MoneroAmountEmittingMultiCurrencyInputFieldsetView
@@ -61,18 +59,21 @@ extension UICommonComponents.Form.Amounts
 		//
 		// Interface - Properties
 		var didUpdateValueAvailability_fn: (() -> Void)? // settable by consumers; this will be called when the ccyConversion rate changes and when the selected currency changes; to be observed by consumers, to provide hook for call to update e.g. the embedding form's submittability
+		var didUpdateMAXButtonToggleState_fn: (() -> Void)?
 		//
 		// Internal - Properties
 		let inputField = InputField()
 		var effectiveMoneroAmountLabel: EffectiveMoneroAmountLabel?
 		let currencyPickerButton = CurrencyPicker.PickerButton()
 		var effectiveAmountLabel_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView?
+		var maxButtonView: MAXButtonView?
 		//
 		var _initial_effectiveAmountLabelBehavior: EffectiveAmountLabelBehavior
 		var _initial_effectiveAmountTooltipText_orNil: String?
+		var _initial_wantsMAXbutton: Bool
 		//
 		// Lifecycle
-		convenience init(effectiveAmountLabelBehavior: EffectiveAmountLabelBehavior)
+		convenience init(effectiveAmountLabelBehavior: EffectiveAmountLabelBehavior, wantsMAXbutton: Bool = false)
 		{
 			self.init(
 				effectiveAmountLabelBehavior: effectiveAmountLabelBehavior,
@@ -81,11 +82,12 @@ extension UICommonComponents.Form.Amounts
 		}
 		init(
 			effectiveAmountLabelBehavior: EffectiveAmountLabelBehavior,
-			effectiveAmountTooltipText_orNil: String?
-		)
-		{
+			effectiveAmountTooltipText_orNil: String?,
+			wantsMAXbutton: Bool = false
+		) {
 			self._initial_effectiveAmountLabelBehavior = effectiveAmountLabelBehavior
 			self._initial_effectiveAmountTooltipText_orNil = effectiveAmountTooltipText_orNil
+			self._initial_wantsMAXbutton = wantsMAXbutton
 			//
 			super.init(frame: .zero)
 			self.setup()
@@ -98,11 +100,41 @@ extension UICommonComponents.Form.Amounts
 			do {
 				let view = self.inputField
 				view.addTarget(self, action: #selector(inputField_editingChanged), for: .editingChanged)
+				view.addTarget(self, action: #selector(inputField_editingBegan), for: .editingDidBegin)
 				self.addSubview(view)
 			}
 			if self._initial_effectiveAmountLabelBehavior == .yieldingRawOrEffectiveMoneroOnlyAmount {
 				let view = EffectiveMoneroAmountLabel(title: "") // empty, since by default, we're in xmr… but we'll config on setup anyway
 				self.effectiveMoneroAmountLabel = view
+				self.addSubview(view)
+			}
+			if self._initial_wantsMAXbutton {
+				let view = MAXButtonView()
+				view._private_fieldset_reconfigureMAXPlaceholderFromMAXToggled =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.inputField.configureWithMAXToggled(
+						on: thisSelf.maxButtonView!.isToggledOn
+					)
+				}
+				view._private_fieldset_maxToggledOn =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.inputField.resignFirstResponder() // in case it's first responder and we're toggling on - to the user, a focused input field means MAX should be off
+					thisSelf.didUpdateMAXButtonToggleState_fn?()
+				}
+				view._private_fieldset_maxToggledOff =
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
+					}
+					thisSelf.didUpdateMAXButtonToggleState_fn?()
+				}
+				self.maxButtonView = view
 				self.addSubview(view)
 			}
 			do {
@@ -185,12 +217,25 @@ extension UICommonComponents.Form.Amounts
 				selectedCurrency: SettingsController.shared.displayCurrency,
 				skipSettingOnPickerView: false
 			)
-			self.configure_effectiveMoneroAmountLabel() // for good measure - jic
+			self.maxButtonView?.set(toggled: false) // must specifically un-set if set
+			self.configure_effectiveMoneroAmountLabel() // for good measure - jic and to ensure maxButtonView gets visibility managed
 		}
 		//
 		// Internal - Imperatives - Configuration
+		func configureVisibilityAndSelectedState_maxButtonView()
+		{
+			guard let view = self.maxButtonView else {
+				return
+			}
+			view.configureVisibilityAndSelectedState(
+				inputText: self.inputField.text,
+				isInputFirstResponder: self.inputField.isFirstResponder
+			)
+		}
 		func configure_effectiveMoneroAmountLabel()
 		{
+			self.configureVisibilityAndSelectedState_maxButtonView() // NOTE: in this function we should make sure to always call self.max_buttonView.setHidden so initial config happens
+			//
 			if self.effectiveMoneroAmountLabel == nil {
 				return
 			}
@@ -204,8 +249,7 @@ extension UICommonComponents.Form.Amounts
 			func __setTextOnAmountUI(
 				title: String,
 				shouldHide_tooltipButton: Bool
-			)
-			{
+			) {
 				self.effectiveMoneroAmountLabel!.text = title
 				self.effectiveMoneroAmountLabel!.isHidden = false
 				self.effectiveAmountLabel_tooltipSpawn_buttonView?.isHidden = shouldHide_tooltipButton // won't set if operand is nil due to ?
@@ -322,7 +366,7 @@ extension UICommonComponents.Form.Amounts
 					)
 				}
 				if let buttonView = self.effectiveAmountLabel_tooltipSpawn_buttonView {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					buttonView.frame = CGRect(
 						x: view.frame.origin.x + view.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
@@ -331,6 +375,16 @@ extension UICommonComponents.Form.Amounts
 						height: tooltipSpawn_buttonView_h
 					).integral
 				}
+			}
+			if let buttonView = self.maxButtonView {
+				let buttonView_w: CGFloat = MAXButtonView.usabilityExpanded_w
+				let buttonView_h: CGFloat = MAXButtonView.usabilityExpanded_h
+				buttonView.frame = CGRect(
+					x: self.inputField.frame.origin.x + self.inputField.frame.size.width,
+					y: self.inputField.frame.origin.y - (buttonView_h - self.inputField.frame.size.height)/2,
+					width: buttonView_w,
+					height: buttonView_h
+				).integral
 			}
 		}
 		//
@@ -362,6 +416,10 @@ extension UICommonComponents.Form.Amounts
 		{
 			self.configure_effectiveMoneroAmountLabel()
 		}
+		@objc func inputField_editingBegan()
+		{
+			self.configureVisibilityAndSelectedState_maxButtonView() // because we might be going from MAX toggled -> unselected
+		}
 	}
 	//
 	//
@@ -379,7 +437,7 @@ extension UICommonComponents.Form.Amounts
 		// Lifecycle
 		init()
 		{
-			super.init(placeholder: "00.00")
+			super.init(placeholder: valueLayer_amountPlaceholderText)
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
@@ -509,6 +567,16 @@ extension UICommonComponents.Form.Amounts
 			return xmrAmountDouble
 		}
 		//
+		// Imperatives - MAX Button
+		func configureWithMAXToggled(on isToggledOn: Bool)
+		{
+			if isToggledOn {
+				self.set(placeholder: NSLocalizedString("MAX", comment: ""), overrideColor: self.textColor!)
+			} else {
+				self.set(placeholder: self.init_placeholder!) // with original color
+			}
+		}
+		//
 		// Delegation - To be called manually by whoever instantiates the AmountInputFieldsetView
 		func textField(
 			_ textField: UITextField,
@@ -592,6 +660,94 @@ extension UICommonComponents.Form.Amounts
 			self.lineBreakMode = .byTruncatingMiddle // undecided about this
 			//
 			self.isHidden = true // initially - consumer show at discretion
+		}
+	}
+	//
+	//
+	class MAXButtonView: UICommonComponents.LinkButtonView
+	{
+		//
+		// Constants
+		static let usabilityExpanded_w: CGFloat = 51
+		static let usabilityExpanded_h: CGFloat = 32
+		//
+		//
+		// Properties - Externally mutable
+		var _private_fieldset_reconfigureMAXPlaceholderFromMAXToggled: (() -> Void)!
+		var _private_fieldset_maxToggledOn: (() -> Void)!
+		var _private_fieldset_maxToggledOff: (() -> Void)!
+		// Properties - Externally read-only
+		var isToggledOn: Bool = false
+		//
+		//
+		// Lifecycle - Init
+		init()
+		{
+			super.init(
+				mode: .mono_default,
+				size: .normal,
+				title: NSLocalizedString("MAX", comment: "")
+			)
+			self.setup()
+		}
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		func setup()
+		{
+			self.startObserving()
+		}
+		func startObserving()
+		{
+			// interactions
+			self.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+		}
+		//
+		// Lifecycle - Deinit
+		deinit
+		{
+			self.teardown()
+		}
+		func teardown()
+		{
+			self.stopObserving()
+		}
+		func stopObserving()
+		{
+		}
+		//
+		// Imperatives
+		func set(toggled: Bool)
+		{
+			self.isToggledOn = toggled
+			if toggled {
+				self.isHidden = true // hide
+				self._private_fieldset_maxToggledOn()
+			} else {
+				self._private_fieldset_maxToggledOff()
+			}
+			self._private_fieldset_reconfigureMAXPlaceholderFromMAXToggled()
+		}
+		func configureVisibilityAndSelectedState(inputText: String?, isInputFirstResponder: Bool)
+		{
+			// NOTE: in this function we must make sure to always set self.isHidden so initial config happens
+			if inputText == nil || inputText == "" {
+				self.isHidden = false // NOTE: this will only actually show the btn if we're not in MAX mode
+				if isInputFirstResponder { // must disable this mode in case it was enabled
+					self.set(toggled: false)
+				} else {
+					self.set(toggled: self.isToggledOn) // to update the UI again , not to change the state
+				}
+			} else {
+				self.isHidden = true // has an amount, shouldn't show MAX btn
+				self.set(toggled: false) // must disable this mode in case it was enabled
+			}
+		}
+		//
+		// Delegation - Interactions
+		@objc func tapped()
+		{
+			self.set(toggled: true)
 		}
 	}
 }

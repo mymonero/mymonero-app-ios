@@ -567,7 +567,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				height: self.authentication_label.frame.size.height
 			)
 			do {
-				let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+				let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 				let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 				self.authentication_tooltipSpawn_buttonView.frame = CGRect(
 					x: self.authentication_label.frame.origin.x + self.authentication_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
