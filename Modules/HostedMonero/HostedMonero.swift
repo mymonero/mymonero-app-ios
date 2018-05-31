@@ -396,7 +396,7 @@ extension HostedMonero
 				"view_key": view_key__private,
 				"amount": "0",
 				"mixin": mixinSize,
-				"use_dust": mixinSize == 0, // Use dust outputs only when we are using no mixins
+				"use_dust": true, // send-funds is now coded to filter unmixable and below threshold dust properly when sweeping and not sweeping
 				"dust_threshold": String(MoneroConstants.dustThreshold, radix: 10)
 			]
 			let endpoint = HostedMoneroAPI_Endpoint.UnspentOuts

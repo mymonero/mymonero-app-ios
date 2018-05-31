@@ -936,11 +936,14 @@ class Wallet: PersistableObject
 	//
 	func sendFunds(
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
-		amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		amount_orNilIfSweeping: HumanUnderstandableCurrencyAmountDouble?, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		isSweeping: Bool,
 		payment_id: MoneroPaymentID?,
 		priority: MoneroTransferSimplifiedPriority,
 		didUpdateProcessStep_fn: @escaping ((_ processStep: HostedMonero.FundsSender.ProcessStep) -> Void),
 		success_fn: @escaping (
+			_ final_sentAmountWithoutFee: MoneroAmount,
+			_ sentPaymentID_orNil: MoneroPaymentID?,
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
 		) -> Void,
@@ -962,9 +965,13 @@ class Wallet: PersistableObject
 		{
 			self.__lock_sending()
 			assert(self.fundsSender == nil)
+			if amount_orNilIfSweeping == 0 || amount_orNilIfSweeping == nil {
+				assert(isSweeping, "Missing amount and not sweeping")
+			}
 			let fundsSender = HostedMonero.FundsSender(
 				target_address: target_address,
-				amount: amount,
+				amount_orNilIfSweeping: amount_orNilIfSweeping,
+				isSweeping: isSweeping,
 				wallet__public_address: self.public_address,
 				wallet__private_keys: self.private_keys,
 				wallet__public_keys: self.public_keys,
@@ -972,12 +979,12 @@ class Wallet: PersistableObject
 				priority: priority
 			)
 			fundsSender.success_fn =
-			{ [weak self] (tx_hash, tx_fee) in
+			{ [weak self] (final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee) in
 				guard let thisSelf = self else {
 					return
 				}
 				thisSelf.__unlock_sending()
-				success_fn(tx_hash, tx_fee)
+				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee)
 			}
 			fundsSender.didUpdateProcessStep_fn = didUpdateProcessStep_fn
 			fundsSender.failWithErr_fn =

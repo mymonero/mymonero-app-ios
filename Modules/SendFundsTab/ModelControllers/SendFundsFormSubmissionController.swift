@@ -43,7 +43,8 @@ extension SendFundsForm
 			//
 			// Input values:
 			var fromWallet: Wallet! // must we make this weak? effects?
-			var amount_submittableDouble: Double
+			var amount_submittableDouble: Double?
+			var isSweeping: Bool
 			var priority: MoneroTransferSimplifiedPriority
 			//
 			let selectedContact: Contact?
@@ -74,6 +75,7 @@ extension SendFundsForm
 		init(parameters: Parameters)
 		{
 			self.parameters = parameters
+			assert(self.parameters.isSweeping || self.parameters.amount_submittableDouble != nil)
 		}
 		// deinit already cancels request
 		//
@@ -247,15 +249,18 @@ extension SendFundsForm
 			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 		) {
 			self.parameters.preSuccess_passedValidation_willBeginSending()
-			let statusMessage_prefix = String(
-				format: NSLocalizedString("Sending %@ XMR…", comment: ""),
-				MoneroAmount.new(withDouble: self.parameters.amount_submittableDouble).localized_formattedString
-			)
+			let statusMessage_prefix = self.parameters.isSweeping
+				? NSLocalizedString("Sending wallet balance…", comment: "")
+				: String(
+					format: NSLocalizedString("Sending %@ XMR…", comment: ""),
+					MoneroAmount.new(withDouble: self.parameters.amount_submittableDouble!).localized_formattedString
+				)
 			self.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(statusMessage_prefix) // start with just prefix
 			//
 			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
-				amount: self.parameters.amount_submittableDouble,
+				amount_orNilIfSweeping: self.parameters.amount_submittableDouble,
+				isSweeping: self.parameters.isSweeping,
 				payment_id: payment_id,
 				priority: self.parameters.priority,
 				didUpdateProcessStep_fn:
@@ -267,7 +272,7 @@ extension SendFundsForm
 					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
 				},
 				success_fn:
-				{ [weak self] (transactionHash, sentAmount) in
+				{ [weak self] (final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee) in
 					guard let thisSelf = self else {
 						return
 					}
@@ -276,9 +281,9 @@ extension SendFundsForm
 						sentTo_address: target_address,
 						isXMRAddressIntegrated: isXMRAddressIntegrated,
 						integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
-						sentWith_paymentID: payment_id,
-						transactionHash: transactionHash,
-						sentAmount: sentAmount
+						sentWith_paymentID: sentPaymentID_orNil,
+						transactionHash: tx_hash,
+						sentAmount: final_sentAmount // may be different for a sweep
 					)
 				},
 				canceled_fn:
@@ -307,11 +312,14 @@ extension SendFundsForm
 			transactionHash: MoneroTransactionHash,
 			sentAmount: MoneroAmount
 		) {
+			var outgoingAmountForDisplay = sentAmount // mutable copy
+			outgoingAmountForDisplay.sign = .minus // make negative as it's outgoing
+			//
 			let mockedTransaction = MoneroHistoricalTransactionRecord(
-				amount: MoneroAmount.new(withDouble: -1 * self.parameters.amount_submittableDouble),
+				amount: outgoingAmountForDisplay,
 				totalSent: sentAmount,
 				totalReceived: MoneroAmount("0"),
-				approxFloatAmount: -1 * self.parameters.amount_submittableDouble, // -1 b/c it's outgoing!
+				approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: outgoingAmountForDisplay),
 				spent_outputs: nil, // TODO: is this ok?
 				timestamp: Date(), // faking this
 				hash: transactionHash,
@@ -320,8 +328,8 @@ extension SendFundsForm
 				mempool: false, // TODO: is this correct?
 				unlock_time: 0,
 				height: 0, // TODO: is this correct?
-//				coinbase: false, // TODO: need this?
-//				tx_fee: tx_fee, // TODO?
+//				coinbase: false, // TODO
+//				tx_fee: tx_fee, // TODO
 //				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
 				cached__isConfirmed: false, // important
 				cached__isUnlocked: true, // TODO: not sure about this

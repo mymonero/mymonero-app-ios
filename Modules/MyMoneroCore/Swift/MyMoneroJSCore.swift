@@ -253,8 +253,10 @@ class MyMoneroCoreJS : NSObject, WKScriptMessageHandler
 				fn("No result of public_addr found on result of random_scalar.", nil)
 				return
 			}
-			self._callSync(.core, "create_address", [ scalar, "\(NetType.MAINNET.jsRepresentation)" ])
-			{ (err_str, any) in
+			self._callSync(.core, "create_address", [
+				scalar.jsRepresentationString,
+				"\(NetType.MAINNET.jsRepresentation)"
+			]) { (err_str, any) in
 				if let err_str = err_str {
 					fn("Error creating address with random scalar: \(err_str)", nil)
 					return

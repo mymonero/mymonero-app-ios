@@ -156,7 +156,8 @@ extension HostedMonero
 		var isCanceled = false
 		//
 		var target_address: MoneroAddress! // currency-ready wallet address, but not an OA address (resolve before calling)
-		var amount: HumanUnderstandableCurrencyAmountDouble! // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		var amount_orNilIfSweeping: HumanUnderstandableCurrencyAmountDouble? // human-understandable number, e.g. input 0.5 for 0.5 XMR ; will be ignored if isSweeping
+		var isSweeping: Bool!
 		var wallet__public_address: MoneroAddress!
 		var wallet__private_keys: MoneroKeyDuo!
 		var wallet__public_keys: MoneroKeyDuo!
@@ -176,6 +177,8 @@ extension HostedMonero
 //		) -> Void
 		var didUpdateProcessStep_fn: ((_ processStep: ProcessStep) -> Void)?
 		var success_fn: ((
+			_ final_sentAmountWithoutFee: MoneroAmount,
+			_ sentPaymentID_orNil: MoneroPaymentID?,
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount
 		) -> Void)?
@@ -187,7 +190,8 @@ extension HostedMonero
 		//
 		init(
 			target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
-			amount: HumanUnderstandableCurrencyAmountDouble, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+			amount_orNilIfSweeping: HumanUnderstandableCurrencyAmountDouble?, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+			isSweeping: Bool,
 			wallet__public_address: MoneroAddress,
 			wallet__private_keys: MoneroKeyDuo,
 			wallet__public_keys: MoneroKeyDuo,
@@ -195,7 +199,8 @@ extension HostedMonero
 			priority: MoneroTransferSimplifiedPriority
 		) {
 			self.target_address = target_address
-			self.amount = amount
+			self.amount_orNilIfSweeping = amount_orNilIfSweeping
+			self.isSweeping = isSweeping
 			self.wallet__public_address = wallet__public_address
 			self.wallet__private_keys = wallet__private_keys
 			self.wallet__public_keys = wallet__public_keys
@@ -222,17 +227,18 @@ extension HostedMonero
 			assert(self._current_request == nil)
 			//
 			// status: preparing to send funds…
-			if amount <= 0 {
+			if !self.isSweeping && self.amount_orNilIfSweeping! <= 0 {
 				self.failWithErr_fn?(NSLocalizedString("The amount you've entered is too low", comment: ""))
 				return
 			}
-			let totalAmountWithoutFee = MoneroAmount.new(withDouble: amount)
+			var totalAmountWithoutFee = MoneroAmount.new(withDouble: self.isSweeping ? 0 : self.amount_orNilIfSweeping!) // this will get reassigned below if sweeping, so it's a var
 			let targetDescription = SendFundsTargetDescription(
 				address: target_address,
 				amount: totalAmountWithoutFee
 			)
 		//	DDLog.Info("HostedMonero", "targetDescription \(targetDescription)")
-			DDLog.Info("HostedMonero", "Total to send, before fee: \(totalAmountWithoutFee)")
+			let amountForDisplay: Any = self.isSweeping ? "all" : totalAmountWithoutFee // Swift compiler bug? when amountForDisplay rhs value placed in string interpolation, it tries to init a BigInt with "all"
+			DDLog.Info("HostedMonero", "Total to send, before fee: \(amountForDisplay)")
 			//
 			// Derive/finalize some values…
 			let final__mixin = MyMoneroCore.fixedMixin
@@ -332,10 +338,18 @@ extension HostedMonero
 				let _/*hostingService_chargeAmount*/ = HostedMonero.APIClient_HostConfig.HostingServiceChargeForTransaction(
 					with: attemptAt_network_minimumFee
 				)
-				var totalAmountIncludingFees = totalAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
+				var totalAmountIncludingFees: MoneroAmount
+				if self.isSweeping {
+					totalAmountIncludingFees = MoneroAmount("18450000000000000000")! //~uint64 max
+				} else {
+					totalAmountIncludingFees = totalAmountWithoutFee + attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
+				}
+				let balanceForDisplay: Any = self.isSweeping ? "all" : totalAmountIncludingFees // Swift compiler bug? when amountForDisplay rhs value placed in string interpolation, it tries to init a BigInt with "all"
+				DDLog.Info("HostedMonero", "Initial balance required: \(balanceForDisplay)");
 				let usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
 					target_amount: totalAmountIncludingFees,
-					unusedOuts: original_unusedOuts
+					unusedOuts: original_unusedOuts,
+					isSweeping: self.isSweeping
 				)
 				
 				DDLog.Info("HostedMonero", "usableOutputsAndAmounts \(usableOutputsAndAmounts)")
@@ -344,12 +358,38 @@ extension HostedMonero
 				var usingOuts = usableOutputsAndAmounts.usingOuts
 				var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
 				var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
-				if usingOuts.count > 1 {
-					var newNeededFee = MoneroUtils.Fees.calculate_fee(
-						feePerKB,
-						MoneroUtils.Fees.estimateRctSize(usingOuts.count, final__mixin, 2),
-						MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
-					)
+				//
+				var newNeededFee = MoneroUtils.Fees.calculate_fee(
+					feePerKB,
+					MoneroUtils.Fees.estimateRctSize(usingOuts.count, final__mixin, 2),
+					MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
+				)
+				// if newNeededFee < neededFee, use neededFee instead (should only happen on the 2nd or later times through (due to estimated fee being too low)
+				if newNeededFee < attemptAt_network_minimumFee {
+					newNeededFee = attemptAt_network_minimumFee
+				}
+				if self.isSweeping {
+					/*
+					// When/if sending to multiple destinations supported, uncomment and port this:
+					if (dsts.length !== 1) {
+					deferred.reject("Sweeping to multiple accounts is not allowed");
+					return;
+					}
+					*/
+					totalAmountWithoutFee = usingOutsAmount - newNeededFee
+					if totalAmountWithoutFee <= 0 {
+						let errStr = String(format:
+							NSLocalizedString("Your spendable balance is too low. Have %@ %@ spendable, need %@ %@.", comment: ""),
+							FormattedString(fromMoneroAmount: usingOutsAmount),
+							MoneroConstants.currency_symbol,
+							FormattedString(fromMoneroAmount: newNeededFee),
+							MoneroConstants.currency_symbol
+						)
+						self.failWithErr_fn?(errStr)
+						return
+					}
+					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
+				} else {
 					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
 					// add outputs 1 at a time till we either have them all or can meet the fee
 					while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
@@ -361,6 +401,7 @@ extension HostedMonero
 						usingOuts.append(out)
 						usingOutsAmount = usingOutsAmount + out.amount
 						DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
+						// and recalculate invalidated values
 						newNeededFee = MoneroUtils.Fees.calculate_fee(
 							feePerKB,
 							MoneroUtils.Fees.estimateRctSize(usingOuts.count, final__mixin, 2),
@@ -368,16 +409,19 @@ extension HostedMonero
 						)
 						totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
 					}
-					DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
-					attemptAt_network_minimumFee = newNeededFee
 				}
+				DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
+				attemptAt_network_minimumFee = newNeededFee
+				//
 				DDLog.Info("HostedMonero", "~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
 				// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
 				if usingOutsAmount < totalAmountIncludingFees {
 					let errStr_localized = String(format:
-						NSLocalizedString("Not enough spendable outputs / balance too low (have: %@, need: %@)", comment: ""),
+						NSLocalizedString("Your spendable balance is too low. Have %@ %@ spendable, need %@ %@.", comment: ""),
 						FormattedString(fromMoneroAmount: usingOutsAmount),
-						FormattedString(fromMoneroAmount: totalAmountIncludingFees)
+						MoneroConstants.currency_symbol,
+						FormattedString(fromMoneroAmount: totalAmountIncludingFees),
+						MoneroConstants.currency_symbol
 					)
 					self.failWithErr_fn?(errStr_localized)
 					return
@@ -409,6 +453,9 @@ extension HostedMonero
 					)
 				}
 				if usingOutsAmount > totalAmountIncludingFees {
+					if self.isSweeping {
+						assert(false, "Unexpected usingOutsAmount > totalAmountIncludingFees && sweeping")
+					}
 					let changeAmount = usingOutsAmount - totalAmountIncludingFees
 					DDLog.Info("HostedMonero", "changeAmount \(changeAmount)")
 					// for RCT we don't presently care about dustiness so add entire change amount
@@ -423,7 +470,10 @@ extension HostedMonero
 					//
 					return
 				}
-				if usingOutsAmount == totalAmountWithoutFee {
+				if usingOutsAmount == totalAmountIncludingFees {
+					//
+					// this should always fire when sweeping
+					//
 					// because isRingCT=true, create random destination to keep 2 outputs always in case of 0 change
 					// TODO: would be nice to avoid this asynchrony so ___proceed() can be dispensed with
 					MyMoneroCore.shared.New_FakeAddressForRCTTx({ [weak self] (err_str, fakeAddress) in
@@ -644,6 +694,8 @@ extension HostedMonero
 							}
 							let tx_fee = final_networkFee/* + hostingService_chargeAmount NOTE: Service charge removed */
 							thisSelf.success_fn?(
+								totalAmountWithoutFee,
+								final__payment_id,
 								tx_hash,
 								tx_fee
 							) // 🎉
@@ -662,7 +714,8 @@ extension HostedMonero
 	}
 	static func _outputsAndAmountToUseForMixin(
 		target_amount: MoneroAmount,
-		unusedOuts: [MoneroOutputDescription]
+		unusedOuts: [MoneroOutputDescription],
+		isSweeping: Bool
 	) -> (
 		usingOuts: [MoneroOutputDescription],
 		usingOutsAmount: MoneroAmount,
@@ -679,6 +732,19 @@ extension HostedMonero
 			remaining_unusedOuts.remove(at: idx)
 			// now select it for usage
 			let out_amount = out.amount
+			DDLog.Info("HostedMonero", "Found unused output with amount: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")
+			if out_amount < MoneroConstants.dustThreshold {
+				if isSweeping == false {
+					DDLog.Info("HostedMonero", "Not sweeping, and found a dusty (though maybe mixable) output... skipping it!")
+					continue
+				}
+				if out.rct == nil || out.rct == "" {
+					DDLog.Info("HostedMonero", "Sweeping, and found a dusty but unmixable (non-rct) output... skipping it!")
+					continue
+				} else {
+					DDLog.Info("HostedMonero", "Sweeping and found a dusty but mixable (rct) amount... keeping it!")
+				}
+			}
 			toFinalize_usingOuts.append(out)
 			toFinalize_usingOutsAmount = toFinalize_usingOutsAmount + out_amount
 			DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")

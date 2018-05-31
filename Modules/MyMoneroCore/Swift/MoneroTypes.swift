@@ -56,7 +56,7 @@ struct MoneroConstants
 	static let maxBlockNumber = 500000000 // Maximum block number, used for tx unlock time
 	static let avgBlockTime: TimeInterval = 60 // Average block time in seconds, used for unlock time estimation
 	//
-	static let dustThreshold = MoneroAmount("10000000000")! // Dust threshold in atomic units; 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
+	static let dustThreshold = MoneroAmount("2000000000")! // Dust threshold in atomic units; 2*10^9 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 }
 //
 // Types

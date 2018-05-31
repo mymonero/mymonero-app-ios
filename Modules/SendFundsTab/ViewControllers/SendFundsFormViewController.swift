@@ -822,20 +822,22 @@ extension SendFundsForm
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
 			//
+			let isSweeping = false // TODO
+			
 			let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
 			let amount_submittableDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
 				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
 			)
-			do {
+			if isSweeping == false {
 				assert(amount_submittableDouble != nil && amountText != nil && amountText != "")
 				if amount_submittableDouble == nil {
 					self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
 					return
 				}
-			}
-			if amount_submittableDouble! <= 0 {
-				self.setValidationMessage(NSLocalizedString("The amount to send must be greater than zero.", comment: ""))
-				return
+				if amount_submittableDouble! <= 0 {
+					self.setValidationMessage(NSLocalizedString("The amount to send must be greater than zero.", comment: ""))
+					return
+				}
 			}
 			//
 			let selectedCurrency = self.amount_fieldset.currencyPickerButton.selectedCurrency
@@ -857,9 +859,11 @@ extension SendFundsForm
 				//
 				let priority = self.selected_priority
 				//
+				assert(isSweeping || amount_submittableDouble != nil)
 				let parameters = SendFundsForm.SubmissionController.Parameters(
 					fromWallet: fromWallet,
-					amount_submittableDouble: amount_submittableDouble!,
+					amount_submittableDouble: amount_submittableDouble,
+					isSweeping: isSweeping,
 					priority: priority,
 					//
 					selectedContact: selectedContact,
@@ -969,7 +973,7 @@ extension SendFundsForm
 			}
 			//
 			// now if using alternate display currency, be sure to ask for terms agreement before doing send
-			if selectedCurrency != .XMR {
+			if isSweeping == false && selectedCurrency != .XMR {
 				let hasAgreedToUsageGateTerms = UserDefaults.standard.bool(
 					forKey: UsageGateState_PlainStorage_Keys.hasAgreedToTermsOfCalculatedEffectiveMoneroAmount.key
 				)

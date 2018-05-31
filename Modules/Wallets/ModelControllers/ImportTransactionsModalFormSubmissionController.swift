@@ -76,7 +76,8 @@ extension ImportTransactionsModal
 			//
 			self.parameters.fromWallet.sendFunds(
 				target_address: target_address,
-				amount: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
+				amount_orNilIfSweeping: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
+				isSweeping: false,
 				payment_id: payment_id,
 				priority: MoneroTransferSimplifiedPriority.defaultPriority, // .med
 				didUpdateProcessStep_fn:
@@ -88,7 +89,7 @@ extension ImportTransactionsModal
 					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
 				},
 				success_fn:
-				{ [weak self] (transactionHash, sentAmount) in
+				{ [weak self] (sentAmountDouble, sentPaymentID_orNil, tx_hash, tx_fee) in
 					guard let thisSelf = self else {
 						return
 					}
