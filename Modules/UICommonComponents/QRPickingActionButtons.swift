@@ -142,9 +142,11 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - Picking
-		func __shared_didPick(requestURIStringForAutofill requestURIString: String)
+		func __shared_didPick(possibleRequestURIStringForAutofill possibleRequestURIString: String)
 		{
-			self.didPick_fn?(requestURIString)
+			// TODO: rename this to 'possible' uri string
+			
+			self.didPick_fn?(possibleRequestURIString)
 		}
 		//
 		// Delegation - Interactions
@@ -180,7 +182,7 @@ extension UICommonComponents
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) // delay here merely for visual effect
 						{ [unowned self] in
 							self._tearDownAnyQRScanningCameraViewController(animated: true)
-							self.__shared_didPick(requestURIStringForAutofill: scannedMessageString) // possibly wait til completion?
+							self.__shared_didPick(possibleRequestURIStringForAutofill: scannedMessageString) // possibly wait til completion?
 						}
 					}
 			}
@@ -285,7 +287,7 @@ extension UICommonComponents
 				)
 				return
 			}
-			self.__shared_didPick(requestURIStringForAutofill: messageString!)
+			self.__shared_didPick(possibleRequestURIStringForAutofill: messageString!)
 		}
 	}
 }

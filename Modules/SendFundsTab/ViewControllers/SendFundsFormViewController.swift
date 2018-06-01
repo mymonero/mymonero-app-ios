@@ -498,11 +498,11 @@ extension SendFundsForm
 					thisSelf._clearForm() // may as well
 				}
 				buttons.didPick_fn =
-				{ [weak self] (uriString) in
+				{ [weak self] (possibleUriString) in
 					guard let thisSelf = self else {
 						return
 					}
-					thisSelf.__shared_didPick(requestURIStringForAutofill: uriString)
+					thisSelf.__shared_didPick(possibleRequestURIStringForAutofill: possibleUriString)
 				}
 				buttons.didEndQRScanWithErrStr_fn =
 				{ [weak self] (localizedValidationMessage) in
@@ -1398,14 +1398,20 @@ extension SendFundsForm
 		}
 		//
 		// Delegation - URL picking (also used by QR picking)
-		func __shared_didPick(requestURIStringForAutofill requestURIString: String)
+		func ___shared_initialResetFormFor_didPick()
 		{
 			self.clearValidationMessage() // in case there was a parsing err etc displaying
 			self._clearForm()
 			//
 			self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
+		}
+		func __shared_didPick(possibleRequestURIStringForAutofill possibleRequestURIString: String)
+		{
+			self.___shared_initialResetFormFor_didPick()
 			//
-			let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(fromURIString: requestURIString)
+			let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(
+				fromPossibleURIOrMoneroOrOAAddressString: possibleRequestURIString
+			)
 			if err_str != nil {
 				self.set(
 					validationMessage: NSLocalizedString(
@@ -1416,7 +1422,26 @@ extension SendFundsForm
 				)
 				return
 			}
-			let requestPayload = optl_requestPayload!
+			self.__shared_havingClearedForm_didPick(requestPayload: optl_requestPayload!)
+		}
+		func __shared_didPick(confirmedRequestURIStringForAutofill requestURIString: String)
+		{
+			self.___shared_initialResetFormFor_didPick()
+			//
+			let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(
+				fromPossibleURIOrMoneroOrOAAddressString: requestURIString
+			)
+			if err_str != nil {
+				self.set(
+					validationMessage: NSLocalizedString("Unable to decode that URL: \(err_str!)", comment: ""),
+					wantsXButton: true
+				)
+				return
+			}
+			self.__shared_havingClearedForm_didPick(requestPayload: optl_requestPayload!)
+		}
+		func __shared_havingClearedForm_didPick(requestPayload: MoneroUtils.URIs.Requests.ParsedRequest)
+		{
 			var currencyToSelect: CcyConversionRates.Currency = .XMR // the default; to be finalized as follows…
 			if let amountCurrencySymbol = requestPayload.amountCurrency,
 				amountCurrencySymbol != ""
@@ -1426,10 +1451,7 @@ extension SendFundsForm
 				)
 				if currency == nil {
 					self.set(
-						validationMessage: NSLocalizedString(
-							"Unrecognized currency on funds request",
-							comment: ""
-						),
+						validationMessage: NSLocalizedString("Unrecognized currency on funds request", comment: ""),
 						wantsXButton: true
 					)
 					return
@@ -1570,7 +1592,7 @@ extension SendFundsForm
 				self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // if any
 				self.navigationController?.popToRootViewController(animated: false) // if any
 			}
-			self.__shared_didPick(requestURIStringForAutofill: url.absoluteString)
+			self.__shared_didPick(confirmedRequestURIStringForAutofill: url.absoluteString)
 		}
 		//
 		@objc func WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_ notification: Notification)

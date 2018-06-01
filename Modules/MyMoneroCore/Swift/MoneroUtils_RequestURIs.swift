@@ -113,17 +113,35 @@ extension MoneroUtils.URIs
 		}
 		//
 		static func new_parsedRequest(
-			fromURIString uriString: String
+			fromPossibleURIOrMoneroOrOAAddressString string: String
 		) -> (
 			err_str: String?,
 			parsedRequest: ParsedRequest?
 		) {
-			guard let urlComponents = URLComponents(string: uriString) else {
-				return (err_str: "Unrecognized URI format", parsedRequest: nil)
+
+			// TODO: expand this to take uriString or moneroAddress or OAAddress
+
+			// TODO: detect no-scheme moneroAddr and possible OA addr - if has no monero: prefix
+			if string.hasPrefix(MoneroConstants.currency_requestURIPrefix_sansColon + ":") == false {
+				if string.contains("?") { // fairly sure this is correct.. (just an extra failsafe/filter)
+					return (NSLocalizedString("Unrecognized URI format", comment: ""), nil)
+				}
+				let couldBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(string)
+				if couldBeOAAddress {
+					return (nil, ParsedRequest(address: string, amount: nil, description: nil, paymentID: nil, message: nil, amountCurrency: nil))
+				}
+				let (err_str, _) = MyMoneroCore.shared_objCppBridge.decoded(address: string)
+				if err_str == nil { // then it looks like a monero address
+					return (nil, ParsedRequest(address: string, amount: nil, description: nil, paymentID: nil, message: nil, amountCurrency: nil))
+				}
+				return (NSLocalizedString("No Monero request info", comment: ""), nil)
+			}
+			guard let urlComponents = URLComponents(string: string) else {
+				return (err_str: NSLocalizedString("Unrecognized URI format", comment: ""), parsedRequest: nil)
 			}
 			let scheme = urlComponents.scheme
 			if scheme != MoneroConstants.currency_requestURIPrefix_sansColon {
-				return (err_str: "Request URI has non-Monero protocol", parsedRequest: nil)
+				return (err_str: NSLocalizedString("Request URI has non-Monero protocol", comment: ""), parsedRequest: nil)
 			}
 			var target_address: MoneroAddress // var, as we have to finalize it
 			// if the URL has '://' in it instead of ':', path may be empty, but host will contain the address instead
@@ -132,7 +150,7 @@ extension MoneroUtils.URIs
 			} else if urlComponents.path != "" {
 				target_address = urlComponents.path
 			} else {
-				return (err_str: "Request URI had no target address", parsedRequest: nil)
+				return (err_str: NSLocalizedString("Request URI had no target address", comment: ""), parsedRequest: nil)
 			}
 			var amount: String?
 			var description: String?

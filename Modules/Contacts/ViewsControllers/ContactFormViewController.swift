@@ -170,11 +170,11 @@ class ContactFormViewController: UICommonComponents.FormViewController
 				thisSelf.clearValidationMessage() // in case there was a parsing err etc displaying
 			}
 			buttons.didPick_fn =
-			{ [weak self] (uriString) in
+			{ [weak self] (possibleUriString) in
 				guard let thisSelf = self else {
 					return
 				}
-				thisSelf.__shared_didPick(requestURIStringForAutofill: uriString)
+				thisSelf.__shared_didPick(possibleRequestURIStringForAutofill: possibleUriString)
 			}
 			buttons.didEndQRScanWithErrStr_fn =
 			{ [weak self] (localizedValidationMessage) in
@@ -619,11 +619,17 @@ class ContactFormViewController: UICommonComponents.FormViewController
 	}
 	//
 	// Delegation - URL picking (also used by QR picking)
-	func __shared_didPick(requestURIStringForAutofill requestURIString: String)
+	func ___shared_initialResetFormFor_didPick()
 	{
 		self.clearValidationMessage() // in case there was a parsing err etc displaying
+	}
+	func __shared_didPick(possibleRequestURIStringForAutofill possibleRequestURIString: String)
+	{
+		self.___shared_initialResetFormFor_didPick()
 		//
-		let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(fromURIString: requestURIString)
+		let (err_str, optl_requestPayload) = MoneroUtils.URIs.Requests.new_parsedRequest(
+			fromPossibleURIOrMoneroOrOAAddressString: possibleRequestURIString
+		)
 		if err_str != nil {
 			self.set(
 				validationMessage: NSLocalizedString(
@@ -634,7 +640,10 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			)
 			return
 		}
-		let requestPayload = optl_requestPayload!
+		self.__shared_havingClearedForm_didPick(requestPayload: optl_requestPayload!)
+	}
+	func __shared_havingClearedForm_didPick(requestPayload: MoneroUtils.URIs.Requests.ParsedRequest)
+	{
 		do {
 			let target_address = requestPayload.address
 			assert(target_address != "") // b/c it should have been caught as a validation err on New_ParsedRequest_FromURIString
