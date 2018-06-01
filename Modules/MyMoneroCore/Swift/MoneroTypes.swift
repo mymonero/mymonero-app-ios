@@ -768,7 +768,7 @@ enum MoneroTransferSimplifiedPriority: UInt32
 	case high = 3
 	case veryhigh = 4
 	//
-	static var defaultPriority: MoneroTransferSimplifiedPriority = .med
+	static var defaultPriority: MoneroTransferSimplifiedPriority = .low
 	//
 	var cppRepresentation: UInt32 {
 		return self.rawValue
