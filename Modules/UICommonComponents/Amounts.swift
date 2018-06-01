@@ -110,15 +110,6 @@ extension UICommonComponents.Form.Amounts
 			}
 			if self._initial_wantsMAXbutton {
 				let view = MAXButtonView()
-				view._private_fieldset_reconfigureMAXPlaceholderFromMAXToggled =
-				{ [weak self] in
-					guard let thisSelf = self else {
-						return
-					}
-					thisSelf.inputField.configureWithMAXToggled(
-						on: thisSelf.maxButtonView!.isToggledOn
-					)
-				}
 				view._private_fieldset_maxToggledOn =
 				{ [weak self] in
 					guard let thisSelf = self else {
@@ -429,7 +420,7 @@ extension UICommonComponents.Form.Amounts
 	{
 		//
 		// Constants
-		static let visual__w: CGFloat = 8*12 + UICommonComponents.Form.Amounts.CurrencyPicker.PickerButton.fixedWidth
+		static let visual__w: CGFloat = 8*13 + UICommonComponents.Form.Amounts.CurrencyPicker.PickerButton.fixedWidth
 		static let w: CGFloat = visual__w + 2*UICommonComponents.FormInputCells.imagePadding_x
 		//
 		// Properties - Interface
@@ -568,11 +559,16 @@ extension UICommonComponents.Form.Amounts
 		}
 		//
 		// Imperatives - MAX Button
-		func configureWithMAXToggled(on isToggledOn: Bool)
-		{
+		func configureWithMAXToggled(
+			on isToggledOn: Bool,
+			toToggledOnText: String?
+		) {
 			if isToggledOn {
-				self.set(placeholder: NSLocalizedString("MAX", comment: ""), overrideColor: self.textColor!)
+				assert(toToggledOnText != nil)
+				assert(self.text == nil || self.text == "")
+				self.set(placeholder: toToggledOnText!, overrideColor: self.textColor!)
 			} else {
+				assert(toToggledOnText == nil)
 				self.set(placeholder: self.init_placeholder!) // with original color
 			}
 		}
@@ -721,12 +717,11 @@ extension UICommonComponents.Form.Amounts
 		{
 			self.isToggledOn = toggled
 			if toggled {
-				self.isHidden = true // hide
+//				self.isHidden = true // hide
 				self._private_fieldset_maxToggledOn()
 			} else {
 				self._private_fieldset_maxToggledOff()
 			}
-			self._private_fieldset_reconfigureMAXPlaceholderFromMAXToggled()
 		}
 		func configureVisibilityAndSelectedState(inputText: String?, isInputFirstResponder: Bool)
 		{

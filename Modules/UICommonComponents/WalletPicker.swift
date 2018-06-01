@@ -46,6 +46,7 @@ extension UICommonComponents
 		// Properties
 		var tapped_fn: (() -> Void)?
 		var picker_inputField_didBeginEditing: ((_ textField: UITextField) -> Void)?
+		var selectionUpdated_fn: (() -> Void)?
 		var selectedWallet: Wallet? // weak might be a good idea but strong should be ok here b/c we unpick the selectedWallet when wallets reloads on logged-in runtime teardown
 		var pickerView: WalletPickerView!
 		var picker_inputField: UITextField!
@@ -102,6 +103,7 @@ extension UICommonComponents
 								}
 								self.contentView.prepareForReuse()
 								self.contentView.clearFields()
+								self.selectionUpdated_fn?()
 								return
 							}
 						} else {
@@ -116,6 +118,7 @@ extension UICommonComponents
 						if self.selectedWallet == nil || self.selectedWallet! != selectedWallet {
 							self.selectedWallet = selectedWallet
 							self.contentView.configure(withObject: selectedWallet)
+							self.selectionUpdated_fn?()
 						} else {
 							DDLog.Warn("UICommonComponents.WalletPicker", "reloaded but was same")
 						}
@@ -194,7 +197,8 @@ extension UICommonComponents
 			if skipSettingOnPickerView == false {
 				self.pickerView.selectWithoutYielding(wallet: wallet)
 			}
-			// TODO/NOTE: bubble if necessary
+			//
+			self.selectionUpdated_fn?()
 		}
 		//
 		func configure(withRecord record: Wallet)

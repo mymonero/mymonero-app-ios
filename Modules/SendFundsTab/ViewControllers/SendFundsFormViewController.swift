@@ -109,6 +109,10 @@ extension SendFundsForm
 			}
 			do {
 				let view = UICommonComponents.WalletPickerButtonFieldView(selectedWallet: nil)
+				view.selectionUpdated_fn =
+				{ [unowned self] in
+					self.configure_amountInputTextGivenMaxToggledState()
+				}
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -184,6 +188,7 @@ extension SendFundsForm
 					guard let thisSelf = self else {
 						return
 					}
+					thisSelf.configure_amountInputTextGivenMaxToggledState()
 					thisSelf.set_isFormSubmittable_needsUpdate()
 				}
 				self.amount_fieldset = view
@@ -463,6 +468,7 @@ extension SendFundsForm
 						return
 					}
 					thisSelf.configure_networkFeeEstimate_label()
+					thisSelf.configure_amountInputTextGivenMaxToggledState()
 				}
 				self.priority_inputView = view
 				self.scrollView.addSubview(view)
@@ -510,6 +516,7 @@ extension SendFundsForm
 			//
 			// initial configuration; now that references to both the fee estimate layer and the priority select control have been assigned…
 			self.configure_networkFeeEstimate_label()
+			self.configure_amountInputTextGivenMaxToggledState()
 		}
 		override func setup_navigation()
 		{
@@ -694,6 +701,77 @@ extension SendFundsForm
 			//
 			return priority
 		}
+		var new_xmr_estFeeAmount: MoneroAmount {
+			let feePerKB_Amount = MoneroAmount("187000000")! // constant for now pending polling fee_per_kb on account info
+			let priority = self.selected_priority
+			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
+			//
+			return estNetworkFee_moneroAmount
+		}
+		var new_xmr_estMaxAmount: MoneroAmount? { // may return nil if a wallet isn't present yet
+			guard let wallet = self.fromWallet_inputView.selectedWallet else {
+				return nil // no wallet yet
+			}
+			let availableWalletBalance = wallet.balanceAmount - wallet.lockedBalanceAmount // TODO: is it correct to incorporate locked balance into this?
+			let estNetworkFee_moneroAmount = self.new_xmr_estFeeAmount
+			if availableWalletBalance > estNetworkFee_moneroAmount {
+				return availableWalletBalance - estNetworkFee_moneroAmount
+			}
+			return MoneroAmount("0") // can't actually send any of the balance - or maybe there are some dusty outputs that will come up in the actual sweep?99
+		}
+		var new_displayCcyFormatted_estMaxAmountString: String? { // this is going to return nil if the rate is not ready for the selected display currency - user will probably just have to keep hitting 'max'
+			guard let xmr_estMaxAmount = self.new_xmr_estMaxAmount else {
+				return nil
+			}
+			let displayCurrency = self.amount_fieldset.currencyPickerButton.selectedCurrency
+			if displayCurrency != .XMR {
+				let converted_amountDouble = displayCurrency.displayUnitsRounded_amountInCurrency(
+					fromMoneroAmount: xmr_estMaxAmount
+				)
+				if converted_amountDouble == nil {
+					return nil // rate not ready yet
+				}
+				return displayCurrency.nonAtomicCurrency_localized_formattedString(
+					final_amountDouble: converted_amountDouble!
+				)
+			}
+			return xmr_estMaxAmount.localized_formattedString // then it's an xmr amount
+		}
+		var new_displayCcyFormatted_estMaxAmount_fullInputText: String {
+			guard let string = self.new_displayCcyFormatted_estMaxAmountString else {
+				return NSLocalizedString("MAX", comment: "") // such as while rate not available
+			}
+			return "~ " + string // TODO: is this localized enough - consider writing direction
+			// ^ luckily we can do this for long numbers because the field will right truncate it and then left align the text
+		}
+		func new_displayCcyFormatted_estFeeFigures() -> (
+			amount_formattedString: String,
+			displayCurrency: CcyConversionRates.Currency
+		) {
+			let estNetworkFee_moneroAmount = self.new_xmr_estFeeAmount
+			var mutable_displayCurrency = SettingsController.shared.displayCurrency
+			var mutable_amount_formattedString: String!
+			do {
+				if mutable_displayCurrency != .XMR {
+					let converted_amountDouble = mutable_displayCurrency.displayUnitsRounded_amountInCurrency(
+						fromMoneroAmount: estNetworkFee_moneroAmount
+					)
+					if converted_amountDouble != nil {
+						mutable_amount_formattedString = mutable_displayCurrency.nonAtomicCurrency_localized_formattedString(
+							final_amountDouble: converted_amountDouble!
+						)
+					} else {
+						assert(mutable_displayCurrency != .XMR)
+						mutable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
+					}
+				}
+				if mutable_displayCurrency == .XMR { // still
+					// then we still need to derive final_amount_formattedString
+					mutable_amount_formattedString = estNetworkFee_moneroAmount.localized_formattedString
+				}
+			}
+			return (mutable_amount_formattedString, mutable_displayCurrency)
+		}
 		//
 		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
@@ -730,34 +808,10 @@ extension SendFundsForm
 			self.view.setNeedsLayout()
 		}
 		//
-		// Imperatives - Configuration - Fee estimate label
+		// Imperatives - Configuration - Fee estimate label, Max amount, ...
 		func configure_networkFeeEstimate_label()
 		{
-			let feePerKB_Amount = MoneroAmount("187000000")! // constant for now pending polling fee_per_kb on account info
-			let priority = self.selected_priority
-			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
-			var finalizable_displayCurrency = SettingsController.shared.displayCurrency
-			var final_amount_formattedString: String!
-			do {
-				if finalizable_displayCurrency != .XMR {
-					let converted_amountDouble = finalizable_displayCurrency.displayUnitsRounded_amountInCurrency(
-						fromMoneroAmount: estNetworkFee_moneroAmount
-					)
-					if converted_amountDouble != nil {
-						final_amount_formattedString = finalizable_displayCurrency.nonAtomicCurrency_localized_formattedString(
-							final_amountDouble: converted_amountDouble!
-						)
-					} else {
-						assert(finalizable_displayCurrency != .XMR)
-						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
-					}
-				}
-				if finalizable_displayCurrency == .XMR { // still
-					// then we still need to derive final_amount_formattedString
-					final_amount_formattedString = estNetworkFee_moneroAmount.localized_formattedString
-				}
-			}
-			let final_displayCurrency = finalizable_displayCurrency
+			let (final_amount_formattedString, final_displayCurrency) = self.new_displayCcyFormatted_estFeeFigures()
 			let text = String(
 				format: NSLocalizedString("+ %@ %@ EST. NETWORK FEE", comment: ""),
 				final_amount_formattedString,
@@ -766,6 +820,17 @@ extension SendFundsForm
 			self.networkFeeEstimate_label.text = text
 			//
 			self.view.setNeedsLayout() // we must reflow the tooltip's x
+		}
+		func configure_amountInputTextGivenMaxToggledState()
+		{
+			let isMaxToggledOn = self.amount_fieldset.maxButtonView!.isToggledOn
+			let toToggledOnText: String? = isMaxToggledOn
+				? self.new_displayCcyFormatted_estMaxAmount_fullInputText // if non xmr ccy but rate nil (amount nil), will display "MAX" til it's ready
+				: nil
+			self.amount_fieldset.inputField.configureWithMAXToggled(
+				on: isMaxToggledOn,
+				toToggledOnText: toToggledOnText
+			)
 		}
 		//
 		// Imperatives - Contact picker, contact picking
@@ -1078,7 +1143,10 @@ extension SendFundsForm
 				self.hideAndClear_manualPaymentIDField()
 				self.set_addPaymentID_buttonView(isHidden: false)
 			}
-			self.priority_inputView.set(selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString, skipSettingOnPickerView: false) // reset to default .. this will cause configure_networkFeeEstimate_label to be called to reconfigure fee
+			self.priority_inputView.set( // reset to default .. this will cause configure_networkFeeEstimate_label and configure_amountInputTextGivenMaxToggledState to be called to reconfigure fee
+				selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
+				skipSettingOnPickerView: false
+			)
 		}
 		//
 		// Delegation - Form submission success
@@ -1539,10 +1607,12 @@ extension SendFundsForm
 		@objc func CcyConversionRates_didUpdateAvailabilityOfRates()
 		{
 			self.configure_networkFeeEstimate_label() // the amount field takes care of observing this for itself but the estimate label doesn't…… could be factored……
+			self.configure_amountInputTextGivenMaxToggledState() // if necessary
 		}
 		@objc func SettingsController__NotificationNames_Changed__displayCurrencySymbol()
 		{
 			self.configure_networkFeeEstimate_label()
+			self.configure_amountInputTextGivenMaxToggledState()
 		}
 	}
 }
