@@ -55,10 +55,10 @@ extension MoneroUtils.Mnemonics
 		// since mnemonics can be entered with only the first N letters, we must check equality of mnemonics by prefix
 		let a__mnemonicString_words = a.components(separatedBy: " ")
 		let b__mnemonicString_words = b.components(separatedBy: " ")
-		let mnemonicString_words_count = a__mnemonicString_words.count
 		if a__mnemonicString_words.count != b__mnemonicString_words.count {
 			return false
 		}
+		let mnemonicString_words_count = a__mnemonicString_words.count
 		for i in 0 ..< mnemonicString_words_count {
 			let a__word = a__mnemonicString_words[i]
 			let b__word = b__mnemonicString_words[i]
