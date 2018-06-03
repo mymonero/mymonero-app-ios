@@ -172,14 +172,28 @@ class WalletsListController: PersistedObjectListController
 		self.onceBooted({ [unowned self] in
 			PasswordController.shared.OnceBootedAndPasswordObtained( // this will 'block' until we have access to the pw
 				{ [unowned self] (password, passwordType) in
-					do {
+					do { // check if wallet already entered
+						let (err_str, mnemonicString_wordsetName) = MoneroUtils.Mnemonics.wordsetName(accordingToMnemonicString: mnemonicString) // slightly redundant
+						if err_str != nil { // validates word length, though should not be necessary here
+							fn(err_str, nil, nil)
+							return
+						}
 						for (_, record) in self.records.enumerated() {
 							let wallet = record as! Wallet
-							if wallet.mnemonicString == mnemonicString {
+							guard let wallet_mnemonicString = wallet.mnemonicString else {
+								// TODO: solve limitation of this code - check if wallet with same address (but no mnemonic) was already added
+								continue
+							}
+							let areMnemonicsEqual = MoneroUtils.Mnemonics.isEqual(
+								a: wallet_mnemonicString,
+								b: mnemonicString,
+								a__wordsetName: mnemonicString_wordsetName!, // ! b/c handled err_str earlier
+								b__wordsetName: wallet.mnemonic_wordsetName!
+							)
+							if areMnemonicsEqual { // must use this comparator to support partial-word mnemomnic strings
 								fn(nil, wallet, true) // wasWalletAlreadyInserted: true
 								return
 							}
-							// TODO: solve limitation of this code - check if wallet with same address (but no mnemonic) was already added
 						}
 					}
 					do {

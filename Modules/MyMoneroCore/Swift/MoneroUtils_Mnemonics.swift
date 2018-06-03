@@ -34,55 +34,93 @@
 //
 import Foundation
 //
+//
 extension MoneroUtils
 {
-	struct Mnemonics
-	{
-		static func wordsetName(
-			accordingToMnemonicString mnemonicString: MoneroSeedAsMnemonic
-		) -> (
-			err_str: String?,
-			suspectedAs_wordsetNamed: MoneroMnemonicWordsetName?
-		)
-		{
-			let mnemonicString_words = mnemonicString.components(separatedBy: " ")
-			if mnemonicString_words.count == 0 {
-				return ("Invalid mnemonic", nil)
-			}
-			var wholeMnemonicSuspectedAsWordsetNamed: MNWords.WordsetName?
-			do { // derive…
-				for (_, mnemonicString_word) in mnemonicString_words.enumerated() {
-					var thisWordIsInWordsetNamed: MNWords.WordsetName?
-					do { // derive…
-						for (_, wordsetName) in MNWords.WordsetName.all.enumerated() {
-							if wordsetName == .Electrum {
-								continue // skip because it conflicts with 'english'
-							}
-							let wordsetWords = MNWords.wordsByWordsetName[wordsetName]!
-							if wordsetWords.contains(mnemonicString_word) {
-								thisWordIsInWordsetNamed = wordsetName
-								break // done looking
-							}
-							// haven't found it yet
-						}
-					}
-					if thisWordIsInWordsetNamed == nil { // didn't find this word in any of the mnemonic wordsets
-						return ("Unrecognized mnemonic language", nil)
-					}
-					if wholeMnemonicSuspectedAsWordsetNamed == nil { // haven't found it yet
-						wholeMnemonicSuspectedAsWordsetNamed = thisWordIsInWordsetNamed
-					} else if thisWordIsInWordsetNamed != wholeMnemonicSuspectedAsWordsetNamed {
-						return ("Ambiguous mnemonic language", nil) // multiple wordset names detected
-					} else {
-						// nothing to do but keep verifying the rest of the words that it's the same suspsected wordset
-					}
-				}
-				if wholeMnemonicSuspectedAsWordsetNamed == nil { // this might be redundant, but for logical rigor……
-					return ("Unrecognized mnemonic language", nil)
-				}
-			}
-			return (nil, wholeMnemonicSuspectedAsWordsetNamed)
+	struct Mnemonics {}
+}
+extension MoneroUtils.Mnemonics
+{	
+	static func isEqual( // NOTE: you should only pass /confirmed valid/ mnemonics to this function
+		a: MoneroSeedAsMnemonic,
+		b: MoneroSeedAsMnemonic,
+		a__wordsetName: MoneroUtils.Mnemonics.MNWords.WordsetName,
+		b__wordsetName: MoneroUtils.Mnemonics.MNWords.WordsetName
+	) -> Bool {
+		if a__wordsetName != b__wordsetName {
+			return false
 		}
+		let prefixLen = Int(a__wordsetName.prefixLen) // String ops require Int
+		//
+		// since mnemonics can be entered with only the first N letters, we must check equality of mnemonics by prefix
+		let a__mnemonicString_words = a.components(separatedBy: " ")
+		let b__mnemonicString_words = b.components(separatedBy: " ")
+		let mnemonicString_words_count = a__mnemonicString_words.count
+		if a__mnemonicString_words.count != b__mnemonicString_words.count {
+			return false
+		}
+		for i in 0 ..< mnemonicString_words_count {
+			let a__word = a__mnemonicString_words[i]
+			let b__word = b__mnemonicString_words[i]
+			// ... We're assuming that a and b are already valid mneminics
+			let a_prefix: Substring = a__word[..<a__word.index(a__word.startIndex, offsetBy: prefixLen)]
+			let b_prefix: Substring = b__word[..<b__word.index(b__word.startIndex, offsetBy: prefixLen)]
+			if a_prefix != b_prefix {
+				return false
+			}
+		}
+		return true
+	}
+}
+extension MoneroUtils.Mnemonics
+{
+	static func wordsetName(
+		accordingToMnemonicString mnemonicString: MoneroSeedAsMnemonic
+	) -> (
+		err_str: String?,
+		suspectedAs_wordsetNamed: MoneroMnemonicWordsetName?
+	) {
+		let mnemonicString_words = mnemonicString.components(separatedBy: " ")
+		if mnemonicString_words.count == 0 {
+			return (NSLocalizedString("Invalid mnemonic", comment: ""), nil)
+		}
+		var wholeMnemonicSuspectedAsWordsetNamed: MNWords.WordsetName?
+		for (_, mnemonicString_word) in mnemonicString_words.enumerated() {
+			var thisWordIsInWordsetNamed: MNWords.WordsetName? // derive…
+			for (_, wordsetName) in MNWords.WordsetName.all.enumerated() {
+				if wordsetName == .Electrum {
+					continue // skip because it conflicts with 'english'
+				}
+				if mnemonicString_word.count < wordsetName.prefixLen {
+					return (NSLocalizedString("Please enter more than \(wordsetName.prefixLen-1) letters per word", comment: ""), nil)
+				}
+				for (_, wordsetWord) in wordsetName.words.enumerated() {
+					if wordsetWord.hasPrefix(mnemonicString_word) { // check prefix rather than checking exact match to support entering first three letters - and we can do this safely here b/c we already checked the mnemonicString_word length >= wordsetName.prefixLen
+						thisWordIsInWordsetNamed = wordsetName
+						break // done looking; exit interior then exterior loop
+					}
+					// not the word; keep looking
+				}
+				if thisWordIsInWordsetNamed != nil { // found the word in the wordset
+					break // also exit
+				}
+			}
+			if thisWordIsInWordsetNamed == nil { // didn't find this word in any of the mnemonic wordsets
+				return (NSLocalizedString("Unrecognized mnemonic language", comment: ""), nil)
+			}
+			assert(thisWordIsInWordsetNamed != nil, "Illegal thisWordIsInWordsetNamed != nil after searching all wordsets for a word and not already having returned.")
+			if wholeMnemonicSuspectedAsWordsetNamed == nil { // haven't found it yet
+				wholeMnemonicSuspectedAsWordsetNamed = thisWordIsInWordsetNamed
+			} else if thisWordIsInWordsetNamed != wholeMnemonicSuspectedAsWordsetNamed {
+				return (NSLocalizedString("Ambiguous mnemonic language", comment: ""), nil) // multiple wordset names detected
+			} else {
+				// nothing to do but keep verifying the rest of the words that it's the same suspsected wordset
+			}
+		}
+		if wholeMnemonicSuspectedAsWordsetNamed == nil { // this is redundant given check above, but to be clear..
+			return (NSLocalizedString("Unrecognized mnemonic language", comment: ""), nil)
+		}
+		return (nil, wholeMnemonicSuspectedAsWordsetNamed)
 	}
 }
 extension MoneroUtils.Mnemonics
@@ -127,10 +165,26 @@ extension MoneroUtils.Mnemonics
 			var wordsetName: String {
 				return self.rawValue
 			}
+			var words: [String] {
+				return MNWords.wordsByWordsetName[self]!
+			}
+			var prefixLen: UInt {
+				switch self {
+					case .Electrum: return 0 // unsure why that is .. whole word?
+					case .English: return 3
+					case .Spanish: return 4
+					case .Portuguese: return 3
+					case .Japanese: return 3
+				}
+			}
 			var objcSerialized: String {
 				let str = self.wordsetName
 				// just capitalizing the first letter… that's how mymonero-core-cpp requires the languages to be
 				return str.prefix(1).uppercased() + str.dropFirst()
+			}
+			static func ==(l: WordsetName, r: WordsetName) -> Bool
+			{
+				return l.rawValue == r.rawValue
 			}
 			static func new(fromJSONRepresentation jsonRepresentation: Any) -> WordsetName
 			{

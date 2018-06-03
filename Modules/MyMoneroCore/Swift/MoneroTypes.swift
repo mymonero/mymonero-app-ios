@@ -78,7 +78,7 @@ extension MoneroTypeString
 	
 }
 typealias MoneroSeed = MoneroTypeString
-typealias MoneroSeedAsMnemonic = MoneroTypeString
+typealias MoneroSeedAsMnemonic = MoneroTypeString // see MoneroUtils_Mnemonics for equality impl
 typealias MoneroAddress = MoneroTypeString
 typealias MoneroStandardAddress = MoneroAddress
 typealias MoneroIntegratedAddress = MoneroAddress

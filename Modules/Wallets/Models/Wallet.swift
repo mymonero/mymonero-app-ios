@@ -763,8 +763,7 @@ class Wallet: PersistableObject
 		MyMoneroCore.shared.MnemonicStringFromSeed(
 			self.account_seed!,
 			self.mnemonic_wordsetName!
-		)
-		{ [weak self] (err_str, seedAsMnemonic) in
+		) { [weak self] (err_str, seedAsMnemonic) in
 			guard let thisSelf = self else {
 				return
 			}
@@ -773,14 +772,20 @@ class Wallet: PersistableObject
 				return
 			}
 			if thisSelf.mnemonicString != nil {
-				if thisSelf.mnemonicString != seedAsMnemonic! { // would be rather odd
+				let areMnemonicsEqual = MoneroUtils.Mnemonics.isEqual(
+					a: thisSelf.mnemonicString!,
+					b: seedAsMnemonic!,
+					a__wordsetName: thisSelf.mnemonic_wordsetName!,
+					b__wordsetName: thisSelf.mnemonic_wordsetName! // assume they're the same
+				)
+				if areMnemonicsEqual == false { // would be rather odd; NOTE: must use this comparator instead of string comparison to support partial-word mnemonic strings
 					assert(false, "Different mnemonicString derived from accountSeed than was entered for login")
 					thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: "Mnemonic seed mismatch")
 					return
 				}
-			} else {
-				thisSelf.mnemonicString = seedAsMnemonic!
 			}
+			thisSelf.mnemonicString = seedAsMnemonic! // set it in all cases - because we want to support converting partial-word input to full-word for display and recording
+			//
 			__proceed_havingActuallyBooted()
 		}
 	}
