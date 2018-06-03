@@ -144,8 +144,6 @@ extension UICommonComponents
 		// Delegation - Picking
 		func __shared_didPick(possibleRequestURIStringForAutofill possibleRequestURIString: String)
 		{
-			// TODO: rename this to 'possible' uri string
-			
 			self.didPick_fn?(possibleRequestURIString)
 		}
 		//
