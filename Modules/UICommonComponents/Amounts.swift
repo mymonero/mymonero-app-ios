@@ -561,7 +561,7 @@ extension UICommonComponents.Form.Amounts
 		// Imperatives - MAX Button
 		func configureWithMAXToggled(
 			on isToggledOn: Bool,
-			toToggledOnText: String?
+			toToggledOnText: String? // shouldn't be nil when isToggledOn
 		) {
 			if isToggledOn {
 				assert(toToggledOnText != nil)
