@@ -118,10 +118,7 @@ extension MoneroUtils.URIs
 			err_str: String?,
 			parsedRequest: ParsedRequest?
 		) {
-
-			// TODO: expand this to take uriString or moneroAddress or OAAddress
-
-			// TODO: detect no-scheme moneroAddr and possible OA addr - if has no monero: prefix
+			// detect no-scheme moneroAddr and possible OA addr - if has no monero: prefix
 			if string.hasPrefix(MoneroConstants.currency_requestURIPrefix_sansColon + ":") == false {
 				if string.contains("?") { // fairly sure this is correct.. (just an extra failsafe/filter)
 					return (NSLocalizedString("Unrecognized URI format", comment: ""), nil)
