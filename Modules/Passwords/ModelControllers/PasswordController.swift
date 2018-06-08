@@ -210,7 +210,7 @@ final class PasswordController
 	}
 	var messageAsEncryptedDataForUnlockChallenge_base64String: String?
 	var isAlreadyGettingExistingOrNewPWFromUser: Bool?
-	private var passwordEntryDelegate: PasswordEntryDelegate? // someone in the app must set this by calling setPasswordEntryDelegate(to:)
+	private var passwordEntryDelegate: PasswordEntryDelegate? // someone in the app must set this by calling setPasswordEntryDelegate(to:); TODO: would we like this to be weak?
 	func setPasswordEntryDelegate(to delegate: PasswordEntryDelegate)
 	{
 		if self.passwordEntryDelegate != nil {
@@ -1128,7 +1128,7 @@ final class PasswordController
 					}
 					let registrant__err_str = registrant.passwordController_DeleteEverything()
 					if registrant__err_str != nil {
-						cb(err_str)
+						cb(registrant__err_str)
 						return
 					}
 				}
