@@ -1141,8 +1141,10 @@ final class PasswordController
 			{ [unowned self] (err_str) in
 				if err_str != nil {
 					DDLog.Error("Passwords", "Error while deleting everything: \(err_str!)")
-					assert(false)
-					return
+					assert(false, "Error while deleting everything")
+					// we probably want to just fatalError here since password etc has been un-set - user can always relaunch
+					fatalError("Error while deleting everything")
+//					return
 				}
 				NotificationCenter.default.post(
 					name: NotificationNames.havingDeletedEverything_didDeconstructBootedStateAndClearPassword.notificationName,
