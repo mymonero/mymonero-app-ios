@@ -1114,14 +1114,7 @@ final class PasswordController
 				self._id = nil
 				self.messageAsEncryptedDataForUnlockChallenge_base64String = nil
 				//
-				// delete pw record
-				let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.collectionName)
-				if err_str != nil {
-					cb(err_str)
-					return
-				}
-				DDLog.Deleting("Passwords", "Deleted password record.")
-				// now have others delete everything else
+				// first have registrants delete everything
 				for (_, weakRefTo_registrant) in self.weakRefsTo_deleteEverythingRegistrants.enumerated() {
 					guard let registrant = weakRefTo_registrant.value else {
 						continue // skip ; has dealloced somehow
@@ -1132,6 +1125,15 @@ final class PasswordController
 						return
 					}
 				}
+				//
+				// then delete pw record
+				let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.collectionName)
+				if err_str != nil {
+					cb(err_str)
+					return
+				}
+				DDLog.Deleting("Passwords", "Deleted password record.")
+				//
 				self.initializeRuntimeAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
 				cb(nil)
 			},
