@@ -140,11 +140,12 @@ class UserIdle: NSObject
 		//
 		DispatchQueue.main.async
 		{ [unowned self] in
+			self._numberOfSecondsSinceLastUserInteraction = 0.0 // reset this in case the app disabled user idle at a time at all different from when the last idle breaking action occurred - s since last user interaction should always be 0 when the userIdle timer starts anyway
+			//
 			self._userIdle_intervalTimer = Timer.scheduledTimer(
 				withTimeInterval: TimeInterval(1.0),
 				repeats: true
-			)
-			{ [unowned self] timer in
+			) { [unowned self] timer in
 				self._numberOfSecondsSinceLastUserInteraction += 1.0 // count the second
 				//
 				let appTimeoutAfterS = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? 20.0 // use default on no pw entered / no settings info yet
