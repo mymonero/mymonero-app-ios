@@ -118,20 +118,10 @@ extension MoneroAmount
 			// default to using locale's decimalSeparator, because we've just gotten this number from a locale-sensitive number formatter
 		)
 	}
-	static func new(withUserInputAmountString string: String) -> MoneroAmount?
-	{
-		guard let double = MoneyAmount.newDouble(withUserInputAmountString: string) else {
-			return nil
-		}
-		let amount = self.new(withDouble: double)
-		//
-		return amount
-	}
 	static func new(
 		withMoneyAmountDoubleString string: String,
 		decimalSeparator: String = Locale.current.decimalSeparator ?? "." // NOTE: defaults to locale's decimal separator!
-	) -> MoneroAmount
-	{ // aka monero_utils.parseMoney
+	) -> MoneroAmount { // aka monero_utils.parseMoney
 		if string == "" {
 			return MoneroAmount(0)
 		}
