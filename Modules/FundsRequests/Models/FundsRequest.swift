@@ -103,7 +103,7 @@ class FundsRequest: PersistableObject
 	}
 	//
 	// Lifecycle - Init - Reading existing (already saved) wallet
-	override func collectionName() -> String
+	override class func collectionName() -> String
 	{
 		return "FundsRequests"
 	}

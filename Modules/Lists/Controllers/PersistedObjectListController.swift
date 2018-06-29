@@ -65,7 +65,6 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	//
 	// Properties - Initializing inputs and constants
 	var listedObjectType: PersistableObject.Type!
-	var documentCollectionName: DocumentPersister.CollectionName!
 	var instanceUUID = UUID()
 	func identifier() -> String { // satisfy DeleteEverythingRegistrant for isEqual
 		return self.instanceUUID.uuidString
@@ -83,7 +82,6 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	init(listedObjectType type: PersistableObject.Type)
 	{
 		self.listedObjectType = type
-		self.documentCollectionName = "\(type)" as DocumentPersister.CollectionName
 		self.setup()
 	}
 	func setup()
@@ -148,7 +146,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 			}
 			let (load__err_str, documentsData) = DocumentPersister.shared.DocumentsData(
 				withIds: ids!,
-				inCollectionNamed: self.documentCollectionName
+				inCollectionNamed: self.listedObjectType.collectionName()
 			)
 			if load__err_str != nil {
 				self._setup_didFailToBoot(withErrStr: load__err_str!)
@@ -264,7 +262,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	// Runtime - Accessors - Private - Lookups - Documents & instances
 	func _new_idsOfPersistedRecords() -> (err_str: String?, ids: [DocumentPersister.DocumentId]?)
 	{
-		return DocumentPersister.shared.IdsOfAllDocuments(inCollectionNamed: self.documentCollectionName)
+		return DocumentPersister.shared.IdsOfAllDocuments(inCollectionNamed: self.listedObjectType.collectionName())
 	}
 	//
 	// Imperatives - Overridable
@@ -358,11 +356,11 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	// Protocol - DeleteEverythingRegistrant
 	func passwordController_DeleteEverything() -> String?
 	{
-		let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.documentCollectionName)
+		let (err_str, _) = DocumentPersister.shared.RemoveAllDocuments(inCollectionNamed: self.listedObjectType.collectionName())
 		if err_str != nil {
 			DDLog.Error("Lists", "Error while deleting everything: \(err_str!.debugDescription)")
 		} else {
-			DDLog.Deleting("Lists", "Deleted all \(self.documentCollectionName).")
+			DDLog.Deleting("Lists", "Deleted all \(self.listedObjectType.collectionName()).")
 		}
 		return err_str
 	}

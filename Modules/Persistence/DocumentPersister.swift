@@ -366,7 +366,7 @@ class DocumentPersister
 				}
 				let fileKey_collectionName = fileKey_components[0] as CollectionName
 				if fileKey_collectionName != collectionName {
-//					console.log("Skipping file named", fileKey, "as it's not in", collectionName)
+//					DDLog.Info("Persistence", "Skipping file named \(fileKey) as it's not in \(collectionName)")
 					continue
 				}
 				let fileKey_id  = fileKey_components[1] as DocumentId

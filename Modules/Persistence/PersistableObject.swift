@@ -67,10 +67,14 @@ class PersistableObject: Equatable
 		var key: String { return self.rawValue }
 	}
 	//
+	class func collectionName() -> String
+	{
+		assert(false, "You must override PersistableObject.collectionName")
+		return ""
+	}
 	func collectionName() -> String
 	{
-		assert(false, "You must override PersistableObject/collectionName")
-		return ""
+		return type(of: self).collectionName()
 	}
 	func new_encrypted_dictRepresentationBase64Data(withPassword password: PasswordController.Password) throws -> Data
 	{
