@@ -105,7 +105,7 @@ class FundsRequest: PersistableObject
 	// Lifecycle - Init - Reading existing (already saved) wallet
 	override func collectionName() -> String
 	{
-		return "FundsRequest"
+		return "FundsRequests"
 	}
 	required init?(withPlaintextDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{

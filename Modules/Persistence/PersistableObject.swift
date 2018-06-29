@@ -72,7 +72,7 @@ class PersistableObject: Equatable
 		assert(false, "You must override PersistableObject/collectionName")
 		return ""
 	}
-	func new_encrypted_dictRepresentationData(withPassword password: PasswordController.Password) throws -> Data
+	func new_encrypted_dictRepresentationBase64Data(withPassword password: PasswordController.Password) throws -> Data
 	{
 		let dict = self.new_dictRepresentation() // plaintext
 		let plaintextData =  try JSONSerialization.data(
@@ -81,7 +81,7 @@ class PersistableObject: Equatable
 		)
 		let encryptedData = RNCryptor.encrypt(data: plaintextData, withPassword: password)
 		//
-		return encryptedData
+		return encryptedData.base64EncodedData() // must be base64 encoded to retain compatibility
 	}
 	func new_dictRepresentation() -> DocumentPersister.DocumentJSON
 	{
@@ -160,7 +160,7 @@ class PersistableObject: Equatable
 		self.insertedAt_date = Date()
 		// and now that those values have been placed, we can generate the dictRepresentation
 		do {
-			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
+			let data = try self.new_encrypted_dictRepresentationBase64Data(withPassword: PasswordController.shared.password!)
 			let err_str = DocumentPersister.shared.Write(
 				documentFileWithData: data,
 				withId: self._id!,
@@ -189,7 +189,7 @@ class PersistableObject: Equatable
 			return nil // just bail
 		}
 		do {
-			let data = try self.new_encrypted_dictRepresentationData(withPassword: PasswordController.shared.password!)
+			let data = try self.new_encrypted_dictRepresentationBase64Data(withPassword: PasswordController.shared.password!)
 			let err_str = DocumentPersister.shared.Write(
 				documentFileWithData: data,
 				withId: self._id!,

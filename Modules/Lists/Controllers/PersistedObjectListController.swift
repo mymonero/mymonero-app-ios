@@ -162,11 +162,11 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 				self._setup_didFailToBoot(withErrStr: load__err_str)
 				return
 			}
-			for (_, encrypted_documentData) in documentsData!.enumerated() {
+			for (_, encrypted_base64Encoded_documentData) in documentsData!.enumerated() {
 				var plaintext_documentData: Data
 				do {
 					plaintext_documentData = try RNCryptor.decrypt(
-						data: encrypted_documentData,
+						data: Data(base64Encoded: encrypted_base64Encoded_documentData)!, // must base64-decode data for portability
 						withPassword: password
 					)
 				} catch let e {

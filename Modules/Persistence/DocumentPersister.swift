@@ -49,7 +49,7 @@ class DocumentPersister
 		var new_fileKey: String {
 			return "\(self.inCollectionName)\(DocumentFileDescription.fileKeyComponentDelimiterString)\(self.documentId)"
 		}
-		static let filenameExt = "MMDBDoc.json" // just trying to pick something fairly unique, and short
+		static let filenameExt = "MMDBDoc" // just trying to pick something fairly unique, and short
 		var new_filename: String {
 			return "\(self.new_fileKey).\(DocumentFileDescription.filenameExt)"
 		}

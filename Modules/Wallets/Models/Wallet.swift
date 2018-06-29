@@ -358,7 +358,7 @@ class Wallet: PersistableObject
 	//
 	override func collectionName() -> String
 	{
-		return "Wallet"
+		return "Wallets"
 	}
 	required init?(withPlaintextDictRepresentation dictRepresentation: DocumentPersister.DocumentJSON) throws
 	{
