@@ -161,10 +161,13 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 				return
 			}
 			for (_, encrypted_base64Encoded_documentData) in documentsData!.enumerated() {
+				let encrypted_binary_documentData = Data(
+					base64Encoded: encrypted_base64Encoded_documentData
+				)! // must base64-decode data for portability
 				var plaintext_documentData: Data
 				do {
 					plaintext_documentData = try RNCryptor.decrypt(
-						data: Data(base64Encoded: encrypted_base64Encoded_documentData)!, // must base64-decode data for portability
+						data: encrypted_binary_documentData,
 						withPassword: password
 					)
 				} catch let e {

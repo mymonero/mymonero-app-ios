@@ -1040,7 +1040,7 @@ final class PasswordController
 			let err_str = "Code fault: saveToDisk musn't be called until a password has been set"
 			return err_str
 		}
-		let plaintextData = self.plaintextMessageToSaveForUnlockChallenges.data(using: .utf8)!
+		let plaintextData = self.plaintextMessageToSaveForUnlockChallenges.data(using: .utf8, allowLossyConversion: false)!
 		let encryptedData = RNCryptor.encrypt(data: plaintextData, withPassword: self.password!)
 		let encryptedData_base64String = encryptedData.base64EncodedString()
 		self.messageAsEncryptedDataForUnlockChallenge_base64String = encryptedData_base64String // it's important that we hang onto this in memory so we can access it if we need to change the password later

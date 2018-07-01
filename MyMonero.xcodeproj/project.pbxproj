@@ -231,6 +231,7 @@
 		9FA734331F077E0300C674D6 /* EmojiPickerButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */; };
 		9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FA734351F077EA100C674D6 /* popoverBG@3x.png */; };
 		9FA734381F077EA100C674D6 /* popoverDisclosureArrow@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */; };
+		9FA7FA1E20E94C1500210486 /* LocalDataMigrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7FA1D20E94C1500210486 /* LocalDataMigrations.swift */; };
 		9FAA18A31F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */; };
 		9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */; };
 		9FAA18AB1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */; };
@@ -567,6 +568,7 @@
 		9FA734321F077E0300C674D6 /* EmojiPickerButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPickerButtonView.swift; sourceTree = "<group>"; };
 		9FA734351F077EA100C674D6 /* popoverBG@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverBG@3x.png"; sourceTree = "<group>"; };
 		9FA734361F077EA100C674D6 /* popoverDisclosureArrow@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverDisclosureArrow@3x.png"; sourceTree = "<group>"; };
+		9FA7FA1D20E94C1500210486 /* LocalDataMigrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDataMigrations.swift; sourceTree = "<group>"; };
 		9FAA18A21F082871001F1D4D /* emojiPickerPopover_cell_selectedBG_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emojiPickerPopover_cell_selectedBG_stretchable@3x.png"; sourceTree = "<group>"; };
 		9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicators.swift; sourceTree = "<group>"; };
 		9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graphicActivityIndicator_decoration@3x.png"; sourceTree = "<group>"; };
@@ -1090,6 +1092,7 @@
 				9F7298B81F329D8400CD59E1 /* UserIdle.swift */,
 				9F7298BE1F33C0EE00CD59E1 /* ScreenSleep.swift */,
 				9F7298CE1F341DD700CD59E1 /* HostedSource.swift */,
+				9FA7FA1D20E94C1500210486 /* LocalDataMigrations.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2017,6 +2020,7 @@
 				9F7E51711EC6156C001EAB3F /* HostedMonero.swift in Sources */,
 				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
 				9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */,
+				9FA7FA1E20E94C1500210486 /* LocalDataMigrations.swift in Sources */,
 				9FA7341C1F05D92700C674D6 /* AddContactBaseFormViewController.swift in Sources */,
 				9F7298CF1F341DD700CD59E1 /* HostedSource.swift in Sources */,
 				9F453FAA1F267A65004590DC /* SendFundsFormViewController.swift in Sources */,

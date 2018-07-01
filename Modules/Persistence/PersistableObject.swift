@@ -83,7 +83,7 @@ class PersistableObject: Equatable
 			withJSONObject: dict,
 			options: []
 		)
-		let encryptedData = RNCryptor.encrypt(data: plaintextData, withPassword: password)
+		let encryptedData = RNCryptor.encrypt(data: plaintextData, withPassword: password) // this returns UTF8 encoded data
 		//
 		return encryptedData.base64EncodedData() // must be base64 encoded to retain compatibility
 	}

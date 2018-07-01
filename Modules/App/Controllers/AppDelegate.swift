@@ -63,6 +63,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 		_ application: UIApplication,
 		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
 	) -> Bool {
+		//
+		// While launch screen still showing, let's take the chance to synchronously do any migrations:
+		let _ = LocalDataMigrations.shared
+		//
+		//
 		self.windowController = WindowController() // the window must be initialized after app finishes launching or nested UITabBarControllers will
 		self.window = self.windowController.window // setting this as early as possible
 		self.appSingletonsController = AppSingletonsController()
