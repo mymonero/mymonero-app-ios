@@ -223,7 +223,8 @@ extension WalletDetails
 		var shouldShowScanningBlockchainActivityIndicator: Bool {
 			assert(self.shouldShowImportTransactionsButton == false) // putting this check outside so priority logic is dictated elsewhere (in delegate methods)
 			let wallet = self.wallet
-			if wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true {
+			if wallet.isBooted == false/*for now*/ || wallet.hasEverFetched_accountInfo == false/*for now*/
+				|| wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true {
 				return false // not yet
 			}
 			return wallet.isAccountScannerCatchingUp
