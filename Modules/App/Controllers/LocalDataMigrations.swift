@@ -47,7 +47,7 @@ class LocalDataMigrations
 			let preV0_filenameSuffix = "."+DocumentPersister.DocumentFileDescription.preV0_filenameExt
 			let preV0_filenameSuffix_length = preV0_filenameSuffix.count
 			if filename.hasSuffix(preV0_filenameSuffix) == false {
-				DDLog.Info("LocalDataMigrations", "Skipping \(fileURL)")
+//				DDLog.Info("LocalDataMigrations", "Skipping \(fileURL)") // commented b/c it will execute on basically every subsequent run even when migration not needed
 				continue
 			}
 			let fileData: Data = try Data(contentsOf: fileURL, options: [])

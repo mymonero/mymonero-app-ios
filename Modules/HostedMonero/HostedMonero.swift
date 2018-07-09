@@ -539,7 +539,11 @@ extension HostedMonero
 				// these sorts of things shouldn't be necessary but bit us in JS/web
 	//			, useXDR: true, // CORS
 	//			withCredentials: true // CORS
-			).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+			)
+			
+			DDLog.Info("Networking", "request body: \(String(data: requestHandle.request!.httpBody!, encoding: .utf8)!)")
+				
+				requestHandle.validate(statusCode: 200..<300).validate(contentType: ["application/json"])
 			.responseJSON
 			{ /*[unowned self]*/ response in
 				let statusCode = response.response?.statusCode ?? -1
