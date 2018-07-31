@@ -203,7 +203,10 @@ class Wallet: PersistableObject
 	// Internal
 	enum DictKey: String
 	{ // (For persistence)
-		// Encrypted:
+		case login__new_address = "login__new_address"
+		case login__generated_locally = "login__generated_locally"
+		case local_wasAGeneratedWallet = "local_wasAGeneratedWallet"
+		//
 		case currency = "currency"
 		case walletLabel = "walletLabel"
 		case swatchColorHexString = "swatchColorHexString"
@@ -235,11 +238,14 @@ class Wallet: PersistableObject
 		//
 		case isLoggedIn = "isLoggedIn"
 		case isInViewOnlyMode = "isInViewOnlyMode"
-		case shouldDisplayImportAccountOption = "shouldDisplayImportAccountOption"
 	}
 	//
 	//
 	// Properties - Principal Persisted Values
+	//
+	var local_wasAGeneratedWallet: Bool?
+	var login__new_address: Bool?
+	var login__generated_locally: Bool?
 	//
 	var currency: Currency!
 	var walletLabel: String!
@@ -273,10 +279,10 @@ class Wallet: PersistableObject
 	// Properties - Boolean State
 	// persisted
 	var isLoggedIn = false
-	var shouldDisplayImportAccountOption: Bool?
 	var isInViewOnlyMode: Bool?
 	// transient/not persisted
 	var isBooted = false
+	var shouldDisplayImportAccountOption: Bool?
 	var isLoggingIn = false
 	var wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed: Bool?
 	var isSendingFunds = false
@@ -291,6 +297,15 @@ class Wallet: PersistableObject
 	{
 		var dict = super.new_dictRepresentation() // since it constructs the base object for us
 		do {
+			if self.login__new_address != nil {
+				dict[DictKey.login__new_address.rawValue] = self.login__new_address!
+			}
+			if self.login__generated_locally != nil {
+				dict[DictKey.login__generated_locally.rawValue] = self.login__generated_locally!
+			}
+			if self.local_wasAGeneratedWallet != nil {
+				dict[DictKey.local_wasAGeneratedWallet.rawValue] = self.local_wasAGeneratedWallet!
+			}
 			dict[DictKey.currency.rawValue] = self.currency.jsonRepresentation()
 			dict[DictKey.walletLabel.rawValue] = self.walletLabel
 			dict[DictKey.swatchColorHexString.rawValue] = self.swatchColor.jsonRepresentation()
@@ -306,9 +321,6 @@ class Wallet: PersistableObject
 			}
 			dict[DictKey.publicKeys.rawValue] = self.public_keys.jsonRepresentation
 			dict[DictKey.privateKeys.rawValue] = self.private_keys.jsonRepresentation
-			if let value = self.shouldDisplayImportAccountOption {
-				dict[DictKey.shouldDisplayImportAccountOption.rawValue] = value
-			}
 			dict[DictKey.isLoggedIn.rawValue] = self.isLoggedIn
 			if let isInViewOnlyMode = self.isInViewOnlyMode {
 				dict[DictKey.isInViewOnlyMode.rawValue] = isInViewOnlyMode
@@ -364,9 +376,12 @@ class Wallet: PersistableObject
 	{
 		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
+		self.local_wasAGeneratedWallet = dictRepresentation[DictKey.local_wasAGeneratedWallet.rawValue] as? Bool
+		self.login__generated_locally = dictRepresentation[DictKey.login__generated_locally.rawValue] as? Bool
+		self.login__new_address = dictRepresentation[DictKey.login__new_address.rawValue] as? Bool
+		//
 		self.isLoggedIn = dictRepresentation[DictKey.isLoggedIn.rawValue] as! Bool
 		self.isInViewOnlyMode = dictRepresentation[DictKey.isInViewOnlyMode.rawValue] as? Bool
-		self.shouldDisplayImportAccountOption = dictRepresentation[DictKey.shouldDisplayImportAccountOption.rawValue] as? Bool
 		if let date = dictRepresentation[DictKey.dateThatLast_fetchedAccountInfo.rawValue] {
 			guard let timeInterval = date as? TimeInterval else {
 				self.didFailToInitialize_flag = true
@@ -442,6 +457,9 @@ class Wallet: PersistableObject
 		if let timeIntervalSince1970 = dictRepresentation[DictKey.dateThatLast_fetchedAccountTransactions.rawValue] {
 			self.dateThatLast_fetchedAccountTransactions = Date(timeIntervalSince1970: timeIntervalSince1970 as! TimeInterval)
 		}
+		//
+		// Regenerate any runtime vals that depend on persisted vals..
+		self.regenerate_shouldDisplayImportAccountOption()
 	}
 	//
 	//
@@ -851,19 +869,24 @@ class Wallet: PersistableObject
 			self.public_keys = verifiedComponentsForLogIn!.publicKeys
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
+			self.local_wasAGeneratedWallet = wasAGeneratedWallet
 			//
 			self.logIn_requestHandle = HostedMonero.APIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
-				{ [weak self] (login__err_str, isANewAddressToServer) in
+				generated_locally: wasAGeneratedWallet,
+				{ [weak self] (login__err_str, result) in
 					guard let thisSelf = self else {
 						return // already dealloc'd
 					}
-					//
 					thisSelf.isLoggingIn = false
 					thisSelf.isLoggedIn = login__err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
 					//
-					thisSelf.shouldDisplayImportAccountOption = wasAGeneratedWallet == false && isANewAddressToServer == true && thisSelf.isLoggedIn/*supporting shouldExitOnLoginError=false*/
+					thisSelf.login__new_address = result!.isANewAddressToServer
+					thisSelf.login__generated_locally = result!.generated_locally
+					thisSelf.account_scan_start_height = result!.start_height
+					//
+					thisSelf.regenerate_shouldDisplayImportAccountOption() // now this can be called
 					//
 					let shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
 					if login__err_str != nil {
@@ -908,6 +931,24 @@ class Wallet: PersistableObject
 		} else {
 			DDLog.Warn("Wallet", "Manual refresh requested before hostPollingController set up.")
 			// not booted yet.. ignoring
+		}
+	}
+	func regenerate_shouldDisplayImportAccountOption()
+	{
+		let isAPIBeforeGeneratedLocallyAPISupport = self.login__generated_locally == nil || self.account_scan_start_height == nil
+		if isAPIBeforeGeneratedLocallyAPISupport {
+			if self.local_wasAGeneratedWallet == nil {
+				self.local_wasAGeneratedWallet = false // just going to set this to false - it means the user is on a wallet which was logged in via a previous version
+			}
+			if self.login__new_address == nil {
+				self.login__new_address = false // going to set this to false if it doesn't exist - it means the user is on a wallet which was logged in via a previous version
+			}
+			self.shouldDisplayImportAccountOption = self.local_wasAGeneratedWallet! == false && self.login__new_address! == true
+		} else {
+			if self.account_scan_start_height == nil {
+				fatalError("Logic error: expected latest_scan_start_height")
+			}
+			self.shouldDisplayImportAccountOption = self.login__generated_locally != true && self.account_scan_start_height! != 0
 		}
 	}
 	//
@@ -1106,6 +1147,7 @@ class Wallet: PersistableObject
 			|| wasFirstFetchOf_accountInfo == true
 		{
 			anyChanges = true
+			self.regenerate_shouldDisplayImportAccountOption() // scan start height may have changed
 			self.___didReceiveActualChangeTo_heights()
 		}
 		if anyChanges == false {
@@ -1153,6 +1195,7 @@ class Wallet: PersistableObject
 		if didActuallyChange_heights == true
 			|| wasFirstFetchOf_transactions == true
 		{
+			self.regenerate_shouldDisplayImportAccountOption() // scan start height may have changed
 			self.___didReceiveActualChangeTo_heights()
 		}
 	}

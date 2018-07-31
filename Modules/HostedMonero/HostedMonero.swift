@@ -242,13 +242,29 @@ extension HostedMonero
 		}
 		//
 		// Login
+		struct ParsedResult_Login
+		{
+			var isANewAddressToServer: Bool
+			var generated_locally: Bool? // may be nil if the server doesn't support it yet (pre summer 18)
+			var start_height: Int?/*UInt64*/ // may be nil if "
+			//
+			static func new(response_jsonDict: [String: Any]) -> ParsedResult_Login
+			{
+				return ParsedResult_Login(
+					isANewAddressToServer: response_jsonDict["new_address"] as! Bool,
+					generated_locally: response_jsonDict["generated_locally"] != nil ? (response_jsonDict["generated_locally"] as! Bool) : nil,
+					start_height: response_jsonDict["start_height"] != nil ? (response_jsonDict["start_height"] as! Int/*UInt64*/) : nil
+				)
+			}
+		}
 		@discardableResult
 		func LogIn(
 			address: MoneroAddress,
 			view_key__private: MoneroKey,
+			generated_locally: Bool,
 			_ fn: @escaping (
 				_ err_str: String?,
-				_ isANewAddressToServer: Bool?
+				_ result: ParsedResult_Login?
 			) -> Void
 		) -> RequestHandle? {
 			var parameters = self._new_parameters_forWalletRequest(
@@ -256,6 +272,7 @@ extension HostedMonero
 				view_key__private: view_key__private
 			)
 			parameters["create_account"] = true
+			parameters["generated_locally"] = generated_locally
 			//
 			let endpoint = HostedMoneroAPI_Endpoint.LogIn
 			let requestHandle = self._request(endpoint, parameters)
@@ -264,9 +281,8 @@ extension HostedMonero
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let response_jsonDict = response_jsonDict!
-				let isNewAddressToServer = response_jsonDict["new_address"] as! Bool
-				self._shared_onMain_callBackFromRequest(err_str, isNewAddressToServer, fn)
+				let result = ParsedResult_Login.new(response_jsonDict: response_jsonDict!)
+				self._shared_onMain_callBackFromRequest(err_str, result, fn)
 			}
 			return requestHandle
 		}
