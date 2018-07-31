@@ -150,7 +150,7 @@ class WalletsListViewCell: UITableViewCell
 	// - - Accessory views
 	func configureAccessoryViews()
 	{
-		if self.object!.isFetchingAnyUpdates {
+		if self.object != nil && self.object!.isFetchingAnyUpdates {
 			self._show_activityIndicator()
 			self.accessoryChevronView.isHidden = true
 		} else {
