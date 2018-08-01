@@ -449,6 +449,7 @@ extension UICommonComponents.Form.Amounts
 			//
 			var mutable_bounds = bounds
 			mutable_bounds.size.width -= right // accounting for currency select element
+			mutable_bounds.origin.y -= 1
 			let final_bounds = mutable_bounds
 			//
 			return final_bounds
