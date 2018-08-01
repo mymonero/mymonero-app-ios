@@ -561,7 +561,7 @@ extension ImportTransactionsModal
 					height: self.toAddress_label.frame.size.height
 				).integral
 				self.toAddress_labelAccessory_copyButton.frame = CGRect(
-					x: labelAccessoryLabel_x + fullWidth_label_w - self.toAddress_labelAccessory_copyButton.frame.size.width/2 - self.toAddress_labelAccessory_copyButton.titleLabel!.frame.size.width/2,
+					x: (input_x + textField_w) - (label_x - input_x) - self.toAddress_labelAccessory_copyButton.frame.size.width,
 					y: self.toAddress_label.frame.origin.y - (self.toAddress_labelAccessory_copyButton.frame.size.height - self.toAddress_label.frame.size.height)/2,
 					width: self.toAddress_labelAccessory_copyButton.frame.size.width,
 					height: self.toAddress_labelAccessory_copyButton.frame.size.height
@@ -581,7 +581,7 @@ extension ImportTransactionsModal
 					height: self.paymentID_label.frame.size.height
 				).integral
 				self.paymentID_labelAccessory_copyButton.frame = CGRect(
-					x: labelAccessoryLabel_x + fullWidth_label_w - self.paymentID_labelAccessory_copyButton.frame.size.width/2 - self.toAddress_labelAccessory_copyButton.titleLabel!.frame.size.width/2,
+					x: (input_x + textField_w) - (label_x - input_x) - self.paymentID_labelAccessory_copyButton.frame.size.width,
 					y: self.paymentID_label.frame.origin.y - (self.paymentID_labelAccessory_copyButton.frame.size.height - self.paymentID_label.frame.size.height)/2,
 					width: self.paymentID_labelAccessory_copyButton.frame.size.width,
 					height: self.paymentID_labelAccessory_copyButton.frame.size.height
