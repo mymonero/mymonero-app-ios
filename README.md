@@ -82,17 +82,12 @@ MyMonero Donation Address (XMR): 48yi8KBxh7fdZzwnX2kFCGALRcN1sNjwBHDfd5i9WLAWKs7
 Proceeds from donations are used to fund development on the MyMonero back-end server (a performant version of which we soon™ plan to open-source for anyone to run their own server at home). Any remaining funds will go towards product (app UI) R&D, and hosting costs.
 
 
-## Main Contributors
+## Authors & Contributors
 
-Contributors to each release are credited in release notes.
+We try to credit each contributors in release notes.
 
-### Core
+* ⛰ `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Maintainer; Lead developer
 
-* ⛰ `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Repo maintainer; Lead developer; MyMonero partner
+* 🔥 `mds` ([Matt Smith](http://mds.is)) Mobile app variant designer
 
-* 🌅 `vtnerd` ([Lee Clagett](https://github.com/vtnerd)) MyMonero lead back-end developer
-
-* 🐴 `fluffypony` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero partner; Monero core team member
-
-* 🍄 `luigi` Monero tech advisor; Main MyMonero JS core crypto contributor
-
+* 👑 `john_alan` iOS Engineer / Implemented Preferences slider and switch control views 
