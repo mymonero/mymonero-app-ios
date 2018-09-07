@@ -84,7 +84,7 @@ Proceeds from donations are used to fund development on the MyMonero back-end se
 
 ## Authors & Contributors
 
-We try to credit each contributors in release notes.
+We try to credit each contributor in App Store release notes.
 
 * ⛰ `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Maintainer; Lead developer
 
