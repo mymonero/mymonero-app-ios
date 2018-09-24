@@ -1,6 +1,0 @@
-echo "🔁  npm install";
-npm install;
-
-echo "🔁  bin/package_ios_js";
-bin/package_ios_js;
-
