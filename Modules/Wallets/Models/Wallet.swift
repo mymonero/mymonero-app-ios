@@ -1171,6 +1171,9 @@ class Wallet: PersistableObject
 		//
 		// Transactions
 		// Note: In the JS, we do a basic/initial diff of the txs and selectively construct the actual final used list, in order to preserve local metadata (and we see how many we've added etc) - but I will not port that yet since we are not implementing local notifications yet - and since we may have a more proper syncing engine soon
+		//
+		// Update: It would be a good idea to port the diffing stuff here because now we want to save tx key
+		//		
 		let didActuallyChange_transactions = self.transactions == nil || self.transactions! != parsedResult.transactions
 		let existing_transactions = self.transactions
 		self.transactions = parsedResult.transactions
