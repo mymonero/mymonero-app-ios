@@ -127,6 +127,7 @@ class Wallet_HostPollingController
 			return
 		}
 		self.requestHandleFor_addressInfo = HostedMonero.APIClient.shared.AddressInfo(
+			wallet_keyImageCache: wallet.keyImageCache,
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
@@ -179,6 +180,7 @@ class Wallet_HostPollingController
 			return
 		}
 		self.requestHandleFor_addressTransactions = HostedMonero.APIClient.shared.AddressTransactions(
+			wallet_keyImageCache: wallet.keyImageCache,
 			address: wallet.public_address,
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,

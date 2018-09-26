@@ -242,6 +242,7 @@ class Wallet: PersistableObject
 	//
 	//
 	// Properties - Principal Persisted Values
+	let keyImageCache = MoneroUtils.KeyImageCache()
 	//
 	var local_wasAGeneratedWallet: Bool?
 	var login__new_address: Bool?
@@ -263,12 +264,12 @@ class Wallet: PersistableObject
 	var totalSent: MoneroAmount?
 	var lockedBalance: MoneroAmount?
 	//
-	var account_scanned_tx_height: Int?
-	var account_scanned_height: Int? // TODO: it would be good to resolve account_scanned_height vs account_scanned_tx_height
-	var account_scanned_block_height: Int?
-	var account_scan_start_height: Int?
-	var transaction_height: Int?
-	var blockchain_height: Int?
+	var account_scanned_tx_height: UInt64?
+	var account_scanned_height: UInt64? // TODO: it would be good to resolve account_scanned_height vs account_scanned_tx_height
+	var account_scanned_block_height: UInt64?
+	var account_scan_start_height: UInt64?
+	var transaction_height: UInt64?
+	var blockchain_height: UInt64?
 	//
 	var spentOutputs: [MoneroSpentOutputDescription]?
 	var transactions: [MoneroHistoricalTransactionRecord]?
@@ -317,7 +318,7 @@ class Wallet: PersistableObject
 				DDLog.Warn("Wallets", "Saving w/o acct seed")
 			}
 			if let value = self.mnemonic_wordsetName {
-				dict[DictKey.mnemonic_wordsetName.rawValue] = value.jsonRepresentation
+				dict[DictKey.mnemonic_wordsetName.rawValue] = value // value itself
 			}
 			dict[DictKey.publicKeys.rawValue] = self.public_keys.jsonRepresentation
 			dict[DictKey.privateKeys.rawValue] = self.private_keys.jsonRepresentation
@@ -409,15 +410,13 @@ class Wallet: PersistableObject
 		// Not going to check whether the acct seed is nil/'' here because if the wallet was
 		// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
 		// cannot obtain the seed.
-		self.mnemonic_wordsetName = dictRepresentation[DictKey.mnemonic_wordsetName.rawValue] as? MoneroMnemonicWordsetName
+		
 		self.public_address = dictRepresentation[DictKey.publicAddress.rawValue] as! MoneroAddress
 		self.public_keys = MoneroKeyDuo.new(
 			fromJSONRepresentation: dictRepresentation[DictKey.publicKeys.rawValue] as! [String: Any]
 		)
 		self.account_seed = dictRepresentation[DictKey.accountSeed.rawValue] as? MoneroSeed
-		if let string = dictRepresentation[DictKey.mnemonic_wordsetName.rawValue] {
-			self.mnemonic_wordsetName = MoneroMnemonicWordsetName.new(fromJSONRepresentation: string as! String)
-		}
+		self.mnemonic_wordsetName = dictRepresentation[DictKey.mnemonic_wordsetName.rawValue] as? MoneroMnemonicWordsetName
 		self.private_keys = MoneroKeyDuo.new(
 			fromJSONRepresentation: dictRepresentation[DictKey.privateKeys.rawValue] as! [String: Any]
 		)
@@ -432,12 +431,12 @@ class Wallet: PersistableObject
 			self.lockedBalance = MoneroAmount(string as! String)
 		}
 		//
-		self.account_scanned_tx_height = dictRepresentation[DictKey.account_scanned_tx_height.rawValue] as? Int
-		self.account_scanned_height = dictRepresentation[DictKey.account_scanned_height.rawValue] as? Int
-		self.account_scanned_block_height = dictRepresentation[DictKey.account_scanned_block_height.rawValue] as? Int
-		self.account_scan_start_height = dictRepresentation[DictKey.account_scan_start_height.rawValue] as? Int
-		self.transaction_height = dictRepresentation[DictKey.transaction_height.rawValue] as? Int
-		self.blockchain_height = dictRepresentation[DictKey.blockchain_height.rawValue] as? Int
+		self.account_scanned_tx_height = dictRepresentation[DictKey.account_scanned_tx_height.rawValue] as? UInt64
+		self.account_scanned_height = dictRepresentation[DictKey.account_scanned_height.rawValue] as? UInt64
+		self.account_scanned_block_height = dictRepresentation[DictKey.account_scanned_block_height.rawValue] as? UInt64
+		self.account_scan_start_height = dictRepresentation[DictKey.account_scan_start_height.rawValue] as? UInt64
+		self.transaction_height = dictRepresentation[DictKey.transaction_height.rawValue] as? UInt64
+		self.blockchain_height = dictRepresentation[DictKey.blockchain_height.rawValue] as? UInt64
 		//
 		if let jsonRepresentations = dictRepresentation[DictKey.spentOutputs.rawValue] {
 			self.spentOutputs = MoneroSpentOutputDescription.newArray(
@@ -471,13 +470,12 @@ class Wallet: PersistableObject
 	}
 	convenience init?(
 		ifGeneratingNewWallet_walletDescription: MoneroWalletDescription? // this is left to the consumer to generate because currently to generate it is asynchronous and that would make this init code a bit messy
-	) throws
-	{
+	) throws {
 		self.init()
 		self.currency = .Monero // for now
-		self.mnemonic_wordsetName = MoneroMnemonicWordsetName.new_withCurrentLocale()
 		if ifGeneratingNewWallet_walletDescription != nil {
 			self.generatedOnInit_walletDescription = ifGeneratingNewWallet_walletDescription
+			self.mnemonic_wordsetName = self.generatedOnInit_walletDescription!.mnemonicLanguage
 		}
 	}
 	//
@@ -497,14 +495,6 @@ class Wallet: PersistableObject
 		}
 		self.fundsSender?.cancel() // to get the network request cancel immediately
 		self.fundsSender = nil
-		//
-		if self.public_address != nil { // remember the wallet info may not have been successfully generated yet
-			// And now that network requests have been terminated (with the exception, presently, of any SendFunds), we can delete the key image cache since no more will hopefully get added..
-			MyMoneroCore.shared.DeleteManagedKeyImages(forWalletWithAddress: self.public_address,
-			{ (err_str) in
-				// TODO: Unhandled - see note in DeleteManagedKeyImages()
-			})
-		}
 	}
 	//
 	//
@@ -524,7 +514,7 @@ class Wallet: PersistableObject
 		self._boot_byLoggingIn(
 			address: generatedOnInit_walletDescription.publicAddress,
 			view_key__private: generatedOnInit_walletDescription.privateKeys.view,
-			spend_key_orNilForViewOnly: generatedOnInit_walletDescription.privateKeys.spend,
+			spend_key: generatedOnInit_walletDescription.privateKeys.spend,
 			seed_orNil: generatedOnInit_walletDescription.seed,
 			wasAGeneratedWallet: true, // in this case
 			persistEvenIfLoginFailed_forServerChange: false, // always, in this case
@@ -541,28 +531,23 @@ class Wallet: PersistableObject
 		self.walletLabel = walletLabel
 		self.swatchColor = swatchColor
 		//
-		let (wordsetName__err_str, wordsetName) = MoneroUtils.Mnemonics.wordsetName(accordingToMnemonicString: mnemonicString)
-		if wordsetName__err_str != nil {
-			DDLog.Error("Wallets", "Error while detecting mnemonic wordset from mnemonic string: \(wordsetName__err_str.debugDescription)")
-			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: wordsetName__err_str)
-			return
-		}
 		self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
-		self.mnemonic_wordsetName = wordsetName!
+		// we'll set the wordset name in a moment
 		//
-		MyMoneroCore.shared.WalletDescriptionFromMnemonicSeed(
+		MyMoneroCore.shared_objCppBridge.WalletDescriptionFromMnemonicSeed(
 			mnemonicString,
-			self.mnemonic_wordsetName!,
 			{ [unowned self] (err_str, walletDescription) in
 				if err_str != nil {
 					self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str!)
 					return
 				}
+				self.mnemonic_wordsetName = walletDescription!.mnemonicLanguage
+				//
 				assert(walletDescription!.seed != "")
 				self._boot_byLoggingIn(
 					address: walletDescription!.publicAddress,
 					view_key__private: walletDescription!.privateKeys.view,
-					spend_key_orNilForViewOnly: walletDescription!.privateKeys.spend,
+					spend_key: walletDescription!.privateKeys.spend,
 					seed_orNil: walletDescription!.seed,
 					wasAGeneratedWallet: false,
 					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
@@ -585,7 +570,7 @@ class Wallet: PersistableObject
 		self._boot_byLoggingIn(
 			address: address,
 			view_key__private: privateKeys.view,
-			spend_key_orNilForViewOnly: privateKeys.spend,
+			spend_key: privateKeys.spend,
 			seed_orNil: nil,
 			wasAGeneratedWallet: false,
 			persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
@@ -624,17 +609,15 @@ class Wallet: PersistableObject
 			if reconstitutionDescription.account_seed != nil {
 				assert(reconstitutionDescription.mnemonic_wordsetName != nil)
 				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
-				MyMoneroCore.shared.MnemonicStringFromSeed(
+				let (err_str, seedAsMnemonic) = MyMoneroCore.shared_objCppBridge.MnemonicStringFromSeed(
 					reconstitutionDescription.account_seed!,
 					reconstitutionDescription.mnemonic_wordsetName!
 				)
-				{ (err_str, seedAsMnemonic) in
-					if let err_str = err_str {
-						fn(err_str)
-						return
-					}
-					_proceedTo_login(mnemonicString: seedAsMnemonic!)
+				if let err_str = err_str {
+					fn(err_str)
+					return
 				}
+				_proceedTo_login(mnemonicString: seedAsMnemonic!)
 				return
 			}
 		}
@@ -675,13 +658,10 @@ class Wallet: PersistableObject
 		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
 		if nBlocksBehind >= 10 { // grace interval, i believe
 			return true
-		} else if nBlocksBehind < 0 {
-			DDLog.Warn("Wallets", "nBlocksBehind < 0")
-			return false
 		}
 		return false
 	}
-	var nBlocksBehind: Int
+	var nBlocksBehind: UInt64
 	{
 		if self.blockchain_height == nil || self.blockchain_height == 0 {
 			DDLog.Warn("Wallets", ".nBlocksBehind called while nil/0 blockchain_height")
@@ -692,6 +672,7 @@ class Wallet: PersistableObject
 			return 0
 		}
 		let nBlocksBehind = self.blockchain_height! - self.account_scanned_block_height!
+		//
 		return nBlocksBehind
 	}
 	var catchingUpPercentageFloat: Double // btn 0 and 1.0
@@ -778,34 +759,28 @@ class Wallet: PersistableObject
 			return
 		}
 		// re-derive mnemonic string from account seed
-		MyMoneroCore.shared.MnemonicStringFromSeed(
+		let (err_str, seedAsMnemonic) = MyMoneroCore.shared_objCppBridge.MnemonicStringFromSeed(
 			self.account_seed!,
 			self.mnemonic_wordsetName!
-		) { [weak self] (err_str, seedAsMnemonic) in
-			guard let thisSelf = self else {
-				return
-			}
-			if let err_str = err_str {
-				thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
-				return
-			}
-			if thisSelf.mnemonicString != nil {
-				let areMnemonicsEqual = MoneroUtils.Mnemonics.isEqual(
-					a: thisSelf.mnemonicString!,
-					b: seedAsMnemonic!,
-					a__wordsetName: thisSelf.mnemonic_wordsetName!,
-					b__wordsetName: thisSelf.mnemonic_wordsetName! // assume they're the same
-				)
-				if areMnemonicsEqual == false { // would be rather odd; NOTE: must use this comparator instead of string comparison to support partial-word mnemonic strings
-					assert(false, "Different mnemonicString derived from accountSeed than was entered for login")
-					thisSelf.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: "Mnemonic seed mismatch")
-					return
-				}
-			}
-			thisSelf.mnemonicString = seedAsMnemonic! // set it in all cases - because we want to support converting partial-word input to full-word for display and recording
-			//
-			__proceed_havingActuallyBooted()
+		)
+		if let err_str = err_str {
+			self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: err_str)
+			return
 		}
+		if self.mnemonicString != nil {
+			let areMnemonicsEqual = MyMoneroCore.shared_objCppBridge.areEqualMnemonics(
+				self.mnemonicString!,
+				seedAsMnemonic!
+			)
+			if areMnemonicsEqual == false { // would be rather odd; NOTE: must use this comparator instead of string comparison to support partial-word mnemonic strings
+				assert(false, "Different mnemonicString derived from accountSeed than was entered for login")
+				self.__trampolineFor_failedToBootWith_fnAndErrStr(fn: fn, err_str: "Mnemonic seed mismatch")
+				return
+			}
+		}
+		self.mnemonicString = seedAsMnemonic! // set it in all cases - because we want to support converting partial-word input to full-word for display and recording
+		//
+		__proceed_havingActuallyBooted()
 	}
 	func _atRuntime_setup_hostPollingController()
 	{
@@ -833,7 +808,7 @@ class Wallet: PersistableObject
 	func _boot_byLoggingIn(
 		address: MoneroAddress,
 		view_key__private: MoneroKey,
-		spend_key_orNilForViewOnly: MoneroKey?,
+		spend_key: MoneroKey,
 		seed_orNil: MoneroSeed?,
 		wasAGeneratedWallet: Bool,
 		persistEvenIfLoginFailed_forServerChange: Bool,
@@ -841,10 +816,10 @@ class Wallet: PersistableObject
 	) {
 		self.isLoggingIn = true
 		//
-		MyMoneroCore.shared.New_VerifiedComponentsForLogIn(
+		MyMoneroCore.shared_objCppBridge.New_VerifiedComponentsForLogIn(
 			address,
 			view_key__private,
-			spend_key_orNilForViewOnly: spend_key_orNilForViewOnly,
+			spend_key: spend_key,
 			seed_orNil: seed_orNil,
 			wasAGeneratedWallet: wasAGeneratedWallet
 		) { [unowned self] (
@@ -882,12 +857,6 @@ class Wallet: PersistableObject
 					thisSelf.isLoggingIn = false
 					thisSelf.isLoggedIn = login__err_str == nil // supporting shouldExitOnLoginError=false for wallet reboot
 					//
-					thisSelf.login__new_address = result!.isANewAddressToServer
-					thisSelf.login__generated_locally = result!.generated_locally
-					thisSelf.account_scan_start_height = result!.start_height
-					//
-					thisSelf.regenerate_shouldDisplayImportAccountOption() // now this can be called
-					//
 					let shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
 					if login__err_str != nil {
 						if shouldExitOnLoginError == true {
@@ -899,6 +868,14 @@ class Wallet: PersistableObject
 						} else {
 							// this allows us to continue with the above-set login info to call 'saveToDisk()' when this call to log in is coming from a wallet reboot. reason is that we expect all such wallets to be valid monero wallets if they are able to have been rebooted.
 						}
+					}
+					//
+					if result != nil { // i.e. on error but shouldExitOnLoginError != true
+						thisSelf.login__new_address = result!.isANewAddressToServer
+						thisSelf.login__generated_locally = result!.generated_locally
+						thisSelf.account_scan_start_height = result!.start_height
+						//
+						thisSelf.regenerate_shouldDisplayImportAccountOption() // now this can be called
 					}
 					//
 					let saveToDisk__err_str = thisSelf.saveToDisk()
@@ -991,7 +968,8 @@ class Wallet: PersistableObject
 			_ final_sentAmountWithoutFee: MoneroAmount,
 			_ sentPaymentID_orNil: MoneroPaymentID?,
 			_ tx_hash: MoneroTransactionHash,
-			_ tx_fee: MoneroAmount
+			_ tx_fee: MoneroAmount,
+			_ tx_key: MoneroTransactionSecKey
 		) -> Void,
 		canceled_fn: @escaping () -> Void,
 		failWithErr_fn: @escaping (
@@ -1022,15 +1000,16 @@ class Wallet: PersistableObject
 				wallet__private_keys: self.private_keys,
 				wallet__public_keys: self.public_keys,
 				payment_id: payment_id,
-				priority: priority
+				priority: priority,
+				wallet__keyImageCache: self.keyImageCache
 			)
 			fundsSender.success_fn =
-			{ [weak self] (final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee) in
+			{ [weak self] (final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key) in
 				guard let thisSelf = self else {
 					return
 				}
 				thisSelf.__unlock_sending()
-				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee)
+				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key)
 			}
 			fundsSender.didUpdateProcessStep_fn = didUpdateProcessStep_fn
 			fundsSender.failWithErr_fn =

@@ -53,6 +53,169 @@ extension MyMoneroCore
 
 		//
 		// Accessors
+		func NewlyCreatedWallet(
+			_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void
+			) {
+			let _ = MyMoneroCore_ObjCpp.newlyCreatedWallet(
+				(NSLocale.current.languageCode ?? "en"),
+				nettype: MM_MAINNET
+			) { [weak self] (
+				errStr_orNil,
+				//
+				// TODO: slightly more difficult to maintain; Might be nice to transition this an object which holds (typed) strings… but is it desirable to declare it in ObjC land?
+				seed_hexString,
+				mnemonic,
+				mnemonicLanguage,
+				address,
+				sec_viewKey,
+				sec_spendKey,
+				pub_viewKey,
+				pub_spendKey
+			) in
+				guard let _ = self else {
+					return
+				}
+				if let errStr = errStr_orNil {
+					fn(errStr, nil)
+					return
+				}
+				let publicKeys = MoneroKeyDuo(
+					view: pub_viewKey!,
+					spend: pub_spendKey!
+				)
+				let privateKeys = MoneroKeyDuo(
+					view: sec_viewKey!,
+					spend: sec_spendKey!
+				)
+				let description = MoneroWalletDescription(
+					mnemonic: mnemonic!,
+					mnemonicLanguage: mnemonicLanguage! as MoneroMnemonicWordsetName,
+					seed: seed_hexString!,
+					publicAddress: address!,
+					publicKeys: publicKeys,
+					privateKeys: privateKeys
+				)
+				fn(nil, description)
+			}
+		}
+		func MnemonicStringFromSeed(
+			_ account_seed: String,
+			_ wordsetName: MoneroMnemonicWordsetName
+		) -> (
+			err_str: String?,
+			mnemonicString: MoneroSeedAsMnemonic?
+		) {
+				let retVals = MyMoneroCore_ObjCpp.mnemonicString(
+					fromSeedHex: account_seed.objcSerialized, // really just returns the seed again
+					mnemonicWordsetName: wordsetName.apiSafe
+				)
+				let errStr_orNil = retVals[MyMoneroCore_ObjCpp.retValDictKey__ErrStr()] as? String
+				let mnemonicString_orNil = retVals[MyMoneroCore_ObjCpp.retValDictKey__Value()] as? MoneroSeedAsMnemonic
+				//
+				return (errStr_orNil, mnemonicString_orNil)
+		}
+		func WalletDescriptionFromMnemonicSeed(
+			_ mnemonicString: MoneroSeedAsMnemonic,
+			_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void
+		) {
+			let _ = MyMoneroCore_ObjCpp.seedAndKeys(
+				fromMnemonic: mnemonicString.objcSerialized,
+				nettype: MM_MAINNET
+			) { [weak self] (
+				errStr_orNil,
+				//
+				// TODO: slightly more difficult to maintain; Might be nice to transition this an object which holds (typed) strings… but is it desirable to declare it in ObjC land?
+				seed_hexString,
+				mnemonicLanguage,
+				address,
+				sec_viewKey,
+				sec_spendKey,
+				pub_viewKey,
+				pub_spendKey
+			) in
+				guard let _ = self else {
+					return
+				}
+				if let errStr = errStr_orNil {
+					fn(errStr, nil)
+					return
+				}
+				let publicKeys = MoneroKeyDuo(
+					view: pub_viewKey!,
+					spend: pub_spendKey!
+				)
+				let privateKeys = MoneroKeyDuo(
+					view: sec_viewKey!,
+					spend: sec_spendKey!
+				)
+				let description = MoneroWalletDescription(
+					mnemonic: mnemonicString,
+					mnemonicLanguage: mnemonicLanguage! as MoneroMnemonicWordsetName,
+					seed: seed_hexString!,
+					publicAddress: address!,
+					publicKeys: publicKeys,
+					privateKeys: privateKeys
+				)
+				fn(nil, description)
+			}
+		}
+		func New_VerifiedComponentsForLogIn(
+			_ address: MoneroAddress,
+			_ view_key: MoneroKey,
+			spend_key: MoneroKey,
+			seed_orNil: MoneroSeed?,
+			wasAGeneratedWallet: Bool,
+			_ fn: @escaping (
+				_ err_str: String?,
+				_ components: MoneroVerifiedComponentsForLogIn?
+			) -> Void
+		) {
+			MyMoneroCore_ObjCpp.verifiedComponentsForOpeningExistingWallet(
+				withAddress: address.objcSerialized,
+				sec_viewKey: view_key.objcSerialized,
+				sec_spendKey_orNilForViewOnly: spend_key.objcSerialized, // not going to be nil, here
+				sec_seed_orNil: seed_orNil?.objcSerialized,
+				wasANewlyGeneratedWallet: wasAGeneratedWallet,
+				nettype: MM_MAINNET // Testnet etc could be exposed
+			) { [weak self] (
+				errStr_orNil,
+				//
+				seed_NSString_orNil,
+				//
+				address,
+				sec_viewKey,
+				sec_spendKey_orNil,
+				pub_viewKey,
+				pub_spendKey,
+				isInViewOnlyMode,
+				isValid
+			) in
+				guard let _ = self else {
+					return
+				}
+				if let errStr = errStr_orNil {
+					fn(errStr, nil)
+					return
+				}
+				assert(isValid)
+				let publicKeys = MoneroKeyDuo(
+					view: pub_viewKey!,
+					spend: pub_spendKey!
+				)
+				let privateKeys = MoneroKeyDuo(
+					view: sec_viewKey!,
+					spend: sec_spendKey_orNil! // will assume it exists since we passed it in and know we did not get a validation error
+				)
+				let components = MoneroVerifiedComponentsForLogIn(
+					seed: seed_NSString_orNil,
+					publicAddress: address!,
+					publicKeys: publicKeys,
+					privateKeys: privateKeys,
+					isInViewOnlyMode: isInViewOnlyMode
+				)
+				fn(nil, components)
+			}
+		}
 		func decoded(
 			address: MoneroAddress
 		) -> (
@@ -62,7 +225,7 @@ extension MyMoneroCore
 			let retVals = MyMoneroCore_ObjCpp.decodedAddress(
 				address.objcSerialized,
 				isTestnet: false
-			)!
+			)
 			if let errStr = retVals.errStr_orNil {
 				return (errStr, nil)
 			}
@@ -71,8 +234,8 @@ extension MyMoneroCore
 				paymentID_NSString_orNil = nil // normalize / sanitize
 			}
 			let keypair = MoneroKeyDuo(
-				view: retVals.pub_viewKey_NSString,
-				spend: retVals.pub_spendKey_NSString
+				view: retVals.pub_viewKey_NSString!,
+				spend: retVals.pub_spendKey_NSString!
 			)
 			let components = MoneroDecodedAddressComponents(
 				publicKeys: keypair,
@@ -96,6 +259,111 @@ extension MyMoneroCore
 			return MyMoneroCore_ObjCpp.new_integratedAddr(
 				fromStdAddr: standardAddress,
 				andShortPID: short_paymentID
+			)
+		}
+		var New_PaymentID: MoneroShortPaymentID {
+			return MyMoneroCore_ObjCpp.new_short_plain_paymentID()
+		}
+		var New_FakeAddressForRCTTx: MoneroAddress {
+			return MyMoneroCore_ObjCpp.new_fakeAddressForRCTTx(with: MM_MAINNET) // testnet could be exposed
+		}
+		static var fixedRingsize: UInt32 {
+			return MyMoneroCore_ObjCpp.fixedRingsize()
+		}
+		static var fixedMixinsize: UInt32 {
+			return MyMoneroCore_ObjCpp.fixedMixinsize()
+		}
+		static func estimatedNetworkFee(
+			withFeePerKB fee_per_kb: MoneroAmount,
+			priority: MoneroTransferSimplifiedPriority = .low
+		) -> MoneroAmount {
+			let estimatedFee_UInt64 = MyMoneroCore_ObjCpp.estimatedTxNetworkFee(
+				withFeePerKB: UInt64(String(fee_per_kb))!,
+				priority: priority.cppRepresentation
+			)
+			return MoneroAmount("\(estimatedFee_UInt64)")!
+		}
+		func areEqualMnemonics(_ a: String, _ b: String) -> Bool
+		{
+			return MyMoneroCore_ObjCpp.areEqualMnemonics(a, b: b)
+		}
+		func new__key_image_from(
+			tx_pub_key: MoneroTransactionPubKey,
+			out_index: UInt64,
+			public_address: MoneroAddress,
+			sec_keys: MoneroKeyDuo,
+			pub_spendKey: MoneroKey
+		) -> MoneroKeyImage {
+			return MyMoneroCore_ObjCpp.new_keyImage(
+				from_tx_pub_key: tx_pub_key,
+				sec_spendKey: sec_keys.spend,
+				sec_viewKey: sec_keys.view,
+				pub_spendKey: pub_spendKey,
+				out_index: out_index
+			)!
+		}
+		
+		func new_serializedSignedTransaction(
+			from_address: String,
+			wallet__private_keys: MoneroKeyDuo,
+			to_address: MoneroStandardAddress,
+			sending_amount: UInt64,
+			fee_amount: UInt64,
+			change_amount: UInt64,
+			payment_id: MoneroPaymentID?,
+			usingOuts: [MoneroOutputDescription],
+			randomOuts: [MoneroRandomAmountAndOutputs]
+		) -> (
+			err_str: String?,
+			serializedSignedTransaction: MoneroSerializedSignedTransaction?,
+			tx_hash: MoneroTransactionHash?,
+			tx_key: String? // TODO: MoneroTransactionPrivateKey?
+		) {
+			var outputs = [Monero_Arg_SpendableOutput]()
+			for (_, usingOut) in usingOuts.enumerated() {
+				let output = Monero_Arg_SpendableOutput()
+				output.amount = usingOut.amount.integerRepresentation
+				output.public_key = usingOut.public_key
+				output.rct = usingOut.rct
+				output.global_index = usingOut.globalIndex
+				output.index = usingOut.index
+				output.tx_pub_key = usingOut.tx_pub_key
+				outputs.append(output)
+			}
+			var mixOuts = [Monero_Arg_RandomAmountAndOuts]()
+			for (_, randomAmountAndOut) in randomOuts.enumerated() {
+				let mixOut = Monero_Arg_RandomAmountAndOuts()
+				mixOut.amount = randomAmountAndOut.amount.integerRepresentation
+				var mixOutOutputs = [Monero_Arg_RandomAmountOut]()
+				for (_, randomAmountOut) in randomAmountAndOut.outputs.enumerated() {
+					let mixOutOutput = Monero_Arg_RandomAmountOut()
+					mixOutOutput.public_key = randomAmountOut.public_key
+					mixOutOutput.rct = randomAmountOut.rct
+					mixOutOutput.global_index = randomAmountOut.globalIndex
+					mixOutOutputs.append(mixOutOutput)
+				}
+				mixOut.outputs = mixOutOutputs
+				mixOuts.append(mixOut)
+			}
+			let retVals = MyMoneroCore_ObjCpp.createTransaction(
+				with: MM_MAINNET,
+				from_address_string: from_address,
+				sec_viewKey_string: wallet__private_keys.view,
+				sec_spendKey_string: wallet__private_keys.spend,
+				to_address_string: to_address,
+				payment_id_string: payment_id,
+				sending_amount: sending_amount,
+				fee_amount: fee_amount,
+				change_amount: change_amount,
+				unlock_time: 0,
+				outputs: outputs,
+				mix_outs: mixOuts
+			)
+			return (
+				retVals.errStr_orNil,
+				retVals.serialized_signed_tx,
+				retVals.tx_hash,
+				retVals.tx_key
 			)
 		}
 	}

@@ -96,6 +96,9 @@ extension MoneroAmount
 	var atomicUnitsBigIntString: String {
 		return "\(self)"
 	}
+	var integerRepresentation: UInt64 {
+		return UInt64(self.atomicUnitsBigIntString)!
+	}
 	//
 	var doubleParseable_formattedString: String {
 		return FormattedString(fromMoneroAmount: self, decimalSeparator: ".") // must specifically use "." here

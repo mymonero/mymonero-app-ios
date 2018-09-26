@@ -89,7 +89,7 @@ extension ImportTransactionsModal
 					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
 				},
 				success_fn:
-				{ [weak self] (sentAmountDouble, sentPaymentID_orNil, tx_hash, tx_fee) in
+				{ [weak self] (sentAmountDouble, sentPaymentID_orNil, tx_hash, tx_fee, tx_key) in
 					guard let thisSelf = self else {
 						return
 					}

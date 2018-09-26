@@ -87,6 +87,7 @@ typealias MoneroLongPaymentID = MoneroPaymentID // 32
 typealias MoneroShortPaymentID = MoneroPaymentID // 8
 typealias MoneroTransactionHash = MoneroTypeString
 typealias MoneroTransactionPubKey = MoneroTypeString
+typealias MoneroTransactionSecKey = MoneroTypeString
 typealias MoneroTransactionPrefixHash = MoneroTypeString
 typealias MoneroKeyImage = MoneroTypeString
 typealias MoneroKey = MoneroTypeString
@@ -134,6 +135,7 @@ struct MoneroDecodedAddressComponents
 struct MoneroWalletDescription
 {
 	var mnemonic: MoneroSeedAsMnemonic
+	var mnemonicLanguage: MoneroMnemonicWordsetName
 	var seed: MoneroSeed
 	var publicAddress: MoneroAddress
 	var publicKeys: MoneroKeyDuo
@@ -147,7 +149,23 @@ struct MoneroVerifiedComponentsForLogIn
 	var privateKeys: MoneroKeyDuo
 	var isInViewOnlyMode: Bool
 }
-typealias MoneroMnemonicWordsetName = MoneroUtils.Mnemonics.MNWords.WordsetName // TODO: so, MoneroUtils_Mnemonics is vendored… is that ok for long-term?
+typealias MoneroMnemonicWordsetName = String
+extension MoneroMnemonicWordsetName
+{
+	var apiSafe: String {
+		// convert all lowercase, legacy values to core-cpp compatible
+		if self == "english" {
+			return "English"
+		} else if self == "spanish" {
+			return "Español"
+		} else if self == "portuguese" {
+			return "Português"
+		} else if self == "japanese" {
+			return "日本語"
+		}
+		return self // then it's got to be one of the new values that came from core-cpp itself
+	}
+}
 //
 class MoneroHistoricalTransactionRecord: Equatable
 {
@@ -171,11 +189,11 @@ class MoneroHistoricalTransactionRecord: Equatable
 	let timestamp: Date
 	let hash: MoneroTransactionHash
 	let paymentId: MoneroPaymentID?
-	let mixin: Int
+	let mixin: UInt
 	//
 	let mempool: Bool
 	let unlock_time: Double
-	let height: Int
+	let height: UInt64? // may not have made it into a block yet!
 	//
 	// Transient values
 	let cached__isConfirmed: Bool
@@ -193,11 +211,11 @@ class MoneroHistoricalTransactionRecord: Equatable
 		timestamp: Date,
 		hash: MoneroTransactionHash,
 		paymentId: MoneroPaymentID?,
-		mixin: Int,
+		mixin: UInt,
 		//
 		mempool: Bool,
 		unlock_time: Double,
-		height: Int,
+		height: UInt64?,
 		//
 		cached__isConfirmed: Bool,
 		cached__isUnlocked: Bool,
@@ -234,16 +252,23 @@ class MoneroHistoricalTransactionRecord: Equatable
 	//
 	// Static - Accessors - Transforms
 	static func isConfirmed(
-		givenTransactionHeight height: Int,
-		andWalletBlockchainHeight blockchain_height: Int
+		givenTransactionHeight height: UInt64?,
+		andWalletBlockchainHeight blockchain_height: UInt64
 	) -> Bool {
-		let differenceInHeight = blockchain_height - height
+		if height == nil {
+			return false // hasn't made it into a block yet
+		}
+		if height! > blockchain_height { // we'd get a negative number
+			// this is probably a tx which is still pending
+			return false
+		}
+		let differenceInHeight = blockchain_height - height!
 		//
 		return differenceInHeight > MoneroConstants.txMinConfirms
 	}
 	static func isUnlocked(
 		givenTransactionUnlockTime unlock_time: Double,
-		andWalletBlockchainHeight blockchain_height: Int
+		andWalletBlockchainHeight blockchain_height: UInt64
 	) -> Bool {
 		if unlock_time < Double(MoneroConstants.maxBlockNumber) { // then unlock time is block height
 			return Double(blockchain_height) >= unlock_time
@@ -254,7 +279,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	}
 	static func lockedReason(
 		givenTransactionUnlockTime unlock_time: Double,
-		andWalletBlockchainHeight blockchain_height: Int
+		andWalletBlockchainHeight blockchain_height: UInt64
 	) -> String {
 		func colloquiallyFormattedDate(_ date: Date) -> String
 		{
@@ -335,64 +360,6 @@ class MoneroHistoricalTransactionRecord: Equatable
 		return true
 	}
 	//
-	static func newArray(
-		withCoreParsed_jsonDicts dicts: [[String: Any]],
-		wallet__blockchainHeight: Int
-	) -> [MoneroHistoricalTransactionRecord] {
-		return dicts.map
-			{
-				return MoneroHistoricalTransactionRecord.new(
-					withCoreParsed_jsonDict: $0,
-					wallet__blockchainHeight: wallet__blockchainHeight
-				)
-		}
-	}
-	static func new(
-		withCoreParsed_jsonDict dict: [String: Any],
-		wallet__blockchainHeight: Int
-	) -> MoneroHistoricalTransactionRecord {
-		let height = dict["height"] as! Int
-		let unlockTime = dict["unlock_time"] as? Double ?? 0
-		//
-		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
-			givenTransactionHeight: height,
-			andWalletBlockchainHeight: wallet__blockchainHeight
-		)
-		let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
-			givenTransactionUnlockTime: unlockTime,
-			andWalletBlockchainHeight: wallet__blockchainHeight
-		)
-		let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
-			givenTransactionUnlockTime: unlockTime,
-			andWalletBlockchainHeight: wallet__blockchainHeight
-			) : nil
-		//
-		let instance = MoneroHistoricalTransactionRecord(
-			amount: MoneroAmount("\(dict["amount"] as! String)")!,
-			totalSent: MoneroAmount("\(dict["total_sent"] as! String)")!,
-			totalReceived: MoneroAmount("\(dict["total_received"] as! String)")!,
-			approxFloatAmount: dict["approx_float_amount"] as! Double,
-			spent_outputs: MoneroSpentOutputDescription.newArray(
-				withCoreParsed_jsonDicts: dict["spent_outputs"] as? [[String: Any]] ?? []
-			),
-			timestamp: MoneroJSON_dateFormatter.date(from: "\(dict["timestamp"] as! String)")!,
-			hash: dict["hash"] as! MoneroTransactionHash,
-			paymentId: dict["payment_id"] as? MoneroPaymentID,
-			mixin: dict["mixin"] as! Int,
-			//
-			mempool: dict["mempool"] as! Bool,
-			unlock_time: unlockTime,
-			height: height,
-			//
-			cached__isConfirmed: isConfirmed,
-			cached__isUnlocked: isUnlocked,
-			cached__lockedReason: lockedReason,
-			//
-			isJustSentTransientTransactionRecord: false
-		)
-		return instance
-	}
-	//
 	static func newSerializedDictRepresentation(
 		withArray array: [MoneroHistoricalTransactionRecord]
 	) -> [[String: Any]] {
@@ -401,21 +368,21 @@ class MoneroHistoricalTransactionRecord: Equatable
 	var jsonRepresentation: [String: Any]
 	{
 		var dict: [String: Any] =
-			[
-				"amount": String(amount, radix: 10),
-				"total_sent": String(totalSent, radix: 10),
-				"total_received": String(totalReceived, radix: 10),
-				//
-				"approx_float_amount": approxFloatAmount,
-				"spent_outputs": MoneroSpentOutputDescription.newSerializedDictRepresentation(
-					withArray: spent_outputs ?? []
-				),
-				"timestamp": timestamp.timeIntervalSince1970,
-				"hash": hash,
-				"mixin": mixin,
-				"mempool": mempool,
-				"unlock_time": unlock_time,
-				"height": height
+		[
+			"amount": String(amount, radix: 10),
+			"total_sent": String(totalSent, radix: 10),
+			"total_received": String(totalReceived, radix: 10),
+			//
+			"approx_float_amount": approxFloatAmount,
+			"spent_outputs": MoneroSpentOutputDescription.newSerializedDictRepresentation(
+				withArray: spent_outputs ?? []
+			),
+			"timestamp": timestamp.timeIntervalSince1970,
+			"hash": hash,
+			"mixin": mixin,
+			"mempool": mempool,
+			"unlock_time": unlock_time,
+			"height": height
 		]
 		if let value = paymentId {
 			dict["paymentId"] = value
@@ -424,9 +391,9 @@ class MoneroHistoricalTransactionRecord: Equatable
 	}
 	static func new(
 		fromJSONRepresentation jsonRepresentation: [String: Any],
-		wallet__blockchainHeight: Int
+		wallet__blockchainHeight: UInt64
 	) -> MoneroHistoricalTransactionRecord {
-		let height = jsonRepresentation["height"] as! Int
+		let height = jsonRepresentation["height"] as! UInt64
 		let unlockTime = jsonRepresentation["unlock_time"] as! Double
 		//
 		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
@@ -454,7 +421,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			timestamp: Date(timeIntervalSince1970: jsonRepresentation["timestamp"] as! TimeInterval), // since we took .timeIntervalSince1970
 			hash: jsonRepresentation["hash"] as! MoneroTransactionHash,
 			paymentId: jsonRepresentation["paymentId"] as? MoneroPaymentID,
-			mixin: jsonRepresentation["mixin"] as! Int,
+			mixin: jsonRepresentation["mixin"] as! UInt,
 			mempool: jsonRepresentation["mempool"] as! Bool,
 			unlock_time: unlockTime,
 			height: height,
@@ -468,7 +435,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 	}
 	static func newArray(
 		fromJSONRepresentations array: [[String: Any]],
-		wallet__blockchainHeight: Int
+		wallet__blockchainHeight: UInt64
 	) -> [MoneroHistoricalTransactionRecord] {
 		return array.map
 		{
@@ -484,8 +451,8 @@ struct MoneroSpentOutputDescription: Equatable
 	let amount: MoneroAmount
 	let tx_pub_key: MoneroTransactionPubKey
 	let key_image: MoneroKeyImage
-	let mixin: Int
-	let out_index: Int
+	let mixin: UInt
+	let out_index: UInt64
 	//
 	// Equatable
 	static func ==(
@@ -511,18 +478,18 @@ struct MoneroSpentOutputDescription: Equatable
 	}
 	//
 	// For API response parsing
-	static func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroSpentOutputDescription]
+	static func newArray(withAPIJSONDicts dicts: [[String: Any]]) -> [MoneroSpentOutputDescription]
 	{
-		return dicts.map{ MoneroSpentOutputDescription.new(withCoreParsed_jsonDict: $0) }
+		return dicts.map{ MoneroSpentOutputDescription.new(withAPIJSONDict: $0) }
 	}
-	static func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroSpentOutputDescription
+	static func new(withAPIJSONDict dict: [String: Any]) -> MoneroSpentOutputDescription
 	{
 		let instance = MoneroSpentOutputDescription(
-			amount: MoneroAmount("\(dict["amount"] as! String)")!,
-			tx_pub_key: dict["tx_pub_key"] as! String,
+			amount: MoneroAmount(dict["amount"] as! String)!,
+			tx_pub_key: dict["tx_pub_key"] as! MoneroTransactionPubKey,
 			key_image: dict["key_image"] as! MoneroKeyImage,
-			mixin: dict["mixin"] as! Int,
-			out_index: dict["out_index"] as! Int
+			mixin: dict["mixin"] as! UInt,
+			out_index: dict["out_index"] as! UInt64
 		)
 		return instance
 	}
@@ -548,8 +515,8 @@ struct MoneroSpentOutputDescription: Equatable
 			amount: MoneroAmount(jsonRepresentation["amount"] as! String)!,
 			tx_pub_key: jsonRepresentation["tx_pub_key"] as! MoneroTransactionPubKey,
 			key_image: jsonRepresentation["key_image"] as! MoneroKeyImage,
-			mixin: jsonRepresentation["mixin"] as! Int,
-			out_index: jsonRepresentation["out_index"] as! Int
+			mixin: jsonRepresentation["mixin"] as! UInt,
+			out_index: jsonRepresentation["out_index"] as! UInt64
 		)
 	}
 	static func newArray(
@@ -563,8 +530,8 @@ struct MoneroSpentOutputDescription: Equatable
 { // TODO: would be good to make this name more precise, like Monero/Unspent/Unused/Usable/Random/…OutputDescription
 	let amount: MoneroAmount
 	let public_key: String
-	let index: Int
-	let globalIndex: Int
+	let index: UInt64
+	let globalIndex: UInt64
 	let rct: String?
 	let tx_id: Int
 	let tx_hash: MoneroTransactionHash
@@ -572,13 +539,13 @@ struct MoneroSpentOutputDescription: Equatable
 	let tx_prefix_hash: MoneroTransactionPrefixHash
 	let spend_key_images: [MoneroKeyImage]
 	let timestamp: Date
-	let height: Int
+	let height: UInt64
 	//
 	init(
 		amount: MoneroAmount,
 		public_key: String,
-		index: Int,
-		globalIndex: Int,
+		index: UInt64,
+		globalIndex: UInt64,
 		rct: String?,
 		tx_id: Int,
 		tx_hash: MoneroTransactionHash,
@@ -586,7 +553,7 @@ struct MoneroSpentOutputDescription: Equatable
 		tx_prefix_hash: MoneroTransactionPrefixHash,
 		spend_key_images: [MoneroKeyImage],
 		timestamp: Date,
-		height: Int
+		height: UInt64
 	) {
 		self.amount = amount
 		self.public_key = public_key
@@ -602,13 +569,13 @@ struct MoneroSpentOutputDescription: Equatable
 		self.height = height
 	}
 	//
-	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroOutputDescription
+	class func new(withAPIJSONDict dict: [String: Any]) -> MoneroOutputDescription
 	{
 		let outputDescription = MoneroOutputDescription(
 			amount: MoneroAmount("\(dict["amount"] as! String)")!,
 			public_key: dict["public_key"] as! String,
-			index: dict["index"] as! Int,
-			globalIndex: dict["global_index"] as! Int,
+			index: dict["index"] as! UInt64,
+			globalIndex: dict["global_index"] as! UInt64,
 			rct: dict["rct"] as? String,
 			tx_id: dict["tx_id"] as! Int,
 			tx_hash: dict["tx_hash"] as! String,
@@ -616,36 +583,9 @@ struct MoneroSpentOutputDescription: Equatable
 			tx_prefix_hash: dict["tx_prefix_hash"] as! String,
 			spend_key_images: dict["spend_key_images"] as? [String] ?? [],
 			timestamp: MoneroJSON_dateFormatter.date(from: "\(dict["timestamp"] as! String)")!,
-			height: dict["height"] as! Int
+			height: dict["height"] as! UInt64
 		)
 		return outputDescription
-	}
-	class func jsArrayString(_ array: [MoneroOutputDescription]) -> String
-	{
-		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
-	}
-	var jsRepresentationString: String
-	{
-		let prefix = "{"
-		let suffix = "}"
-		var keysAndValuesString = ""
-		// many of these don't need to be wrapped in escaped quotes because .jsRepresentationString does so
-		keysAndValuesString += "\"amount\": \(amount.jsRepresentationString)"
-		keysAndValuesString += ", \"global_index\": \(globalIndex)"
-		keysAndValuesString += ", \"height\": \(height)"
-		keysAndValuesString += ", \"index\": \(index)"
-		keysAndValuesString += ", \"public_key\": \"\(public_key)\""
-		if let rct = rct, rct != "" {
-			keysAndValuesString += ", \"rct\": \"\(rct)\""
-		}
-		keysAndValuesString += ", \"spend_key_images\": \(MoneroKeyImage.jsArrayString(spend_key_images))"
-		keysAndValuesString += ", \"timestamp\": \"\(MoneroJSON_dateFormatter.string(from: timestamp))\""
-		keysAndValuesString += ", \"tx_hash\": \(tx_hash.jsRepresentationString)"
-		keysAndValuesString += ", \"tx_id\": \(tx_id)"
-		keysAndValuesString += ", \"tx_prefix_hash\": \(tx_pub_key.jsRepresentationString)"
-		keysAndValuesString += ", \"tx_pub_key\": \(tx_pub_key.jsRepresentationString)"
-		//
-		return prefix + keysAndValuesString + suffix
 	}
 }
 @objc class MoneroRandomAmountAndOutputs: NSObject
@@ -661,33 +601,25 @@ struct MoneroSpentOutputDescription: Equatable
 		self.outputs = outputs
 	}
 	//
-	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomAmountAndOutputs
+	class func new(withAPIJSONDict dict: [String: Any]) -> MoneroRandomAmountAndOutputs
 	{
 		let dict_outputs = dict["outputs"] as! [[String: Any]]
-		let outputs = MoneroRandomOutputDescription.newArray(withCoreParsed_jsonDicts: dict_outputs)
+		let outputs = MoneroRandomOutputDescription.newArray(withAPIJSONDicts: dict_outputs)
 		let amountAndOutputs = MoneroRandomAmountAndOutputs(
 			amount: MoneroAmount("\(dict["amount"] as! String)")!,
 			outputs: outputs
 		)
 		return amountAndOutputs
 	}
-	class func jsArrayString(_ array: [MoneroRandomAmountAndOutputs]) -> String
-	{
-		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
-	}
-	var jsRepresentationString: String
-	{
-		return "{ \"amount\": \(amount.jsRepresentationString), \"outputs\": \(MoneroRandomOutputDescription.jsArrayString(outputs)) }" // amount.jsRepresentationString will become a "new JSBigInt…"
-	}
 }
 @objc class MoneroRandomOutputDescription: NSObject
 {
-	let globalIndex: Int // supplied by old/existing API as string
+	let globalIndex: UInt64
 	let public_key: MoneroTransactionPubKey
 	let rct: String?
 	//
 	init(
-		globalIndex: Int,
+		globalIndex: UInt64,
 		public_key: MoneroTransactionPubKey,
 		rct: String?
 	) {
@@ -696,17 +628,17 @@ struct MoneroSpentOutputDescription: Equatable
 		self.rct = rct
 	}
 	//
-	class func newArray(withCoreParsed_jsonDicts dicts: [[String: Any]]) -> [MoneroRandomOutputDescription]
+	class func newArray(withAPIJSONDicts dicts: [[String: Any]]) -> [MoneroRandomOutputDescription]
 	{
-		return dicts.map{ new(withCoreParsed_jsonDict: $0) }
+		return dicts.map{ new(withAPIJSONDict: $0) }
 	}
-	class func new(withCoreParsed_jsonDict dict: [String: Any]) -> MoneroRandomOutputDescription
+	class func new(withAPIJSONDict dict: [String: Any]) -> MoneroRandomOutputDescription
 	{
-		var globalIndex: Int!
+		var globalIndex: UInt64!
 		do {
 			if let asString = dict["global_index"] as? String {
-				globalIndex = Int(asString)!
-			} else if let asInt = dict["global_index"] as? Int {
+				globalIndex = UInt64(asString)!
+			} else if let asInt = dict["global_index"] as? UInt64 {
 				globalIndex = asInt
 			} else {
 				fatalError("Unparseable global_index")
@@ -718,44 +650,6 @@ struct MoneroSpentOutputDescription: Equatable
 			rct: dict["rct"] as? String
 		)
 		return outputDescription
-	}
-	class func jsArrayString(_ array: [MoneroRandomOutputDescription]) -> String
-	{
-		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
-	}
-	var jsRepresentationString: String {
-		let prefix = "{"
-		let suffix = "}"
-		var keysAndValuesString = ""
-		keysAndValuesString += "\"global_index\": \"\(globalIndex)\"" // since it's been a string (for RandomOuts), we should wrap in escaped quotes - FIXME: may be able to pass an Int
-		keysAndValuesString += ", \"public_key\": \(public_key.jsRepresentationString)"
-		if let rct = rct, rct != "" {
-			keysAndValuesString += ", \"rct\": \"\(rct)\""
-		}
-		//
-		return prefix + keysAndValuesString + suffix
-	}
-}
-@objc class SendFundsTargetDescription: NSObject
-{ // TODO: namespace
-	let address: MoneroAddress
-	let amount: MoneroAmount
-	//
-	init(
-		address: MoneroAddress,
-		amount: MoneroAmount
-	) {
-		self.address = address
-		self.amount = amount
-	}
-	//
-	class func jsArrayString(
-		_ array: [SendFundsTargetDescription]
-	) -> String {
-		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
-	}
-	var jsRepresentationString: String {
-		return "{ \"address\": \"\(address)\", \"amount\": \(amount.jsRepresentationString) }" // amount.jsRepresentationString will become a "new JSBigInt…"
 	}
 }
 typealias MoneroSignedTransaction = [String: Any]

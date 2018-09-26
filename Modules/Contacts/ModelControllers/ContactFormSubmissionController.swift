@@ -163,19 +163,12 @@ class ContactFormSubmissionController: OpenAliasResolverRequestMaker
 		//
 		// not a subaddr either - normal wallet addr
 		if self.parameters.paymentID == nil || self.parameters.paymentID! == "" {
-			MyMoneroCore.shared.New_PaymentID(
-				{ [unowned self] (err_str, generated_paymentID) in
-					if err_str != nil {
-						self.parameters.preSuccess_terminal_validationMessage_fn(err_str!)
-						return
-					}
-					let paymentID = generated_paymentID!
-					self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
-					self.__proceedTo_persistContact(
-						withPaymentID: paymentID,
-						cached_OAResolved_XMR_address: nil
-					)
-			})
+			let paymentID = MyMoneroCore.shared_objCppBridge.New_PaymentID
+			self.parameters.feedBackOverridingPaymentIDValue_fn(paymentID)
+			self.__proceedTo_persistContact(
+				withPaymentID: paymentID,
+				cached_OAResolved_XMR_address: nil
+			)
 			return
 		}
 		// else, simply use the entered paymentID

@@ -272,7 +272,7 @@ extension SendFundsForm
 					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
 				},
 				success_fn:
-				{ [weak self] (final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee) in
+				{ [weak self] (final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee, tx_key) in
 					guard let thisSelf = self else {
 						return
 					}
@@ -283,6 +283,7 @@ extension SendFundsForm
 						integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
 						sentWith_paymentID: sentPaymentID_orNil,
 						transactionHash: tx_hash,
+						transactionKey: tx_key,
 						sentAmount: final_sentAmount // may be different for a sweep
 					)
 				},
@@ -310,6 +311,7 @@ extension SendFundsForm
 			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?,
 			sentWith_paymentID: MoneroPaymentID?,
 			transactionHash: MoneroTransactionHash,
+			transactionKey: MoneroTransactionSecKey,
 			sentAmount: MoneroAmount
 		) {
 			var outgoingAmountForDisplay = sentAmount // mutable copy
@@ -330,6 +332,7 @@ extension SendFundsForm
 				height: 0, // TODO: is this correct?
 //				coinbase: false, // TODO
 //				tx_fee: tx_fee, // TODO
+//				tx_key: tx_key, // TODO
 //				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
 				cached__isConfirmed: false, // important
 				cached__isUnlocked: true, // TODO: not sure about this

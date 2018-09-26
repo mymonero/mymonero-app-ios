@@ -1,8 +1,8 @@
 //
-//  monero_paymentID_utils.hpp
+//  MoneroUtils_KeyImageCache.swift
 //  MyMonero
 //
-//  Created by Paul Shapiro on 12/1/17.
+//  Created by Paul Shapiro on 1/2/18.
 //  Copyright (c) 2014-2018, MyMonero.com
 //
 //  All rights reserved.
@@ -31,24 +31,53 @@
 //  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-//
 
-#ifndef monero_paymentID_utils_hpp
-#define monero_paymentID_utils_hpp
+import Foundation
 
-#include <stdio.h>
-#include "crypto.h"
-
-namespace monero_paymentID_utils
+extension MoneroUtils
 {
-//	//
-//	// Generating Payment IDs
-//	crypto::hash8 new_short_plain_paymentID(); // This is favored - its length will be detected and encrypted automatically on send
-	//
-	// Parsing and Detecting Payment IDs
-	bool parse_long_payment_id(const std::string& payment_id_str, crypto::hash& payment_id);
-	bool parse_short_payment_id(const std::string& payment_id_str, crypto::hash8& payment_id);
-	bool parse_payment_id(const std::string& payment_id_str, crypto::hash& payment_id);
+	class KeyImageCache // instantiate and store on a wallet object rather than as singleton, for security
+	{
+		typealias _KeyImageCacheKey = String // NOT the key image :)
+		typealias _KeyImageCacheKeyTuple = (
+			tx_pub_key: MoneroTransactionPubKey,
+			public_address: MoneroAddress,
+			out_index: UInt64
+		)
+		static func _new_cacheKey(
+			from cacheKeyTuple: _KeyImageCacheKeyTuple
+		) -> _KeyImageCacheKey {
+			return "\(cacheKeyTuple.tx_pub_key):\(cacheKeyTuple.public_address):\(cacheKeyTuple.out_index)"
+		}
+		//
+		// Properties
+		fileprivate var keyImages_byCacheKey = [_KeyImageCacheKey: MoneroKeyImage]()
+		//
+		// Instance - Interface - Accessors
+		func lazy_keyImage(
+			tx_pub_key: MoneroTransactionPubKey,
+			out_index: UInt64,
+			public_address: MoneroAddress,
+			sec_keys: MoneroKeyDuo,
+			pub_spendKey: MoneroKey
+		) -> MoneroKeyImage {
+			let cacheKeyTuple = (tx_pub_key, public_address, out_index)
+			let cacheKey = KeyImageCache._new_cacheKey(from: cacheKeyTuple)
+			var cached_keyImage = self.keyImages_byCacheKey[cacheKey]
+			if cached_keyImage == nil { //
+				cached_keyImage = MyMoneroCore.shared_objCppBridge.new__key_image_from( // momentarily incorrect name
+					tx_pub_key: tx_pub_key,
+					out_index: out_index,
+					public_address: public_address,
+					sec_keys: sec_keys,
+					pub_spendKey: pub_spendKey
+				)
+				self.keyImages_byCacheKey[cacheKey] = cached_keyImage // now it's correct
+			}
+			return cached_keyImage!
+		}
+	}
 }
 
-#endif /* monero_paymentID_utils_hpp */
+
+

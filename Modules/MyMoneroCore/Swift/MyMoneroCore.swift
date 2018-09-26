@@ -36,7 +36,7 @@ import Foundation
 import UIKit // because we use a WKWebView
 //
 // Principal type
-final class MyMoneroCore : MyMoneroCoreJS
+final class MyMoneroCore
 {
 	// TODO? alternative to subclassing MyMoneroCoreJS would be to hold an instance of it and provide proxy fns as interface.
 	//
@@ -44,25 +44,20 @@ final class MyMoneroCore : MyMoneroCoreJS
 	static let shared = MyMoneroCore()
 	//
 	// Constants - Mixin
-	static let _forkv7_minimumMixin: Int = 6
-	static func _mixinToRingsize(_ mixin: Int) -> Int { return mixin + 1 }
+	static let _forkv7_minimumMixin: UInt = 6
+	static func _mixinToRingsize(_ mixin: UInt) -> UInt { return mixin + 1 }
 	//
-	static let thisFork_minMixin: Int = _forkv7_minimumMixin
-	static var thisFork_minRingSize: Int {
+	static let thisFork_minMixin: UInt = _forkv7_minimumMixin
+	static var thisFork_minRingSize: UInt {
 		return _mixinToRingsize(thisFork_minMixin)
 	}
-	static var fixedMixin: Int = thisFork_minMixin // using the monero app default to remove MM user identifiers
-	static var fixedRingsize: Int {
+	static var fixedMixin: UInt = thisFork_minMixin // using the monero app default to remove MM user identifiers
+	static var fixedRingsize: UInt {
 		return _mixinToRingsize(fixedMixin)
 	}
 	//
 	// Lifecycle - Init
-	private convenience init()
+	init()
 	{
-		self.init(window: UIApplication.shared.delegate!.window!!)
-	}
-	override init(window: UIWindow)
-	{
-		super.init(window: window)
 	}
 }
