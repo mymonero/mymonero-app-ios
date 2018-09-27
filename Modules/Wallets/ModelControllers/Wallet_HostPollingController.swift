@@ -66,6 +66,10 @@ class Wallet_HostPollingController
 	// Lifecycle - Teardown
 	deinit
 	{
+		self.tearDown()
+	}
+	func tearDown()
+	{
 		self.invalidateTimer()
 		do {
 			if let requestHandle = self.requestHandleFor_addressInfo {
@@ -78,6 +82,9 @@ class Wallet_HostPollingController
 			}
 		}
 		self._didUpdate_factorOf_isFetchingAnyUpdates() // unsure if emitting is desired here but it probably isn't harmful
+		self.didUpdate_factorOf_isFetchingAnyUpdates_fn = nil
+		//
+		self.wallet = nil
 	}
 	//
 	// Accessors
@@ -90,7 +97,12 @@ class Wallet_HostPollingController
 	// Imperatives - Timer
 	func startPollingTimer()
 	{
-		self.timer = Timer.scheduledTimer(timeInterval: Wallet_HostPollingController.pollingTimerPeriod, target: self, selector: #selector(__timerFired), userInfo: nil, repeats: true)
+		self.timer = Timer.scheduledTimer(withTimeInterval: Wallet_HostPollingController.pollingTimerPeriod, repeats: true, block: { [weak self] (timer) in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.__timerFired()
+		})
 	}
 	func invalidateTimer()
 	{
@@ -132,23 +144,23 @@ class Wallet_HostPollingController
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
 			spend_key__private: wallet.private_keys.spend,
-			{ [unowned self] (err_str, parsedResult) in
-//				if self == nil {
-//					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
-//					return
-//				}
-				if self.requestHandleFor_addressInfo == nil {
+			{ [weak self] (err_str, parsedResult) in
+				guard let thisSelf = self else {
+					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
+					return
+				}
+				if thisSelf.requestHandleFor_addressInfo == nil {
 					assert(false, "Already canceled")
 					return
 				}
-				self._dateOfLast_fetch_addressInfo = Date()
-				self.requestHandleFor_addressInfo = nil // first/immediately unlock this request fetch
-				self._didUpdate_factorOf_isFetchingAnyUpdates()
+				thisSelf._dateOfLast_fetch_addressInfo = Date()
+				thisSelf.requestHandleFor_addressInfo = nil // first/immediately unlock this request fetch
+				thisSelf._didUpdate_factorOf_isFetchingAnyUpdates()
 				//
 				if err_str != nil {
 					return // already logged err
 				}
-				guard let wallet = self.wallet else {
+				guard let wallet = thisSelf.wallet else {
 					DDLog.Warn("Wallets", "Wallet host polling request response returned but wallet already freed.")
 					return
 				}
@@ -185,23 +197,23 @@ class Wallet_HostPollingController
 			view_key__private: wallet.private_keys.view,
 			spend_key__public: wallet.public_keys.spend,
 			spend_key__private: wallet.private_keys.spend,
-			{ [unowned self] (err_str, parsedResult) in
-//				if self == nil {
-//					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
-//					return
-//				}
-				if self.requestHandleFor_addressTransactions == nil {
+			{ [weak self] (err_str, parsedResult) in
+				guard let thisSelf = self else {
+					DDLog.Warn("Wallets.Wallet_HostPollingController", "self already nil")
+					return
+				}
+				if thisSelf.requestHandleFor_addressTransactions == nil {
 					assert(false, "Already canceled")
 					return
 				}
-				self._dateOfLast_fetch_addressTransactions = Date()
-				self.requestHandleFor_addressTransactions = nil // first/immediately unlock this request fetch
-				self._didUpdate_factorOf_isFetchingAnyUpdates()
+				thisSelf._dateOfLast_fetch_addressTransactions = Date()
+				thisSelf.requestHandleFor_addressTransactions = nil // first/immediately unlock this request fetch
+				thisSelf._didUpdate_factorOf_isFetchingAnyUpdates()
 				//
 				if err_str != nil {
 					return // already logged err
 				}
-				guard let wallet = self.wallet else {
+				guard let wallet = thisSelf.wallet else {
 					DDLog.Warn("Wallets", "Wallet host polling request response returned but wallet already freed.")
 					return
 				}
