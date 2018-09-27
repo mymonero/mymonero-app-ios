@@ -174,32 +174,6 @@ class Wallet: PersistableObject
 			return NSNotification.Name(self.rawValue)
 		}
 	}
-	struct RebootReconstitutionDescription
-	{
-		//		var currency: Currency!
-		var walletLabel: String
-		var swatchColor: Wallet.SwatchColor
-		//
-		var mnemonic_wordsetName: MoneroMnemonicWordsetName? // be sure this is supplied if account_seed is not nil nil but mnemonicSeed is nil so mnemonicString can be rederived
-		var mnemonicString: MoneroSeedAsMnemonic?
-		var account_seed: MoneroSeed?
-		var private_keys: MoneroKeyDuo!
-		var public_address: MoneroAddress!
-		//
-		static func new(fromWallet wallet: Wallet) -> RebootReconstitutionDescription
-		{
-			return RebootReconstitutionDescription(
-				walletLabel: wallet.walletLabel,
-				swatchColor: wallet.swatchColor,
-				mnemonic_wordsetName: wallet.mnemonic_wordsetName,
-				//
-				mnemonicString: wallet.mnemonicString,
-				account_seed: wallet.account_seed,
-				private_keys: wallet.private_keys,
-				public_address: wallet.public_address
-			)
-		}
-	}
 	// Internal
 	enum DictKey: String
 	{ // (For persistence)
@@ -483,11 +457,15 @@ class Wallet: PersistableObject
 	override func teardown()
 	{
 		super.teardown()
-		//
+		self.tearDownRuntime()
+	}
+	func tearDownRuntime()
+	{
 		self.hostPollingController = nil // stop requests
 		//
 		self.logIn_requestHandle?.cancel() // in case wallet is being rebooted on API address change via settings
 		self.logIn_requestHandle = nil
+		self.isLoggingIn = false
 		//
 		if self.isSendingFunds { // just in case - i.e. on teardown while sending but user sends the app to the background
 			UserIdle.shared.reEnable_userIdle()
@@ -495,6 +473,60 @@ class Wallet: PersistableObject
 		}
 		self.fundsSender?.cancel() // to get the network request cancel immediately
 		self.fundsSender = nil
+	}
+	func deBoot()
+	{
+		let old__totalReceived = self.totalReceived
+		let old__totalSent = self.totalSent
+		let old__lockedBalance = self.lockedBalance
+		let old__spentOutputs = self.spentOutputs
+		let old__transactions = self.transactions
+		do {
+			self.tearDownRuntime() // stop any requests, etc
+		}
+		do {
+			// important flags to clear:
+			self.isLoggedIn = false
+			self.didFailToBoot_flag = nil
+			self.didFailToBoot_errStr = nil
+			self.isBooted = false
+			//
+			self.totalReceived = nil
+			self.totalSent = nil
+			self.lockedBalance = nil
+			//
+			self.account_scanned_tx_height = nil
+			self.account_scanned_height = nil
+			self.account_scanned_block_height = nil
+			self.account_scan_start_height = nil
+			self.transaction_height = nil
+			self.blockchain_height = nil
+			//
+			self.spentOutputs = nil
+			self.transactions = nil
+			//
+			self.dateThatLast_fetchedAccountInfo = nil
+			self.dateThatLast_fetchedAccountTransactions = nil
+		}
+		do {
+			self.___didReceiveActualChangeTo_balance(
+				old_totalReceived: old__totalReceived,
+				old_totalSent: old__totalSent,
+				old_lockedBalance: old__lockedBalance
+			)
+			self.___didReceiveActualChangeTo_spentOutputs(
+				old_spentOutputs: old__spentOutputs
+			)
+			self.___didReceiveActualChangeTo_heights()
+			self.___didReceiveActualChangeTo_transactions(
+				old_transactions: old__transactions
+			)
+			self.regenerate_shouldDisplayImportAccountOption()
+		}
+		let save_err_str = self.saveToDisk()
+		if save_err_str != nil {
+			DDLog.Error("Wallet", "Error while saving during a deBoot(): \(save_err_str!)")
+		}
 	}
 	//
 	//
@@ -504,8 +536,7 @@ class Wallet: PersistableObject
 		walletLabel: String,
 		swatchColor: SwatchColor,
 		_ fn: @escaping (_ err_str: String?) -> Void
-	) -> Void
-	{
+	) -> Void {
 		self.walletLabel = walletLabel
 		self.swatchColor = swatchColor
 		//
@@ -577,52 +608,28 @@ class Wallet: PersistableObject
 			fn
 		)
 	}
-	func Boot_byLoggingIn_existingWallet(
-		reconstitutionDescription: RebootReconstitutionDescription,
-		persistEvenIfLoginFailed_forServerChange: Bool = true,
-		_ fn: @escaping (_ err_str: String?) -> Void
-	) {
-		func _proceedTo_login(mnemonicString: MoneroSeedAsMnemonic?)
-		{
-			if mnemonicString != nil {
-				self.Boot_byLoggingIn_existingWallet_withMnemonic(
-					walletLabel: reconstitutionDescription.walletLabel,
-					swatchColor: reconstitutionDescription.swatchColor,
-					mnemonicString: mnemonicString!,
-					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
-					fn
-				)
-			} else {
-				assert(self.account_seed == nil)
-				//
-				self.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
-					walletLabel: reconstitutionDescription.walletLabel,
-					swatchColor: reconstitutionDescription.swatchColor,
-					address: reconstitutionDescription.public_address,
-					privateKeys: reconstitutionDescription.private_keys,
-					persistEvenIfLoginFailed_forServerChange: persistEvenIfLoginFailed_forServerChange,
-					fn
-				)
-			}
+	func logOutThenSaveAndLogIn()
+	{
+		if self.isLoggedIn == true { // if we actually do need to log out ... otherwise this may be an attempt by the ListController to log in after having loaded a failed login from a previous user session upon launching the app
+			self.deBoot()
 		}
-		if reconstitutionDescription.mnemonicString == nil {
-			if reconstitutionDescription.account_seed != nil {
-				assert(reconstitutionDescription.mnemonic_wordsetName != nil)
-				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
-				let (err_str, seedAsMnemonic) = MyMoneroCore.shared_objCppBridge.MnemonicStringFromSeed(
-					reconstitutionDescription.account_seed!,
-					reconstitutionDescription.mnemonic_wordsetName!
-				)
-				if let err_str = err_str {
-					fn(err_str)
+		self._boot_byLoggingIn(
+			address: self.public_address,
+			view_key__private: self.private_keys.view,
+			spend_key: self.private_keys.spend, // currently not expecting nil
+			seed_orNil: self.account_seed,
+			wasAGeneratedWallet: self.local_wasAGeneratedWallet ?? false,
+			persistEvenIfLoginFailed_forServerChange: true,
+			{ [weak self] (err_str) in
+				guard let _ = self else {
 					return
 				}
-				_proceedTo_login(mnemonicString: seedAsMnemonic!)
-				return
+				if err_str != nil {
+					DDLog.Error("Wallets", "Failed to log back in with error: \(err_str!)")
+					return
+				}
+				DDLog.Done("Wallets", "Logged back in.")
 			}
-		}
-		_proceedTo_login(
-			mnemonicString: reconstitutionDescription.mnemonicString // might be nil
 		)
 	}
 	//
@@ -711,8 +718,7 @@ class Wallet: PersistableObject
 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
 	func Boot_havingLoadedDecryptedExistingInitDoc(
 		_ fn: @escaping (_ err_str: String?) -> Void
-	)
-	{ // nothing to do here as we assume validation done on init
+	) { // nothing to do here as we assume validation done on init
 		self._trampolineFor_successfullyBooted(fn)
 	}
 	//
@@ -728,8 +734,17 @@ class Wallet: PersistableObject
 		err_str: String?
 	) {
 		self._setStateThatFailedToBoot(withErrStr: err_str)
-		DispatchQueue.main.async {
-			NotificationCenter.default.post(name: PersistableObject.NotificationNames.failedToBoot.notificationName, object: self, userInfo: nil)
+		//
+		DispatchQueue.main.async
+		{ [weak self] in
+			guard let thisSelf = self else {
+				return
+			}
+			NotificationCenter.default.post(
+				name: PersistableObject.NotificationNames.failedToBoot.notificationName,
+				object: thisSelf,
+				userInfo: nil
+			)
 		}
 		fn(err_str)
 	}
@@ -740,6 +755,8 @@ class Wallet: PersistableObject
 		{
 //			DDLog.Done("Wallets", "Successfully booted \(self)")
 			self.isBooted = true
+			self.didFailToBoot_errStr = nil
+			self.didFailToBoot_flag = nil
 			DispatchQueue.main.async
 			{ [weak self] in
 				guard let thisSelf = self else {
@@ -747,7 +764,7 @@ class Wallet: PersistableObject
 				}
 				thisSelf._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
 				//
-				NotificationCenter.default.post(name: PersistableObject.NotificationNames.booted.notificationName, object: self, userInfo: nil)
+				NotificationCenter.default.post(name: PersistableObject.NotificationNames.booted.notificationName, object: thisSelf, userInfo: nil)
 			}
 			fn(nil)
 		}
@@ -864,6 +881,7 @@ class Wallet: PersistableObject
 								fn: fn,
 								err_str: login__err_str
 							)
+							thisSelf.logIn_requestHandle = nil
 							return
 						} else {
 							// this allows us to continue with the above-set login info to call 'saveToDisk()' when this call to log in is coming from a wallet reboot. reason is that we expect all such wallets to be valid monero wallets if they are able to have been rebooted.
@@ -884,6 +902,7 @@ class Wallet: PersistableObject
 							fn: fn,
 							err_str: saveToDisk__err_str
 						)
+						thisSelf.logIn_requestHandle = nil
 						return
 					}
 					if shouldExitOnLoginError == false && login__err_str != nil {
@@ -892,8 +911,10 @@ class Wallet: PersistableObject
 							fn: fn,
 							err_str: login__err_str
 						)
+						thisSelf.logIn_requestHandle = nil
 					} else { // it's actually a success
 						thisSelf._trampolineFor_successfullyBooted(fn)
+						thisSelf.logIn_requestHandle = nil
 					}
 				}
 			)

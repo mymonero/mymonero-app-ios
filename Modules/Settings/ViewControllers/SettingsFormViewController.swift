@@ -777,8 +777,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		self.view.setNeedsLayout() // for validation err
 		func _exitAndUnlock(
 			withValidationErr err_str: String?
-		)
-		{
+		) {
 			if err_str != nil {
 				self.address_inputView.setValidationError(err_str!)
 			}

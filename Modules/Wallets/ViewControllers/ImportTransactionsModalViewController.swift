@@ -433,11 +433,11 @@ extension ImportTransactionsModal
 					DispatchQueue.main.asyncAfter( 
 						deadline: .now() + 1.0, // for effect
 						execute:
-						{ [weak self] in // Now dismiss
-							guard let thisSelf = self else {
+						{ [weak thisSelf] in // Now dismiss
+							guard let thisSelf1 = thisSelf else {
 								return
 							}
-							thisSelf.navigationController?.dismiss(animated: true, completion: nil)
+							thisSelf1.navigationController?.dismiss(animated: true, completion: nil)
 						}
 					)
 					DispatchQueue.main.async

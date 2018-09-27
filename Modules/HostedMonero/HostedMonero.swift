@@ -38,6 +38,17 @@ import Alamofire
 struct HostedMonero {}
 extension HostedMonero
 {
+	enum NotificationNames: String
+	{
+		case initializedWithNewServerURL = "HostedMonero_NotificationNames_initializedWithNewServerURL"
+		//
+		var notificationName: NSNotification.Name {
+			return NSNotification.Name(self.rawValue)
+		}
+	}
+}
+extension HostedMonero
+{
 	struct ParsedResult_AddressInfo
 	{
 		let totalReceived: MoneroAmount
@@ -850,6 +861,12 @@ extension HostedMonero
 		@objc func SettingsController__NotificationNames_Changed__specificAPIAddressURLAuthority()
 		{
 			self.initializeManagerWithFinalServerAuthority()
+			//
+			// Notify consumers to avoid race condition with anyone trying to make a request just before the manager gets de-initialized and re-initialized
+			NotificationCenter.default.post(
+				name: HostedMonero.NotificationNames.initializedWithNewServerURL.notificationName,
+				object: nil
+			)
 		}
 	}
 }

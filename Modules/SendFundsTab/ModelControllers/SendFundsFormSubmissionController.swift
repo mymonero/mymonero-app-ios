@@ -344,12 +344,15 @@ extension SendFundsForm
 				return
 			}
 			do { // and fire off a request to have the wallet get the latest (real) tx records
-				let wallet = self.parameters.fromWallet
 				DispatchQueue.main.async
-				{
-					if wallet != nil {
-						wallet!.hostPollingController!._fetch_addressTransactions() // TODO: maybe fix up the API for this
+				{ [weak self] in
+					guard let thisSelf = self else {
+						return
 					}
+					guard let wallet = thisSelf.parameters.fromWallet else {
+						return
+					}
+					wallet.hostPollingController?._fetch_addressTransactions() // TODO: fix up the API for this
 				}
 			}
 			self.parameters.success_fn(
