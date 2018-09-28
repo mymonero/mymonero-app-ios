@@ -3,15 +3,15 @@ platform :ios, '10.0'
 use_frameworks!
 
 def common_pods
-	pod 'BigInt', '~> 3.0.1'
-	pod 'SwiftDate', '~> 4.5.1'
-	pod 'Alamofire', '~> 4.7.1'
+	pod 'BigInt', '3.0.1'
+	pod 'SwiftDate', '4.5.1'
+	pod 'Alamofire', '4.7.1'
 	pod 'RNCryptor', '5.0.3'
-	pod 'ReachabilitySwift', '~> 4.1.0'
-	pod 'PKHUD', '~> 5.0'
-	pod 'AMPopTip', '~> 3.2.1'
-	pod 'Popover', '~> 1.2.0'
-	pod 'ofxiOSBoost', '~> 1.60.0'
+	pod 'ReachabilitySwift', '4.1.0'
+	pod 'PKHUD', '5.0'
+	pod 'AMPopTip', '3.2.1'
+	pod 'Popover', '1.2.0'
+	pod 'ofxiOSBoost', '1.60.0'
 end
 
 target 'MyMonero' do
