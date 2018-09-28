@@ -35,7 +35,7 @@
 import Foundation
 import UIKit
 
-UIApplicationMain(
+let _ = UIApplicationMain(
 	CommandLine.argc,
 	UnsafeMutableRawPointer(CommandLine.unsafeArgv)
 		.bindMemory(

@@ -139,7 +139,7 @@ class Contact: PersistableObject
 		self.fullname = dictRepresentation[DictKey.fullname.rawValue] as! String
 		self.address = dictRepresentation[DictKey.address.rawValue] as! String
 		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
-		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as! Emoji.EmojiCharacter
+		self.emoji = dictRepresentation[DictKey.emoji.rawValue] as? Emoji.EmojiCharacter
 		self.cached_OAResolved_XMR_address = dictRepresentation[DictKey.cached_OAResolved_XMR_address.rawValue] as? String
 		//
 		self.setup()

@@ -421,7 +421,7 @@ extension HostedMonero
 					}
 					changeAmount = usingOutsAmount - totalAmountIncludingFees
 					// for RCT we don't presently care about dustiness so add entire change amount
-					DDLog.Info("HostedMonero", "Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address)")
+					DDLog.Info("HostedMonero", "Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address!)")
 				}
 				//
 				self.updateProcessStep(to: .fetchingDecoyOutputs)

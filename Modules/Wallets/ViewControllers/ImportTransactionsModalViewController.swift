@@ -473,7 +473,7 @@ extension ImportTransactionsModal
 			//
 			let top_yOffset: CGFloat = self.yOffsetForViewsBelowValidationMessageView
 			let label_x = self.new__label_x
-			let labelAccessoryLabel_x = self.new__labelAccessoryLabel_x
+			let _ = self.new__labelAccessoryLabel_x
 			let input_x = self.new__input_x
 			let textField_w = self.new__textField_w
 			let fullWidth_label_w = self.new__fieldLabel_w

@@ -762,7 +762,7 @@ extension HostedMonero
 		//
 		// Private - Runtime - Imperatives - Requests - Shared
 		@discardableResult
-		open func _request(
+		public func _request(
 			_ endpoint: HostedMoneroAPI_Endpoint,
 			_ parameters: Alamofire.Parameters,
 			_ fn: @escaping (

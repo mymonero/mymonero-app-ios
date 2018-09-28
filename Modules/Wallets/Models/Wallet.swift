@@ -377,7 +377,7 @@ class Wallet: PersistableObject
 		self.currency = Currency.new(
 			from_jsonRepresentation: dictRepresentation[DictKey.currency.rawValue] as! String
 		)
-		self.walletLabel = dictRepresentation[DictKey.walletLabel.rawValue] as! String
+		self.walletLabel = dictRepresentation[DictKey.walletLabel.rawValue] as? String
 		self.swatchColor = SwatchColor.new(
 			from_jsonRepresentation: dictRepresentation[DictKey.swatchColorHexString.rawValue] as! String
 		)
@@ -385,7 +385,7 @@ class Wallet: PersistableObject
 		// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
 		// cannot obtain the seed.
 		
-		self.public_address = dictRepresentation[DictKey.publicAddress.rawValue] as! MoneroAddress
+		self.public_address = dictRepresentation[DictKey.publicAddress.rawValue] as? MoneroAddress
 		self.public_keys = MoneroKeyDuo.new(
 			fromJSONRepresentation: dictRepresentation[DictKey.publicKeys.rawValue] as! [String: Any]
 		)
