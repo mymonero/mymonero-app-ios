@@ -168,6 +168,10 @@ typedef enum {
 + (uint32_t)default_priority;
 + (uint64_t)estimatedTxNetworkFeeWithFeePerKB:(uint64_t)fee_per_kb
 									 priority:(uint32_t)priority;
++ (uint64_t)calculate_fee:(uint64_t)fee_per_kb
+				num_bytes:(size_t)num_bytes
+		   fee_multiplier:(uint32_t)fee_multiplier;
++ (size_t)estimate_rct_tx_size:(int)n_inputs;
 //
 + (nullable NSString *)new_keyImageFrom_tx_pub_key:(nonnull NSString *)tx_pub_key_NSString
 							 sec_spendKey:(nonnull NSString *)sec_spendKey_NSString

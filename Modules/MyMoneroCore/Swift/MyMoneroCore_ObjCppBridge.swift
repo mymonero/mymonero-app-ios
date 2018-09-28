@@ -283,6 +283,21 @@ extension MyMoneroCore
 			)
 			return MoneroAmount("\(estimatedFee_UInt64)")!
 		}
+		static func calculateFee(
+			withFeePerKB fee_per_kb: MoneroAmount,
+			num_bytes: Int,
+			fee_multiplier: UInt32
+		) -> MoneroAmount {
+			let fee_UInt64 = MyMoneroCore_ObjCpp.calculate_fee(
+				UInt64(String(fee_per_kb))!,
+				num_bytes: num_bytes,
+				fee_multiplier: fee_multiplier
+			)
+			return MoneroAmount("\(fee_UInt64)")!
+		}
+		static func estimateRctSize(_ n_inputs: Int) -> Int {
+			return MyMoneroCore_ObjCpp.estimate_rct_tx_size(Int32(n_inputs))
+		}
 		func areEqualMnemonics(_ a: String, _ b: String) -> Bool
 		{
 			return MyMoneroCore_ObjCpp.areEqualMnemonics(a, b: b)

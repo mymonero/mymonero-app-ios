@@ -460,7 +460,27 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	);
 	return estimated_fee;
 }
-
++ (uint64_t)calculate_fee:(uint64_t)fee_per_kb
+				num_bytes:(size_t)num_bytes
+		   fee_multiplier:(uint32_t)fee_multiplier
+{
+	return monero_transfer_utils::calculate_fee(
+		fee_per_kb,
+		num_bytes,
+		fee_multiplier
+	);
+}
++ (size_t)estimate_rct_tx_size:(int)n_inputs
+{
+	std::vector<uint8_t> extra;
+	return monero_transfer_utils::estimate_rct_tx_size(
+		n_inputs,
+		monero_transfer_utils::fixed_mixinsize(),
+		2, // n_outputs
+		extra.size(),
+		monero_fork_rules::lightwallet_hardeded__use_bulletproofs()
+	);
+}
 + (uint32_t)fixedRingsize
 {
 	return monero_transfer_utils::fixed_ringsize();

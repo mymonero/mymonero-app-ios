@@ -39,83 +39,16 @@ extension MoneroUtils
 {
 	struct Fees
 	{
-		static let newer_multipliers: [UInt] = [1, 4, 20, 166]
+		static let newer_multipliers: [UInt32] = [1, 4, 20, 166]
 		// TODO: replace this with an enum?
 		static func fee_multiplier_for_priority(
 			_ priority: MoneroTransferSimplifiedPriority
-		) -> UInt {
+		) -> UInt32 {
 			let priority_as_idx = Int(priority.rawValue - 1)
 			if (priority_as_idx < 0 || priority_as_idx >= newer_multipliers.count) {
 				fatalError("fee_multiplier_for_priority: priority_as_idx out of newer_multipliers bounds")
 			}
 			return MoneroUtils.Fees.newer_multipliers[priority_as_idx]
-		}
-		
-		static func estimateRctSize(
-			_ inputs: UInt, // number of
-			_ mixin: UInt,
-			_ outputs: UInt // number of
-		) -> UInt {
-			var size: UInt = 0
-			// tx prefix
-			// first few bytes
-			size += 1 + 6;
-			size += inputs * (1+6+(mixin+1)*3+32); // original C implementation is *2+32 but author advised to change 2 to 3 as key offsets are variable size and this constitutes a best guess
-			// vout
-			size += outputs * (6+32);
-			// extra
-			size += 40;
-			// rct signatures
-			// type
-			size += 1;
-			// rangeSigs
-			size += (2*64*32+32+64*32) * outputs;
-			// MGs
-			size += inputs * (32 * (mixin+1) + 32);
-			// mixRing - not serialized, can be reconstructed
-			/* size += 2 * 32 * (mixin+1) * inputs; */
-			// pseudoOuts
-			size += 32 * inputs;
-			// ecdhInfo
-			size += 2 * 32 * outputs;
-			// outPk - only commitment is saved
-			size += 32 * outputs;
-			// txnFee
-			size += 4;
-			//
-			return UInt(size)
-		}
-		static func estimated_neededNetworkFee(
-			_ mixin: UInt,
-			_ feePerKB: MoneroAmount,
-			_ priority: MoneroTransferSimplifiedPriority // TODO: implement
-		) -> MoneroAmount {
-			let numberOf_inputs: UInt = 2 // this might change -- might select inputs
-			let numberOf_outputs: UInt = 1/*dest*/ + 1/*change*/ + 0/*no mymonero fee presently*/
-			// TODO: update est tx size for bulletproofs
-			// TODO: normalize est tx size fn naming
-			let estimated_txSize_bytes = estimateRctSize(numberOf_inputs, mixin, numberOf_outputs)
-			let estimated_fee = calculate_fee(feePerKB, estimated_txSize_bytes, fee_multiplier_for_priority(priority))
-			//
-			return estimated_fee
-		}
-		static func calculate_fee__kb(
-			_ fee_per_kb: MoneroAmount,
-			_ numberOf_kb: UInt,
-			_ fee_multiplier: UInt
-		) -> MoneroAmount {
-			let fee = fee_per_kb * MoneroAmount("\(fee_multiplier)")! * MoneroAmount("\(numberOf_kb)")!
-			//
-			return fee
-		}
-		static func calculate_fee(
-			_ fee_per_kb: MoneroAmount,
-			_ numberOf_bytes: UInt,
-			_ fee_multiplier: UInt
-		) -> MoneroAmount {
-			let numberOf_kb: UInt = (numberOf_bytes + 1023) / 1024 // i.e. ceil
-			//
-			return calculate_fee__kb(fee_per_kb, numberOf_kb, fee_multiplier)
 		}
 	}
 }
@@ -309,8 +242,14 @@ extension HostedMonero
 					}
 					let feePerKB = result!.feePerKB
 					// Transaction will need at least 1KB fee (13KB for RingCT)
-					let network_minimumTXSize_kb: UInt = 13 // because isRingCT=true
-					let network_minimumFee = MoneroUtils.Fees.calculate_fee__kb(feePerKB, network_minimumTXSize_kb, MoneroUtils.Fees.fee_multiplier_for_priority(thisSelf.priority))
+					let network_minimumTXSize_B: Int = 13 * 1000 // because isRingCT=true
+					let network_minimumFee = MyMoneroCore.ObjCppBridge.calculateFee(
+						withFeePerKB: feePerKB,
+						num_bytes: network_minimumTXSize_B,
+						fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(
+							thisSelf.priority
+						)
+					)
 					// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
 					__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 						original_unusedOuts: result!.unusedOutputs,
@@ -347,10 +286,12 @@ extension HostedMonero
 				var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
 				var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
 				//
-				var newNeededFee = MoneroUtils.Fees.calculate_fee(
-					feePerKB,
-					MoneroUtils.Fees.estimateRctSize(UInt(usingOuts.count), final__mixin, 2),
-					MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
+				var newNeededFee = MyMoneroCore.ObjCppBridge.calculateFee(
+					withFeePerKB: feePerKB,
+					num_bytes: MyMoneroCore.ObjCppBridge.estimateRctSize(usingOuts.count),
+					fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(
+						self.priority
+					)
 				)
 				// if newNeededFee < neededFee, use neededFee instead (should only happen on the 2nd or later times through (due to estimated fee being too low)
 				if newNeededFee < this_attemptAt_network_minimumFee {
@@ -390,10 +331,12 @@ extension HostedMonero
 						usingOutsAmount = usingOutsAmount + out.amount
 						DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
 						// and recalculate invalidated values
-						newNeededFee = MoneroUtils.Fees.calculate_fee(
-							feePerKB,
-							MoneroUtils.Fees.estimateRctSize(UInt(usingOuts.count), final__mixin, 2),
-							MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
+						newNeededFee = MyMoneroCore.ObjCppBridge.calculateFee(
+							withFeePerKB: feePerKB,
+							num_bytes: MyMoneroCore.ObjCppBridge.estimateRctSize(usingOuts.count),
+							fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(
+								self.priority
+							)
 						)
 						totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
 					}
@@ -483,13 +426,13 @@ extension HostedMonero
 				let tx_key = optl_tx_key!
 				//
 				// work out per-kb fee for transaction and verify that it's enough
-				let txBlobBytes = Double(serialized_signedTx.count) / 2.0
-				var numKB = UInt(floor(txBlobBytes / 1024.0))
-				if txBlobBytes.truncatingRemainder(dividingBy: 1024) != 0 { // TODO: AUDIT: != 0 correct here? note: truncatingRemainder is % operator
-					numKB += 1
-				}
-				DDLog.Info("HostedMonero", "\(txBlobBytes) bytes <= \(numKB) KB (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
-				let feeActuallyNeededByNetwork = MoneroUtils.Fees.calculate_fee__kb(feePerKB, numKB, MoneroUtils.Fees.fee_multiplier_for_priority(self.priority))
+				let txBlobBytes = Int(Double(serialized_signedTx.count) / 2.0) // can probably just divide by int 2
+				DDLog.Info("HostedMonero", "\(txBlobBytes) bytes, (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
+				let feeActuallyNeededByNetwork = MyMoneroCore.ObjCppBridge.calculateFee(
+					withFeePerKB: feePerKB,
+					num_bytes: txBlobBytes,
+					fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
+				)
 				// if we need a higher fee
 				if feeActuallyNeededByNetwork > passedIn_attemptAt_network_minimumFee {
 					DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")

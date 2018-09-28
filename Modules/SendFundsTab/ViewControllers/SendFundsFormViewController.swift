@@ -702,10 +702,12 @@ extension SendFundsForm
 			return priority
 		}
 		var new_xmr_estFeeAmount: MoneroAmount {
-			let feePerKB_Amount = MoneroAmount("187000000")! // constant for now pending polling fee_per_kb on account info
+			let feePerKB_Amount = MoneroAmount("152700000")! // constant for now pending polling fee_per_kb on account info
 			let priority = self.selected_priority
-			let estNetworkFee_moneroAmount: MoneroAmount = MoneroUtils.Fees.estimated_neededNetworkFee(MyMoneroCore.fixedMixin, feePerKB_Amount, priority)
-			//
+			let estNetworkFee_moneroAmount = MyMoneroCore.ObjCppBridge.estimatedNetworkFee(
+				withFeePerKB: feePerKB_Amount,
+				priority: priority
+			)
 			return estNetworkFee_moneroAmount
 		}
 		var new_xmr_estMaxAmount: MoneroAmount? { // may return nil if a wallet isn't present yet
