@@ -256,8 +256,7 @@ extension UICommonComponents
 				andYOffset yOffset: CGFloat,
 				givenSpecificFieldViews specific_fieldViews: [FieldView],
 				alsoLayOutSharedSeparatorViewsForDisplay: Bool // pass false if you actually only want to use this to measure the fieldViews
-			) -> CGRect
-			{
+			) -> CGRect {
 				let self_width = containingWidth - 2*UICommonComponents.Details.SectionContentContainerView.x
 				let frame_withoutHeight = CGRect(
 					x: UICommonComponents.Details.SectionContentContainerView.x,
@@ -278,11 +277,23 @@ extension UICommonComponents
 								let separatorView = self.fieldSeparatorViews[idx] // we expect there to be one
 								separatorView.isHidden = true
 							}
+						} else {
+							// then just make sure the previous separator view is necessary
+							if idx > 0 { // then there was a previous one
+								let previous_fieldView = specific_fieldViews[idx - 1]
+								if previous_fieldView.isHidden == false { // its separatorView would not have been hidden, but shown
+									let previous_separatorView = self.fieldSeparatorViews[idx - 1]
+									previous_separatorView.isHidden = true
+								}
+							}
+
+							assert(self.fieldSeparatorViews.count == idx)
 						}
 						continue // skip
 					}
 					//
 					// fieldViews are actually sized here - it might be nicer if we could just measure them instead
+					assert(fieldView.isHidden == false)
 					fieldView.layOut(
 						withContainerWidth: self_width,
 						withXOffset: 0,
@@ -315,8 +326,22 @@ extension UICommonComponents
 				}
 				var frame_withHeight = frame_withoutHeight
 				do { // finalize
-					let last_fieldView = specific_fieldViews.last!
-					frame_withHeight.size.height = last_fieldView.frame.origin.y + last_fieldView.frame.size.height
+					var last_visible_fieldView: UIView?
+					var i = specific_fieldViews.count - 1
+					while i >= 0 {
+						let fieldView = specific_fieldViews[i]
+						if fieldView.isHidden == false {
+							last_visible_fieldView = fieldView
+							break
+						}
+						i -= 1
+					}
+					if let last_fieldView = last_visible_fieldView {
+						frame_withHeight.size.height = last_fieldView.frame.origin.y + last_fieldView.frame.size.height
+					} else {
+						// it will be initialized to 0
+						DDLog.Warn("Details", "Asked to lay out section view with no visible fields.")
+					}
 				}
 				return frame_withHeight
 			}
