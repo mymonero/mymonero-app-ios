@@ -284,6 +284,7 @@ extension SendFundsForm
 						sentWith_paymentID: sentPaymentID_orNil,
 						transactionHash: tx_hash,
 						transactionKey: tx_key,
+						tx_fee: tx_fee,
 						sentAmount: final_sentAmount // may be different for a sweep
 					)
 				},
@@ -312,6 +313,7 @@ extension SendFundsForm
 			sentWith_paymentID: MoneroPaymentID?,
 			transactionHash: MoneroTransactionHash,
 			transactionKey: MoneroTransactionSecKey,
+			tx_fee: MoneroAmount,
 			sentAmount: MoneroAmount
 		) {
 			var outgoingAmountForDisplay = sentAmount // mutable copy
@@ -331,13 +333,15 @@ extension SendFundsForm
 				unlock_time: 0,
 				height: 0, // TODO: is this correct?
 //				coinbase: false, // TODO
-//				tx_fee: tx_fee, // TODO
-//				tx_key: tx_key, // TODO
-//				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
 				cached__isConfirmed: false, // important
 				cached__isUnlocked: true, // TODO: not sure about this
 				cached__lockedReason: nil,
-				isJustSentTransientTransactionRecord: true
+				isJustSentTransientTransactionRecord: true,
+				//
+				tx_key: transactionKey,
+				tx_fee: tx_fee,
+				to_address: sentTo_address
+//				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
 			)
 			if self.parameters.fromWallet == nil {
 				assert(false, "FYI: wallet freed before end of SendFunds")

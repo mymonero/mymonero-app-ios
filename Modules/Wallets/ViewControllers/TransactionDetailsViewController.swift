@@ -65,9 +65,11 @@ extension TransactionDetails
 		var date__fieldView: UICommonComponents.Details.ShortStringFieldView!
 //		var memo__fieldView: UICommonComponents.Details.ShortStringFieldView!
 		var amountsFeesTotals__fieldView: UICommonComponents.Details.ShortStringFieldView! // TODO: multi value field
-		var ringsize__fieldView: UICommonComponents.Details.ShortStringFieldView!
 		var transactionHash__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
+		var transactionKey__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
+		var ringsize__fieldView: UICommonComponents.Details.ShortStringFieldView!
 		var paymentID__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
+		var toAddress__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 		//
 		//
 		// Imperatives - Init
@@ -117,6 +119,24 @@ extension TransactionDetails
 					sectionView.add(fieldView: view)
 				}
 				do {
+					let view = UICommonComponents.Details.CopyableLongStringFieldView(
+						labelVariant: self.fieldLabels_variant,
+						title: NSLocalizedString("Transaction ID", comment: ""),
+						valueToDisplayIfZero: NSLocalizedString("N/A", comment: "")
+					)
+					self.transactionHash__fieldView = view
+					sectionView.add(fieldView: view)
+				}
+				do {
+					let view = UICommonComponents.Details.CopyableLongStringFieldView(
+						labelVariant: self.fieldLabels_variant,
+						title: NSLocalizedString("Secret Key", comment: ""),
+						valueToDisplayIfZero: NSLocalizedString("Unknown", comment: "")
+					)
+					self.transactionKey__fieldView = view
+					sectionView.add(fieldView: view)
+				}
+				do {
 					let view = UICommonComponents.Details.ShortStringFieldView(
 						labelVariant: self.fieldLabels_variant,
 						title: NSLocalizedString("Ring size", comment: ""),
@@ -128,23 +148,24 @@ extension TransactionDetails
 				do {
 					let view = UICommonComponents.Details.CopyableLongStringFieldView(
 						labelVariant: self.fieldLabels_variant,
-						title: NSLocalizedString("Transaction Hash", comment: ""),
-						valueToDisplayIfZero: NSLocalizedString("N/A", comment: "")
-					)
-					self.transactionHash__fieldView = view
-					sectionView.add(fieldView: view)
-				}
-				do {
-					let view = UICommonComponents.Details.CopyableLongStringFieldView(
-						labelVariant: self.fieldLabels_variant,
 						title: NSLocalizedString("Payment ID", comment: ""),
 						valueToDisplayIfZero: NSLocalizedString("None", comment: "")
 					)
 					self.paymentID__fieldView = view
 					sectionView.add(fieldView: view)
 				}
+				do {
+					let view = UICommonComponents.Details.CopyableLongStringFieldView(
+						labelVariant: self.fieldLabels_variant,
+						title: NSLocalizedString("To", comment: ""),
+						valueToDisplayIfZero: NSLocalizedString("Unknown", comment: "")
+					)
+					self.toAddress__fieldView = view
+					sectionView.add(fieldView: view)
+				}
 				self.scrollView.addSubview(sectionView)
 			}
+			self.configureUI()
 //			self.view.borderSubviews()
 		}
 		override func setup_navigation()
@@ -261,6 +282,18 @@ extension TransactionDetails
 				let value = self.transaction.paymentId
 				self.paymentID__fieldView.set(text: value)
 			}
+			if let value = self.transaction.tx_key {
+				self.transactionKey__fieldView.set(text: value)
+				self.transactionKey__fieldView.isHidden = false
+			} else {
+				self.transactionKey__fieldView.isHidden = true
+			}
+			if let value = self.transaction.to_address {
+				self.toAddress__fieldView.set(text: value)
+				self.toAddress__fieldView.isHidden = false
+			} else {
+				self.toAddress__fieldView.isHidden = true
+			}
 			//
 			do {
 				let text =
@@ -320,7 +353,7 @@ extension TransactionDetails
 		{
 			super.viewWillAppear(animated)
 			//
-			self.configureUI() // deferring til here instead of setup() b/c we ask for navigationController
+			self.configureUI() // deferring til/doing again here instead of setup() b/c we ask for navigationController
 		}
 	}
 }

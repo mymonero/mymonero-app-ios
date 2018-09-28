@@ -241,7 +241,12 @@ extension HostedMonero
 						cached__lockedReason: lockedReason,
 						//
 						//				id: (dict["id"] as? UInt64)!, // unwrapping this for clarity
-						isJustSentTransientTransactionRecord: false
+						isJustSentTransientTransactionRecord: false,
+						//
+						// local-only or sync-only metadata
+						tx_key: nil,
+						tx_fee: nil,
+						to_address: nil
 					)
 					mutable_transactions.append(transactionRecord)
 				}

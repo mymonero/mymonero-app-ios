@@ -195,6 +195,10 @@ class MoneroHistoricalTransactionRecord: Equatable
 	let unlock_time: Double
 	let height: UInt64? // may not have made it into a block yet!
 	//
+	let tx_key: MoneroTransactionSecKey?
+	let tx_fee: MoneroAmount?
+	let to_address: MoneroAddress?
+	//
 	// Transient values
 	let cached__isConfirmed: Bool
 	let cached__isUnlocked: Bool
@@ -220,7 +224,11 @@ class MoneroHistoricalTransactionRecord: Equatable
 		cached__isConfirmed: Bool,
 		cached__isUnlocked: Bool,
 		cached__lockedReason: String?,
-		isJustSentTransientTransactionRecord: Bool
+		isJustSentTransientTransactionRecord: Bool,
+		//
+		tx_key: MoneroTransactionSecKey?,
+		tx_fee: MoneroAmount?,
+		to_address: MoneroAddress?
 	) {
 		self.amount = amount
 		self.totalSent = totalSent
@@ -240,6 +248,10 @@ class MoneroHistoricalTransactionRecord: Equatable
 		self.cached__isUnlocked = cached__isUnlocked
 		self.cached__lockedReason = cached__lockedReason
 		self.isJustSentTransientTransactionRecord = isJustSentTransientTransactionRecord
+		//
+		self.tx_key = tx_key
+		self.tx_fee = tx_fee
+		self.to_address = to_address
 	}
 	//
 	// Lifecycle - Deinit
@@ -381,22 +393,31 @@ class MoneroHistoricalTransactionRecord: Equatable
 			"hash": hash,
 			"mixin": mixin,
 			"mempool": mempool,
-			"unlock_time": unlock_time,
-			"height": height != nil ? height! : UINTMAX_MAX
+			"unlock_time": unlock_time
 		]
+		if height != nil {
+			dict["height"] = height
+		}
 		if let value = paymentId {
 			dict["paymentId"] = value
 		}
+		if let value = tx_key {
+			dict["tx_key"] = value
+		}
+		if let value = tx_fee {
+			dict["tx_fee"] = value
+		}
+		if let value = to_address {
+			dict["to_address"] = value
+		}
+		//
 		return dict
 	}
 	static func new(
 		fromJSONRepresentation jsonRepresentation: [String: Any],
 		wallet__blockchainHeight: UInt64
 	) -> MoneroHistoricalTransactionRecord {
-		var height: UInt64? = jsonRepresentation["height"] as? UInt64
-		if height == UINTMAX_MAX { // this is how we encode a nil height
-			height = nil
-		}
+		let height = jsonRepresentation["height"] as? UInt64
 		let unlockTime = jsonRepresentation["unlock_time"] as! Double
 		//
 		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
@@ -410,8 +431,12 @@ class MoneroHistoricalTransactionRecord: Equatable
 		let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
 			givenTransactionUnlockTime: unlockTime,
 			andWalletBlockchainHeight: wallet__blockchainHeight
-			) : nil
-		
+		) : nil
+		var tx_fee: MoneroAmount? = nil
+		if let tx_fee_string = jsonRepresentation["tx_fee"] as? String {
+			tx_fee = MoneroAmount(tx_fee_string)!
+		}
+		//
 		return self.init(
 			amount: MoneroAmount(jsonRepresentation["amount"] as! String)!,
 			totalSent: MoneroAmount(jsonRepresentation["total_sent"] as! String)!,
@@ -433,7 +458,10 @@ class MoneroHistoricalTransactionRecord: Equatable
 			cached__isUnlocked: isUnlocked,
 			cached__lockedReason: lockedReason,
 			//
-			isJustSentTransientTransactionRecord: false
+			isJustSentTransientTransactionRecord: false,
+			tx_key: jsonRepresentation["tx_key"] as? MoneroTransactionSecKey,
+			tx_fee: tx_fee,
+			to_address: jsonRepresentation["to_address"] as? String
 		)
 	}
 	static func newArray(
