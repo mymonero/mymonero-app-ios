@@ -519,7 +519,7 @@ class ContactFormViewController: UICommonComponents.FormViewController
 			).integral
 		}
 		if self.qrPicking_actionButtons != nil {
-			let justPreviousView = self.resolving_activityIndicator.isHidden == false ? self.resolving_activityIndicator : self.address_inputView
+			let justPreviousView = (self.resolving_activityIndicator.isHidden == false ? self.resolving_activityIndicator : self.address_inputView)!
 			let margin_h = (self.scrollView.frame.size.width - textField_w) / 2
 			self.qrPicking_actionButtons!.givenSuperview_layOut(
 				atY: justPreviousView.frame.origin.y + justPreviousView.frame.size.height + UICommonComponents.ActionButton.topMargin,

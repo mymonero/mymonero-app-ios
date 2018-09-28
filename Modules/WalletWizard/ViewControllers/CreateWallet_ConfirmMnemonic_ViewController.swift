@@ -339,9 +339,9 @@ class CreateWallet_ConfirmMnemonic_ViewController: AddWalletWizardScreen_BaseVie
 			self.tryAgain_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: content_x)
 			self.startOver_actionButtonView.givenSuperview_layOut(atY: buttons_y, withMarginH: content_x)
 		}
-		let bottomMostView = self.selectedWordsView.isHidden == false
+		let bottomMostView = (self.selectedWordsView.isHidden == false
 			? self.selectableWordsView
-			: self.startOver_actionButtonView
+			: self.startOver_actionButtonView)!
 		assert(self.selectableWordsView.isHidden != self.startOver_actionButtonView.isHidden) // assert both are not both visible or hidden
 		self.scrollableContentSizeDidChange(withBottomView: bottomMostView, bottomPadding: 18)
 	}

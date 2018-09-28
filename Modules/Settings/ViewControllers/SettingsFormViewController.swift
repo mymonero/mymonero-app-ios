@@ -577,7 +577,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 				).integral
 			}
 			for (idx, switchView) in switchesToLayOut.enumerated() {
-				let mostPreviousView = idx == 0 ? self.authentication_label : switchesToLayOut[idx - 1]
+				let mostPreviousView = (idx == 0 ? self.authentication_label : switchesToLayOut[idx - 1])!
 				switchView.frame = CGRect(
 					x: input_x,
 					y: mostPreviousView.frame.origin.y + mostPreviousView.frame.size.height

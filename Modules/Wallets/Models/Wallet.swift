@@ -610,7 +610,7 @@ class Wallet: PersistableObject
 	}
 	func logOutThenSaveAndLogIn()
 	{
-		if self.isLoggedIn == true { // if we actually do need to log out ... otherwise this may be an attempt by the ListController to log in after having loaded a failed login from a previous user session upon launching the app
+		if self.isLoggedIn || (self.didFailToBoot_flag != nil && self.didFailToBoot_flag!) || self.isBooted { // if we actually do need to log out ... otherwise this may be an attempt by the ListController to log in after having loaded a failed login from a previous user session upon launching the app
 			self.deBoot()
 		}
 		self._boot_byLoggingIn(

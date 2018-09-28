@@ -382,7 +382,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			"mixin": mixin,
 			"mempool": mempool,
 			"unlock_time": unlock_time,
-			"height": height
+			"height": height != nil ? height! : UINTMAX_MAX
 		]
 		if let value = paymentId {
 			dict["paymentId"] = value
@@ -393,7 +393,10 @@ class MoneroHistoricalTransactionRecord: Equatable
 		fromJSONRepresentation jsonRepresentation: [String: Any],
 		wallet__blockchainHeight: UInt64
 	) -> MoneroHistoricalTransactionRecord {
-		let height = jsonRepresentation["height"] as! UInt64
+		var height: UInt64? = jsonRepresentation["height"] as? UInt64
+		if height == UINTMAX_MAX { // this is how we encode a nil height
+			height = nil
+		}
 		let unlockTime = jsonRepresentation["unlock_time"] as! Double
 		//
 		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
