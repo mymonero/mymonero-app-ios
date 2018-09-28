@@ -144,7 +144,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	bool r = monero_wallet_utils::new_wallet(
 		std::string(languageCode.UTF8String),
 		retVals,
-		nettype_from_objcType(nettype) // isTestnet
+		nettype_from_objcType(nettype)
 	);
 	bool did_error = retVals.did_error;
 	if (!r) {
@@ -347,12 +347,12 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	   isValid
    );
 }
-+ (nonnull Monero_DecodedAddress_RetVals *)decodedAddress:(nonnull NSString *)addressString isTestnet:(BOOL)isTestnet
++ (nonnull Monero_DecodedAddress_RetVals *)decodedAddress:(nonnull NSString *)addressString netType:(NetType)netType
 {
 	Monero_DecodedAddress_RetVals *retVals = [Monero_DecodedAddress_RetVals new];
 	//
 	cryptonote::address_parse_info info;
-	bool didSucceed = cryptonote::get_account_address_from_str(info, isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET, std::string(addressString.UTF8String));
+	bool didSucceed = cryptonote::get_account_address_from_str(info, nettype_from_objcType(netType), std::string(addressString.UTF8String));
 	if (didSucceed == false) {
 		retVals.errStr_orNil = NSLocalizedString(@"Invalid address", nil);
 		//
@@ -378,20 +378,20 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	}
 	return retVals;
 }
-+ (BOOL)isSubAddress:(nonnull NSString *)addressString isTestnet:(BOOL)isTestnet
++ (BOOL)isSubAddress:(nonnull NSString *)addressString netType:(NetType)netType
 {
-	Monero_DecodedAddress_RetVals *retVals = [self decodedAddress:addressString isTestnet:isTestnet];
+	Monero_DecodedAddress_RetVals *retVals = [self decodedAddress:addressString netType:netType];
 	//
 	return retVals.isSubaddress;
 }
-+ (BOOL)isIntegratedAddress:(nonnull NSString *)addressString isTestnet:(BOOL)isTestnet
++ (BOOL)isIntegratedAddress:(nonnull NSString *)addressString netType:(NetType)netType
 {
-	Monero_DecodedAddress_RetVals *retVals = [self decodedAddress:addressString isTestnet:isTestnet];
+	Monero_DecodedAddress_RetVals *retVals = [self decodedAddress:addressString netType:netType];
 	//
 	return retVals.paymentID_NSString_orNil != nil;
 }
 
-+ (nullable NSString *)new_integratedAddrFromStdAddr:(nonnull NSString *)std_address_NSString andShortPID:(nonnull NSString *)short_paymentID isTestnet:(BOOL)isTestnet
++ (nullable NSString *)new_integratedAddrFromStdAddr:(nonnull NSString *)std_address_NSString andShortPID:(nonnull NSString *)short_paymentID netType:(NetType)netType
 {
 	std::string payment_id__string = std::string(short_paymentID.UTF8String);
 	crypto::hash8 payment_id_short;
@@ -400,7 +400,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		return nil;
 	}
 	cryptonote::address_parse_info info;
-	bool didSucceed = cryptonote::get_account_address_from_str(info, isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET, std::string(std_address_NSString.UTF8String));
+	bool didSucceed = cryptonote::get_account_address_from_str(info, nettype_from_objcType(netType), std::string(std_address_NSString.UTF8String));
 	if (didSucceed == false) {
 		return nil;
 	}
@@ -416,7 +416,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		return nil; // that was not a std_address!
 	}
 	std::string int_address_string = cryptonote::get_account_integrated_address_as_str(
-		isTestnet ? cryptonote::TESTNET : cryptonote::MAINNET,
+		nettype_from_objcType(netType),
 		info.address,
 		payment_id_short
 	);
@@ -430,7 +430,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	return [self
 		new_integratedAddrFromStdAddr:std_address_NSString
 		andShortPID:short_paymentID
-		isTestnet:NO];
+		netType:MM_MAINNET];
 }
 
 + (nonnull NSString *)new_short_plain_paymentID

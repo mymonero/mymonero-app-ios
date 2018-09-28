@@ -224,7 +224,7 @@ extension MyMoneroCore
 		) {
 			let retVals = MyMoneroCore_ObjCpp.decodedAddress(
 				address.objcSerialized,
-				isTestnet: false
+				netType: MM_MAINNET
 			)
 			if let errStr = retVals.errStr_orNil {
 				return (errStr, nil)
@@ -246,11 +246,11 @@ extension MyMoneroCore
 		}
 		func isSubAddress(_ string: MoneroAddress) -> Bool
 		{
-			return MyMoneroCore_ObjCpp.isSubAddress(string, isTestnet: false)
+			return MyMoneroCore_ObjCpp.isSubAddress(string, netType: MM_MAINNET)
 		}
 		func isIntegratedAddress(_ string: MoneroAddress) -> Bool
 		{
-			return MyMoneroCore_ObjCpp.isIntegratedAddress(string, isTestnet: false)
+			return MyMoneroCore_ObjCpp.isIntegratedAddress(string, netType: MM_MAINNET)
 		}
 		func New_IntegratedAddress(
 			fromStandardAddress standardAddress: MoneroStandardAddress,

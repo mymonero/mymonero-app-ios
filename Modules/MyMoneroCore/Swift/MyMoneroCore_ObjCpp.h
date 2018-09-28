@@ -151,11 +151,11 @@ typedef enum {
 																)
 															   )fn;
 //
-+ (nonnull Monero_DecodedAddress_RetVals *)decodedAddress:(nonnull NSString *)addressString isTestnet:(BOOL)isTestnet;
-+ (BOOL)isSubAddress:(nonnull NSString *)addressString isTestnet:(BOOL)isTestnet;
-+ (BOOL)isIntegratedAddress:(nonnull NSString *)addressString isTestnet:(BOOL)isTestnet;
++ (nonnull Monero_DecodedAddress_RetVals *)decodedAddress:(nonnull NSString *)addressString netType:(NetType)netType;
++ (BOOL)isSubAddress:(nonnull NSString *)addressString netType:(NetType)netType;
++ (BOOL)isIntegratedAddress:(nonnull NSString *)addressString netType:(NetType)netType;
 //
-+ (nullable NSString *)new_integratedAddrFromStdAddr:(nonnull NSString *)std_address_NSString andShortPID:(nonnull NSString *)short_paymentID isTestnet:(BOOL)isTestnet;
++ (nullable NSString *)new_integratedAddrFromStdAddr:(nonnull NSString *)std_address_NSString andShortPID:(nonnull NSString *)short_paymentID netType:(NetType)netType;
 + (nullable NSString *)new_integratedAddrFromStdAddr:(nonnull NSString *)std_address_NSString andShortPID:(nonnull NSString *)short_paymentID; // mainnet
 //
 + (nonnull NSString *)new_short_plain_paymentID;
