@@ -983,6 +983,7 @@ class Wallet: PersistableObject
 		amount_orNilIfSweeping: HumanUnderstandableCurrencyAmountDouble?, // human-understandable number, e.g. input 0.5 for 0.5 XMR
 		isSweeping: Bool,
 		payment_id: MoneroPaymentID?,
+		integratedAddressPIDForDisplay_orNil: MoneroPaymentID?, // this is not a parameter for sending - it's merely so that it can be used as the final pid for display in the mockedTransaction and sent back to the consumer
 		priority: MoneroTransferSimplifiedPriority,
 		didUpdateProcessStep_fn: @escaping ((_ processStep: HostedMonero.FundsSender.ProcessStep) -> Void),
 		success_fn: @escaping (
@@ -990,7 +991,8 @@ class Wallet: PersistableObject
 			_ sentPaymentID_orNil: MoneroPaymentID?,
 			_ tx_hash: MoneroTransactionHash,
 			_ tx_fee: MoneroAmount,
-			_ tx_key: MoneroTransactionSecKey
+			_ tx_key: MoneroTransactionSecKey,
+			_ mockedTransaction: MoneroHistoricalTransactionRecord
 		) -> Void,
 		canceled_fn: @escaping () -> Void,
 		failWithErr_fn: @escaping (
@@ -1030,7 +1032,40 @@ class Wallet: PersistableObject
 					return
 				}
 				thisSelf.__unlock_sending()
-				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key)
+				//
+				var outgoingAmountForDisplay = final_sentAmountWithoutFee // mutable copy
+				outgoingAmountForDisplay.sign = .minus // make negative as it's outgoing
+				//
+				let mockedTransaction = MoneroHistoricalTransactionRecord(
+					amount: outgoingAmountForDisplay,
+					totalSent: final_sentAmountWithoutFee, // w/o fee b/c the fee is taken and shown separately
+					totalReceived: MoneroAmount("0"),
+					approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: outgoingAmountForDisplay),
+					spent_outputs: nil, // TODO: is this ok?
+					timestamp: Date(), // faking this
+					hash: tx_hash,
+					paymentId: sentPaymentID_orNil ?? integratedAddressPIDForDisplay_orNil, // transaction.paymentId will be nil for integrated addresses but we show it here anyway and, in the situation where they used a std xmr addr and a short pid, an int addr would get fabricated anyway, leaving sentWith_paymentID nil even though user is expecting a pid - so we want to make sure it gets saved in either case
+					mixin: MyMoneroCore.fixedMixin,
+					//
+					mempool: true, // is this correct?
+					unlock_time: 0,
+					height: nil, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
+					//
+//					coinbase: false, // TODO
+					//
+					cached__isConfirmed: false, // important
+					cached__isUnlocked: true, // TODO: not sure about this
+					cached__lockedReason: nil,
+					//
+					isJustSentTransientTransactionRecord: true,
+					//
+					tx_key: tx_key,
+					tx_fee: tx_fee,
+					to_address: target_address
+					//				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
+				)
+				//
+				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction)
 			}
 			fundsSender.didUpdateProcessStep_fn = didUpdateProcessStep_fn
 			fundsSender.failWithErr_fn =

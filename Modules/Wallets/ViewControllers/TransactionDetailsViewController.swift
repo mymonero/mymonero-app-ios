@@ -63,13 +63,13 @@ extension TransactionDetails
 			sectionHeaderTitle: NSLocalizedString("DETAILS", comment: "")
 		)
 		var date__fieldView: UICommonComponents.Details.ShortStringFieldView!
-//		var memo__fieldView: UICommonComponents.Details.ShortStringFieldView!
 		var amountsFeesTotals__fieldView: UICommonComponents.Details.ShortStringFieldView! // TODO: multi value field
+		var toAddress__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
+		var paymentID__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
+		//		var memo__fieldView: UICommonComponents.Details.ShortStringFieldView!
 		var transactionHash__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 		var transactionKey__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 		var ringsize__fieldView: UICommonComponents.Details.ShortStringFieldView!
-		var paymentID__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
-		var toAddress__fieldView: UICommonComponents.Details.CopyableLongStringFieldView!
 		//
 		//
 		// Imperatives - Init
@@ -121,6 +121,24 @@ extension TransactionDetails
 				do {
 					let view = UICommonComponents.Details.CopyableLongStringFieldView(
 						labelVariant: self.fieldLabels_variant,
+						title: NSLocalizedString("To", comment: ""),
+						valueToDisplayIfZero: NSLocalizedString("Unknown", comment: "")
+					)
+					self.toAddress__fieldView = view
+					sectionView.add(fieldView: view)
+				}
+				do {
+					let view = UICommonComponents.Details.CopyableLongStringFieldView(
+						labelVariant: self.fieldLabels_variant,
+						title: NSLocalizedString("Payment ID", comment: ""),
+						valueToDisplayIfZero: NSLocalizedString("None", comment: "")
+					)
+					self.paymentID__fieldView = view
+					sectionView.add(fieldView: view)
+				}
+				do {
+					let view = UICommonComponents.Details.CopyableLongStringFieldView(
+						labelVariant: self.fieldLabels_variant,
 						title: NSLocalizedString("Transaction ID", comment: ""),
 						valueToDisplayIfZero: NSLocalizedString("N/A", comment: "")
 					)
@@ -143,24 +161,6 @@ extension TransactionDetails
 						valueToDisplayIfZero: nil
 					)
 					self.ringsize__fieldView = view
-					sectionView.add(fieldView: view)
-				}
-				do {
-					let view = UICommonComponents.Details.CopyableLongStringFieldView(
-						labelVariant: self.fieldLabels_variant,
-						title: NSLocalizedString("Payment ID", comment: ""),
-						valueToDisplayIfZero: NSLocalizedString("None", comment: "")
-					)
-					self.paymentID__fieldView = view
-					sectionView.add(fieldView: view)
-				}
-				do {
-					let view = UICommonComponents.Details.CopyableLongStringFieldView(
-						labelVariant: self.fieldLabels_variant,
-						title: NSLocalizedString("To", comment: ""),
-						valueToDisplayIfZero: NSLocalizedString("Unknown", comment: "")
-					)
-					self.toAddress__fieldView = view
 					sectionView.add(fieldView: view)
 				}
 				self.scrollView.addSubview(sectionView)

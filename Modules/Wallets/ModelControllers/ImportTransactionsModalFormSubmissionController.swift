@@ -79,6 +79,7 @@ extension ImportTransactionsModal
 				amount_orNilIfSweeping: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
 				isSweeping: false,
 				payment_id: payment_id,
+				integratedAddressPIDForDisplay_orNil: nil, // not currently using an integrated addr  ... if we were, we could decode target_address and use its pid here instead .. in fact, it might be a good idea to do that validation in case of some sort of code fault elsewhere
 				priority: MoneroTransferSimplifiedPriority.defaultPriority, // .med
 				didUpdateProcessStep_fn:
 				{ [weak self] (processStep) in
@@ -89,7 +90,7 @@ extension ImportTransactionsModal
 					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
 				},
 				success_fn:
-				{ [weak self] (sentAmountDouble, sentPaymentID_orNil, tx_hash, tx_fee, tx_key) in
+				{ [weak self] (sentAmountDouble, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction) in
 					guard let thisSelf = self else {
 						return
 					}

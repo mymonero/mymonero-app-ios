@@ -161,110 +161,110 @@ extension HostedMonero
 			spend_key__public: MoneroKey,
 			spend_key__private: MoneroKey,
 			wallet_keyImageCache: MoneroUtils.KeyImageCache
-			) -> (
+		) -> (
 			err_str: String?,
 			result: ParsedResult_AddressTransactions?
-			) {
-				let account_scanned_tx_height = response_jsonDict["scanned_height"] as! UInt64
-				let account_scanned_block_height = response_jsonDict["scanned_block_height"] as! UInt64
-				let account_scan_start_height = response_jsonDict["start_height"] as! UInt64
-				let transaction_height = response_jsonDict["transaction_height"] as! UInt64
-				let blockchain_height = response_jsonDict["blockchain_height"] as! UInt64
+		) {
+			let account_scanned_tx_height = response_jsonDict["scanned_height"] as! UInt64
+			let account_scanned_block_height = response_jsonDict["scanned_block_height"] as! UInt64
+			let account_scan_start_height = response_jsonDict["start_height"] as! UInt64
+			let transaction_height = response_jsonDict["transaction_height"] as! UInt64
+			let blockchain_height = response_jsonDict["blockchain_height"] as! UInt64
+			//
+			var mutable_transactions: [MoneroHistoricalTransactionRecord] = []
+			let transaction_dicts = response_jsonDict["transactions"] as? [[String: Any]] ?? []
+			for (_, tx_dict) in transaction_dicts.enumerated() {
+				assert(blockchain_height != 0)  // if we have txs to parse, I think we can assume height != 0
 				//
-				var mutable_transactions: [MoneroHistoricalTransactionRecord] = []
-				let transaction_dicts = response_jsonDict["transactions"] as? [[String: Any]] ?? []
-				for (_, tx_dict) in transaction_dicts.enumerated() {
-					assert(blockchain_height != 0)  // if we have txs to parse, I think we can assume height != 0
-					//
-					var mutable__tx_total_sent = MoneroAmount(tx_dict["total_sent"] as! String)!
-					let spent_outputs: [[String: Any]] = tx_dict["spent_outputs"] as? [[String: Any]] ?? []
-					var mutable__final_tx_spent_output_dicts = [[String: Any]]()
-					for (_, spent_output) in spent_outputs.enumerated() {
-						let generated__keyImage = wallet_keyImageCache.lazy_keyImage(
-							tx_pub_key: spent_output["tx_pub_key"] as! MoneroTransactionPubKey,
-							out_index: spent_output["out_index"] as! UInt64,
-							public_address: address,
-							sec_keys: MoneroKeyDuo(view: view_key__private, spend: spend_key__private),
-							pub_spendKey: spend_key__public
-						)
-						let spent_output__keyImage = spent_output["key_image"] as! MoneroKeyImage
-						if spent_output__keyImage != generated__keyImage { // is NOT own - discard/redact
-							//					NSLog("Output used as mixin \(spent_output__keyImage)/\(generated__keyImage))")
-							let spent_output__amount = MoneroAmount(spent_output["amount"] as! String)!
-							mutable__tx_total_sent -= spent_output__amount
-						} else { // IS own - include/keep
-							mutable__final_tx_spent_output_dicts.append(spent_output)
-						}
+				var mutable__tx_total_sent = MoneroAmount(tx_dict["total_sent"] as! String)!
+				let spent_outputs: [[String: Any]] = tx_dict["spent_outputs"] as? [[String: Any]] ?? []
+				var mutable__final_tx_spent_output_dicts = [[String: Any]]()
+				for (_, spent_output) in spent_outputs.enumerated() {
+					let generated__keyImage = wallet_keyImageCache.lazy_keyImage(
+						tx_pub_key: spent_output["tx_pub_key"] as! MoneroTransactionPubKey,
+						out_index: spent_output["out_index"] as! UInt64,
+						public_address: address,
+						sec_keys: MoneroKeyDuo(view: view_key__private, spend: spend_key__private),
+						pub_spendKey: spend_key__public
+					)
+					let spent_output__keyImage = spent_output["key_image"] as! MoneroKeyImage
+					if spent_output__keyImage != generated__keyImage { // is NOT own - discard/redact
+						//					NSLog("Output used as mixin \(spent_output__keyImage)/\(generated__keyImage))")
+						let spent_output__amount = MoneroAmount(spent_output["amount"] as! String)!
+						mutable__tx_total_sent -= spent_output__amount
+					} else { // IS own - include/keep
+						mutable__final_tx_spent_output_dicts.append(spent_output)
 					}
-					let final_tx_totalSent: MoneroAmount = mutable__tx_total_sent
-					let final_tx_spent_output_dicts = mutable__final_tx_spent_output_dicts
-					let final_tx_totalReceived = MoneroAmount(tx_dict["total_received"] as! String)! // assuming value exists - default to 0 if n
-					if (final_tx_totalReceived + final_tx_totalSent <= 0) {
-						continue // skip
-					}
-					let final_tx_amount = final_tx_totalReceived - final_tx_totalSent
-					
-					let height = tx_dict["height"] as? UInt64
-					let unlockTime = tx_dict["unlock_time"] as? Double ?? 0
-					//
-					let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
-						givenTransactionHeight: height,
-						andWalletBlockchainHeight: blockchain_height
-					)
-					let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
-						givenTransactionUnlockTime: unlockTime,
-						andWalletBlockchainHeight: blockchain_height
-					)
-					let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
-						givenTransactionUnlockTime: unlockTime,
-						andWalletBlockchainHeight: blockchain_height
-						) : nil
-					let transactionRecord = MoneroHistoricalTransactionRecord(
-						amount: final_tx_amount,
-						totalSent: final_tx_totalSent, // must use this as it's been adjusted for non-own outputs
-						totalReceived: MoneroAmount("\(tx_dict["total_received"] as! String)")!,
-						approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: final_tx_amount), // -> String -> Double
-						spent_outputs: MoneroSpentOutputDescription.newArray(
-							withAPIJSONDicts: final_tx_spent_output_dicts // must use this as it's been adjusted for non-own outputs
-						),
-						timestamp: MoneroJSON_dateFormatter.date(from: "\(tx_dict["timestamp"] as! String)")!,
-						hash: tx_dict["hash"] as! MoneroTransactionHash,
-						paymentId: tx_dict["payment_id"] as? MoneroPaymentID,
-						mixin: tx_dict["mixin"] as! UInt,
-						//
-						mempool: tx_dict["mempool"] as! Bool,
-						unlock_time: unlockTime,
-						height: height,
-						//
-						cached__isConfirmed: isConfirmed,
-						cached__isUnlocked: isUnlocked,
-						cached__lockedReason: lockedReason,
-						//
-						//				id: (dict["id"] as? UInt64)!, // unwrapping this for clarity
-						isJustSentTransientTransactionRecord: false,
-						//
-						// local-only or sync-only metadata
-						tx_key: nil,
-						tx_fee: nil,
-						to_address: nil
-					)
-					mutable_transactions.append(transactionRecord)
 				}
-				mutable_transactions.sort { (a, b) -> Bool in
-					return a.timestamp >= b.timestamp // TODO: this used to sort by b.id-a.id in JS… is timestamp sort ok?
+				let final_tx_totalSent: MoneroAmount = mutable__tx_total_sent
+				let final_tx_spent_output_dicts = mutable__final_tx_spent_output_dicts
+				let final_tx_totalReceived = MoneroAmount(tx_dict["total_received"] as! String)! // assuming value exists - default to 0 if n
+				if (final_tx_totalReceived + final_tx_totalSent <= 0) {
+					continue // skip
 				}
-				let final_transactions = mutable_transactions
+				let final_tx_amount = final_tx_totalReceived - final_tx_totalSent
+				
+				let height = tx_dict["height"] as? UInt64
+				let unlockTime = tx_dict["unlock_time"] as? Double ?? 0
 				//
-				let result = ParsedResult_AddressTransactions(
-					account_scanned_height: account_scanned_tx_height, // account_scanned_tx_height =? account_scanned_height
-					account_scanned_block_height: account_scanned_block_height,
-					account_scan_start_height: account_scan_start_height,
-					transaction_height: transaction_height,
-					blockchain_height: blockchain_height,
-					//
-					transactions: final_transactions
+				let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
+					givenTransactionHeight: height,
+					andWalletBlockchainHeight: blockchain_height
 				)
-				return (nil, result)
+				let isUnlocked = MoneroHistoricalTransactionRecord.isUnlocked(
+					givenTransactionUnlockTime: unlockTime,
+					andWalletBlockchainHeight: blockchain_height
+				)
+				let lockedReason: String? = !isUnlocked ? MoneroHistoricalTransactionRecord.lockedReason(
+					givenTransactionUnlockTime: unlockTime,
+					andWalletBlockchainHeight: blockchain_height
+				) : nil
+				let transactionRecord = MoneroHistoricalTransactionRecord(
+					amount: final_tx_amount,
+					totalSent: final_tx_totalSent, // must use this as it's been adjusted for non-own outputs
+					totalReceived: MoneroAmount("\(tx_dict["total_received"] as! String)")!,
+					approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: final_tx_amount), // -> String -> Double
+					spent_outputs: MoneroSpentOutputDescription.newArray(
+						withAPIJSONDicts: final_tx_spent_output_dicts // must use this as it's been adjusted for non-own outputs
+					),
+					timestamp: MoneroJSON_dateFormatter.date(from: "\(tx_dict["timestamp"] as! String)")!,
+					hash: tx_dict["hash"] as! MoneroTransactionHash,
+					paymentId: tx_dict["payment_id"] as? MoneroPaymentID,
+					mixin: tx_dict["mixin"] as! UInt,
+					//
+					mempool: tx_dict["mempool"] as! Bool,
+					unlock_time: unlockTime,
+					height: height,
+					//
+					cached__isConfirmed: isConfirmed,
+					cached__isUnlocked: isUnlocked,
+					cached__lockedReason: lockedReason,
+					//
+//					id: (dict["id"] as? UInt64)!, // unwrapping this for clarity
+					isJustSentTransientTransactionRecord: false,
+					//
+					// local-only or sync-only metadata
+					tx_key: nil,
+					tx_fee: nil,
+					to_address: nil
+				)
+				mutable_transactions.append(transactionRecord)
+			}
+			mutable_transactions.sort { (a, b) -> Bool in
+				return a.timestamp >= b.timestamp // TODO: this used to sort by b.id-a.id in JS… is timestamp sort ok?
+			}
+			let final_transactions = mutable_transactions
+			//
+			let result = ParsedResult_AddressTransactions(
+				account_scanned_height: account_scanned_tx_height, // account_scanned_tx_height =? account_scanned_height
+				account_scanned_block_height: account_scanned_block_height,
+				account_scan_start_height: account_scan_start_height,
+				transaction_height: transaction_height,
+				blockchain_height: blockchain_height,
+				//
+				transactions: final_transactions
+			)
+			return (nil, result)
 		}
 	}
 	struct ParsedResult_UnspentOuts

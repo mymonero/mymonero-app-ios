@@ -262,6 +262,7 @@ extension SendFundsForm
 				amount_orNilIfSweeping: self.parameters.amount_submittableDouble,
 				isSweeping: self.parameters.isSweeping,
 				payment_id: payment_id,
+				integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
 				priority: self.parameters.priority,
 				didUpdateProcessStep_fn:
 				{ [weak self] (processStep) in
@@ -272,7 +273,7 @@ extension SendFundsForm
 					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
 				},
 				success_fn:
-				{ [weak self] (final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee, tx_key) in
+				{ [weak self] (final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction) in
 					guard let thisSelf = self else {
 						return
 					}
@@ -285,7 +286,8 @@ extension SendFundsForm
 						transactionHash: tx_hash,
 						transactionKey: tx_key,
 						tx_fee: tx_fee,
-						sentAmount: final_sentAmount // may be different for a sweep
+						sentAmount: final_sentAmount, // may be different for a sweep
+						mockedTransaction: mockedTransaction
 					)
 				},
 				canceled_fn:
@@ -314,35 +316,9 @@ extension SendFundsForm
 			transactionHash: MoneroTransactionHash,
 			transactionKey: MoneroTransactionSecKey,
 			tx_fee: MoneroAmount,
-			sentAmount: MoneroAmount
+			sentAmount: MoneroAmount,
+			mockedTransaction: MoneroHistoricalTransactionRecord
 		) {
-			var outgoingAmountForDisplay = sentAmount // mutable copy
-			outgoingAmountForDisplay.sign = .minus // make negative as it's outgoing
-			//
-			let mockedTransaction = MoneroHistoricalTransactionRecord(
-				amount: outgoingAmountForDisplay,
-				totalSent: sentAmount,
-				totalReceived: MoneroAmount("0"),
-				approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: outgoingAmountForDisplay),
-				spent_outputs: nil, // TODO: is this ok?
-				timestamp: Date(), // faking this
-				hash: transactionHash,
-				paymentId: sentWith_paymentID ?? integratedAddressPIDForDisplay_orNil, // transaction.paymentId will be nil for integrated addresses but we show it here anyway and, in the situation where they used a std xmr addr and a short pid, an int addr would get fabricated anyway, leaving sentWith_paymentID nil even though user is expecting a pid - so we want to make sure it gets saved in either case
-				mixin: MyMoneroCore.fixedMixin,
-				mempool: false, // TODO: is this correct?
-				unlock_time: 0,
-				height: 0, // TODO: is this correct?
-//				coinbase: false, // TODO
-				cached__isConfirmed: false, // important
-				cached__isUnlocked: true, // TODO: not sure about this
-				cached__lockedReason: nil,
-				isJustSentTransientTransactionRecord: true,
-				//
-				tx_key: transactionKey,
-				tx_fee: tx_fee,
-				to_address: sentTo_address
-//				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
-			)
 			if self.parameters.fromWallet == nil {
 				assert(false, "FYI: wallet freed before end of SendFunds")
 				return
