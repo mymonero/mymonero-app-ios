@@ -228,13 +228,15 @@ extension TransactionDetails
 			self.set_navigationTitleAndColor()
 			//
 			var validationMessage = ""
-			if transaction.isJustSentTransientTransactionRecord || transaction.cached__isConfirmed == false {
-//				let floatAmount = self.transaction.approxFloatAmount
-//				if floatAmount > 0 {
-//					validationMessage += NSLocalizedString("Some Monero is arriving.", comment: "")
-//				} else {
+			if transaction.isFailed != true { // prevent display on rejected unconfirmed tx
+				if transaction.isJustSentTransientTransactionRecord || transaction.cached__isConfirmed == false {
+//					let floatAmount = self.transaction.approxFloatAmount
+//					if floatAmount > 0 {
+//						validationMessage += NSLocalizedString("Some Monero is arriving.", comment: "")
+//					} else {
 					validationMessage += NSLocalizedString("Your Monero is on its way.", comment: "")
-//				}
+//					}
+				}
 			}
 			if transaction.cached__isUnlocked == false {
 				assert(transaction.cached__lockedReason != nil)
@@ -270,9 +272,12 @@ extension TransactionDetails
 					color: floatAmount < 0 ? UIColor(rgb: 0xF97777) : nil
 				)
 			}
-			do {
-				let value = "\(self.transaction.mixin + 1)" // ringsize is mixin + 1
+			if let value = self.transaction.mixin {
+				let value = "\(value + 1)" // ringsize is mixin + 1
 				self.ringsize__fieldView.set(text: value)
+				self.ringsize__fieldView.isHidden = false
+			} else {
+				self.ringsize__fieldView.isHidden = true
 			}
 			do {
 				let value = self.transaction.hash
@@ -296,10 +301,14 @@ extension TransactionDetails
 			}
 			//
 			do {
-				let text =
-					self.transaction.cached__isConfirmed
-					? NSLocalizedString("CONFIRMED", comment: "")
-					: NSLocalizedString("PENDING", comment: "")
+				var text: String?
+				if self.transaction.isFailed == true {
+					text = NSLocalizedString("REJECTED", comment: "")
+				} else if self.transaction.cached__isConfirmed {
+					text = NSLocalizedString("CONFIRMED", comment: "")
+				} else {
+					text = NSLocalizedString("PENDING", comment: "")
+				}
 				self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 					type: .valueDisplayLabel,
 					target: nil,

@@ -265,6 +265,7 @@ class Wallet: PersistableObject
 	// Properties - Objects
 	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
+	var txCleanupController: Wallet_TxCleanupController? // strong
 	var fundsSender: HostedMonero.FundsSender?
 	//
 	// 'Protocols' - Persistable Object
@@ -462,6 +463,7 @@ class Wallet: PersistableObject
 	func tearDownRuntime()
 	{
 		self.hostPollingController = nil // stop requests
+		self.txCleanupController = nil // stop timer
 		//
 		self.logIn_requestHandle?.cancel() // in case wallet is being rebooted on API address change via settings
 		self.logIn_requestHandle = nil
@@ -763,6 +765,7 @@ class Wallet: PersistableObject
 					return
 				}
 				thisSelf._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
+				thisSelf.txCleanupController = Wallet_TxCleanupController(wallet: thisSelf)
 				//
 				NotificationCenter.default.post(name: PersistableObject.NotificationNames.booted.notificationName, object: thisSelf, userInfo: nil)
 			}
@@ -975,9 +978,25 @@ class Wallet: PersistableObject
 		return nil
 	}
 	//
+	// Imperatives - Local tx CRUD
+	func _manuallyInsertTransactionRecord(
+		_ transaction: MoneroHistoricalTransactionRecord
+	) {
+		let old_transactions = self.transactions
+		if self.transactions == nil {
+			self.transactions = []
+		}
+		self.transactions!.append(transaction)
+		if let _ = self.saveToDisk() {
+			return // TODO: anything to do here? maybe saveToDisk should implement retry logic
+		}
+		// notify/yield
+		self.___didReceiveActualChangeTo_transactions(
+			old_transactions: old_transactions
+		)
+	}
 	//
 	// Runtime (Booted) - Imperatives - Sending Funds
-	//
 	func sendFunds(
 		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
 		amount_orNilIfSweeping: HumanUnderstandableCurrencyAmountDouble?, // human-understandable number, e.g. input 0.5 for 0.5 XMR
@@ -1053,6 +1072,8 @@ class Wallet: PersistableObject
 					//
 //					coinbase: false, // TODO
 					//
+					isFailed: nil, // since we've just created it
+					//
 					cached__isConfirmed: false, // important
 					cached__isUnlocked: true, // TODO: not sure about this
 					cached__lockedReason: nil,
@@ -1066,6 +1087,10 @@ class Wallet: PersistableObject
 				)
 				//
 				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction)
+				//
+				// manually insert .. and subsequent fetches from the server will be
+				// diffed against this, preserving the tx_fee, tx_key, to_address...
+				thisSelf._manuallyInsertTransactionRecord(mockedTransaction);
 			}
 			fundsSender.didUpdateProcessStep_fn = didUpdateProcessStep_fn
 			fundsSender.failWithErr_fn =
@@ -1204,14 +1229,83 @@ class Wallet: PersistableObject
 		self.transaction_height = parsedResult.transaction_height
 		self.blockchain_height = parsedResult.blockchain_height
 		//
-		// Transactions
-		// Note: In the JS, we do a basic/initial diff of the txs and selectively construct the actual final used list, in order to preserve local metadata (and we see how many we've added etc) - but I will not port that yet since we are not implementing local notifications yet - and since we may have a more proper syncing engine soon
+		var didActuallyChange_transactions = false // we'll see if anything actually changed and only emit if so
+		// We will construct the txs from the incoming txs here as follows.
+		// Doing this allows us to selectively preserve already-cached info.
+		var numberOfTransactionsAdded = 0
+//		var newTransactions = [MoneroHistoricalTransactionRecord]()
+		let existing_transactions = (self.transactions ?? [])!
+		let incoming_txs = parsedResult.transactions
 		//
-		// Update: It would be a good idea to port the diffing stuff here because now we want to save tx key
-		//		
-		let didActuallyChange_transactions = self.transactions == nil || self.transactions! != parsedResult.transactions
-		let existing_transactions = self.transactions
-		self.transactions = parsedResult.transactions
+		// Always make sure to construct new array so we have the old set
+		var txs_by_hash = [MoneroTransactionHash: MoneroHistoricalTransactionRecord]()
+		for (_, existing_tx) in existing_transactions.enumerated() {
+			// in JS here we delete the 'id' field but we don't have it in Swift - in JS, the comment is: "not expecting an id but just in case .. so we don't break diffing"
+			txs_by_hash[existing_tx.hash] = existing_tx // start with old one
+		}
+		for (_, incoming_tx) in incoming_txs.enumerated() {
+			// in JS here we delete the 'id' field but we don't have it in Swift - in JS, the comment is: "because this field changes while sending funds, even though hash stays the same, and because we don't want `id` messing with our ability to diff. so we're not even going to try to store this"
+			let existing_tx = txs_by_hash[incoming_tx.hash]
+			let isNewTransaction = existing_tx == nil
+			var finalized_incoming_tx = incoming_tx
+			// ^- If any existing tx is also in incoming txs, this will cause
+			// the (correct) deletion of e.g. isJustSentTransaction=true.
+			if isNewTransaction { // This is generally now only going to be hit when new incoming txs happen - or outgoing txs done on other logins
+				didActuallyChange_transactions = true
+				numberOfTransactionsAdded += 1
+			} else {
+				let existing_same_tx = existing_tx!
+				if incoming_tx != existing_same_tx {
+					didActuallyChange_transactions = true // this is likely to happen if tx.height changes while pending confirmation
+				}
+				// Check if existing tx has any cached info which we
+				// want to bring into the finalized_tx before setting;
+				if existing_same_tx.tx_key != nil {
+					finalized_incoming_tx.tx_key = existing_same_tx.tx_key
+				}
+				if existing_same_tx.to_address != nil {
+					finalized_incoming_tx.to_address = existing_same_tx.to_address
+				}
+				if existing_same_tx.tx_fee != nil {
+					finalized_incoming_tx.tx_fee = existing_same_tx.tx_fee
+				}
+				if incoming_tx.paymentId == nil || incoming_tx.paymentId == "" {
+					if existing_same_tx.paymentId != nil {
+						finalized_incoming_tx.paymentId = existing_same_tx.paymentId // if the tx lost it.. say, while it's being scanned, keep pid
+					}
+				}
+				if incoming_tx.mixin == nil || incoming_tx.mixin == 0 {
+					if existing_same_tx.mixin != nil && existing_same_tx.mixin != 0 {
+						finalized_incoming_tx.mixin = existing_same_tx.mixin // if the tx lost it.. say, while it's being scanned, keep mixin
+					}
+				}
+				//
+				// We could probably check if the existing_same_tx has a
+				// negative amount and the incoming_tx has a positive amount and
+				// then cause the existing_tx to use the negative amount ... but
+				// those criteria are too loose, and the potential for incorrect
+				// behavior too great imo.
+			}
+			// always overwrite existing ones:
+			txs_by_hash[incoming_tx.hash] = finalized_incoming_tx; // the finalized tx
+			// Commented b/c we don't use this yet:
+//			if isNewTransaction { // waiting so we have the finalized incoming_tx obj
+//				newTransactions.append(finalized_incoming_tx)
+//			}
+		}
+		//
+		var finalized_transactions = [MoneroHistoricalTransactionRecord]()
+		for (_, pair) in txs_by_hash.enumerated() {
+			finalized_transactions.append(pair.value)
+		}
+		finalized_transactions.sort { (a, b) -> Bool in
+			// there are no ids here for sorting so we'll use timestamp
+			// and .mempool can mess with user's expectation of tx sorting
+			// when .isFailed is involved, so just going with a simple sort here
+			return b.timestamp < a.timestamp
+		}
+		//
+		self.transactions = finalized_transactions
 		//
 		let wasFirstFetchOf_transactions = self.dateThatLast_fetchedAccountTransactions == nil
 		self.dateThatLast_fetchedAccountTransactions = Date()

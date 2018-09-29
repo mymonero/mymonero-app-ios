@@ -188,22 +188,24 @@ class MoneroHistoricalTransactionRecord: Equatable
 	let spent_outputs: [MoneroSpentOutputDescription]?
 	let timestamp: Date
 	let hash: MoneroTransactionHash
-	let paymentId: MoneroPaymentID?
-	let mixin: UInt
+	var paymentId: MoneroPaymentID? // this is made mutable so it can be recovered if saved only locally
+	var mixin: UInt? // this is made mutable so it can be recovered if saved only locally
 	//
 	let mempool: Bool
 	let unlock_time: Double
 	let height: UInt64? // may not have made it into a block yet!
 	//
-	let tx_key: MoneroTransactionSecKey?
-	let tx_fee: MoneroAmount?
-	let to_address: MoneroAddress?
+	// these properties are made mutable so they can be updated conveniently during a merge/sync from remote
+	var tx_key: MoneroTransactionSecKey?
+	var tx_fee: MoneroAmount?
+	var to_address: MoneroAddress?
+	var isFailed: Bool? // set to mutable to allow changing in-place
 	//
 	// Transient values
 	let cached__isConfirmed: Bool
 	let cached__isUnlocked: Bool
 	let cached__lockedReason: String? // only calculated if isUnlocked=true
-	let isJustSentTransientTransactionRecord: Bool
+	var isJustSentTransientTransactionRecord: Bool // allowed to be mutable for modification during tx cleanup
 	//
 	// Lifecycle - Init
 	required init(
@@ -215,12 +217,13 @@ class MoneroHistoricalTransactionRecord: Equatable
 		timestamp: Date,
 		hash: MoneroTransactionHash,
 		paymentId: MoneroPaymentID?,
-		mixin: UInt,
+		mixin: UInt?,
 		//
 		mempool: Bool,
 		unlock_time: Double,
 		height: UInt64?,
 		//
+		isFailed: Bool?,
 		cached__isConfirmed: Bool,
 		cached__isUnlocked: Bool,
 		cached__lockedReason: String?,
@@ -244,6 +247,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 		self.unlock_time = unlock_time
 		self.height = height
 		//
+		self.isFailed = isFailed
 		self.cached__isConfirmed = cached__isConfirmed
 		self.cached__isUnlocked = cached__isUnlocked
 		self.cached__lockedReason = cached__lockedReason
@@ -369,6 +373,9 @@ class MoneroHistoricalTransactionRecord: Equatable
 		if l.height != r.height {
 			return false
 		}
+		if l.isFailed != r.isFailed {
+			return false
+		}
 		return true
 	}
 	//
@@ -391,10 +398,12 @@ class MoneroHistoricalTransactionRecord: Equatable
 			),
 			"timestamp": timestamp.timeIntervalSince1970,
 			"hash": hash,
-			"mixin": mixin,
 			"mempool": mempool,
 			"unlock_time": unlock_time
 		]
+		if mixin != nil {
+			dict["mixin"] = mixin
+		}
 		if height != nil {
 			dict["height"] = height
 		}
@@ -405,10 +414,13 @@ class MoneroHistoricalTransactionRecord: Equatable
 			dict["tx_key"] = value
 		}
 		if let value = tx_fee {
-			dict["tx_fee"] = value
+			dict["tx_fee"] = String(value, radix: 10)
 		}
 		if let value = to_address {
 			dict["to_address"] = value
+		}
+		if let value = isFailed {
+			dict["isFailed"] = value
 		}
 		//
 		return dict
@@ -420,6 +432,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 		let height = jsonRepresentation["height"] as? UInt64
 		let unlockTime = jsonRepresentation["unlock_time"] as! Double
 		//
+		let isFailed = jsonRepresentation["isFailed"] as? Bool
 		let isConfirmed = MoneroHistoricalTransactionRecord.isConfirmed(
 			givenTransactionHeight: height,
 			andWalletBlockchainHeight: wallet__blockchainHeight
@@ -454,6 +467,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			unlock_time: unlockTime,
 			height: height,
 			//
+			isFailed: isFailed,
 			cached__isConfirmed: isConfirmed,
 			cached__isUnlocked: isUnlocked,
 			cached__lockedReason: lockedReason,

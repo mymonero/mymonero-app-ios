@@ -230,11 +230,13 @@ extension HostedMonero
 					timestamp: MoneroJSON_dateFormatter.date(from: "\(tx_dict["timestamp"] as! String)")!,
 					hash: tx_dict["hash"] as! MoneroTransactionHash,
 					paymentId: tx_dict["payment_id"] as? MoneroPaymentID,
-					mixin: tx_dict["mixin"] as! UInt,
+					mixin: tx_dict["mixin"] as? UInt,
 					//
 					mempool: tx_dict["mempool"] as! Bool,
 					unlock_time: unlockTime,
 					height: height,
+					//
+					isFailed: nil, // since we don't get this from the server
 					//
 					cached__isConfirmed: isConfirmed,
 					cached__isUnlocked: isUnlocked,

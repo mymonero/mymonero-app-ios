@@ -271,7 +271,17 @@ extension WalletDetails
 				}
 				self.dateLabel.text = Transaction.lazy_cell_dateFormatter().string(from: object.timestamp).uppercased()
 				self.paymentIDLabel.text = object.paymentId ?? ""
-				self.statusLabel.text = !object.cached__isConfirmed || !object.cached__isUnlocked ? NSLocalizedString("PENDING", comment: "") : NSLocalizedString("CONFIRMED", comment: "")
+				do {
+					var text: String
+					if object.isFailed == true {
+						text = NSLocalizedString("REJECTED", comment: "")
+					} else if !object.cached__isConfirmed || !object.cached__isUnlocked {
+						text = NSLocalizedString("PENDING", comment: "")
+					} else {
+						text = NSLocalizedString("CONFIRMED", comment: "")
+					}
+					self.statusLabel.text = text
+				}
 			}
 			//
 			func startObserving_object()
