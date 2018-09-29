@@ -141,7 +141,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		   );
 	};
 	monero_wallet_utils::WalletDescriptionRetVals retVals;
-	bool r = monero_wallet_utils::new_wallet(
+	bool r = monero_wallet_utils::convenience__new_wallet_with_language_code(
 		std::string(languageCode.UTF8String),
 		retVals,
 		nettype_from_objcType(nettype)
