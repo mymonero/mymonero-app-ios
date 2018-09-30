@@ -105,25 +105,28 @@ class WalletsListController: PersistedObjectListController
 	//
 	// Booted - Imperatives - Public - Wallets list
 	func CreateNewWallet_NoBootNoListAdd(
+		_ localeCode: String,
 		_ fn: @escaping (_ err: String?, _ walletInstance: Wallet?) -> Void
 	) -> Void { // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
-		MyMoneroCore.shared_objCppBridge.NewlyCreatedWallet
-		{ (err_str, walletDescription) in
-			if err_str != nil {
-				fn(err_str, nil)
-				return
-			}
-			do {
-				guard let wallet = try Wallet(ifGeneratingNewWallet_walletDescription: walletDescription!) else {
-					fn("Unable to add wallet.", nil)
+		MyMoneroCore.shared_objCppBridge.NewlyCreatedWallet(
+			localeCode,
+			{ (err_str, walletDescription) in
+				if err_str != nil {
+					fn(err_str, nil)
 					return
 				}
-				fn(nil, wallet)
-			} catch let e {
-				fn(e.localizedDescription, nil)
-				return
+				do {
+					guard let wallet = try Wallet(ifGeneratingNewWallet_walletDescription: walletDescription!) else {
+						fn("Unable to add wallet.", nil)
+						return
+					}
+					fn(nil, wallet)
+				} catch let e {
+					fn(e.localizedDescription, nil)
+					return
+				}
 			}
-		}
+		)
 	}
 	func OnceBooted_ObtainPW_AddNewlyGeneratedWallet(
 		walletInstance: Wallet,

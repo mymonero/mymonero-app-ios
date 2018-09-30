@@ -170,8 +170,7 @@ extension UICommonComponents
 		
 		func scrollInputViewToVisible(
 			_ inputView: UIView
-		)
-		{
+		) {
 			var estimatedDesiredAdditional__margin_y: CGFloat = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView + UICommonComponents.Form.FieldLabel.fixedHeight + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView
 			do { // to finalize margin_y, in case it's not a direct subview of scrollView (e.g. UITextView inside container)
 				var this_view = inputView

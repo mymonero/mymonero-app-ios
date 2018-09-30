@@ -148,8 +148,7 @@ class AddWalletWizardModalNavigationController: UICommonComponents.NavigationCon
 	func _configureRuntimeStateForTaskModeName(
 		taskMode: TaskMode,
 		toIdx: Int
-	)
-	{
+	) {
 		self.current_wizardTaskMode = taskMode
 		self.current_wizardTaskMode_stepIdx = toIdx
 	}
@@ -174,8 +173,7 @@ class AddWalletWizardModalNavigationController: UICommonComponents.NavigationCon
 	func patchToDifferentWizardTaskMode_withoutPushingScreen(
 		patchTo_wizardTaskMode: TaskMode,
 		atIndex: Int
-	)
-	{
+	) {
 		self._configureRuntimeStateForTaskModeName(taskMode: patchTo_wizardTaskMode, toIdx: atIndex)
 	}
 	//
@@ -219,19 +217,26 @@ class AddWalletWizardModalNavigationController: UICommonComponents.NavigationCon
 	var walletCreation_metaInfo_color: Wallet.SwatchColor?
 	//
 	var walletCreation_walletInstance: Wallet? // strong reference for ownership
+	var currentWalletUsedLocaleCode: String?
 	func setMetaInfoAndProceedToNextStep(
 		walletLabel: String,
 		color: Wallet.SwatchColor
-	)
-	{
+	) {
 		self.walletCreation_metaInfo_walletLabel = walletLabel
 		self.walletCreation_metaInfo_color = color
 		self.proceedToNextStep()
 	}
-	private func __generateWallet(_ fn: @escaping (() -> Void))
-	{
-		WalletsListController.shared.CreateNewWallet_NoBootNoListAdd
-			{ [unowned self] (err_str, walletInstance) in
+	func generateAndUseNewWallet(
+		optl_localeCode: String?,
+		_ fn: @escaping (() -> Void)
+	) {
+		let final__locale_code = (optl_localeCode ?? Locale.current.languageCode ?? "en")!
+		WalletsListController.shared.CreateNewWallet_NoBootNoListAdd(
+			final__locale_code,
+			{ [unowned self] (
+				err_str,
+				walletInstance
+			) in
 				if err_str != nil {
 					assert(false)
 					let generator = UINotificationFeedbackGenerator()
@@ -257,22 +262,28 @@ class AddWalletWizardModalNavigationController: UICommonComponents.NavigationCon
 					return
 				}
 				self.walletCreation_walletInstance = walletInstance
+				self.currentWalletUsedLocaleCode = final__locale_code
 				fn()
-		}
+			}
+		)
 	}
 	func createWalletInstanceAndProceedToNextStep()
 	{
-		self.__generateWallet
-		{ [unowned self] in
-			self.proceedToNextStep()
-		}
+		self.generateAndUseNewWallet(
+			optl_localeCode: nil /*default*/,
+			{ [unowned self] in
+				self.proceedToNextStep()
+			}
+		)
 	}
 	func regenerateWalletAndPopToInformOfMnemonicScreen()
 	{ // TODO: maybe assert that this is being called from the correct screen
-		self.__generateWallet
-		{ [unowned self] in
-			self.popViewController(animated: true)
-		}
+		self.generateAndUseNewWallet(
+			optl_localeCode: self.currentWalletUsedLocaleCode!, // so they end up with the same language
+			{ [unowned self] in
+				self.popViewController(animated: true)
+			}
+		)
 	}
 	//
 	// Runtime - Delegation

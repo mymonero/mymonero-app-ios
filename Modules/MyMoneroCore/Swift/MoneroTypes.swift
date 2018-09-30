@@ -152,7 +152,7 @@ struct MoneroVerifiedComponentsForLogIn
 typealias MoneroMnemonicWordsetName = String
 extension MoneroMnemonicWordsetName
 {
-	var apiSafe: String {
+	var apiSafeMnemonicLanguage: String {
 		// convert all lowercase, legacy values to core-cpp compatible
 		if self == "english" {
 			return "English"
@@ -164,6 +164,65 @@ extension MoneroMnemonicWordsetName
 			return "日本語"
 		}
 		return self // then it's got to be one of the new values that came from core-cpp itself
+	}
+	var correspondingLanguageCode: String {
+		let idxOf = MoneroMnemonicWordsetName.mnemonic_languages.index(of: self)!
+		//
+		return MoneroMnemonicWordsetName.supported_short_codes[idxOf]
+	}
+	static var supported_short_codes: [String]
+	{
+		return [
+			"en",
+			"nl",
+			"fr",
+			"es",
+			"pt",
+			"ja",
+			"it",
+			"de",
+			"ru",
+			"zh", // chinese (simplified)
+			"eo",
+			"jbo" // Lojban
+		]
+	}
+	static var mnemonic_languages: [String]
+	{
+		return [
+			"English",
+			"Netherlands",
+			"Français",
+			"Español",
+			"Português",
+			"日本語",
+			"Italiano",
+			"Deutsch",
+			"русский язык",
+			"简体中文 (中国)",
+			"Esperanto",
+			"Lojban"
+		]
+	}
+	static func mnemonic_language_from(locale_code: String) -> String
+	{
+		let compatible_code = MoneroMnemonicWordsetName.compatible_code_from_locale(
+			locale_code
+		)
+		let idx = MoneroMnemonicWordsetName.supported_short_codes.index(of: compatible_code)!
+		//
+		return MoneroMnemonicWordsetName.mnemonic_languages[idx]
+	}
+	static func compatible_code_from_locale(_ locale_string: String) -> String
+	{
+		let codes = self.supported_short_codes // cache access
+		for (_, short_code) in codes.enumerated() {
+			if locale_string.hasPrefix(short_code) {
+				return short_code
+			}
+		}
+		fatalError("Didn't find a code")
+		// return undefined
 	}
 }
 //

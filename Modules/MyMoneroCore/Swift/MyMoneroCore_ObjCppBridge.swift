@@ -50,14 +50,14 @@ extension MyMoneroCore
 		//
 		// Internal - Lifecycle - Init
 		required init() {}
-
 		//
 		// Accessors
 		func NewlyCreatedWallet(
+			_ localeCode: String,
 			_ fn: @escaping (_ err_str: String?, MoneroWalletDescription?) -> Void
-			) {
+		) {
 			let _ = MyMoneroCore_ObjCpp.newlyCreatedWallet(
-				(NSLocale.current.languageCode ?? "en"),
+				localeCode,
 				nettype: MM_MAINNET
 			) { [weak self] (
 				errStr_orNil,
@@ -105,14 +105,14 @@ extension MyMoneroCore
 			err_str: String?,
 			mnemonicString: MoneroSeedAsMnemonic?
 		) {
-				let retVals = MyMoneroCore_ObjCpp.mnemonicString(
-					fromSeedHex: account_seed.objcSerialized, // really just returns the seed again
-					mnemonicWordsetName: wordsetName.apiSafe
-				)
-				let errStr_orNil = retVals[MyMoneroCore_ObjCpp.retValDictKey__ErrStr()] as? String
-				let mnemonicString_orNil = retVals[MyMoneroCore_ObjCpp.retValDictKey__Value()] as? MoneroSeedAsMnemonic
-				//
-				return (errStr_orNil, mnemonicString_orNil)
+			let retVals = MyMoneroCore_ObjCpp.mnemonicString(
+				fromSeedHex: account_seed.objcSerialized, // really just returns the seed again
+				mnemonicWordsetName: wordsetName.apiSafeMnemonicLanguage
+			)
+			let errStr_orNil = retVals[MyMoneroCore_ObjCpp.retValDictKey__ErrStr()] as? String
+			let mnemonicString_orNil = retVals[MyMoneroCore_ObjCpp.retValDictKey__Value()] as? MoneroSeedAsMnemonic
+			//
+			return (errStr_orNil, mnemonicString_orNil)
 		}
 		func WalletDescriptionFromMnemonicSeed(
 			_ mnemonicString: MoneroSeedAsMnemonic,

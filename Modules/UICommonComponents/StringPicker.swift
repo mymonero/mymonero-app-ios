@@ -185,7 +185,7 @@ extension UICommonComponents.Form.StringPicker
 			let arrow_margin_right: CGFloat = 11
 			let arrow_x = self.bounds.size.width - arrow_w - arrow_margin_right
 			//
-			let valueLabel_w: CGFloat = 100
+			let valueLabel_w: CGFloat = 170
 			let valueLabel_x = arrow_x - valueLabel_w - arrow_margin_left
 			//
 			self.titleLabel.frame = CGRect(
