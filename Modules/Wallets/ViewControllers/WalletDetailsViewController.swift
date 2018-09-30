@@ -81,6 +81,9 @@ extension WalletDetails
 			return self.scrollView as! UITableView
 		}
 		//
+		// State
+		var hasEverAutomaticallyDisplayedImportModal: Bool?
+		//
 		//
 		// Imperatives - Init
 		init(wallet: Wallet)
@@ -229,6 +232,11 @@ extension WalletDetails
 			}
 			return wallet.isAccountScannerCatchingUp
 		}
+		var hasWalletBootFailed: Bool {
+			let wallet = self.wallet
+			//
+			return wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true
+		}
 		var shouldShowImportTransactionsButton: Bool {
 			let wallet = self.wallet
 			if wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true {
@@ -362,10 +370,35 @@ extension WalletDetails
 		// Imperatives - Import modal
 		func present_importTransactionsModal()
 		{
+			let p_vc: UIViewController? = self.navigationController!.presentingViewController ?? self.navigationController!.presentedViewController ?? nil
+			if p_vc != nil {
+				if p_vc!.isKind(of: ImportTransactionsModal.ViewController.self) {
+					DDLog.Info("Wallets", "Import modal already presented")
+					return
+				}
+			}
 			let viewController = ImportTransactionsModal.ViewController(wallet: self.wallet)
 			let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
 			navigationController.modalPresentationStyle = .formSheet
 			self.navigationController!.present(navigationController, animated: true, completion: nil)
+		}
+		func _ifNecessary_autoPresent_importTxsModal(afterS: TimeInterval)
+		{
+			// If this is the first time after logging in that we're displaying the import txs modal,
+			// then auto-display it for the user so they don't have to know to click on the button
+			if self.hasEverAutomaticallyDisplayedImportModal != true {
+				if self.shouldShowImportTransactionsButton {
+					self.hasEverAutomaticallyDisplayedImportModal = true // immediately, in case login and viewDidAppear race
+					DispatchQueue.main.asyncAfter(
+						deadline: .now() + afterS
+					) { [weak self] in
+						guard let thisSelf = self else {
+							return
+						}
+						thisSelf.present_importTransactionsModal()
+					}
+				}
+			}
 		}
 		//
 		// Overrides - Layout
@@ -582,6 +615,7 @@ extension WalletDetails
 		@objc func _wallet_loggedIn()
 		{
 			self.tableView.reloadData()
+			self._ifNecessary_autoPresent_importTxsModal(afterS: 1)
 		}
 		@objc func _wallet_failedToLogIn()
 		{
@@ -625,6 +659,7 @@ extension WalletDetails
 					}
 				}
 			}
+			self._ifNecessary_autoPresent_importTxsModal(afterS: 1)
 		}
 		override func viewWillDisappear(_ animated: Bool)
 		{
