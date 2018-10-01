@@ -1052,7 +1052,7 @@ class Wallet: PersistableObject
 				}
 				thisSelf.__unlock_sending()
 				//
-				var outgoingAmountForDisplay = final_sentAmountWithoutFee // mutable copy
+				var outgoingAmountForDisplay = final_sentAmountWithoutFee + tx_fee // mutable copy
 				outgoingAmountForDisplay.sign = .minus // make negative as it's outgoing
 				//
 				let mockedTransaction = MoneroHistoricalTransactionRecord(
