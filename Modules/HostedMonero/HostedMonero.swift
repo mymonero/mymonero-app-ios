@@ -219,17 +219,29 @@ extension HostedMonero
 					givenTransactionUnlockTime: unlockTime,
 					andWalletBlockchainHeight: blockchain_height
 				) : nil
+				//
+				let approxFloatAmount = DoubleFromMoneroAmount(moneroAmount: final_tx_amount)
+				//
+				let record__payment_id = tx_dict["payment_id"] as? MoneroPaymentID
+				var final__paymentId = record__payment_id
+				if record__payment_id?.count == 16 {
+					// short (encrypted) pid
+					if approxFloatAmount < 0 {
+						// outgoing
+						final__paymentId = nil // need to filter these out .. because (afaik) after adding short pid scanning support, the server can't presently filter out short (encrypted) pids on outgoing txs ... not sure this is the optimal or 100% correct solution
+					}
+				}
 				let transactionRecord = MoneroHistoricalTransactionRecord(
 					amount: final_tx_amount,
 					totalSent: final_tx_totalSent, // must use this as it's been adjusted for non-own outputs
 					totalReceived: MoneroAmount("\(tx_dict["total_received"] as! String)")!,
-					approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: final_tx_amount), // -> String -> Double
+					approxFloatAmount: approxFloatAmount, // -> String -> Double
 					spent_outputs: MoneroSpentOutputDescription.newArray(
 						withAPIJSONDicts: final_tx_spent_output_dicts // must use this as it's been adjusted for non-own outputs
 					),
 					timestamp: MoneroJSON_dateFormatter.date(from: "\(tx_dict["timestamp"] as! String)")!,
 					hash: tx_dict["hash"] as! MoneroTransactionHash,
-					paymentId: tx_dict["payment_id"] as? MoneroPaymentID,
+					paymentId: final__paymentId,
 					mixin: tx_dict["mixin"] as? UInt,
 					//
 					mempool: tx_dict["mempool"] as! Bool,

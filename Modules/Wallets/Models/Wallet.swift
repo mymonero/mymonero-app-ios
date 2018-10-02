@@ -1247,7 +1247,7 @@ class Wallet: PersistableObject
 			// in JS here we delete the 'id' field but we don't have it in Swift - in JS, the comment is: "because this field changes while sending funds, even though hash stays the same, and because we don't want `id` messing with our ability to diff. so we're not even going to try to store this"
 			let existing_tx = txs_by_hash[incoming_tx.hash]
 			let isNewTransaction = existing_tx == nil
-			var finalized_incoming_tx = incoming_tx
+			let finalized_incoming_tx = incoming_tx
 			// ^- If any existing tx is also in incoming txs, this will cause
 			// the (correct) deletion of e.g. isJustSentTransaction=true.
 			if isNewTransaction { // This is generally now only going to be hit when new incoming txs happen - or outgoing txs done on other logins
