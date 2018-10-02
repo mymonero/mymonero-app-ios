@@ -163,7 +163,7 @@ extension WalletDetails
 		class _InfoDisclosing_LongStringFieldView: UICommonComponents.Details.CopyableLongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(13, 44, 17, 16)
+				return UIEdgeInsets.init(top: 13, left: 44, bottom: 17, right: 16)
 			}
 		}
 		class InfoDisclosing_CopyableLongStringFieldView: _InfoDisclosing_LongStringFieldView
@@ -178,7 +178,7 @@ extension WalletDetails
 		class _InfoDisclosing_Truncated_LongStringFieldView: _InfoDisclosing_LongStringFieldView
 		{
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(13, 44, 12, 16)
+				return UIEdgeInsets.init(top: 13, left: 44, bottom: 12, right: 16)
 			}
 			override func setup()
 			{

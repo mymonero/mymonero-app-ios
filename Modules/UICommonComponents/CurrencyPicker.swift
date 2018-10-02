@@ -77,11 +77,11 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 		{
 			self.setup_layerMask()
 			//
-			self.titleEdgeInsets = UIEdgeInsetsMake(
-				0,
-				-PickerButton.selectText_w + PickerButton.selectText_margin_left,
-				0,
-				0//PickerButton.disclosureArrow_margin_left + PickerButton.disclosureArrow_w + PickerButton.disclosureArrow_margin_right
+			self.titleEdgeInsets = UIEdgeInsets.init(
+				top: 0,
+				left: -PickerButton.selectText_w + PickerButton.selectText_margin_left,
+				bottom: 0,
+				right: 0//PickerButton.disclosureArrow_margin_left + PickerButton.disclosureArrow_w + PickerButton.disclosureArrow_margin_right
 					//+ 4 // not sure why this is necessary - basically a difference to JS/HTML
 			)
 			self.titleLabel!.textAlignment = .left
@@ -95,11 +95,11 @@ extension UICommonComponents.Form.Amounts.CurrencyPicker
 				UIImage(named: "smallSelect_disclosureArrow")!,
 				for: .normal
 			)
-			self.imageEdgeInsets = UIEdgeInsetsMake(
-				0,
-				PickerButton.selectText_margin_left + PickerButton.selectText_w + PickerButton.disclosureArrow_margin_left,
-				0,
-				0
+			self.imageEdgeInsets = UIEdgeInsets.init(
+				top: 0,
+				left: PickerButton.selectText_margin_left + PickerButton.selectText_w + PickerButton.disclosureArrow_margin_left,
+				bottom: 0,
+				right: 0
 			)
 			//
 			self.configureBackgroundColor()

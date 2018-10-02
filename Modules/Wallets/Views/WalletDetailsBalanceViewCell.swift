@@ -86,7 +86,7 @@ extension WalletDetails
 			// Constants
 			static let height: CGFloat = 71
 			//
-			static let imagePaddingInsets = UIEdgeInsetsMake(2, 1, 2, 1)
+			static let imagePaddingInsets = UIEdgeInsets.init(top: 2, left: 1, bottom: 2, right: 1)
 			static let cornerRadius: CGFloat = 5
 			static func stretchableBackgroundImage(forSwatchColor swatchColor: Wallet.SwatchColor) -> UIImage
 			{
@@ -220,7 +220,7 @@ extension WalletDetails
 						finalized_paddingZeros_string = ""
 					}
 				}
-				let attributes: [NSAttributedStringKey : Any] = [:]
+				let attributes: [NSAttributedString.Key : Any] = [:]
 				let attributedText = NSMutableAttributedString(string: "\(finalized_main_string)\(finalized_paddingZeros_string)", attributes: attributes)
 				let mainSectionTextColor = self.mainSectionTextColor(withWallet: wallet)
 				let secondarySectionTextColor = self.secondarySectionTextColor(withWallet: wallet)
@@ -233,7 +233,7 @@ extension WalletDetails
 					let final_rangeLength = finalizable_rangeLength
 					attributedText.addAttributes(
 						[
-							NSAttributedStringKey.foregroundColor: mainSectionTextColor,
+							NSAttributedString.Key.foregroundColor: mainSectionTextColor,
 						],
 						range: NSMakeRange(0, final_rangeLength)
 					)
@@ -241,7 +241,7 @@ extension WalletDetails
 						if finalized_paddingZeros_string.count > 0 {
 							attributedText.addAttributes(
 								[
-									NSAttributedStringKey.foregroundColor: secondarySectionTextColor,
+									NSAttributedString.Key.foregroundColor: secondarySectionTextColor,
 								],
 								range: NSMakeRange(
 									finalized_main_string.count,
@@ -258,7 +258,7 @@ extension WalletDetails
 							string: string,
 							attributes:
 							[
-								NSAttributedStringKey.foregroundColor: secondarySectionTextColor // secondary to annotate value itself
+								NSAttributedString.Key.foregroundColor: secondarySectionTextColor // secondary to annotate value itself
 							]
 						)
 						attributedText.append(attrString)

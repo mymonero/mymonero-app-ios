@@ -100,7 +100,7 @@ extension UICommonComponents
 				paragraphStyle.lineSpacing = 4
 				paragraphStyle.alignment = .center
 				attributedString.addAttribute(
-					NSAttributedStringKey.paragraphStyle,
+					NSAttributedString.Key.paragraphStyle,
 					value: paragraphStyle,
 					range: range
 				)

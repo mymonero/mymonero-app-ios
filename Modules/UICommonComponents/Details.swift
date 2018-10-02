@@ -353,7 +353,7 @@ extension UICommonComponents
 			//
 			// Constants
 			var contentInsets: UIEdgeInsets { // override
-				return UIEdgeInsetsMake(0, 0, 0, 0)
+				return UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
 			}
 			//
 			// Properties
@@ -489,7 +489,7 @@ extension UICommonComponents
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(13, 16, 17, 16)
+				return UIEdgeInsets.init(top: 13, left: 16, bottom: 17, right: 16)
 			}
 			//
 			// Properties
@@ -731,7 +731,7 @@ extension UICommonComponents
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(13, 16, 17, 16)
+				return UIEdgeInsets.init(top: 13, left: 16, bottom: 17, right: 16)
 			}
 			//
 			// Properties
@@ -799,7 +799,7 @@ extension UICommonComponents
 			//
 			// Constants
 			override var contentInsets: UIEdgeInsets {
-				return UIEdgeInsetsMake(13, 16, 17, 16)
+				return UIEdgeInsets.init(top: 13, left: 16, bottom: 17, right: 16)
 			}
 			//
 			// Properties

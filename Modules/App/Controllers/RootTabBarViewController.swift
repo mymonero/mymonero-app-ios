@@ -76,7 +76,7 @@ class RootTabBarViewController: UITabBarController
 		// vertically center tab bar item images
 		let offset_y: CGFloat = 5
 		for (_, viewController) in self.viewControllers!.enumerated() {
-			viewController.tabBarItem.imageInsets = UIEdgeInsetsMake(offset_y, 0, -offset_y, 0)
+			viewController.tabBarItem.imageInsets = UIEdgeInsets.init(top: offset_y, left: 0, bottom: -offset_y, right: 0)
 		}
 		//
 		func __passwordController_didBoot()

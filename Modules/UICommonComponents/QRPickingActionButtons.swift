@@ -224,9 +224,9 @@ extension UICommonComponents
 		}
 		//
 		// Delegation - UIImagePickerControllerDelegate
-		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
+		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])
 		{
-			let picked_originalImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+			let picked_originalImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
 			self._didPick(possibleQRCodeImage: picked_originalImage)
 			self._tearDownAnyImagePickerController(animated: true)
 		}

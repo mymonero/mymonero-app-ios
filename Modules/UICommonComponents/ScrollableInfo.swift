@@ -136,11 +136,11 @@ extension UICommonComponents
 		//
 		func new_contentInset() -> UIEdgeInsets // NOTE: this is contentInset for the SCROLLVIEW
 		{ // overridable
-			return UIEdgeInsetsMake(0, 0, 0, 0)
+			return UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
 		}
 		var new_subviewLayoutInsets: UIEdgeInsets
 		{ // overridable
-			return UIEdgeInsetsMake(0, 0, 0, 0)
+			return UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
 		}
 		//
 		// Accessors - Lookups/Derived - Layout metrics
@@ -256,7 +256,7 @@ extension UICommonComponents
 			super.viewWillLayoutSubviews()
 			//
 			let safeAreaInsets = self.view.polyfilled_safeAreaInsets
-			let contentViewFrame = UIEdgeInsetsInsetRect(self.view.bounds, safeAreaInsets)
+			let contentViewFrame = self.view.bounds.inset(by: safeAreaInsets)
 			//
 			var scrollView_top: CGFloat = contentViewFrame.origin.y
 			if let messageView = self.messageView, messageView.isHidden == false {

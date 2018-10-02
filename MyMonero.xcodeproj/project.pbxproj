@@ -1962,12 +1962,12 @@
 					9F24AE181EBA7D3A00841BCB = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = NLN5D623Y3;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					9FF6C9A31F7C919B00B20D40 = {
 						CreatedOnToolsVersion = 8.3.3;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 9F24AE181EBA7D3A00841BCB;
 					};
@@ -2532,7 +2532,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
 				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-core-cpp/**";
 			};
@@ -2556,7 +2556,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-core-cpp/**";
 			};
@@ -2632,7 +2632,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-internal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-core-cpp/**";
 			};
@@ -2708,7 +2708,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-profiling";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-core-cpp/**";
 			};
@@ -2795,7 +2795,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
 				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-core-cpp/**";
 			};
@@ -2808,7 +2808,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.MyMoneroScreenshotsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = MyMonero;
 			};
 			name = Debug;
@@ -2856,7 +2856,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = MyMonero;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2905,7 +2905,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = MyMonero;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2954,7 +2954,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = MyMonero;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -3003,7 +3003,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = MyMonero;
 				VALIDATE_PRODUCT = YES;
 			};

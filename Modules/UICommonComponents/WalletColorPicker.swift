@@ -284,7 +284,7 @@ extension UICommonComponents
 			//
 			self.isUserInteractionEnabled = true
 			self.isAccessibilityElement = true
-			self.accessibilityTraits = UIAccessibilityTraitButton
+			self.accessibilityTraits = UIAccessibilityTraits.button
 			self.accessibilityIdentifier = "walletColorOption.\(color.colorName)"
 			do {
 				let view = self.iconView

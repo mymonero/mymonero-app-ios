@@ -75,7 +75,7 @@ class AddWalletWizardScreen_BaseViewController: UICommonComponents.FormViewContr
 	override func viewWillDisappear(_ animated: Bool)
 	{
 		super.viewWillDisappear(animated)
-		if self.isMovingFromParentViewController {
+		if self.isMovingFromParent {
 			self._viewControllerIsBeingPoppedFrom()
 		}
 	}

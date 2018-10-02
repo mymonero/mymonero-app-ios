@@ -1009,7 +1009,7 @@ extension UICommonComponents.Form
 				layout.scrollDirection = .horizontal
 				//
 				let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-				view.contentInset = UIEdgeInsetsMake(0, 1, 0, 1)
+				view.contentInset = UIEdgeInsets.init(top: 0, left: 1, bottom: 0, right: 1)
 				view.showsHorizontalScrollIndicator = false
 				view.layer.masksToBounds = true
 				view.backgroundColor = self.backgroundColor
@@ -1143,7 +1143,7 @@ extension UICommonComponents.Form
 		func configure(withContact contact: Contact, isLast: Bool)
 		{
 			self.isAccessibilityElement = true
-			self.accessibilityTraits = UIAccessibilityTraitButton
+			self.accessibilityTraits = UIAccessibilityTraits.button
 			self.accessibilityIdentifier = "button.\(contact.fullname!)" // just going to assume this is unique >_>
 			//
 			self.emojiLabel.text = contact.emoji!

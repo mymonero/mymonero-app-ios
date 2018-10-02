@@ -152,8 +152,7 @@ class AboutMyMoneroViewController: UIViewController
 	@objc func viewSourceButton_tapped()
 	{
 		let url = URL(string: HostedSource.sourceRepository_urlString)!
-		let options: [String: Any] = [:]
-		UIApplication.shared.open(url, options: options, completionHandler: nil)
+		UIApplication.shared.open(url)
 	}
 	//
 	// Delegation - Interactions

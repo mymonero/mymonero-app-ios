@@ -85,7 +85,7 @@ class RootViewController: UIViewController
 		do {
 			let controller = RootTabBarViewController()
 			self.tabBarViewController = controller
-			self.addChildViewController(controller)
+			self.addChild(controller)
 			self.view.addSubview(controller.view)
 		}
 	}
@@ -103,13 +103,13 @@ class RootViewController: UIViewController
 		NotificationCenter.default.addObserver(
 			self,
 			selector: #selector(UIApplicationWillChangeStatusBarFrame),
-			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			name: UIApplication.willChangeStatusBarFrameNotification,
 			object: nil
 		)
 		NotificationCenter.default.addObserver(
 			self,
 			selector: #selector(UIApplicationDidChangeStatusBarFrame),
-			name: NSNotification.Name.UIApplicationDidChangeStatusBarFrame,
+			name: UIApplication.didChangeStatusBarFrameNotification,
 			object: nil
 		)
 	}

@@ -103,7 +103,7 @@ class ForgotPasswordViewController: UIViewController
 		super.viewDidLayoutSubviews()
 		//
 		let safeAreaInsets = self.view.polyfilled_safeAreaInsets
-		let contentAreaFrame = UIEdgeInsetsInsetRect(self.view.bounds, safeAreaInsets)
+		let contentAreaFrame = self.view.bounds.inset(by: safeAreaInsets)
 		//
 		let margin_h = UICommonComponents.EmptyStateView.default__margin_h
 		let emptyStateView_margin_top: CGFloat = 14

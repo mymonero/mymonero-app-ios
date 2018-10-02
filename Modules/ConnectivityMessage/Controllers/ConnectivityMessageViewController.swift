@@ -95,13 +95,13 @@ class ConnectivityMessageViewController: UIViewController
 		NotificationCenter.default.addObserver(
 			self,
 			selector: #selector(UIApplicationWillChangeStatusBarFrame),
-			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			name: UIApplication.willChangeStatusBarFrameNotification,
 			object: nil
 		)
 		NotificationCenter.default.addObserver(
 			self,
 			selector: #selector(UIApplicationDidChangeStatusBarFrame),
-			name: NSNotification.Name.UIApplicationDidChangeStatusBarFrame,
+			name: UIApplication.didChangeStatusBarFrameNotification,
 			object: nil
 		)
 	}
@@ -123,12 +123,12 @@ class ConnectivityMessageViewController: UIViewController
 	{
 		NotificationCenter.default.removeObserver(
 			self,
-			name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+			name: UIApplication.willChangeStatusBarFrameNotification,
 			object: nil
 		)
 		NotificationCenter.default.removeObserver(
 			self,
-			name: NSNotification.Name.UIApplicationDidChangeStatusBarFrame,
+			name: UIApplication.didChangeStatusBarFrameNotification,
 			object: nil
 		)
 	}
@@ -141,20 +141,20 @@ class ConnectivityMessageViewController: UIViewController
 		// this luckily gets called even when we do not set a flexibleWidth autoresizingMask… why?
 		//
 		let statusBarFrame = UIApplication.shared.statusBarFrame
-		let margin = UIEdgeInsetsMake(
-			0,
-			8,
-			0,
-			8
+		let margin = UIEdgeInsets.init(
+			top: 0,
+			left: 8,
+			bottom: 0,
+			right: 8
 		)
-		let containerView_padding = UIEdgeInsetsMake(2, 0, 2, 0)
+		let containerView_padding = UIEdgeInsets.init(top: 2, left: 0, bottom: 2, right: 0)
 		let h: CGFloat = containerView_padding.top + 24 + containerView_padding.bottom
 		let viewportWidth = UIScreen.main.bounds.size.width // is now (in modern iOS versions) always correct value regardless of statusBarOrientation
-		let final_safeAreaInsets = UIEdgeInsetsMake( // because i just can't seem to get sampling the safeAreaInsets right in this particular case (b/c we want to keep self above any possible child of the rootViewController), I'm just going to opt to hardcode these values. It's actually probably an improvement anyway.
-			44 - 8,
-			44 + 8,
-			0,
-			44 + 8
+		let final_safeAreaInsets = UIEdgeInsets.init( // because i just can't seem to get sampling the safeAreaInsets right in this particular case (b/c we want to keep self above any possible child of the rootViewController), I'm just going to opt to hardcode these values. It's actually probably an improvement anyway.
+			top: 44 - 8,
+			left: 44 + 8,
+			bottom: 0,
+			right: 44 + 8
 		)
 		let frame = CGRect(
 			x: margin.left + final_safeAreaInsets.left,

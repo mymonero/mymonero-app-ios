@@ -90,13 +90,13 @@ extension UICommonComponents
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(keyboardWillShow),
-				name: Notification.Name.UIKeyboardWillShow,
+				name: UIResponder.keyboardWillShowNotification,
 				object: nil
 			)
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(keyboardWillHide),
-				name: Notification.Name.UIKeyboardWillHide,
+				name: UIResponder.keyboardWillHideNotification,
 				object: nil
 			)
 		}
@@ -105,12 +105,12 @@ extension UICommonComponents
 			super.stopObserving()
 			NotificationCenter.default.removeObserver(
 				self,
-				name: Notification.Name.UIKeyboardWillShow,
+				name: UIResponder.keyboardWillShowNotification,
 				object: nil
 			)
 			NotificationCenter.default.removeObserver(
 				self,
-				name: Notification.Name.UIKeyboardWillHide,
+				name: UIResponder.keyboardWillHideNotification,
 				object: nil
 			)
 		}
@@ -148,11 +148,11 @@ extension UICommonComponents
 		override func new_contentInset() -> UIEdgeInsets
 		{ // overridable but inheriting safeAreaInsets from super
 			let base = super.new_contentInset()
-			return UIEdgeInsetsMake(
-				base.top + 0,
-				base.left + 0,
-				base.bottom + self._new_heightForKeyboardInContentInsetsBottom,
-				base.right + 0
+			return UIEdgeInsets.init(
+				top: base.top + 0,
+				left: base.left + 0,
+				bottom: base.bottom + self._new_heightForKeyboardInContentInsetsBottom,
+				right: base.right + 0
 			)
 		}
 		//
@@ -391,7 +391,7 @@ extension UICommonComponents
 				return
 			}
 			// arguments
-			let keyboard_size = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+			let keyboard_size = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
 			// state
 			self.keyboardIsShowing = true
 			self.keyboardHeight = keyboard_size.height
@@ -664,7 +664,7 @@ extension UICommonComponents
 			self.backgroundColor = UIColor.clear
 			self.keyboardAppearance = .dark // TODO: configure based on ThemeController
 			self.configureTextFontAndColor()
-			self.textContainerInset = UIEdgeInsetsMake(6, 4, 0, 4)
+			self.textContainerInset = UIEdgeInsets.init(top: 6, left: 4, bottom: 0, right: 4)
 			//
 			let view = UILabel(frame: .zero)
 			view.numberOfLines = 0 // to fix line wrapping bug
@@ -682,7 +682,7 @@ extension UICommonComponents
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(textViewDidChange),
-				name: NSNotification.Name.UITextViewTextDidChange,
+				name: UITextView.textDidChangeNotification,
 				object: nil
 			)
 		}
@@ -706,7 +706,7 @@ extension UICommonComponents
 		{
 			NotificationCenter.default.removeObserver(
 				self,
-				name: NSNotification.Name.UITextViewTextDidChange,
+				name: UITextView.textDidChangeNotification,
 				object: nil
 			)
 		}
@@ -749,7 +749,7 @@ extension UICommonComponents
 			? UIFont.subMiddlingRegularMonospace /* slightly improve truncation of long placeholders on iPhone SE */
 			: UIFont.middlingRegularMonospace
 		//
-		static let textInsets = UIEdgeInsetsMake(8, 10, 8, 10)
+		static let textInsets = UIEdgeInsets.init(top: 8, left: 10, bottom: 8, right: 10)
 		//
 		var validationErrorMessageLabel: FormFieldAccessoryMessageLabel?
 		var init_placeholder: String?
@@ -817,8 +817,8 @@ extension UICommonComponents
 			let range = NSRange(location: 0, length: text.count)
 			string.addAttributes(
 				[
-					NSAttributedStringKey.foregroundColor: overrideColor ?? UIColor(rgb: 0x6B696B),
-					NSAttributedStringKey.font: FormInputField.font_default
+					NSAttributedString.Key.foregroundColor: overrideColor ?? UIColor(rgb: 0x6B696B),
+					NSAttributedString.Key.font: FormInputField.font_default
 				],
 				range: range
 			)
@@ -921,7 +921,7 @@ extension UICommonComponents
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
-				NSAttributedStringKey.paragraphStyle,
+				NSAttributedString.Key.paragraphStyle,
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.count)
 			)
@@ -974,7 +974,7 @@ extension UICommonComponents
 			paragraphStyle.lineSpacing = 3
 			let string = NSMutableAttributedString(string: text)
 			string.addAttribute(
-				NSAttributedStringKey.paragraphStyle,
+				NSAttributedString.Key.paragraphStyle,
 				value: paragraphStyle,
 				range: NSRange(location: 0, length: text.count)
 			)

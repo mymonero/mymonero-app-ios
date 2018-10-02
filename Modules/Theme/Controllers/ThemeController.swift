@@ -74,8 +74,8 @@ class ThemeController
 		appearance.isTranslucent = false // when this is set to false, if a view wants its extended layout to include .top, it must say its extendedLayoutIncludesOpaqueBars - TODO: possible to deprecate this for future proofing w/o too-significant UI overhaul?
 		appearance.titleTextAttributes =
 		[
-			NSAttributedStringKey.font: UIFont.navigationBarBoldSansSerif,
-			NSAttributedStringKey.foregroundColor: UIColor.normalNavigationBarTitleColor
+			NSAttributedString.Key.font: UIFont.navigationBarBoldSansSerif,
+			NSAttributedString.Key.foregroundColor: UIColor.normalNavigationBarTitleColor
 		]
 		if UIFont.shouldStepDownLargerFontSizes {
 			UINavigationBar.appearance().setTitleVerticalPositionAdjustment(-2, for: .default) // b/c font is smaller, need to align w/nav buttons
@@ -104,8 +104,8 @@ class ThemeController
 		let navigationBar = viewController.navigationController!.navigationBar
 		navigationBar.titleTextAttributes =
 		[
-			NSAttributedStringKey.font: UIFont.navigationBarBoldSansSerif,
-			NSAttributedStringKey.foregroundColor: titleTextColor ?? UIColor.normalNavigationBarTitleColor
+			NSAttributedString.Key.font: UIFont.navigationBarBoldSansSerif,
+			NSAttributedString.Key.foregroundColor: titleTextColor ?? UIColor.normalNavigationBarTitleColor
 		]
 
 	}

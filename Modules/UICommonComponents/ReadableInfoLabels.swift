@@ -98,9 +98,9 @@ extension UICommonComponents
 				string: text,
 				attributes:
 				[
-					NSAttributedStringKey.foregroundColor: UIColor(rgb: 0x8D8B8D),
-					NSAttributedStringKey.font: UIFont.middlingRegularSansSerif,
-					NSAttributedStringKey.paragraphStyle: paragraphStyle
+					NSAttributedString.Key.foregroundColor: UIColor(rgb: 0x8D8B8D),
+					NSAttributedString.Key.font: UIFont.middlingRegularSansSerif,
+					NSAttributedString.Key.paragraphStyle: paragraphStyle
 				]
 			)
 			self.attributedText = attributedString

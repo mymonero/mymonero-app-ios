@@ -45,18 +45,18 @@ extension UICommonComponents
 		}
 		// Interface - Properties - Convenience
 		static var new_titleEdgeInsets_withIcon: UIEdgeInsets {
-			return UIEdgeInsetsMake(0, 2, 0, 0)
+			return UIEdgeInsets.init(top: 0, left: 2, bottom: 0, right: 0)
 		}
 		//
 		// Properties
 		var isLeftOfTwoButtons: Bool!
 		var margins: UIEdgeInsets
 		{
-			return UIEdgeInsetsMake(
-				ActionButton.topMargin,
-				CGFloat(0), // left
-				ActionButton.bottomMargin,
-				CGFloat(isLeftOfTwoButtons == true ? ActionButton.spaceBetweenSiblingButtons : 0) // right
+			return UIEdgeInsets.init(
+				top: ActionButton.topMargin,
+				left: CGFloat(0), // left
+				bottom: ActionButton.bottomMargin,
+				right: CGFloat(isLeftOfTwoButtons == true ? ActionButton.spaceBetweenSiblingButtons : 0) // right
 			)
 		}
 		static var spaceBetweenSiblingButtons: CGFloat = 8
@@ -91,7 +91,7 @@ extension UICommonComponents
 			super.setup()
 			if self.iconImage != nil {
 				self.setImage(iconImage, for: .normal)
-				self.imageEdgeInsets = UIEdgeInsetsMake(0, 17, 0, 0)
+				self.imageEdgeInsets = UIEdgeInsets.init(top: 0, left: 17, bottom: 0, right: 0)
 				self.contentHorizontalAlignment = .left
 			}
 		}

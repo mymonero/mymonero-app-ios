@@ -147,7 +147,7 @@ extension UICommonComponents
 		//
 		// NOTE: Doing this instead of sizeThatFits(:) b/c that was slightly annoying. This
 		// may be improved slightly by going with sizeThatFits(:)
-		static let padding = UIEdgeInsetsMake(7, 8, 8, 8)
+		static let padding = UIEdgeInsets.init(top: 7, left: 8, bottom: 8, right: 8)
 		static let button_side: CGFloat = 29
 		func layOut(atX x: CGFloat, y: CGFloat, width: CGFloat)
 		{

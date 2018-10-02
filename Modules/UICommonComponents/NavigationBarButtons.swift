@@ -107,12 +107,12 @@ extension UICommonComponents
 				case .back:
 					view.setImage(UIImage(named: "backButtonIcon"), for: .normal)
 					or_useWidth_notIncludingImagePadding = 44 // was 24; usability
-					view.imageEdgeInsets = UIEdgeInsetsMake(0, -16, 0, 0)
+					view.imageEdgeInsets = UIEdgeInsets.init(top: 0, left: -16, bottom: 0, right: 0)
 					break
 				case .add:
 					view.setImage(UIImage(named: "addButtonIcon_10"), for: .normal)
 					or_useWidth_notIncludingImagePadding = 28
-					view.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+					view.imageEdgeInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
 					break
 				case .cancel:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Cancel", comment: ""), for: .normal)

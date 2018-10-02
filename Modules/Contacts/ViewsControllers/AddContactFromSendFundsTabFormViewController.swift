@@ -130,11 +130,11 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 	//
 	// Accessors - Internal
 	var new_customFieldsetContainerInsets: UIEdgeInsets {
-		return UIEdgeInsetsMake(
-			0 + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,/*approx*/
-			16,
-			0,
-			16
+		return UIEdgeInsets.init(
+			top: 0 + UICommonComponents.Form.FieldLabel.fixedHeight + 8 + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,/*approx*/
+			left: 16,
+			bottom: 0,
+			right: 16
 		)
 	}
 	//
@@ -187,11 +187,11 @@ class AddContactFromSendFundsTabFormViewController: AddContactFromOtherTabFormVi
 		let base = super.new_subviewLayoutInsets
 		let customFieldsetContainerInsets = self.new_customFieldsetContainerInsets
 		
-		return UIEdgeInsetsMake(
-			base.top + customFieldsetContainerInsets.top,
-			base.left + customFieldsetContainerInsets.left,
-			base.bottom + customFieldsetContainerInsets.bottom,
-			base.right + customFieldsetContainerInsets.right
+		return UIEdgeInsets.init(
+			top: base.top + customFieldsetContainerInsets.top,
+			left: base.left + customFieldsetContainerInsets.left,
+			bottom: base.bottom + customFieldsetContainerInsets.bottom,
+			right: base.right + customFieldsetContainerInsets.right
 		)
 	}
 	//

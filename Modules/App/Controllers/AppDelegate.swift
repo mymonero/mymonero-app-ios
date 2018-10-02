@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	// Delegation - UIApplicationDelegate
 	func application(
 		_ application: UIApplication,
-		didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
+		didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 	) -> Bool {
 		//
 		// While launch screen still showing, let's take the chance to synchronously do any migrations:
@@ -95,7 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	func application(
 		_ app: UIApplication,
 		open url: URL,
-		options: [UIApplicationOpenURLOptionsKey : Any] = [:]
+		options: [UIApplication.OpenURLOptionsKey : Any] = [:]
 	) -> Bool {
 		return URLOpening.shared.appReceived(url: url)
 	}

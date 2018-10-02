@@ -81,13 +81,11 @@ extension WalletDetails
 			{
 				super.layoutSubviews()
 
-				let frame = UIEdgeInsetsInsetRect(
-					self.bounds,
-					UIEdgeInsetsMake(
-						0,
-						WalletDetails.TransactionsEmptyState.Cell.contentView_margin_h,
-						0,
-						WalletDetails.TransactionsEmptyState.Cell.contentView_margin_h
+				let frame = self.bounds.inset(by: UIEdgeInsets.init(
+						top: 0,
+						left: WalletDetails.TransactionsEmptyState.Cell.contentView_margin_h,
+						bottom: 0,
+						right: WalletDetails.TransactionsEmptyState.Cell.contentView_margin_h
 					)
 				)
 				self.cellContentView.frame = frame

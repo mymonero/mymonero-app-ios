@@ -65,15 +65,15 @@ struct EmojiUI
 			//
 			let image = UIImage(named: "popoverDisclosureArrow")!
 			self.setImage(image, for: .normal)
-			self.imageEdgeInsets = UIEdgeInsetsMake(
-				1,
-				EmojiPickerButtonView.w - (UICommonComponents.PushButtonCells.imagePaddingForShadow_h + image.size.width + EmojiPickerButtonView.visual__arrowRightPadding),
-				0,
-				EmojiPickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
+			self.imageEdgeInsets = UIEdgeInsets.init(
+				top: 1,
+				left: EmojiPickerButtonView.w - (UICommonComponents.PushButtonCells.imagePaddingForShadow_h + image.size.width + EmojiPickerButtonView.visual__arrowRightPadding),
+				bottom: 0,
+				right: EmojiPickerButtonView.visual__arrowRightPadding + UICommonComponents.PushButtonCells.imagePaddingForShadow_h
 			)
 			//
 			self.contentHorizontalAlignment = .left
-			self.titleEdgeInsets = UIEdgeInsetsMake(0, 1, 0, 0)
+			self.titleEdgeInsets = UIEdgeInsets.init(top: 0, left: 1, bottom: 0, right: 0)
 			self.titleLabel!.font = UIFont.shouldStepDownLargerFontSizes ? .middlingSemiboldSansSerif : .largeSemiboldSansSerif
 			//
 			self.frame = CGRect(
@@ -94,7 +94,7 @@ struct EmojiUI
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(UIApplicationWillChangeStatusBarFrame),
-				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				name: UIApplication.willChangeStatusBarFrameNotification,
 				object: nil
 			)
 		}
@@ -121,7 +121,7 @@ struct EmojiUI
 			)
 			NotificationCenter.default.removeObserver(
 				self,
-				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				name: UIApplication.willChangeStatusBarFrameNotification,
 				object: nil
 			)
 		}

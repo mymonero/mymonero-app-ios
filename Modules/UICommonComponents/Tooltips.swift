@@ -91,7 +91,7 @@ extension UICommonComponents
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(UIApplicationWillChangeStatusBarFrame),
-				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				name: UIApplication.willChangeStatusBarFrameNotification,
 				object: nil
 			)
 		}
@@ -117,7 +117,7 @@ extension UICommonComponents
 			NotificationCenter.default.removeObserver(self, name: MMApplication.NotificationNames.didSendEvent.notificationName, object: nil)
 			NotificationCenter.default.removeObserver(
 				self,
-				name: NSNotification.Name.UIApplicationWillChangeStatusBarFrame,
+				name: UIApplication.willChangeStatusBarFrameNotification,
 				object: nil
 			)
 		}
@@ -142,7 +142,7 @@ extension UICommonComponents
 				tip.borderColor = UIColor(rgb: 0xFFFFFF)
 				tip.borderWidth = 1/UIScreen.main.scale // single pixel / hairline
 				tip.textAlignment = .left
-				tip.edgeInsets = UIEdgeInsetsMake(2, 2, 2, 2)
+				tip.edgeInsets = UIEdgeInsets.init(top: 2, left: 2, bottom: 2, right: 2)
 				tip.edgeMargin = 4 // if needed
 				tip.arrowSize = CGSize(width: 15, height: 13)
 				tip.offset = self.tooltipDirectionFromOrigin == .left || self.tooltipDirectionFromOrigin == .right ? -6 : -7 // from arrow to the spawn origin - so that the actual visual offset ends up being 3

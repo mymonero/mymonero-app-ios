@@ -127,21 +127,17 @@ class FundsRequestsListViewCell: UITableViewCell
 			position: self.cellPosition!
 		)
 		let imagePaddingForShadowInsets = groupedHighlightableCellVariant.imagePaddingForShadow
-		let frame = UIEdgeInsetsInsetRect(
-			self.bounds,
-			UIEdgeInsetsMake(
-				0,
-				FundsRequestsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.left,
-				0,
-				FundsRequestsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.right
+		let frame = self.bounds.inset(by: UIEdgeInsets.init(
+				top: 0,
+				left: FundsRequestsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.left,
+				bottom: 0,
+				right: FundsRequestsListViewCell.contentView_margin_h - imagePaddingForShadowInsets.right
 			)
 		)
 		self.contentView.frame = frame
 		self.backgroundView!.frame = frame
 		self.selectedBackgroundView!.frame = frame
-		let cellContentViewFrame = UIEdgeInsetsInsetRect(
-			self.contentView.bounds,
-			imagePaddingForShadowInsets
+		let cellContentViewFrame = self.contentView.bounds.inset(by: imagePaddingForShadowInsets
 		)
 		self.cellContentView.frame = cellContentViewFrame
 		self.accessoryChevronView.frame = CGRect(

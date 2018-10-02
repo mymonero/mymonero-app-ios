@@ -183,13 +183,11 @@ class WalletsListViewCell: UITableViewCell
 	override func layoutSubviews()
 	{
 		super.layoutSubviews()
-		let frame = UIEdgeInsetsInsetRect(
-			self.bounds,
-			UIEdgeInsetsMake(
-				0,
-				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
-				WalletsListViewCell.cellSpacing - 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_v,
-				WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h
+		let frame = self.bounds.inset(by: UIEdgeInsets.init(
+				top: 0,
+				left: WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h,
+				bottom: WalletsListViewCell.cellSpacing - 2*UICommonComponents.HighlightableCells.imagePaddingForShadow_v,
+				right: WalletsListViewCell.contentView_margin_h - UICommonComponents.HighlightableCells.imagePaddingForShadow_h
 			)
 		)
 		self.contentView.frame = frame

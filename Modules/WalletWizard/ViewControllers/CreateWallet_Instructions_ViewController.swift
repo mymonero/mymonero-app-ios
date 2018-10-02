@@ -88,21 +88,21 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 			view.contentHorizontalAlignment = .left
 			let inset_h: CGFloat = 8
 			let inset_v: CGFloat = 8
-			view.imageEdgeInsets = UIEdgeInsetsMake(
-				inset_v,
-				inset_h + UICommonComponents.FormInputCells.imagePadding_x,
-				inset_v,
-				0
+			view.imageEdgeInsets = UIEdgeInsets.init(
+				top: inset_v,
+				left: inset_h + UICommonComponents.FormInputCells.imagePadding_x,
+				bottom: inset_v,
+				right: 0
 			)
 			view.addTarget(self, action: #selector(agreeCheckboxButton_tapped), for: .touchUpInside)
 			view.setTitle(NSLocalizedString("GOT IT!", comment: ""), for: .normal)
 			view.titleLabel!.font = UIFont.middlingRegularMonospace
 			view.setTitleColor(UIColor(rgb: 0xF8F7F8), for: .normal)
-			view.titleEdgeInsets = UIEdgeInsetsMake(
-				inset_v - 1,
-				UICommonComponents.FormInputCells.imagePadding_x + checkbox_image.size.width + 2,
-				inset_v,
-				0
+			view.titleEdgeInsets = UIEdgeInsets.init(
+				top: inset_v - 1,
+				left: UICommonComponents.FormInputCells.imagePadding_x + checkbox_image.size.width + 2,
+				bottom: inset_v,
+				right: 0
 			)
 			self.scrollView.addSubview(view)
 		}

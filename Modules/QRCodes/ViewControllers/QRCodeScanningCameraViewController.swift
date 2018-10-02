@@ -116,7 +116,7 @@ class QRCodeScanningCameraViewController: UIViewController, AVCaptureMetadataOut
 			view.layer.borderColor = UIColor.green.cgColor // too faint: UIColor.utilityOrConstructiveLinkColor.cgColor
 			view.layer.borderWidth = 2
 			self.view.addSubview(view)
-			self.view.bringSubview(toFront: view)
+			self.view.bringSubviewToFront(view)
 		}
 	}
 	func setup_navigation()

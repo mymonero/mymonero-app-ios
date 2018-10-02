@@ -188,7 +188,7 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 			let view = UICollectionView(frame: base_frame, collectionViewLayout: layout)
 			self.collectionView = view
 			do {
-				view.contentInset = UIEdgeInsetsMake(8, 8, 8, 8)
+				view.contentInset = UIEdgeInsets.init(top: 8, left: 8, bottom: 8, right: 8)
 				view.delegate = self
 				view.dataSource = self
 				view.register(

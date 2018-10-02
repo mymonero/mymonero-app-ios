@@ -235,18 +235,18 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 	{
 		let value = self.new_requesteeMessagePlaintextString
 		let value_NSString = value as NSString
-		let attributes: [NSAttributedStringKey : Any] = [:]
+		let attributes: [NSAttributedString.Key : Any] = [:]
 		let attributedString = NSMutableAttributedString(string: value, attributes: attributes)
 		let linkColor = UIColor.white
 		attributedString.addAttributes(
 			[
-				NSAttributedStringKey.foregroundColor: linkColor
+				NSAttributedString.Key.foregroundColor: linkColor
 			],
 			range: value_NSString.range(of: self.fundsRequest.new_URI(inMode: .addressAsAuthority).absoluteString) // clickable addr
 		)
 		attributedString.addAttributes(
 			[
-				NSAttributedStringKey.foregroundColor: linkColor
+				NSAttributedString.Key.foregroundColor: linkColor
 			],
 			range: value_NSString.range(of: Homepage.appDownloadLink_fullURL)
 		)
@@ -367,7 +367,7 @@ extension UICommonComponents.Details
 		//
 		// Constants - Overrides
 		override var contentInsets: UIEdgeInsets {
-			return UIEdgeInsetsMake(0, 0, 0, 0)
+			return UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
 		}
 		//
 		// Constants

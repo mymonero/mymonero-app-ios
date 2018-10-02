@@ -90,27 +90,27 @@ extension UICommonComponents
 				string: title,
 				attributes:
 				[
-					NSAttributedStringKey.foregroundColor: color_normal,
-					NSAttributedStringKey.font: font,
-					NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleNone.rawValue
+					NSAttributedString.Key.foregroundColor: color_normal,
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.underlineStyle: 0
 				]
 			)
 			let selected_attributedTitle = NSAttributedString(
 				string: title,
 				attributes:
 				[
-					NSAttributedStringKey.foregroundColor: color_normal,
-					NSAttributedStringKey.font: font,
-					NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleSingle.rawValue
+					NSAttributedString.Key.foregroundColor: color_normal,
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
 				]
 			)
 			let disabled_attributedTitle = NSAttributedString(
 				string: title,
 				attributes:
 				[
-					NSAttributedStringKey.foregroundColor: UIColor.disabledLinkColor,
-					NSAttributedStringKey.font: font,
-					NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleNone.rawValue
+					NSAttributedString.Key.foregroundColor: UIColor.disabledLinkColor,
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.underlineStyle: 0
 				]
 			)
 			self.setAttributedTitle(normal_attributedTitle, for: .normal)
