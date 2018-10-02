@@ -226,6 +226,8 @@ extension UICommonComponents
 		// Delegation
 		func tapped(option: WalletColorPickerOptionView)
 		{
+			UIApplication.shared.keyWindow!.resignCurrentFirstResponder() // in case keyboard is presently visible ... not a huge fan of this coupling but this code will always be run in UIKit ... when accessibility is better supported, this technique may become an issue and it may be better to have the VC resignCurrentFirstResponder .. seems to overcomplicate things though
+			//
 			self.select(color: option.color)
 		}
 	}
