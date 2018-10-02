@@ -1920,7 +1920,6 @@
 				9F24AE161EBA7D3A00841BCB /* Frameworks */,
 				9F24AE171EBA7D3A00841BCB /* Resources */,
 				B1FB2FC478D1C87DBF8AABF8 /* [CP] Embed Pods Frameworks */,
-				735119A813CBABC14DEA6AED /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2102,21 +2101,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		735119A813CBABC14DEA6AED /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		8273B9EE1C489BA8C23DEFF6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
