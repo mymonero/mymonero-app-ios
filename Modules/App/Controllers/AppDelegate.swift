@@ -54,6 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	var window: UIWindow?
 	var windowController: WindowController!
 	var appSingletonsController: AppSingletonsController!
+	var screenshotPreventionView: UIView?
 	//
 	// Overrides - Imperatives
 
@@ -109,10 +110,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 			object: nil,
 			userInfo: nil
 		)
-		PasswordController.shared.lockDownAppAndRequirePassword() // goal is to lock down app before OS takes app screenshot for multitasker
+		do {
+			// It's important to ensure all highly sensitive data is not visible to the system screenshotter was made. Initial thought was to reconfigure the UI without animation to avoid having to call 'lock down' but since the problem is the screenshotter, a curtain is displayed instead. On user return, the enter password gate will be displayed instantly if the idle timer would have been up. Better UX
+			let window = UIApplication.shared.keyWindow!
+			let view = UIView()
+			view.frame = window.bounds // critical
+			view.backgroundColor = UIColor.contentBackgroundColor
+			self.screenshotPreventionView = view
+			window.addSubview(view)
+		}
+		
 	}
 	func applicationWillEnterForeground(_ application: UIApplication)
 	{
+		if let view = self.screenshotPreventionView {
+			UserIdle.shared.checkIdleTimeout() // instantly lock down if needed - and preferably, before removing the ss prevention view			
+			UIView.animate(
+				withDuration: 0.15,
+				delay: 0.2, // this delay allows the password entry view time to be shown - however some views don't reconfigure in time, so just for extra safety, a delay is included
+				options: .beginFromCurrentState,
+				animations: {
+					view.alpha = 0
+				}
+			) { (finished) in
+				// TODO: maybe animate this fading away
+				view.removeFromSuperview() // must be removed
+
+			}
+		}
 	}
 
 	func applicationDidBecomeActive(_ application: UIApplication)
@@ -123,7 +148,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	func applicationWillTerminate(_ application: UIApplication) {
 		// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 	}
-
-
 }
 

@@ -1156,7 +1156,7 @@ final class PasswordController
 	//
 	// Runtime - Imperatives - App lock down interface (special case usage only)
 	func lockDownAppAndRequirePassword()
-	{ // just a public interface for this - special-case-usage only! (so far. see index.cordova.js.)
+	{ // just a public interface for this - special-case-usage only!
 		if self.hasUserEnteredValidPasswordYet == false { // this is fine, but should be used to bail
 			DDLog.Warn("Passwords", "Asked to lockDownAppAndRequirePassword but no password entered yet.")
 			return

@@ -53,7 +53,7 @@ class UserIdle: NSObject
 	//
 	// Properties - Initial
 	var isUserIdle = false
-	fileprivate var _numberOfSecondsSinceLastUserInteraction: TimeInterval = 0.0
+	fileprivate var _dateOfLastUserInteraction = Date()
 	fileprivate var _numberOfRequestsToLockUserIdleAsDisabled: UInt = 0
 	fileprivate var _userIdle_intervalTimer: Timer?
 	//
@@ -140,24 +140,31 @@ class UserIdle: NSObject
 		//
 		DispatchQueue.main.async
 		{ [unowned self] in
-			self._numberOfSecondsSinceLastUserInteraction = 0.0 // reset this in case the app disabled user idle at a time at all different from when the last idle breaking action occurred - s since last user interaction should always be 0 when the userIdle timer starts anyway
+			self._dateOfLastUserInteraction = Date() // reset this in case the app disabled user idle at a time at all different from when the last idle breaking action occurred - s since last user interaction should always be 0 when the userIdle timer starts anyway
 			//
 			self._userIdle_intervalTimer = Timer.scheduledTimer(
 				withTimeInterval: TimeInterval(1.0),
 				repeats: true
-			) { [unowned self] timer in
-				self._numberOfSecondsSinceLastUserInteraction += 1.0 // count the second
-				//
-				let appTimeoutAfterS = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? 20.0 // use default on no pw entered / no settings info yet
-				if appTimeoutAfterS == SettingsController.appTimeoutAfterS_neverValue { // then idle timer is specifically disabled
-					return // do nothing
+			) { [weak self] timer in
+				guard let thisSelf = self else {
+					return
 				}
-				//
-				if self._numberOfSecondsSinceLastUserInteraction >= appTimeoutAfterS {
-					if self.isUserIdle == false { // not already idle (else redundant)
-						self._userDidBecomeIdle()
-					}
-				}
+				thisSelf.checkIdleTimeout()
+			}
+		}
+	}
+	//
+	// Imperatives - Publicly callable
+	func checkIdleTimeout()
+	{
+		let appTimeoutAfterS = SettingsController.shared.appTimeoutAfterS_nilForDefault_orNeverValue ?? 20.0 // use default on no pw entered / no settings info yet
+		if appTimeoutAfterS == SettingsController.appTimeoutAfterS_neverValue { // then idle timer is specifically disabled
+			return // do nothing
+		}
+		let sSinceLastInteraction = Date().timeIntervalSince1970 - self._dateOfLastUserInteraction.timeIntervalSince1970
+		if sSinceLastInteraction >= appTimeoutAfterS {
+			if self.isUserIdle == false { // not already idle (else redundant)
+				self._userDidBecomeIdle()
 			}
 		}
 	}
@@ -182,7 +189,7 @@ class UserIdle: NSObject
 	}
 	fileprivate func _userDidInteract()
 	{
-		self._numberOfSecondsSinceLastUserInteraction = 0.0 // reset counter
+		self._dateOfLastUserInteraction = Date() // reset counter
 	}
 	fileprivate func _userDidComeBackFromIdle()
 	{
