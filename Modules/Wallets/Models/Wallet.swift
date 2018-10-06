@@ -1057,7 +1057,7 @@ class Wallet: PersistableObject
 				//
 				let mockedTransaction = MoneroHistoricalTransactionRecord(
 					amount: outgoingAmountForDisplay,
-					totalSent: final_sentAmountWithoutFee, // w/o fee b/c the fee is taken and shown separately
+					totalSent: final_sentAmountWithoutFee + tx_fee,
 					totalReceived: MoneroAmount("0"),
 					approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: outgoingAmountForDisplay),
 					spent_outputs: nil, // TODO: is this ok?
