@@ -42,7 +42,11 @@ class WalletsListViewCell: UITableViewCell
 	static let cellSpacing: CGFloat = 12
 	static let cellHeight: CGFloat = contentViewHeight + cellSpacing
 	//
-	let cellContentView = WalletCellContentView(sizeClass: .large48)
+	let cellContentView = WalletCellContentView(
+		sizeClass: .large48,
+		wantsNoSecondaryBalances: false, // we do want secondary balances, specifically, here
+		wantsOnlySpendableBalance: false // just to be explicit, when there are no secondary balances, display the whole balance
+	)
 	let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
 	var activityIndicator = UICommonComponents.GraphicActivityIndicatorView(appearance: .onAccentBackground)
 	//

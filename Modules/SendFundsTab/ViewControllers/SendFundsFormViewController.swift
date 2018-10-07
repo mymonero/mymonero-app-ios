@@ -746,34 +746,6 @@ extension SendFundsForm
 			return "~ " + string // TODO: is this localized enough - consider writing direction
 			// ^ luckily we can do this for long numbers because the field will right truncate it and then left align the text
 		}
-		func new_displayCcyFormatted_estFeeFigures() -> (
-			amount_formattedString: String,
-			displayCurrency: CcyConversionRates.Currency
-		) {
-			let estNetworkFee_moneroAmount = self.new_xmr_estFeeAmount
-			var mutable_displayCurrency = SettingsController.shared.displayCurrency
-			var mutable_amount_formattedString: String!
-			do {
-				if mutable_displayCurrency != .XMR {
-					let converted_amountDouble = mutable_displayCurrency.displayUnitsRounded_amountInCurrency(
-						fromMoneroAmount: estNetworkFee_moneroAmount
-					)
-					if converted_amountDouble != nil {
-						mutable_amount_formattedString = mutable_displayCurrency.nonAtomicCurrency_localized_formattedString(
-							final_amountDouble: converted_amountDouble!
-						)
-					} else {
-						assert(mutable_displayCurrency != .XMR)
-						mutable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
-					}
-				}
-				if mutable_displayCurrency == .XMR { // still
-					// then we still need to derive final_amount_formattedString
-					mutable_amount_formattedString = estNetworkFee_moneroAmount.localized_formattedString
-				}
-			}
-			return (mutable_amount_formattedString, mutable_displayCurrency)
-		}
 		//
 		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
@@ -813,11 +785,14 @@ extension SendFundsForm
 		// Imperatives - Configuration - Fee estimate label, Max amount, ...
 		func configure_networkFeeEstimate_label()
 		{
-			let (final_amount_formattedString, final_displayCurrency) = self.new_displayCcyFormatted_estFeeFigures()
+			let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+				from: self.new_xmr_estFeeAmount,
+				ccy: SettingsController.shared.displayCurrency
+			)
 			let text = String(
 				format: NSLocalizedString("+ %@ %@ EST. NETWORK FEE", comment: ""),
-				final_amount_formattedString,
-				final_displayCurrency.symbol
+				components.formattedAmount,
+				components.final_ccy.symbol
 			)
 			self.networkFeeEstimate_label.text = text
 			//

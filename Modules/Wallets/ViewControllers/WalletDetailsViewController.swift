@@ -498,8 +498,13 @@ extension WalletDetails
 			let cellPosition = self.cellPosition(forCellAtIndexPath: indexPath)
 			let sectionName = SectionName.new_SectionName(withSectionIndex: indexPath.section)!
 			switch sectionName {
-				case .balance,
-				     .actionButtons:
+				case .balance:
+					let hasSecondaryBalances = self.wallet.lockedBalanceAmount > 0 || self.wallet.new_pendingBalanceAmount > 0
+					return WalletDetails.Balance.Cell.cellHeight(
+						withPosition: cellPosition,
+						hasSecondaryBalances: hasSecondaryBalances
+					)
+				case .actionButtons:
 					return self.cellViewType(forCellAtIndexPath: indexPath).cellHeight(withPosition: cellPosition)
 				case .transactions:
 					assert(wallet.didFailToInitialize_flag != true && wallet.didFailToBoot_flag != true)

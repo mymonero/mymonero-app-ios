@@ -38,17 +38,34 @@ extension WalletDetails
 {
 	struct Balance
 	{
+		static let secondaryBalances_dx: CGFloat = 8
+		static let secondaryBalances_dy: CGFloat = 8
+		static let secondaryBalances_h: CGFloat = 16
+		static let secondaryBalances_padding_btm: CGFloat = 2
+		//
 		class Cell: UICommonComponents.Tables.ReusableTableViewCell
 		{
 			override class func reuseIdentifier() -> String {
 				return "WalletDetails.Balance.Cell"
 			}
-			override class func cellHeight(withPosition cellPosition: UICommonComponents.CellPosition) -> CGFloat
-			{
-				return DisplayView.height
+			override class func cellHeight(
+				withPosition cellPosition: UICommonComponents.CellPosition
+			) -> CGFloat {
+				fatalError("Table view should have called cellHeight(withPosition:hasSecondaryBalances:) instead")
+			}
+			class func cellHeight(
+				withPosition cellPosition: UICommonComponents.CellPosition,
+				hasSecondaryBalances: Bool
+			) -> CGFloat {
+				var h = DisplayView.height
+				if hasSecondaryBalances {
+					h += Balance.secondaryBalances_dy + Balance.secondaryBalances_h + Balance.secondaryBalances_padding_btm
+				}
+				return h
 			}
 			//
 			let balanceDisplayView = DisplayView()
+			let secondaryBalancesLabel = UILabel()
 			override func setup()
 			{
 				super.setup()
@@ -57,26 +74,89 @@ extension WalletDetails
 					self.backgroundColor = UIColor.contentBackgroundColor
 					self.addSubview(self.balanceDisplayView)
 				}
+				do {
+					let view = self.secondaryBalancesLabel
+					view.numberOfLines = 0
+					view.font = UIFont.middlingRegularMonospace
+					view.textColor = UIColor.contentTextColor
+					view.textAlignment = .left
+					view.lineBreakMode = .byTruncatingTail
+					view.adjustsFontSizeToFitWidth = true
+					view.minimumScaleFactor = 0.5
+					self.addSubview(view)
+				}
 			}
 			//
 			// Overrides
 			override func layoutSubviews()
 			{
 				super.layoutSubviews()
-				self.balanceDisplayView.frame = self.bounds.insetBy(
-					dx: WalletDetails.ViewController.margin_h - DisplayView.imagePaddingInsets.left,
-					dy: -DisplayView.imagePaddingInsets.top
-				)
+				do {
+					let l = WalletDetails.ViewController.margin_h - DisplayView.imagePaddingInsets.left
+					let r = WalletDetails.ViewController.margin_h - DisplayView.imagePaddingInsets.right
+					self.balanceDisplayView.frame = CGRect.init(
+						x: l,
+						y: -DisplayView.imagePaddingInsets.top,
+						width: self.bounds.size.width - l - r,
+						height: DisplayView.height + DisplayView.imagePaddingInsets.top + DisplayView.imagePaddingInsets.bottom
+					)
+				}
+				do {
+					self.secondaryBalancesLabel.frame = CGRect.init(
+						x: self.balanceDisplayView.frame.origin.x + secondaryBalances_dx,
+						y: self.balanceDisplayView.frame.origin.y + self.balanceDisplayView.frame.size.height + secondaryBalances_dy,
+						width: self.balanceDisplayView.frame.size.width - 2*secondaryBalances_dx,
+						height: secondaryBalances_h
+					)
+				}
 			}
 			override func _configureUI()
 			{
-				let configuration = self.configuration!
-				let wallet = configuration.dataObject as? Wallet
-				if wallet == nil {
-					assert(false)
-					return
+				let wallet = self.configuration!.dataObject as! Wallet
+				self.balanceDisplayView.set(balanceWithWallet: wallet)
+				//
+				let pendingAmount = wallet.new_pendingBalanceAmount
+				let lockedAmount = wallet.lockedBalanceAmount
+				let hasSecondaryBalances = pendingAmount > 0 || lockedAmount > 0
+				if hasSecondaryBalances {
+					var text = ""
+					if pendingAmount > 0 {
+						let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+							from: pendingAmount,
+							ccy: SettingsController.shared.displayCurrency
+						)
+						text += String(
+							format: NSLocalizedString(
+								"%@ %@ pending",
+								comment: ""
+							),
+							components.formattedAmount,
+							components.final_ccy.symbol
+						)
+					}
+					if lockedAmount > 0 {
+						if text != "" {
+							text += "; "
+						}
+						let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+							from: lockedAmount,
+							ccy: SettingsController.shared.displayCurrency
+						)
+						text += String(
+							format: NSLocalizedString(
+								"%@ %@ locked",
+								comment: ""
+							),
+							components.formattedAmount,
+							components.final_ccy.symbol
+						)
+					}
+					self.secondaryBalancesLabel.text = text
+					self.secondaryBalancesLabel.isHidden = false
+				} else {
+					self.secondaryBalancesLabel.text = ""
+					self.secondaryBalancesLabel.isHidden = true
 				}
-				self.balanceDisplayView.set(balanceWithWallet: wallet!)
 			}
 		}
 
@@ -178,21 +258,12 @@ extension WalletDetails
 				var finalized_paddingZeros_string = ""
 				var displayCurrency = SettingsController.shared.displayCurrency
 				do {
-					let moneroBalanceAmount = wallet.balanceAmount
-					var raw_balanceString: String
-					if displayCurrency == .XMR {
-						raw_balanceString = moneroBalanceAmount.localized_formattedString
-					} else {
-						let convertedAmount = displayCurrency.displayUnitsRounded_amountInCurrency(
-							fromMoneroAmount: moneroBalanceAmount
-						)
-						if convertedAmount != nil {
-							raw_balanceString = MoneroAmount.shared_localized_doubleFormatter().string(for: convertedAmount)!
-						} else {
-							raw_balanceString = moneroBalanceAmount.localized_formattedString
-							displayCurrency = .XMR // display XMR until rate is ready? or maybe just show 'LOADING…'?
-						}
-					}
+					let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+						from: wallet.balanceAmount,
+						ccy: displayCurrency
+					)
+					let raw_balanceString = components.formattedAmount
+					displayCurrency = components.final_ccy // must use the returned one
 					let display_coinUnitPlaces = displayCurrency.unitsForDisplay
 					//
 					// TODO: the following should probably be factored and placed into something like an/the Amounts class
@@ -268,7 +339,7 @@ extension WalletDetails
 				self.label.attributedText = attributedText
 				self._configureBackgroundColor(withWallet: wallet)
 			}
-			func set(utilityText text: String, withWallet wallet: Wallet)
+			fileprivate func set(utilityText text: String, withWallet wallet: Wallet)
 			{
 				self.label.textColor = self.mainSectionTextColor(withWallet: wallet)
 				self.label.text = text

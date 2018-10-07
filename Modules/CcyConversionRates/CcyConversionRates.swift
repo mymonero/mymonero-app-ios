@@ -235,6 +235,28 @@ extension CcyConversionRates.Currency
 		//
 		return truncated_amount
 	}
+	static func amountConverted_displayStringComponents(
+		from amount: MoneroAmount,
+		ccy: CcyConversionRates.Currency
+	) -> (
+		formattedAmount: String,
+		final_ccy: CcyConversionRates.Currency
+	) {
+		var formattedAmount: String
+		var mutable_ccy = ccy
+		if ccy == .XMR {
+			formattedAmount = amount.localized_formattedString
+		} else {
+			let convertedAmount = ccy.displayUnitsRounded_amountInCurrency(fromMoneroAmount: amount)
+			if convertedAmount != nil {
+				formattedAmount = MoneroAmount.shared_localized_doubleFormatter().string(for: convertedAmount)!
+			} else {
+				formattedAmount = amount.localized_formattedString
+				mutable_ccy = .XMR // display XMR until rate is ready? or maybe just show 'LOADING…'?
+			}
+		}
+		return (formattedAmount, mutable_ccy)
+	}
 }
 //
 //

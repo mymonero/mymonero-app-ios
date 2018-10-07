@@ -52,7 +52,11 @@ extension UICommonComponents
 		var picker_inputField: UITextField!
 
 		var touchInterceptingFieldBackgroundView: UIView!
-		var contentView = WalletCellContentView(sizeClass: .medium32)
+		var contentView = WalletCellContentView(
+			sizeClass: .medium32,
+			wantsNoSecondaryBalances: true,
+			wantsOnlySpendableBalance: true // this could be changed to false for e.g. the createfundsrequestform
+		)
 		let accessoryChevronView = UIImageView(image: UIImage(named: "list_rightside_chevron")!)
 		var separatorView: UICommonComponents.Details.FieldSeparatorView!		
 		//
@@ -349,7 +353,11 @@ extension UICommonComponents
 		) -> UIView {
 			var mutable_view: UIView? = view
 			if mutable_view == nil {
-				mutable_view = WalletCellContentView(sizeClass: .medium32)
+				mutable_view = WalletCellContentView(
+					sizeClass: .medium32,
+					wantsNoSecondaryBalances: true,
+					wantsOnlySpendableBalance: true // this could be changed to false for e.g. the createfundsrequestform
+				)
 			}
 			let cellView = mutable_view as! WalletCellContentView
 			let record = WalletsListController.shared.records[row] as! Wallet

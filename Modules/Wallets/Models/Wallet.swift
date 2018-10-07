@@ -716,6 +716,22 @@ class Wallet: PersistableObject
 		}
 		return true
 	}
+	var unlockedBalance: MoneroAmount {
+		return self.balanceAmount - self.lockedBalanceAmount
+	}
+	var new_pendingBalanceAmount: MoneroAmount {
+		var amount = MoneroAmount(0)
+		(self.transactions ?? [MoneroHistoricalTransactionRecord]()).forEach { (tx) in
+			if tx.cached__isConfirmed != true {
+				if tx.isFailed != true /* nil -> false */{ // just filtering these out
+					// now, adding both of these (positive) values to contribute to the total
+					let abs_mag = (tx.totalSent - tx.totalReceived).magnitude // throwing away the sign
+					amount += MoneroAmount(abs_mag)
+				}
+			}
+		}
+		return amount
+	}
 	//
 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
 	func Boot_havingLoadedDecryptedExistingInitDoc(

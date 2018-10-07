@@ -37,14 +37,23 @@ import UIKit
 class WalletCellContentView: UIView
 {
 	var sizeClass: UICommonComponents.WalletIconView.SizeClass
+	var wantsNoSecondaryBalances: Bool
+	var wantsOnlySpendableBalance: Bool
+	//
 	var iconView: UICommonComponents.WalletIconView!
 	var titleLabel: UILabel!
 	var subtitleLabel: UILabel!
 	//
 	// Lifecycle - Init
-	init(sizeClass: UICommonComponents.WalletIconView.SizeClass)
-	{
+	init(
+		sizeClass: UICommonComponents.WalletIconView.SizeClass,
+		wantsNoSecondaryBalances: Bool,
+		wantsOnlySpendableBalance: Bool
+	) {
 		self.sizeClass = sizeClass
+		self.wantsNoSecondaryBalances = wantsNoSecondaryBalances
+		self.wantsOnlySpendableBalance = wantsOnlySpendableBalance
+		//
 		super.init(frame: .zero)
 		self.setup()
 	}
@@ -70,9 +79,7 @@ class WalletCellContentView: UIView
 			let view = UILabel()
 			view.textColor = UIColor(rgb: 0x9E9C9E)
 			view.font = UIFont.middlingRegularMonospace
-			view.numberOfLines = 1
-			view.minimumScaleFactor = 0.4
-			view.adjustsFontSizeToFitWidth = true // for small screen sizes
+			view.numberOfLines = 0
 			self.addSubview(view)
 			self.subtitleLabel =  view
 		}
@@ -169,6 +176,33 @@ class WalletCellContentView: UIView
 				return 15
 		}
 	}
+	var __primaryBalanceLabelText: String {
+		var amount: MoneroAmount
+		if self.wantsOnlySpendableBalance {
+			amount = self.object!.unlockedBalance
+		} else {
+			amount = self.object!.balanceAmount
+		}
+		let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+			from: amount,
+			ccy: SettingsController.shared.displayCurrency
+		)
+		var str: String
+		if self.wantsOnlySpendableBalance && self.object!.hasLockedFunds {
+			str = String(
+				format: NSLocalizedString("%@ %@ unlocked", comment: ""),
+				components.formattedAmount,
+				components.final_ccy.symbol
+			)
+		} else {
+			str = String(
+				format: NSLocalizedString("%@ %@", comment: ""),
+				components.formattedAmount,
+				components.final_ccy.symbol
+			)
+		}
+		return str
+	}
 	//
 	// Imperatives - Configuration
 	weak var object: Wallet? // weak to prevent self from preventing .willBeDeinitialized from being received
@@ -213,60 +247,51 @@ class WalletCellContentView: UIView
 		do {
 			if self.object!.hasEverFetched_accountInfo == false {
 				subtitleLabel_text = "Loading…"
+			} else if self.wantsNoSecondaryBalances {
+				subtitleLabel_text = self.__primaryBalanceLabelText
 			} else {
-				let hasLockedFunds = self.object!.hasLockedFunds
+				subtitleLabel_text = ""
 				//
-				var finalizable_displayCurrency = SettingsController.shared.displayCurrency
-				var finalizable_balanceAmountDouble = DoubleFromMoneroAmount(moneroAmount: self.object!.balanceAmount) // to finalize…
-				var finalizable_lockedBalanceAmountDouble: Double? = hasLockedFunds ? DoubleFromMoneroAmount(moneroAmount: self.object!.lockedBalanceAmount) : nil // to finalize…
-				//
-				if finalizable_displayCurrency != .XMR {
-					let converted_balanceAmountDouble = finalizable_displayCurrency.displayUnitsRounded_amountInCurrency(
-						fromMoneroAmount: self.object!.balanceAmount
+				let pendingAmount = self.object!.new_pendingBalanceAmount
+				let lockedBalanceAmount = self.object!.lockedBalanceAmount
+				if pendingAmount > 0 {
+					let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+						from: pendingAmount,
+						ccy: SettingsController.shared.displayCurrency
 					)
-					let converted_lockedBalanceAmountDouble: Double? = hasLockedFunds ? finalizable_displayCurrency.displayUnitsRounded_amountInCurrency(
-						fromMoneroAmount: self.object!.lockedBalanceAmount
-					) : nil
-					if converted_balanceAmountDouble != nil {
-						finalizable_balanceAmountDouble = converted_balanceAmountDouble! // use converted, non-xmr amount
-						finalizable_lockedBalanceAmountDouble = converted_lockedBalanceAmountDouble // use converted, non-xmr amount
-					} else {
-						assert(converted_balanceAmountDouble == nil)
-						assert(finalizable_displayCurrency != .XMR)
-						finalizable_displayCurrency = .XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
-					}
-				}
-				//
-				let final_balanceAmountDouble = finalizable_balanceAmountDouble
-				let final_lockedBalanceAmountDouble = finalizable_lockedBalanceAmountDouble
-				let final_displayCurrency = finalizable_displayCurrency
-				//
-				var final_balanceAmountString: String!
-				var final_lockedBalanceAmountString: String?
-				if final_displayCurrency == .XMR {
-					final_balanceAmountString = MoneroAmount.new(withDouble: final_balanceAmountDouble).localized_formattedString
-					if hasLockedFunds {
-						final_lockedBalanceAmountString = MoneroAmount.new(withDouble: final_lockedBalanceAmountDouble!).localized_formattedString
-					}
-				} else {
-					final_balanceAmountString = final_displayCurrency.nonAtomicCurrency_localized_formattedString(
-						final_amountDouble: final_balanceAmountDouble
+					subtitleLabel_text! += String(
+						format: NSLocalizedString(
+							"%@ %@ pending",
+							comment: ""
+						),
+						components.formattedAmount,
+						components.final_ccy.symbol
 					)
-					if hasLockedFunds {
-						final_lockedBalanceAmountString = final_displayCurrency.nonAtomicCurrency_localized_formattedString(
-							final_amountDouble: final_lockedBalanceAmountDouble!
-						)
-					}
 				}
-				//
-				subtitleLabel_text = final_balanceAmountString+" "+final_displayCurrency.symbol
-				if hasLockedFunds {
-					subtitleLabel_text = subtitleLabel_text! + " (" + final_lockedBalanceAmountString! + " 🔒)"
+				if lockedBalanceAmount > 0 {
+					let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
+						from: lockedBalanceAmount,
+						ccy: SettingsController.shared.displayCurrency
+					)
+					subtitleLabel_text! += String(
+						format: NSLocalizedString(
+							"%@%@ %@ locked",
+							comment: ""
+						),
+						subtitleLabel_text != "" ? "; " : "",
+						components.formattedAmount,
+						components.final_ccy.symbol
+					)
+				}
+				if subtitleLabel_text == "" {
+					subtitleLabel_text = self.__primaryBalanceLabelText
 				}
 			}
 		}
 		assert(subtitleLabel_text != nil)
 		self.subtitleLabel.text = subtitleLabel_text
+		//
+		self.setNeedsLayout()
 	}
 	func __configureUIWithWallet_swatchColor()
 	{
@@ -320,19 +345,39 @@ class WalletCellContentView: UIView
 		)
 		let labels_x = self.labels_x
 		let labels_rightMargin: CGFloat = 40
+		let titleLabel_h: CGFloat = 16
 		let labels_width = self.frame.size.width - labels_x - labels_rightMargin
 		self.titleLabel.frame = CGRect(
 			x: labels_x,
-			y: self.titleLabels_y,
+			y: 0,
 			width: labels_width,
-			height: 16 // TODO: size with font for accessibility?
+			height: titleLabel_h
 		).integral
 		//
+		let subtitleLabel_dy: CGFloat = (self.sizeClass == .large48 ? 2 : 1)
+		self.subtitleLabel.frame = CGRect(
+			x: 0,
+			y: 0,
+			width: labels_width,
+			height: 0
+		).integral
+		self.subtitleLabel.sizeToFit()
+		let subtitleLabel_h = min(37, self.subtitleLabel.frame.size.height) // after sizeToFit()
+		//
+		let total_labels_h = self.titleLabel.frame.size.height + subtitleLabel_dy + subtitleLabel_h
+		//
+		// Now vertically center labels and give them final heights
+		self.titleLabel.frame = CGRect(
+			x: labels_x,
+			y: (self.bounds.size.height - total_labels_h)/2,
+			width: labels_width,
+			height: titleLabel_h
+		).integral
 		self.subtitleLabel.frame = CGRect(
 			x: labels_x,
-			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + (self.sizeClass == .large48 ? 2 : 1),
+			y: self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + subtitleLabel_dy,
 			width: labels_width,
-			height: 20 // TODO: size with font for accessibility? NOTE: must support emoji, currently, for locked icon
+			height: subtitleLabel_h // max 2 lines
 		).integral
 	}
 	//
