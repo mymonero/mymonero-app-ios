@@ -62,7 +62,7 @@ class ContactsListController: PersistedObjectListController
 	}
 	//
 	// Imperatives - Overrides
-	override func overridable_sortRecords()
+	override func overridable_finalizeAndSortRecords()
 	{
 		self.records = self.records.sorted(by: { (l, r) -> Bool in
 			let l_casted = l as! Contact

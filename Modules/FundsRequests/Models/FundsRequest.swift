@@ -57,17 +57,19 @@ class FundsRequest: PersistableObject
 		case message = "message"
 		case description = "description"
 		case amountCurrency = "amountCurrency"
+		case is_displaying_local_wallet = "is_displaying_local_wallet"
 	}
 	//
 	// Properties - Persisted Values
 	var from_fullname: String?
-	var to_walletSwatchColor: Wallet.SwatchColor!
+	var to_walletSwatchColor: Wallet.SwatchColor?
 	var to_address: MoneroAddress!
 	var payment_id: MoneroPaymentID?
 	var amount: String?
 	var message: String?
 	var description: String?
 	var amountCurrency: CcyConversionRates.CurrencySymbol? // nil if no amount
+	var is_displaying_local_wallet: Bool?
 	//
 	// Properties - Transient
 	var qrCode_cgImage: CGImage!
@@ -81,7 +83,9 @@ class FundsRequest: PersistableObject
 			if let value = self.from_fullname {
 				dict[DictKey.from_fullname.rawValue] = value
 			}
-			dict[DictKey.to_walletHexColorString.rawValue] = self.to_walletSwatchColor.jsonRepresentation()
+			if let value = self.to_walletSwatchColor {
+				dict[DictKey.to_walletHexColorString.rawValue] = value.jsonRepresentation()
+			}
 			dict[DictKey.to_address.rawValue] = self.to_address
 			if let value = self.payment_id {
 				dict[DictKey.payment_id.rawValue] = value
@@ -98,6 +102,9 @@ class FundsRequest: PersistableObject
 			if let value = self.amountCurrency {
 				dict[DictKey.amountCurrency.rawValue] = value
 			}
+			if let value = self.is_displaying_local_wallet {
+				dict[DictKey.is_displaying_local_wallet.rawValue] = value
+			}
 		}
 		return dict
 	}
@@ -112,13 +119,18 @@ class FundsRequest: PersistableObject
 		try super.init(withPlaintextDictRepresentation: dictRepresentation) // this will set _id for us
 		//
 		self.from_fullname = dictRepresentation[DictKey.from_fullname.rawValue] as? String
-		self.to_walletSwatchColor = Wallet.SwatchColor.new(from_jsonRepresentation: dictRepresentation[DictKey.to_walletHexColorString.rawValue] as! String)
-		self.to_address = dictRepresentation[DictKey.to_address.rawValue] as! String
+		if let hexString = dictRepresentation[DictKey.to_walletHexColorString.rawValue] as? String {
+			self.to_walletSwatchColor = Wallet.SwatchColor.new(
+				from_jsonRepresentation: hexString
+			)
+		}
+		self.to_address = dictRepresentation[DictKey.to_address.rawValue] as? String
 		self.payment_id = dictRepresentation[DictKey.payment_id.rawValue] as? String
 		self.amount = dictRepresentation[DictKey.amount.rawValue] as? String
 		self.message = dictRepresentation[DictKey.message.rawValue] as? String
 		self.description = dictRepresentation[DictKey.description.rawValue] as? String
 		self.amountCurrency = dictRepresentation[DictKey.amountCurrency.rawValue] as? CcyConversionRates.CurrencySymbol
+		self.is_displaying_local_wallet = dictRepresentation[DictKey.is_displaying_local_wallet.rawValue] as? Bool ?? false // nil -> false
 		//
 		self.setup()
 	}
@@ -130,15 +142,17 @@ class FundsRequest: PersistableObject
 	}
 	convenience init(
 		from_fullname: String?,
-		to_walletSwatchColor: Wallet.SwatchColor,
+		to_walletSwatchColor: Wallet.SwatchColor?, // this may be nil if is_displaying_local_wallet is true
 		to_address: MoneroAddress,
 		payment_id: MoneroPaymentID?,
 		amount: String?,
 		message: String?,
 		description: String?,
-		amountCurrency: CcyConversionRates.CurrencySymbol?
+		amountCurrency: CcyConversionRates.CurrencySymbol?,
+		is_displaying_local_wallet: Bool
 	) {
 		self.init()
+		//
 		self.from_fullname = from_fullname
 		self.to_walletSwatchColor = to_walletSwatchColor
 		self.to_address = to_address
@@ -147,20 +161,24 @@ class FundsRequest: PersistableObject
 		self.message = message
 		self.description = description
 		self.amountCurrency = amountCurrency
+		self.is_displaying_local_wallet = is_displaying_local_wallet
 		//
 		self.setup()
 	}
 	func setup()
 	{
 		self.setup_qrCode_cgImage()
-		self.cached__qrCode_image_small = QRCodeImages.new_qrCode_UIImage(fromCGImage: self.qrCode_cgImage, withQRSize: .small)
+		self.cached__qrCode_image_small = QRCodeImages.new_qrCode_UIImage(
+			fromCGImage: self.qrCode_cgImage,
+			withQRSize: .small
+		)
 	}
 	func setup_qrCode_cgImage()
 	{
-		let noSlashes_uri = self.new_URI(
-			inMode: .addressAsFirstPathComponent
+		let noSlashes_uri = self.new_URI(inMode: .addressAsFirstPathComponent)
+		self.qrCode_cgImage = QRCodeImages.new_qrCode_cgImage(
+			withContentString: noSlashes_uri.absoluteString
 		)
-		self.qrCode_cgImage = QRCodeImages.new_qrCode_cgImage(withContentString: noSlashes_uri.absoluteString)
 	}
 	//
 	// Interface - Runtime - Accessors/Properties

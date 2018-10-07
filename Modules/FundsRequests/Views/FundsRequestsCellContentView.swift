@@ -68,6 +68,9 @@ class FundsRequestsCellContentView: UIView
 	//
 	var willBeDisplayedWithRightSideAccessoryChevron = true // configurable after init, else also call self.setNeedsLayout
 	//
+	var walletSwatchColorChanged_handler_token: Any?
+	var walletLabelChanged_handler_token: Any?
+	//
 	// Lifecycle - Init
 	init(displayMode: DisplayMode)
 	{
@@ -131,6 +134,7 @@ class FundsRequestsCellContentView: UIView
 	}
 	func _stopObserving_object()
 	{
+		self._stopObserving_wallet_ifAnyTokens()
 		assert(self.object != nil)
 		self.__stopObserving(specificObject: self.object!)
 	}
@@ -150,11 +154,38 @@ class FundsRequestsCellContentView: UIView
 		}
 		self.hasStoppedObservingObject_forLastNonNilSetOfObject = true // must set to true so we can set back to false when object is set back to non-nil
 		//
+		self._stopObserving_wallet_ifAnyTokens()
+		//
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName, object: object)
 		NotificationCenter.default.removeObserver(self, name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: object)
 	}
-		//
+	func _stopObserving_wallet_ifAnyTokens()
+	{
+		if let t = self.walletSwatchColorChanged_handler_token {
+			NotificationCenter.default.removeObserver(t)
+			self.walletSwatchColorChanged_handler_token = nil
+		}
+		if let t = self.walletLabelChanged_handler_token {
+			NotificationCenter.default.removeObserver(t)
+			self.walletLabelChanged_handler_token = nil
+		}
+	}
+	//
 	// Accessors
+	var givenRecordAndBootedWLC_toWallet_orNil: Wallet? {
+		assert(self.object != nil, "Expected self.record != nil by fundsRequest cell givenBooted_toWallet_orNil()")
+		if (!WalletsListController.shared.hasBooted) {
+			return nil // this actually might happen when tearing down - WLC goes first... but we assume it means self is about to go too
+		}
+		for (_, o_w) in WalletsListController.shared.records.enumerated() {
+			let w = o_w as! Wallet
+			if w.public_address == self.object!.to_address {
+				return w
+			}
+		}
+		return nil
+	}
+
 	//
 	// Imperatives - Configuration
 	weak var object: FundsRequest? // prevent self from preventing object from being freed so we still get .willBeDeinitialized
@@ -182,17 +213,44 @@ class FundsRequestsCellContentView: UIView
 			self.senderLabel.text = ""
 			self.memoLabel.text = self.object!.didFailToBoot_errStr ?? ""
 		} else {
-			self.iconView.configure(withSwatchColor: object.to_walletSwatchColor)
+			let is_displaying_local_wallet = object.is_displaying_local_wallet == true // handle false and nil
+			var wallet_ifRecordForQRDisplay: Wallet?
+			if is_displaying_local_wallet {
+				assert(WalletsListController.shared.hasBooted, "Expected booted WLC")
+				for (_, o_w) in WalletsListController.shared.records.enumerated() {
+					let w = o_w as! Wallet
+					if w.public_address == object.to_address {
+						wallet_ifRecordForQRDisplay = w
+						break
+					}
+				}
+			}
+			assert(
+				!is_displaying_local_wallet || wallet_ifRecordForQRDisplay != nil,
+				"Expected to find wallet_ifRecordForQRDisplay when is_displaying_local_wallet"
+			)
+			self.iconView.configure(
+				withSwatchColor: is_displaying_local_wallet
+					? wallet_ifRecordForQRDisplay!.swatchColor
+					: object.to_walletSwatchColor!
+			)
 			if self.displayMode == .withQRCode {
 				self.qrCodeImageView!.image = object.cached__qrCode_image_small
 			}
 			var amountLabel_text: String = ""
-			if object.amount != nil {
-				amountLabel_text += object.amount!
-				amountLabel_text += " "
-				amountLabel_text += object.amountCurrency ?? "XMR"
+			if is_displaying_local_wallet {
+				amountLabel_text = String(format:
+					NSLocalizedString("Request Monero to \"%@\"", comment: ""),
+					wallet_ifRecordForQRDisplay!.walletLabel!
+				)
 			} else {
-				amountLabel_text = NSLocalizedString("Any amount", comment: "")
+				if object.amount != nil {
+					amountLabel_text += object.amount!
+					amountLabel_text += " "
+					amountLabel_text += object.amountCurrency ?? "XMR"
+				} else {
+					amountLabel_text = NSLocalizedString("Any amount", comment: "")
+				}
 			}
 			self.amountLabel.text = amountLabel_text
 			self.senderLabel.text = object.from_fullname ?? "" // appears to be better not to show 'N/A' in else case
@@ -207,6 +265,32 @@ class FundsRequestsCellContentView: UIView
 		self.hasStoppedObservingObject_forLastNonNilSetOfObject = false // set to false so we make sure to stopObserving
 		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeinitialized(_:)), name: PersistableObject.NotificationNames.willBeDeinitialized.notificationName, object: self.object!)
 		NotificationCenter.default.addObserver(self, selector: #selector(_willBeDeleted), name: PersistableObject.NotificationNames.willBeDeleted.notificationName, object: self.object!)
+		//
+		if self.walletSwatchColorChanged_handler_token != nil || self.walletLabelChanged_handler_token != nil {
+			self._stopObserving_wallet_ifAnyTokens()
+		}
+		if let w = self.givenRecordAndBootedWLC_toWallet_orNil {
+			self.walletSwatchColorChanged_handler_token = NotificationCenter.default.addObserver(
+				forName: Wallet.NotificationNames.swatchColorChanged.notificationName,
+				object: w,
+				queue: nil
+			) { [weak self] (note) in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf._configureUI()
+			}
+			self.walletLabelChanged_handler_token = NotificationCenter.default.addObserver(
+				forName: Wallet.NotificationNames.labelChanged.notificationName,
+				object: w,
+				queue: nil
+			) { [weak self] (note) in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf._configureUI()
+			}
+		}
 	}
 	//
 	// Imperatives - Overrides

@@ -95,7 +95,20 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	}
 	func setup_tryToBoot()
 	{
-		self.setup_fetchAndReconstituteExistingRecords()
+		self.overridable_deferBootUntil
+		{ [weak self] (err) in
+			guard let thisSelf = self else {
+				return
+			}
+			if err != nil {
+				fatalError(err!) // necessary?
+			}
+			thisSelf.setup_fetchAndReconstituteExistingRecords()
+		}
+	}
+	func overridable_deferBootUntil(_ fn: @escaping (_ err: String?) -> Void)
+	{
+		fn(nil) // make sure to call this
 	}
 	func startObserving_passwordController()
 	{
@@ -191,19 +204,23 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 				self.records.append(listedObjectInstance!)
 				self.overridable_booting_didReconstitute(listedObjectInstance: listedObjectInstance!)
 			}
-			self.overridable_sortRecords()
 			self._setup_didBoot()
-			self._listUpdated_records() // post notification after booting, i.e. at runtime
 		}
 	}
 	func _setup_didBoot()
 	{
 //		DDLog.Done("Lists", "\(self) booted.")
+		self.overridable_finalizeAndSortRecords() // finalize on every boot - so that overriders can opt to do CRUD even with 0 extant records
 		self.hasBooted = true // all done!
 		self._callAndFlushAllBlocksWaitingForBootToExecute() // after hasBooted=true
 		DispatchQueue.main.async
-		{ [unowned self] in // on next tick to avoid instantiator missing this
+		{ [weak self] in // on next tick to avoid instantiator missing this
+			guard let thisSelf = self else {
+				return
+			}
 			NotificationCenter.default.post(name: Notifications_Boot.did.notificationName, object: self)
+			thisSelf._listUpdated_records() // notify every boot, after did-boot notification
+
 		}
 	}
 	func _setup_didFailToBoot(withErrStr err_str: String)
@@ -269,7 +286,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	}
 	//
 	// Imperatives - Overridable
-	func overridable_sortRecords() {}
+	func overridable_finalizeAndSortRecords() {}
 	//
 	// Imperatives - Deferring execution
 	// NOTE: onceBooted() exists because waiting for a password to be entered by the user must be asynchronous
@@ -310,35 +327,57 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 		}
 		return err_str
 	}
+	func givenBooted_delete_noListUpdatedNotify(listedObject object: PersistableObject) -> String?
+	{
+		assert(self.hasBooted)
+		if self.hasBooted == false {
+			return "Code fault"
+		}
+		let err_str = object.delete()
+		if err_str == nil { // remove / release
+			self._removeFromList_noListUpdatedNotify(object)
+		}
+		return err_str
+	}
 	func _removeFromList(_ object: PersistableObject)
+	{
+		self._removeFromList_noListUpdatedNotify(object)
+		self._listUpdated_records(updatedRecord: object)
+	}
+	func _removeFromList_noListUpdatedNotify(_ object: PersistableObject)
 	{
 		// self.stopObserving(record: record) // if observation added later…
 		let index = self.records.index(where: { (record) -> Bool in
 			record._id == object._id
 		})!
 		self.records.remove(at: index)
-		//
-		self._listUpdated_records(updatedRecord: object)
 	}
 	//
 	// Delegation
 	func overridable_booting_didReconstitute(listedObjectInstance: PersistableObject) {} // somewhat intentionally ignores errors and values which would be returned asynchronously, e.g. by way of a callback/block
 	func _atRuntime__record_wasSuccessfullySetUp(_ listedObject: PersistableObject)
 	{
+		self._atRuntime__record_wasSuccessfullySetUp_noSortNoListUpdated(listedObject)
+		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true { // this is no longer actually used by anything
+			self.overridable_finalizeAndSortRecords()
+		}
+		self.__dispatchAsync_listUpdated_records(updatedRecord: listedObject)
+		// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
+	}
+	func _atRuntime__record_wasSuccessfullySetUp_noSortNoListUpdated(
+		_ listedObject: PersistableObject
+	) {
 		if self.overridable_wantsRecordsAppendedNotPrepended {
 			self.records.append(listedObject)
 		} else {
 			self.records.insert(listedObject, at: 0) // so we add it to the top
 		}
-//		self.overridable_startObserving_record(recordInstance) // TODO if necessary - but shouldn't be at the moment - if implemented, be sure to add corresponding stopObserving where necessary
-		//
-		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true {
-			self.overridable_sortRecords()
-		}
-		self.__dispatchAsync_listUpdated_records(updatedRecord: listedObject)
-		// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
+//		self.overridable_startObserving(record: recordInstance) // TODO if necessary - but shouldn't be at the moment - if implemented, be sure to add corresponding stopObserving in _removeFromList_noListUpdatedNotify
 	}
-	func _listUpdated_records(updatedRecord record: PersistableObject? = nil) {
+	//
+	func _listUpdated_records(
+		updatedRecord record: PersistableObject? = nil // no one's actually looking for this in Notifications_List.updated userInfo at present
+	) {
 		var userInfo = [String: Any]()
 		if record != nil {
 			userInfo[Notifications_userInfoKeys.record.rawValue] = record

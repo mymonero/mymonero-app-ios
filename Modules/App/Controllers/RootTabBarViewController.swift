@@ -191,7 +191,7 @@ class RootTabBarViewController: UITabBarController
 			navigationController.popToRootViewController(animated: animated)
 			if let _ = navigationController.presentedViewController {
 				navigationController.dismiss(animated: animated, completion: nil) // just in case - a variety of things could be open
-			}			
+			}
 		}
 	}
 	//

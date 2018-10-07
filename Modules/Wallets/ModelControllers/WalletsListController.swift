@@ -90,7 +90,7 @@ class WalletsListController: PersistedObjectListController
 	}
 	//
 	// Runtime - Imperatives - Overrides
-	override func overridable_sortRecords()
+	override func overridable_finalizeAndSortRecords()
 	{
 		self.records = self.records.sorted(by: { (l, r) -> Bool in
 			if l.insertedAt_date == nil {

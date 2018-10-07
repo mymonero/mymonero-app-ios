@@ -142,8 +142,13 @@ class FundsRequestsListViewController: ListViewController
 	{
 		self.tableView.deselectRow(at: indexPath, animated: true)
 		let record = self.listController.records[indexPath.row] as! FundsRequest
-		let viewController = FundsRequestDetailsViewController(fundsRequest: record)
-		self.navigationController?.pushViewController(viewController, animated: true)
+		var viewController: UIViewController?
+		if record.is_displaying_local_wallet == true {
+			viewController = FundsRequestQRDisplayViewController(fundsRequest: record)
+		} else {
+			viewController = FundsRequestDetailsViewController(fundsRequest: record)
+		}
+		self.navigationController?.pushViewController(viewController!, animated: true)
 	}
 	//
 	// Delegation - Interactions
@@ -166,13 +171,41 @@ class FundsRequestsListViewController: ListViewController
 	}
 	@objc func WalletAppWalletActionsCoordinator_didTrigger_receiveFundsToWallet(_ notification: Notification)
 	{
-		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request details view…
-		// but do not dismiss modals - reconfigure instead
 		let userInfo = notification.userInfo!
 		let wallet = userInfo[WalletAppWalletActionsCoordinator.NotificationUserInfoKeys.wallet.key] as! Wallet
-		self.presentOrConfigureExistingCreateRequestFormView(
-			withContact: nil,
-			selectedWallet: wallet
-		)
+		//
+		// pop all presented back to root view before presentation ... unless the view is already showing!
+		let hasTopModalView = self.navigationController?.presentedViewController != nil
+		let topVC_asQRVC = self.navigationController?.topViewController as? FundsRequestQRDisplayViewController
+		let hasQRDisplayView = topVC_asQRVC != nil
+		let qrViewIsSameRecordView = hasQRDisplayView && topVC_asQRVC!.fundsRequest.to_address == wallet.public_address && topVC_asQRVC!.fundsRequest.is_displaying_local_wallet == true
+		let hasNothingToDo = !hasTopModalView && qrViewIsSameRecordView
+		if hasNothingToDo {
+			DDLog.Info("FundsRequests", "Already displaying that wallet's QR display view")
+			return
+		}
+		self.navigationController?.popToRootViewController(animated: false) // essential for the case they're viewing a request details view…
+		self.navigationController?.dismiss(animated: false, completion: nil)
+		//
+		DispatchQueue.main.asyncAfter(
+			deadline: .now() + 0.25 // this is to give the references time to settle down and prevent any racing that may occur to to dismissal leading to references being torn down... the delay should be largely unnoticeable and could even serve to lessen confusion about the UI changing to another tab suddenly ... at testing it was found that 200 was sufficient but i want to increase it for safety and because it can also be slightly better UX
+		) { [weak self] in
+			guard let thisSelf = self else {
+				return
+			}
+			var requestForWallet: FundsRequest?
+			for (_, o) in thisSelf.listController.records.enumerated() {
+				let r = o as! FundsRequest
+				if r.is_displaying_local_wallet == true && r.to_address == wallet.public_address {
+					requestForWallet = r
+					break
+				}
+			}
+			if requestForWallet == nil {
+				fatalError("Expected requestForWallet to be non nil")
+			}
+			let viewController = FundsRequestQRDisplayViewController(fundsRequest: requestForWallet!)
+			thisSelf.navigationController?.pushViewController(viewController, animated: true)
+		}
 	}
 }

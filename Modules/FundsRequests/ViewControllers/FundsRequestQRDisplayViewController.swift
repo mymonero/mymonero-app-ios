@@ -108,17 +108,27 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		}
 		do {
 			self.navigationItem.title = NSLocalizedString("Scan Code to Pay", comment: "")
-			self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .go,
-				tapped_fn:
-				{ [unowned self] in
-					self.navigationController!.dismiss(
-						animated: true,
-						completion: nil
-					)
-				},
-				title_orNilForDefault: NSLocalizedString("Done", comment: "")
-			)
+			if self.fundsRequest.is_displaying_local_wallet != true {
+				self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+					type: .go,
+					tapped_fn:
+					{ [unowned self] in
+						self.navigationController!.dismiss(
+							animated: true,
+							completion: nil
+						)
+					},
+					title_orNilForDefault: NSLocalizedString("Done", comment: "")
+				)
+			} else {
+				self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+					type: .back,
+					tapped_fn:
+					{ [unowned self] in
+						self.navigationController?.popViewController(animated: true)
+					}
+				)
+			}
 		}
 		do {
 			let recognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipedDown))
