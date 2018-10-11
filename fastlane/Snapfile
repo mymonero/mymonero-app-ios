@@ -2,11 +2,11 @@
 
 # A list of devices you want to take the screenshots from
 devices([
-	"iPhone X"#,
+	# "iPhone XS", # apparently generates wrong sized image.. maybe pending frameit support for XS ?
 	# "iPhone 8",
-	# "iPhone 8 Plus"#,
+	"iPhone 8 Plus",
 	# "iPhone SE",
-	# "iPad Pro (12.9-inch)"
+	"iPad Pro (12.9-inch)"
 ])
 
 languages([
@@ -26,9 +26,9 @@ workspace "./MyMonero.xcworkspace"
 number_of_retries 0 # it's not going to be able to clear the Sim between retries (apparently) so it's not useful
 # reinstall_app true #may get tripped up otherwise?
 stop_after_first_error true
-concurrent_simulators false #can it handle it?
-# clean true #may get tripped up otherwise?
-# erase_simulator true #may get tripped up otherwise?
+concurrent_simulators false 
+# clean true
+# erase_simulator true
 
 output_directory "./screenshots"
 

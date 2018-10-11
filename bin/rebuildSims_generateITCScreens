@@ -10,6 +10,6 @@ then
 
 	cd ./screenshots && 
 
-	fastlane frameit black
+	fastlane frameit gold
 fi
 

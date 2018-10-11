@@ -2,6 +2,9 @@
 
 .DS_Store
 
+fastlane/report.xml
+fastlane/README.md
+
 build/
 DerivedData/
 
