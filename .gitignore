@@ -32,3 +32,5 @@ Modules/MyMoneroCore/package-lock.json
 
 MyMonero.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 # ^ for now
+
+fastlane/report.xml
