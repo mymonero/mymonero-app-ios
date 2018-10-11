@@ -90,7 +90,7 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			forYourReferenceTextField.tap()
 			forYourReferenceTextField.typeText("Spending Cash")
 			//
-			let colorButton = app.buttons["walletColorOption.blue"]
+			let colorButton = app.buttons["walletColorOption.orange"]
 			colorButton.tap()
 			//
 			self.tapNext(inApp: app, atBarTitle: "Log Into Your Wallet")
@@ -106,7 +106,6 @@ class MyMoneroScreenshotsUITests: XCTestCase
 			//
 			self.tapNext(inApp: app, atBarTitle: "Create PIN/Password")
 		}
-		//
 		app.cells.element(boundBy: 0).tap() // tap on wallet list cell
 		sleep(1) // just wait a moment in case acct info hasn't finished loading
 		//
@@ -123,16 +122,18 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		do {
 			let field = app.textFields["Enter name"]
 			field.tap()
-			field.typeText("Ric")
+			field.typeText("The Monero Project")
 		}
 		do {
 			let enterAddressEmailOrDomainTextView = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"Enter address, email, or domain").element
 			enterAddressEmailOrDomainTextView.tap()
 			enterAddressEmailOrDomainTextView.tap()
 			enterAddressEmailOrDomainTextView.tap()
-			app.scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .textView).element.typeText("ric@spagni.net")
+			app.scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .textView).element.typeText("donate@getmonero.org")
 		}
 		app.navigationBars["New Contact"].buttons["Save"].tap()
+		//
+		sleep(2)
 		//
 		app.cells.element(boundBy: 0).tap() // tap on contacts list cell
 		//
@@ -145,24 +146,6 @@ class MyMoneroScreenshotsUITests: XCTestCase
 		app.secureTextFields["So we know it's you"].typeText("qweqwe")
 		app.navigationBars["Enter Password"].buttons["Next"].tap()
 		//
-		app.tabBars.children(matching: .button).element(boundBy: 3).tap() // tap on Contacts to add monero donation
-		//
-		app.navigationBars["Contacts"].buttons["addButtonIcon 10"].tap()
-		do {
-			let field = app.textFields["Enter name"]
-			field.tap()
-			field.typeText("The Monero Project")
-		}
-		do {
-			let enterAddressEmailOrDomainTextView = app.scrollViews.otherElements.textViews.containing(.staticText, identifier:"Enter address, email, or domain").element
-			enterAddressEmailOrDomainTextView.tap()
-			enterAddressEmailOrDomainTextView.tap()
-			enterAddressEmailOrDomainTextView.tap()
-			app.scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .textView).element.typeText("donate@getmonero.org")
-		}
-		app.navigationBars["New Contact"].buttons["Save"].tap()
-		//
-		sleep(3) // wait for DNS resolution to improve failure rate - is there a better way?
 		app.tabBars.children(matching: .button).element(boundBy: 1).tap() // tap on Send
 		do {
 			let field = app.scrollViews.otherElements.textFields["00.00"]
