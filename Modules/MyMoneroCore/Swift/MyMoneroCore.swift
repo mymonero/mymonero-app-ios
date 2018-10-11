@@ -44,10 +44,10 @@ final class MyMoneroCore
 	static let shared = MyMoneroCore()
 	//
 	// Constants - Mixin
-	static let _forkv7_minimumMixin: UInt = 6
+	// TODO: get these from core-cpp
 	static func _mixinToRingsize(_ mixin: UInt) -> UInt { return mixin + 1 }
 	//
-	static let thisFork_minMixin: UInt = _forkv7_minimumMixin
+	static let thisFork_minMixin: UInt = 10
 	static var thisFork_minRingSize: UInt {
 		return _mixinToRingsize(thisFork_minMixin)
 	}
