@@ -332,7 +332,13 @@ class FundsRequestsCellContentView: UIView
 			width: labels_width,
 			height: 16
 		).integral
-		self.amountLabel.sizeToFit() // to constrain to minimum width
+		self.amountLabel.sizeToFit()
+		self.amountLabel.frame = CGRect( // to constrain max width
+			x: self.amountLabel.frame.origin.x,
+			y: self.amountLabel.frame.origin.y,
+			width: min(labels_width, self.amountLabel.frame.size.width),
+			height: self.amountLabel.frame.size.height
+		).integral
 		do {
 			let amountLabelAndMargin_portionOf_labels_width = self.amountLabel.frame.size.width + 12
 			let senderLabel_x = self.amountLabel.frame.origin.x + amountLabelAndMargin_portionOf_labels_width
