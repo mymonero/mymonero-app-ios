@@ -159,7 +159,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	   nil,
 	   //
 	   [NSString stringWithUTF8String:walletDescription.sec_seed_string.c_str()],
-	   [NSString stringWithUTF8String:walletDescription.mnemonic_string.c_str()],
+	   [NSString stringWithUTF8String:std::string(walletDescription.mnemonic_string.data(), walletDescription.mnemonic_string.size()).c_str()],
 	   [NSString stringWithUTF8String:walletDescription.mnemonic_language.c_str()],
 	   [NSString stringWithUTF8String:walletDescription.address_string.c_str()],
 	   [NSString stringWithUTF8String:string_tools::pod_to_hex(walletDescription.sec_viewKey).c_str()],
@@ -184,7 +184,12 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		};
 	}
 	return @{
-		[[self class] retValDictKey__Value]: [NSString stringWithUTF8String:(*retVals.mnemonic_string).c_str()]
+		 [[self class] retValDictKey__Value]: [NSString stringWithUTF8String:
+			std::string(
+				(*retVals.mnemonic_string).data(),
+				(*retVals.mnemonic_string).size()
+			).c_str()
+		 ]
 	};
 }
 //
