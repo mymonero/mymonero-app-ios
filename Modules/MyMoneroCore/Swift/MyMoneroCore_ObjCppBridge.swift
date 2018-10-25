@@ -264,9 +264,6 @@ extension MyMoneroCore
 		var New_PaymentID: MoneroShortPaymentID {
 			return MyMoneroCore_ObjCpp.new_short_plain_paymentID()
 		}
-		var New_FakeAddressForRCTTx: MoneroAddress {
-			return MyMoneroCore_ObjCpp.new_fakeAddressForRCTTx(with: MM_MAINNET) // testnet could be exposed
-		}
 		static var fixedRingsize: UInt32 {
 			return MyMoneroCore_ObjCpp.fixedRingsize()
 		}
@@ -274,29 +271,14 @@ extension MyMoneroCore
 			return MyMoneroCore_ObjCpp.fixedMixinsize()
 		}
 		static func estimatedNetworkFee(
-			withFeePerKB fee_per_kb: MoneroAmount,
+			withFeePerB fee_per_b: MoneroAmount,
 			priority: MoneroTransferSimplifiedPriority = .low
 		) -> MoneroAmount {
 			let estimatedFee_UInt64 = MyMoneroCore_ObjCpp.estimatedTxNetworkFee(
-				withFeePerKB: UInt64(String(fee_per_kb))!,
+				withFeePerB: UInt64(String(fee_per_b))!,
 				priority: priority.cppRepresentation
 			)
 			return MoneroAmount("\(estimatedFee_UInt64)")!
-		}
-		static func calculateFee(
-			withFeePerKB fee_per_kb: MoneroAmount,
-			num_bytes: Int,
-			fee_multiplier: UInt32
-		) -> MoneroAmount {
-			let fee_UInt64 = MyMoneroCore_ObjCpp.calculate_fee(
-				UInt64(String(fee_per_kb))!,
-				num_bytes: num_bytes,
-				fee_multiplier: fee_multiplier
-			)
-			return MoneroAmount("\(fee_UInt64)")!
-		}
-		static func estimateRctSize(_ n_inputs: Int) -> Int {
-			return MyMoneroCore_ObjCpp.estimate_rct_tx_size(Int32(n_inputs))
 		}
 		func areEqualMnemonics(_ a: String, _ b: String) -> Bool
 		{
@@ -317,68 +299,95 @@ extension MyMoneroCore
 				out_index: out_index
 			)!
 		}
-		
-		func new_serializedSignedTransaction(
-			from_address: String,
-			wallet__private_keys: MoneroKeyDuo,
-			to_address: MoneroStandardAddress,
+		//
+		func send_step1__prepare_params_for_get_decoys(
+			sweeping: Bool,
 			sending_amount: UInt64,
-			fee_amount: UInt64,
-			change_amount: UInt64,
+			fee_per_b: UInt64,
+			priority: MoneroTransferSimplifiedPriority,
+			unspent_outs: [MoneroOutputDescription],
 			payment_id: MoneroPaymentID?,
-			usingOuts: [MoneroOutputDescription],
-			randomOuts: [MoneroRandomAmountAndOutputs]
-		) -> (
-			err_str: String?,
-			serializedSignedTransaction: MoneroSerializedSignedTransaction?,
-			tx_hash: MoneroTransactionHash?,
-			tx_key: String? // TODO: MoneroTransactionPrivateKey?
-		) {
-			var outputs = [Monero_Arg_SpendableOutput]()
-			for (_, usingOut) in usingOuts.enumerated() {
+			optl__passedIn_attemptAt_fee: UInt64?
+		) -> Monero_Send_Step1_RetVals {
+			var args_outputs = [Monero_Arg_SpendableOutput]()
+			for (_, this_out) in unspent_outs.enumerated() {
 				let output = Monero_Arg_SpendableOutput()
-				output.amount = usingOut.amount.integerRepresentation
-				output.public_key = usingOut.public_key
-				output.rct = usingOut.rct
-				output.global_index = usingOut.globalIndex
-				output.index = usingOut.index
-				output.tx_pub_key = usingOut.tx_pub_key
-				outputs.append(output)
+				output.amount = this_out.amount.integerRepresentation
+				output.public_key = this_out.public_key
+				output.rct = this_out.rct
+				output.global_index = this_out.globalIndex
+				output.index = this_out.index
+				output.tx_pub_key = this_out.tx_pub_key
+				args_outputs.append(output)
 			}
-			var mixOuts = [Monero_Arg_RandomAmountAndOuts]()
-			for (_, randomAmountAndOut) in randomOuts.enumerated() {
-				let mixOut = Monero_Arg_RandomAmountAndOuts()
-				mixOut.amount = randomAmountAndOut.amount.integerRepresentation
-				var mixOutOutputs = [Monero_Arg_RandomAmountOut]()
+			var optl__passedIn_attemptAt_fee_string: String? = nil
+			if optl__passedIn_attemptAt_fee != nil {
+				optl__passedIn_attemptAt_fee_string = "\(optl__passedIn_attemptAt_fee!)"
+			}
+			let retVals = MyMoneroCore_ObjCpp.send_step1__prepare_params_for_get_decoys(
+				withSweeping: sweeping,
+				sending_amount: sending_amount,
+				fee_per_b: fee_per_b,
+				priority: priority.cppRepresentation,
+				unspent_outputs: args_outputs,
+				payment_id_string: payment_id,
+				optl__passedIn_attemptAt_fee_string: optl__passedIn_attemptAt_fee_string // using a string allows passing a nil
+			)
+			if retVals.reconstructErr_needMoreMoneyThanFound { // must rewrite this error in this special case
+				retVals.errStr_orNil = String(format:
+					NSLocalizedString("Spendable balance too low. Have %@ %@; need %@ %@.", comment: ""),
+					FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.spendable_balance)")!),
+					MoneroConstants.currency_symbol,
+					FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.required_balance)")!),
+					MoneroConstants.currency_symbol
+				);
+			}
+			return retVals;
+		}
+		func send_step2__try_create_transaction(
+			from_address: MoneroStandardAddress,
+			wallet__private_keys: MoneroKeyDuo,
+			to_address: MoneroAddress,
+			payment_id: MoneroPaymentID?,
+			final_total_wo_fee: UInt64,
+			change_amount: UInt64,
+			using_fee: UInt64,
+			priority: MoneroTransferSimplifiedPriority,
+			using_outs: [Monero_Arg_SpendableOutput], // returned by step1
+			mix_outs: [MoneroRandomAmountAndOutputs],
+			fee_per_b: UInt64,
+			unlock_time: UInt64 = 0
+		) -> Monero_Send_Step2_RetVals {
+			var args_mixOuts = [Monero_Arg_RandomAmountAndOuts]()
+			for (_, randomAmountAndOut) in mix_outs.enumerated() {
+				let arg_el = Monero_Arg_RandomAmountAndOuts()
+				arg_el.amount = randomAmountAndOut.amount.integerRepresentation
+				var arg_el_mixOutOutputs = [Monero_Arg_RandomAmountOut]()
 				for (_, randomAmountOut) in randomAmountAndOut.outputs.enumerated() {
-					let mixOutOutput = Monero_Arg_RandomAmountOut()
-					mixOutOutput.public_key = randomAmountOut.public_key
-					mixOutOutput.rct = randomAmountOut.rct
-					mixOutOutput.global_index = randomAmountOut.globalIndex
-					mixOutOutputs.append(mixOutOutput)
+					let arg_el_mixOutOutput = Monero_Arg_RandomAmountOut()
+					arg_el_mixOutOutput.public_key = randomAmountOut.public_key
+					arg_el_mixOutOutput.rct = randomAmountOut.rct
+					arg_el_mixOutOutput.global_index = randomAmountOut.globalIndex
+					arg_el_mixOutOutputs.append(arg_el_mixOutOutput)
 				}
-				mixOut.outputs = mixOutOutputs
-				mixOuts.append(mixOut)
+				arg_el.outputs = arg_el_mixOutOutputs
+				args_mixOuts.append(arg_el)
 			}
-			let retVals = MyMoneroCore_ObjCpp.createTransaction(
+			return MyMoneroCore_ObjCpp.send_step2__try_create_transaction(
 				with: MM_MAINNET,
 				from_address_string: from_address,
 				sec_viewKey_string: wallet__private_keys.view,
 				sec_spendKey_string: wallet__private_keys.spend,
 				to_address_string: to_address,
 				payment_id_string: payment_id,
-				sending_amount: sending_amount,
-				fee_amount: fee_amount,
+				final_total_wo_fee: final_total_wo_fee,
 				change_amount: change_amount,
-				unlock_time: 0,
-				outputs: outputs,
-				mix_outs: mixOuts
-			)
-			return (
-				retVals.errStr_orNil,
-				retVals.serialized_signed_tx,
-				retVals.tx_hash,
-				retVals.tx_key
+				using_fee: using_fee,
+				priority: priority.cppRepresentation,
+				using_outs: using_outs, // passed to step2 from step1
+				mix_outs: args_mixOuts,
+				fee_per_b: fee_per_b,
+				unlock_time: unlock_time
 			)
 		}
 	}

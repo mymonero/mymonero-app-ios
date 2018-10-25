@@ -296,6 +296,7 @@
 		9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */; };
 		9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04F81ECFD94B009256BD /* PersistableObject.swift */; };
 		9FEC04FB1ECFE23E009256BD /* DocumentPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */; };
+		9FEC2F3F218130D000B25169 /* monero_fee_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC2F3E218130D000B25169 /* monero_fee_utils.cpp */; };
 		9FEFBEEB215954D700CCAB6C /* monero_address_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEFBEA6215954D700CCAB6C /* monero_address_utils.cpp */; };
 		9FEFBEEC215954D700CCAB6C /* tools__ret_vals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEFBEA8215954D700CCAB6C /* tools__ret_vals.cpp */; };
 		9FEFBEEE215954D700CCAB6C /* monero_paymentID_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEFBEB0215954D700CCAB6C /* monero_paymentID_utils.cpp */; };
@@ -728,6 +729,8 @@
 		9FEC04EE1ECFD8C4009256BD /* PersistedObjectListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistedObjectListController.swift; sourceTree = "<group>"; };
 		9FEC04F81ECFD94B009256BD /* PersistableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableObject.swift; sourceTree = "<group>"; };
 		9FEC04FA1ECFE23E009256BD /* DocumentPersister.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPersister.swift; sourceTree = "<group>"; };
+		9FEC2F3D218130D000B25169 /* monero_fee_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_fee_utils.hpp; sourceTree = "<group>"; };
+		9FEC2F3E218130D000B25169 /* monero_fee_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_fee_utils.cpp; sourceTree = "<group>"; };
 		9FEFBEA6215954D700CCAB6C /* monero_address_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_address_utils.cpp; sourceTree = "<group>"; };
 		9FEFBEA7215954D700CCAB6C /* monero_transfer_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_transfer_utils.hpp; sourceTree = "<group>"; };
 		9FEFBEA8215954D700CCAB6C /* tools__ret_vals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tools__ret_vals.cpp; sourceTree = "<group>"; };
@@ -1970,6 +1973,8 @@
 				9FEFBEB4215954D700CCAB6C /* monero_address_utils.hpp */,
 				9FEFBEA6215954D700CCAB6C /* monero_address_utils.cpp */,
 				9FEFBEA8215954D700CCAB6C /* tools__ret_vals.cpp */,
+				9FEC2F3E218130D000B25169 /* monero_fee_utils.cpp */,
+				9FEC2F3D218130D000B25169 /* monero_fee_utils.hpp */,
 				9FEFBEAB215954D700CCAB6C /* monero_wallet_utils.hpp */,
 				9FEFBEB1215954D700CCAB6C /* monero_wallet_utils.cpp */,
 				9FEFBEAC215954D700CCAB6C /* monero_fork_rules.hpp */,
@@ -2453,6 +2458,7 @@
 				9F2FEB38216011A6003FAD8F /* Wallet_TxCleanupController.swift in Sources */,
 				9FEC04F91ECFD94B009256BD /* PersistableObject.swift in Sources */,
 				9FAF95241FB4F4FD00ECE0A6 /* CcyConversionRates.swift in Sources */,
+				9FEC2F3F218130D000B25169 /* monero_fee_utils.cpp in Sources */,
 				9FD70E091F1988FB000FE675 /* Tables.swift in Sources */,
 				9F5A24C52178066900DF2B9C /* string_tools.cpp in Sources */,
 				9F33E6F91F20016000610662 /* EditWalletViewController.swift in Sources */,

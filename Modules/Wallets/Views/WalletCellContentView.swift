@@ -78,8 +78,10 @@ class WalletCellContentView: UIView
 		do {
 			let view = UILabel()
 			view.textColor = UIColor(rgb: 0x9E9C9E)
-			view.font = UIFont.middlingRegularMonospace
+			view.font = UIFont.shouldStepDownLargerFontSizes ? UIFont.subMiddlingRegularMonospace : UIFont.middlingRegularMonospace // subMiddling seems too small visually and is an interrim solution given balances with all decimal places
 			view.numberOfLines = 0
+			view.minimumScaleFactor = 0.7
+			view.adjustsFontSizeToFitWidth = true
 			self.addSubview(view)
 			self.subtitleLabel =  view
 		}
@@ -185,7 +187,8 @@ class WalletCellContentView: UIView
 		}
 		let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
 			from: amount,
-			ccy: SettingsController.shared.displayCurrency
+			ccy: SettingsController.shared.displayCurrency,
+			chopNPlaces: 3
 		)
 		var str: String
 		if self.wantsOnlySpendableBalance && self.object!.hasLockedFunds {
@@ -257,7 +260,8 @@ class WalletCellContentView: UIView
 				if pendingAmount > 0 {
 					let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
 						from: pendingAmount,
-						ccy: SettingsController.shared.displayCurrency
+						ccy: SettingsController.shared.displayCurrency,
+						chopNPlaces: 3
 					)
 					subtitleLabel_text! += String(
 						format: NSLocalizedString(
@@ -271,7 +275,8 @@ class WalletCellContentView: UIView
 				if lockedBalanceAmount > 0 {
 					let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
 						from: lockedBalanceAmount,
-						ccy: SettingsController.shared.displayCurrency
+						ccy: SettingsController.shared.displayCurrency,
+						chopNPlaces: 3
 					)
 					subtitleLabel_text! += String(
 						format: NSLocalizedString(
@@ -344,7 +349,7 @@ class WalletCellContentView: UIView
 			height: self.iconView.frame.size.height
 		)
 		let labels_x = self.labels_x
-		let labels_rightMargin: CGFloat = 40
+		let labels_rightMargin: CGFloat = 24
 		let titleLabel_h: CGFloat = 16
 		let labels_width = self.frame.size.width - labels_x - labels_rightMargin
 		self.titleLabel.frame = CGRect(

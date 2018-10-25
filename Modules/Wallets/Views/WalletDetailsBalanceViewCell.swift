@@ -123,7 +123,8 @@ extension WalletDetails
 					if pendingAmount > 0 {
 						let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
 							from: pendingAmount,
-							ccy: SettingsController.shared.displayCurrency
+							ccy: SettingsController.shared.displayCurrency,
+							chopNPlaces: 3
 						)
 						text += String(
 							format: NSLocalizedString(
@@ -140,7 +141,8 @@ extension WalletDetails
 						}
 						let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
 							from: lockedAmount,
-							ccy: SettingsController.shared.displayCurrency
+							ccy: SettingsController.shared.displayCurrency,
+							chopNPlaces: 3
 						)
 						text += String(
 							format: NSLocalizedString(

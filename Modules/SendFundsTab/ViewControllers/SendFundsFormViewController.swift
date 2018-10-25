@@ -199,6 +199,8 @@ extension SendFundsForm
 					text: nil,
 					displayMode: .prominent // slightly brighter here per design; considered merging
 				)
+//				view.adjustsFontSizeToFitWidth = true
+//				view.minimumScaleFactor = 0.8
 				self.networkFeeEstimate_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -702,11 +704,9 @@ extension SendFundsForm
 			return priority
 		}
 		var new_xmr_estFeeAmount: MoneroAmount {
-			let feePerKB_Amount = MoneroAmount("152700000")! // constant for now pending polling fee_per_kb on account info
-			let priority = self.selected_priority
 			let estNetworkFee_moneroAmount = MyMoneroCore.ObjCppBridge.estimatedNetworkFee(
-				withFeePerKB: feePerKB_Amount,
-				priority: priority
+				withFeePerB: MoneroAmount("24658")!, // constant for now pending polling fee_per_kb on account info
+				priority: self.selected_priority
 			)
 			return estNetworkFee_moneroAmount
 		}
@@ -787,10 +787,11 @@ extension SendFundsForm
 		{
 			let components = CcyConversionRates.Currency.amountConverted_displayStringComponents(
 				from: self.new_xmr_estFeeAmount,
-				ccy: SettingsController.shared.displayCurrency
+				ccy: SettingsController.shared.displayCurrency,
+				chopNPlaces: UIFont.shouldStepDownLargerFontSizes ? 4 : 3 // for new high precision fees; TODO: is this future-proofed enough?
 			)
 			let text = String(
-				format: NSLocalizedString("+ %@ %@ EST. NETWORK FEE", comment: ""),
+				format: NSLocalizedString("+ %@ %@ EST. FEE", comment: ""),
 				components.formattedAmount,
 				components.final_ccy.symbol
 			)
@@ -1199,20 +1200,27 @@ extension SendFundsForm
 					width: textField_w, // full-size width
 					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
 				).integral
-				self.networkFeeEstimate_label.frame = CGRect(
-					x: label_x,
-					y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
-					width: fullWidth_label_w,
-					height: 0
-				).integral
 				do {
-					self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
-					var final__networkFeeEstimate_label_frame = self.networkFeeEstimate_label.frame
-					final__networkFeeEstimate_label_frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.networkFeeEstimate_label.frame = final__networkFeeEstimate_label_frame // kinda sucks to set this three times in this method. any alternative?
-					//
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+					//
+					self.networkFeeEstimate_label.frame = CGRect(
+						x: label_x,
+						y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
+						width: 0,
+						height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					).integral
+					self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+					var final__frame = self.networkFeeEstimate_label.frame
+					let max_w = fullWidth_label_w - 6 // or so
+					if final__frame.size.width < max_w {
+						final__frame.size.width = final__frame.size.width
+					} else {
+						final__frame.size.width = max_w
+					}
+					final__frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+					self.networkFeeEstimate_label.frame = final__frame // kinda sucks to set this three times in this method. any alternative?
+					//
 					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
 						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
 						y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,

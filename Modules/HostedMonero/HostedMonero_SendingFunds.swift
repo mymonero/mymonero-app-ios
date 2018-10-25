@@ -55,7 +55,6 @@ extension MoneroUtils
 //
 extension HostedMonero
 {
-	
 	class FundsSender
 	{
 		enum ProcessStep
@@ -168,60 +167,15 @@ extension HostedMonero
 				self.failWithErr_fn?(NSLocalizedString("The amount you've entered is too low", comment: ""))
 				return
 			}
-			var totalAmountWithoutFee = MoneroAmount.new(withDouble: self.isSweeping ? 0 : self.amount_orNilIfSweeping!) // this will get reassigned below if sweeping, so it's a var
-		//	DDLog.Info("HostedMonero", "targetDescription \(targetDescription)")
-			let amountForDisplay: Any = self.isSweeping ? "all" : totalAmountWithoutFee // Swift compiler bug? when amountForDisplay rhs value placed in string interpolation, it tries to init a BigInt with "all"
-			DDLog.Info("HostedMonero", "Total to send, before fee: \(amountForDisplay)")
-			//
-			// Derive/finalize some values…
-			let final__mixin = MyMoneroCore.fixedMixin
-			if final__mixin <= 0 { // TODO: min mixin checking
-				self.failWithErr_fn?(NSLocalizedString("Expected mixin > 0", comment: ""))
-				return
-			}
-			if final__mixin < MyMoneroCore.thisFork_minMixin {
-				self.failWithErr_fn?(NSLocalizedString("Ringsize is below the minimum.", comment: ""))
-				return
-			}
-			var final__payment_id = payment_id == "" ? nil : payment_id
-			var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one (finalized just below)
-			let (err_str, decodedAddressComponents) = MyMoneroCore.shared_objCppBridge.decoded(address: target_address)
-			if let _ = err_str {
-				self.failWithErr_fn?(NSLocalizedString("Invalid recipient address.", comment: ""))
-				return
-			}
-			guard let _ = decodedAddressComponents else {
-				self.failWithErr_fn?(NSLocalizedString("Error obtaining decoded recipient Monero address components.", comment: ""))
-				return
-			}
-			let isIntegratedAddress = decodedAddressComponents!.intPaymentId != nil
-			if self.payment_id != nil && self.payment_id != "" {
-				if isIntegratedAddress { // is integrated address
-					self.failWithErr_fn?(NSLocalizedString("Payment ID must be blank when using an Integrated Address", comment: ""))
-					return
-				}
-				if decodedAddressComponents!.isSubaddress {
-					self.failWithErr_fn?(NSLocalizedString("Payment ID must be blank when using a Subaddress", comment: ""))
-					return
-				}
-			}
-			if isIntegratedAddress {
-				final__payment_id = decodedAddressComponents!.intPaymentId
-				final__pid_encrypt = true // we do want to encrypt if using an integrated address
-				assert(MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short))
-			} else {
-				if MoneroUtils.PaymentIDs.isAValidOrNotA(paymentId: final__payment_id) == false { // Validation
-					self.failWithErr_fn?(NSLocalizedString("The payment ID you've entered is not valid", comment: ""))
-					return
-				}
-				if final__payment_id != nil {
-					final__pid_encrypt = MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short) // if it's a short pid, encrypt
-				}
-			}
+			var sending_amount = MoneroAmount.new(withDouble: self.isSweeping ? 0 : self.amount_orNilIfSweeping!) // this will get reassigned below if sweeping, so it's a var
+			var using__payment_id = payment_id == "" ? nil : payment_id
+
 			//
 			// now _proceedTo_getUnspentOutsUsableForMixin
 			assert(self._current_request == nil)
 			self.updateProcessStep(to: .fetchingLatestBalance)
+			var original_unusedOuts: [MoneroOutputDescription]!
+			var feePerB: MoneroAmount!
 			self._current_request = HostedMonero.APIClient.shared.UnspentOuts(
 				wallet_keyImageCache: wallet__keyImageCache,
 				address: wallet__public_address,
@@ -240,137 +194,38 @@ extension HostedMonero
 						thisSelf.failWithErr_fn?(err_str)
 						return
 					}
-					let feePerKB = result!.feePerKB
-					// Transaction will need at least 1KB fee (13KB for RingCT)
-					let network_minimumTXSize_B: Int = 13 * 1000 // because isRingCT=true
-					let network_minimumFee = MyMoneroCore.ObjCppBridge.calculateFee(
-						withFeePerKB: feePerKB,
-						num_bytes: network_minimumTXSize_B,
-						fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(
-							thisSelf.priority
-						)
-					)
+					feePerB = result!.feePerB
+					original_unusedOuts = result!.unusedOutputs
+					//
 					// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
-					__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-						original_unusedOuts: result!.unusedOutputs,
-						feePerKB: feePerKB,
-						passedIn_attemptAt_network_minimumFee: network_minimumFee
-					)
+					__reenterable_constructTxAndSend()
 				}
 			)
-			func __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-				original_unusedOuts: [MoneroOutputDescription],
-				feePerKB: MoneroAmount,
-				passedIn_attemptAt_network_minimumFee: MoneroAmount
+			func __reenterable_constructTxAndSend(
+				_ passedIn_attemptAt_minimumFee: UInt64? = nil,
+				constructionAttemptN: UInt32 = 1
 			) { // Now we need to establish some values for balance validation and to construct the transaction
-				DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts)")
+				DDLog.Info("HostedMonero", "Entered re-enterable tx building codepath with original_unusedOuts \(original_unusedOuts!)")
 				self.updateProcessStep(to: .calculatingFee)
 				//
-				var this_attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
-				var totalAmountIncludingFees: MoneroAmount
-				if self.isSweeping {
-					totalAmountIncludingFees = MoneroAmount("18450000000000000000")! //~uint64 max
-				} else {
-					totalAmountIncludingFees = totalAmountWithoutFee + this_attemptAt_network_minimumFee/* + hostingService_chargeAmount NOTE service fee removed for now */
-				}
-				let balanceForDisplay: Any = self.isSweeping ? "all" : totalAmountIncludingFees // Swift compiler bug? when amountForDisplay rhs value placed in string interpolation, it tries to init a BigInt with "all"
-				DDLog.Info("HostedMonero", "Initial balance required: \(balanceForDisplay)");
-				let usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
-					target_amount: totalAmountIncludingFees,
-					unusedOuts: original_unusedOuts,
-					isSweeping: self.isSweeping
+				let step1_retVals = MyMoneroCore.shared_objCppBridge.send_step1__prepare_params_for_get_decoys(
+					sweeping: isSweeping,
+					sending_amount: sending_amount.integerRepresentation,
+					fee_per_b: feePerB.integerRepresentation,
+					priority: priority,
+					unspent_outs: original_unusedOuts,
+					payment_id: using__payment_id,
+					optl__passedIn_attemptAt_fee: passedIn_attemptAt_minimumFee
 				)
-				DDLog.Info("HostedMonero", "usableOutputsAndAmounts \(usableOutputsAndAmounts)")
-				// v-- now, since isRingCT=true, compute fee as closely as possible before hand
-				var usingOuts = usableOutputsAndAmounts.usingOuts
-				var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
-				var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts
-				//
-				var newNeededFee = MyMoneroCore.ObjCppBridge.calculateFee(
-					withFeePerKB: feePerKB,
-					num_bytes: MyMoneroCore.ObjCppBridge.estimateRctSize(usingOuts.count),
-					fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(
-						self.priority
-					)
-				)
-				// if newNeededFee < neededFee, use neededFee instead (should only happen on the 2nd or later times through (due to estimated fee being too low)
-				if newNeededFee < this_attemptAt_network_minimumFee {
-					newNeededFee = this_attemptAt_network_minimumFee
-				}
-				if self.isSweeping {
-					/*
-					// When/if sending to multiple destinations supported, uncomment and port this:
-					if (dsts.length !== 1) {
-					deferred.reject("Sweeping to multiple accounts is not allowed");
-					return;
-					}
-					*/
-					totalAmountWithoutFee = usingOutsAmount - newNeededFee
-					if totalAmountWithoutFee <= 0 {
-						let errStr = String(format:
-							NSLocalizedString("Your spendable balance is too low. Have %@ %@ spendable, need %@ %@.", comment: ""),
-							FormattedString(fromMoneroAmount: usingOutsAmount),
-							MoneroConstants.currency_symbol,
-							FormattedString(fromMoneroAmount: newNeededFee),
-							MoneroConstants.currency_symbol
-						)
-						self.failWithErr_fn?(errStr)
-						return
-					}
-					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
-				} else {
-					totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee/* NOTE service fee removed for now, but when we add it back, don't we need to add it to here here? */
-					// add outputs 1 at a time till we either have them all or can meet the fee
-					while usingOutsAmount < totalAmountIncludingFees && remaining_unusedOuts.count > 0 {
-						// pop and return random element from list
-						let idx = __randomIndex(remaining_unusedOuts)
-						let out = remaining_unusedOuts[idx]
-						remaining_unusedOuts.remove(at: idx)
-						//
-						usingOuts.append(out)
-						usingOutsAmount = usingOutsAmount + out.amount
-						DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out.amount)) - \(out)")
-						// and recalculate invalidated values
-						newNeededFee = MyMoneroCore.ObjCppBridge.calculateFee(
-							withFeePerKB: feePerKB,
-							num_bytes: MyMoneroCore.ObjCppBridge.estimateRctSize(usingOuts.count),
-							fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(
-								self.priority
-							)
-						)
-						totalAmountIncludingFees = totalAmountWithoutFee + newNeededFee
-					}
-				}
-				DDLog.Info("HostedMonero", "New fee: \(FormattedString(fromMoneroAmount: newNeededFee)) for \(usingOuts.count) inputs")
-				this_attemptAt_network_minimumFee = newNeededFee // update with new attempt
-				//
-				DDLog.Info("HostedMonero", "~ Balance required: \(FormattedString(fromMoneroAmount: totalAmountIncludingFees))")
-				// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
-				if usingOutsAmount < totalAmountIncludingFees {
-					let errStr_localized = String(format:
-						NSLocalizedString("Your spendable balance is too low. Have %@ %@ spendable, need %@ %@.", comment: ""),
-						FormattedString(fromMoneroAmount: usingOutsAmount),
-						MoneroConstants.currency_symbol,
-						FormattedString(fromMoneroAmount: totalAmountIncludingFees),
-						MoneroConstants.currency_symbol
-					)
-					self.failWithErr_fn?(errStr_localized)
+				if let err_str = step1_retVals.errStr_orNil {
+					self.failWithErr_fn?(err_str)
 					return
-				}
-				var changeAmount: MoneroAmount = 0 // to finalize
-				if usingOutsAmount > totalAmountIncludingFees {
-					if self.isSweeping {
-						assert(false, "Unexpected usingOutsAmount > totalAmountIncludingFees && sweeping")
-					}
-					changeAmount = usingOutsAmount - totalAmountIncludingFees
-					// for RCT we don't presently care about dustiness so add entire change amount
-					DDLog.Info("HostedMonero", "Sending change of \(FormattedString(fromMoneroAmount: changeAmount)) to \(wallet__public_address!)")
 				}
 				//
 				self.updateProcessStep(to: .fetchingDecoyOutputs)
 				assert(self._current_request == nil)
 				self._current_request = HostedMonero.APIClient.shared.RandomOuts(
-					using_outs: usingOuts,
+					using_outs: step1_retVals.using_outs!,
 					{ [weak self] (err_str, result) in
 						guard let thisSelf = self else {
 							return
@@ -383,105 +238,84 @@ extension HostedMonero
 							thisSelf.failWithErr_fn?(err_str)
 							return
 						}
-						__proceedTo_createSignedTxAndAttemptToSend(
-							original_unusedOuts: original_unusedOuts,
-							passedIn_attemptAt_network_minimumFee: this_attemptAt_network_minimumFee, // need to use the updated one
-							usingOuts: usingOuts,
-							mix_outs: result!.amount_outs,
-							feePerKB: feePerKB,
-							changeAmount: changeAmount
-						)
+						___createTxAndAttemptToSend(result!.amount_outs)
 					}
 				)
-			}
-			func __proceedTo_createSignedTxAndAttemptToSend(
-				original_unusedOuts: [MoneroOutputDescription],
-				passedIn_attemptAt_network_minimumFee: MoneroAmount,
-				usingOuts: [MoneroOutputDescription], // would be nice to try to avoid having to send these args through, but globals seem a more complex option
-				mix_outs: [MoneroRandomAmountAndOutputs],
-				feePerKB: MoneroAmount,
-				changeAmount: MoneroAmount
-			) {
-				self.updateProcessStep(to: .constructingTransaction)
-				assert(
-					final__pid_encrypt == false || MoneroUtils.PaymentIDs.isAValid(paymentId: final__payment_id!, ofVariant: .short)
-				)
-				let (err_str, optl_serialized_signedTx, optl_tx_hash, optl_tx_key) = MyMoneroCore.shared_objCppBridge.new_serializedSignedTransaction(
-					from_address: wallet__public_address,
-					wallet__private_keys: wallet__private_keys,
-					to_address: target_address,
-					sending_amount: totalAmountWithoutFee.integerRepresentation, // this can get modified, i.e. on sweep
-					fee_amount: passedIn_attemptAt_network_minimumFee.integerRepresentation,
-					change_amount: changeAmount.integerRepresentation,
-					payment_id: final__payment_id,
-					usingOuts: usingOuts,
-					randomOuts: mix_outs
-				)
-				if let err_str = err_str {
-					self.failWithErr_fn?(err_str)
-					return
-				}
-				let serialized_signedTx = optl_serialized_signedTx!
-				let tx_hash = optl_tx_hash!
-				let tx_key = optl_tx_key!
-				//
-				// work out per-kb fee for transaction and verify that it's enough
-				let txBlobBytes = Int(Double(serialized_signedTx.count) / 2.0) // can probably just divide by int 2
-				DDLog.Info("HostedMonero", "\(txBlobBytes) bytes, (current fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee))")
-				let feeActuallyNeededByNetwork = MyMoneroCore.ObjCppBridge.calculateFee(
-					withFeePerKB: feePerKB,
-					num_bytes: txBlobBytes,
-					fee_multiplier: MoneroUtils.Fees.fee_multiplier_for_priority(self.priority)
-				)
-				// if we need a higher fee
-				if feeActuallyNeededByNetwork > passedIn_attemptAt_network_minimumFee {
-					DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee. Previous fee: \(FormattedString(fromMoneroAmount: passedIn_attemptAt_network_minimumFee)) New fee: \(FormattedString(fromMoneroAmount: feeActuallyNeededByNetwork)))")
-					__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
-						original_unusedOuts: original_unusedOuts, // this must be the original unusedOuts
-						feePerKB: feePerKB, // this could probably be cached on the instance if really desired..
-						passedIn_attemptAt_network_minimumFee: feeActuallyNeededByNetwork
+				func ___createTxAndAttemptToSend(_ mix_outs: [MoneroRandomAmountAndOutputs])
+				{
+					self.updateProcessStep(to: .constructingTransaction)
+					//
+					let step2_retVals = MyMoneroCore.shared_objCppBridge.send_step2__try_create_transaction(
+						from_address: wallet__public_address,
+						wallet__private_keys: wallet__private_keys,
+						to_address: target_address,
+						payment_id: using__payment_id,
+						final_total_wo_fee: step1_retVals.final_total_wo_fee,
+						change_amount: step1_retVals.change_amount,
+						using_fee: step1_retVals.using_fee,
+						priority: priority,
+						using_outs: step1_retVals.using_outs!,
+						mix_outs: mix_outs,
+						fee_per_b: feePerB.integerRepresentation
 					)
-					// ^-- we are re-entering this codepath after changing this feeActuallyNeededByNetwork
-					return
-				}
-				//
-				// generated with correct per-kb fee
-				let final_networkFee = passedIn_attemptAt_network_minimumFee // just to make things clear
-				DDLog.Info("HostedMonero", "Successful tx generation, submitting tx. Going with final_networkFee of \(FormattedString(fromMoneroAmount: final_networkFee))")
-				//
-				// status: submitting…
-				assert(self._current_request == nil)
-				self.updateProcessStep(to: .submittingTransaction)
-				self._current_request = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
-					address: self.wallet__public_address,
-					view_key__private: self.wallet__private_keys.view,
-					serializedSignedTx: serialized_signedTx,
-					{ [weak self] (err_str, nilValue) in
-						guard let thisSelf = self else {
-							return
-						}
-						thisSelf._current_request = nil
-						if thisSelf.isCanceled {
-							return
-						}
-						if let err_str = err_str {
-							let errStr_localized = String(
-								format: NSLocalizedString("Unexpected error while submitting your transaction: %@", comment: ""),
-								err_str
-							)
-							thisSelf.failWithErr_fn?(errStr_localized)
-							return
-						}
-						thisSelf.success_fn?(
-							totalAmountWithoutFee,
-							final__payment_id,
-							tx_hash,
-							final_networkFee,
-							tx_key
-						) // 🎉
+					if let err_str = step2_retVals.errStr_orNil {
+						self.failWithErr_fn?(err_str)
+						return
 					}
-				)
-//				preSuccess_obtainedSubmitTransactionRequestHandle(requestHandle)
+					if step2_retVals.tx_must_be_reconstructed == true {
+						DDLog.Info("HostedMonero", "Need to reconstruct the tx with enough of a network fee")
+						// this will update status back to .calculatingFee
+						if constructionAttemptN > 30 { // just going to avoid an infinite loop here
+							self.failWithErr_fn?("Unable to construct a transaction with sufficient fee for unknown reason.")
+							return
+						}
+						__reenterable_constructTxAndSend(
+							step2_retVals.fee_actually_needed, // we are re-entering the step1->step2 codepath after updating fee_actually_needed
+							constructionAttemptN: constructionAttemptN + 1
+						);
+						return;
+					}
+					DDLog.Info("HostedMonero", "Successful tx generation; submitting tx.");
+					//
+					// status: submitting…
+					assert(self._current_request == nil)
+					self.updateProcessStep(to: .submittingTransaction)
+					self._current_request = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
+						address: self.wallet__public_address,
+						view_key__private: self.wallet__private_keys.view,
+						serializedSignedTx: step2_retVals.serialized_signed_tx!,
+						{ [weak self] (err_str, nilValue) in
+							guard let thisSelf = self else {
+								return
+							}
+							thisSelf._current_request = nil
+							if thisSelf.isCanceled {
+								return
+							}
+							if let err_str = err_str {
+								let errStr_localized = String(
+									format: NSLocalizedString("Unexpected error while submitting your transaction: %@", comment: ""),
+									err_str
+								)
+								thisSelf.failWithErr_fn?(errStr_localized)
+								return
+							}
+							let (_, d) = MyMoneroCore.shared_objCppBridge.decoded(address: thisSelf.target_address)
+							// assuming valid here given successful send
+							let final__payment_id: String? = d!.intPaymentId ?? using__payment_id
+							let final_fee_amount = MoneroAmount("\(step1_retVals.using_fee)")!
+							let finalTotalWOFee_amount = MoneroAmount("\(step1_retVals.final_total_wo_fee)")!
+							thisSelf.success_fn?(
+								finalTotalWOFee_amount + final_fee_amount, // total sent
+								final__payment_id,
+								step2_retVals.tx_hash!,
+								final_fee_amount,
+								step2_retVals.tx_key!
+							) // 🎉
+						}
+					)
+	/*				preSuccess_obtainedSubmitTransactionRequestHandle(requestHandle) */
+				}
 			}
 		}
 	}

@@ -178,7 +178,7 @@ extension UICommonComponents
 			self.contentView.frame = CGRect(
 				x: 0,
 				y: 0,
-				width: arrow_x,
+				width: self.bounds.size.width,
 				height: self.bounds.size.height
 			)
 			self.accessoryChevronView.frame = CGRect(

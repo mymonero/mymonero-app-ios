@@ -237,21 +237,29 @@ extension CcyConversionRates.Currency
 	}
 	static func amountConverted_displayStringComponents(
 		from amount: MoneroAmount,
-		ccy: CcyConversionRates.Currency
+		ccy: CcyConversionRates.Currency,
+		chopNPlaces: UInt = 0
 	) -> (
 		formattedAmount: String,
 		final_ccy: CcyConversionRates.Currency
 	) {
 		var formattedAmount: String
+		var final_input_amount: MoneroAmount!
+		if chopNPlaces != 0 {
+			let power = MoneroAmount("10")!.power(Int(chopNPlaces)) // this *should* be ok for amount, even if it has no decimal places, because those places would be filled with 0s in such a number
+			final_input_amount = (amount / power) * power
+		} else {
+			final_input_amount = amount
+		}
 		var mutable_ccy = ccy
 		if ccy == .XMR {
-			formattedAmount = amount.localized_formattedString
+			formattedAmount = final_input_amount!.localized_formattedString
 		} else {
-			let convertedAmount = ccy.displayUnitsRounded_amountInCurrency(fromMoneroAmount: amount)
+			let convertedAmount = ccy.displayUnitsRounded_amountInCurrency(fromMoneroAmount: final_input_amount!)
 			if convertedAmount != nil {
 				formattedAmount = MoneroAmount.shared_localized_doubleFormatter().string(for: convertedAmount)!
 			} else {
-				formattedAmount = amount.localized_formattedString
+				formattedAmount = final_input_amount!.localized_formattedString
 				mutable_ccy = .XMR // display XMR until rate is ready? or maybe just show 'LOADING…'?
 			}
 		}

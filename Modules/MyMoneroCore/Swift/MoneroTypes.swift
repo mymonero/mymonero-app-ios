@@ -82,6 +82,7 @@ typealias MoneroSeedAsMnemonic = MoneroTypeString // see MoneroUtils_Mnemonics f
 typealias MoneroAddress = MoneroTypeString
 typealias MoneroStandardAddress = MoneroAddress
 typealias MoneroIntegratedAddress = MoneroAddress
+typealias MoneroSubAddress = MoneroAddress
 typealias MoneroPaymentID = MoneroTypeString
 typealias MoneroLongPaymentID = MoneroPaymentID // 32
 typealias MoneroShortPaymentID = MoneroPaymentID // 8

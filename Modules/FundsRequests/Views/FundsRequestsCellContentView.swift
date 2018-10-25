@@ -237,17 +237,19 @@ class FundsRequestsCellContentView: UIView
 			if self.displayMode == .withQRCode {
 				self.qrCodeImageView!.image = object.cached__qrCode_image_small
 			}
-			var amountLabel_text: String = ""
+			var amountLabel_text: String!
 			if is_displaying_local_wallet {
 				amountLabel_text = String(format:
-					NSLocalizedString("Request Monero to \"%@\"", comment: ""),
+					NSLocalizedString("To \"%@\"", comment: ""),
 					wallet_ifRecordForQRDisplay!.walletLabel!
 				)
 			} else {
 				if object.amount != nil {
-					amountLabel_text += object.amount!
-					amountLabel_text += " "
-					amountLabel_text += object.amountCurrency ?? "XMR"
+					amountLabel_text = String(format:
+						NSLocalizedString("%@ %@", comment: ""),
+						object.amount!,
+						(object.amountCurrency ?? "XMR")
+					)
 				} else {
 					amountLabel_text = NSLocalizedString("Any amount", comment: "")
 				}

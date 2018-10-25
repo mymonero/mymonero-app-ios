@@ -52,7 +52,10 @@ using namespace monero_transfer_utils;
 @implementation Monero_DecodedAddress_RetVals
 @end
 //
-@implementation Monero_CreatedTransaction
+@implementation Monero_Send_Step1_RetVals
+@end
+//
+@implementation Monero_Send_Step2_RetVals
 @end
 //
 @implementation Monero_Arg_SpendableOutput
@@ -445,18 +448,11 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	).c_str()];
 }
 
-+ (nonnull NSString *)new_fakeAddressForRCTTxWithNetType:(NetType)nettype
-{
-	return [NSString stringWithUTF8String:monero_transfer_utils::new_dummy_address_string_for_rct_tx(
-		nettype_from_objcType(nettype)
-	).c_str()];
-}
-
-+ (uint64_t)estimatedTxNetworkFeeWithFeePerKB:(uint64_t)fee_per_kb
++ (uint64_t)estimatedTxNetworkFeeWithFeePerB:(uint64_t)fee_per_b
 									 priority:(uint32_t)priority
 {
-	uint64_t estimated_fee = monero_transfer_utils::estimated_tx_network_fee(
-		fee_per_kb,
+	uint64_t estimated_fee = monero_fee_utils::estimated_tx_network_fee(
+		fee_per_b,
 		priority,
 		[] (uint8_t version, int64_t early_blocks) -> bool
 		{
@@ -464,27 +460,6 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		}
 	);
 	return estimated_fee;
-}
-+ (uint64_t)calculate_fee:(uint64_t)fee_per_kb
-				num_bytes:(size_t)num_bytes
-		   fee_multiplier:(uint32_t)fee_multiplier
-{
-	return monero_transfer_utils::calculate_fee(
-		fee_per_kb,
-		num_bytes,
-		fee_multiplier
-	);
-}
-+ (size_t)estimate_rct_tx_size:(int)n_inputs
-{
-	std::vector<uint8_t> extra;
-	return monero_transfer_utils::estimate_rct_tx_size(
-		n_inputs,
-		monero_transfer_utils::fixed_mixinsize(),
-		2, // n_outputs
-		extra.size(),
-		monero_fork_rules::lightwallet_hardeded__use_bulletproofs()
-	);
 }
 + (uint32_t)fixedRingsize
 {
@@ -534,21 +509,15 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	return key_image_hex_NSString;
 }
 
-+ (nonnull Monero_CreatedTransaction *)createTransactionWithNetType:(NetType)objcNetType
-												from_address_string:(nonnull NSString *)from_address_string
-												 sec_viewKey_string:(nonnull NSString *)sec_viewKey_string
-												sec_spendKey_string:(nonnull NSString *)sec_spendKey_string
-												  to_address_string:(nonnull NSString *)to_address_string
-												  payment_id_string:(nullable NSString *)payment_id_string
-													 sending_amount:(uint64_t)sending_amount
-														 fee_amount:(uint64_t)fee_amount
-													  change_amount:(uint64_t)change_amount
-														unlock_time:(uint64_t)unlock_time
-															outputs:(NSArray<Monero_Arg_SpendableOutput *> *_Nonnull)args_outputs
-														   mix_outs:(NSArray<Monero_Arg_RandomAmountAndOuts *> *_Nonnull)args_mix_outs
++ (nonnull Monero_Send_Step1_RetVals *)send_step1__prepare_params_for_get_decoysWithSweeping:(BOOL)sweeping
+																			  sending_amount:(uint64_t)sending_amount
+																				   fee_per_b:(uint64_t)fee_per_b
+																					priority:(uint32_t)priority
+																			 unspent_outputs:(NSArray<Monero_Arg_SpendableOutput *> *)args_outputs
+																		   payment_id_string:(nullable NSString *)payment_id_string
+														 optl__passedIn_attemptAt_fee_string:(nullable NSString *)passedIn_attemptAt_fee_string
 {
-	Monero_CreatedTransaction *retVals = [Monero_CreatedTransaction new];
-	//
+	Monero_Send_Step1_RetVals *retVals = [Monero_Send_Step1_RetVals new];
 	vector<SpendableOutput> outputs;
 	for (Monero_Arg_SpendableOutput *usingOut in args_outputs) {
 		SpendableOutput output{};
@@ -564,7 +533,97 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		output.tx_pub_key = string(usingOut.tx_pub_key.UTF8String);
 		outputs.push_back(output);
 	}
+	optional<string> optl_pid = none;
+	if (payment_id_string != nil) {
+		optl_pid = std::string(payment_id_string.UTF8String);
+	}
+	optional<uint64_t> passedIn_attemptAt_fee = none;
+	if (passedIn_attemptAt_fee_string != nil) {
+		passedIn_attemptAt_fee = stoull(std::string(passedIn_attemptAt_fee_string.UTF8String));
+	}
 	//
+	Send_Step1_RetVals call_retVals; // the C++ one
+	monero_transfer_utils::send_step1__prepare_params_for_get_decoys(
+		call_retVals,
+		optl_pid,
+		sending_amount,
+		sweeping,
+		priority,
+		[] (uint8_t version, int64_t early_blocks) -> bool
+		{
+			return lightwallet_hardcoded__use_fork_rules(version, early_blocks);
+		},
+		outputs,
+		fee_per_b,
+		//
+		passedIn_attemptAt_fee
+	);
+	if (call_retVals.errCode != noError) {
+		if (call_retVals.errCode == needMoreMoneyThanFound) { // must rewrite err_msg for return in this special case
+			retVals.reconstructErr_needMoreMoneyThanFound = true;
+			retVals.spendable_balance = call_retVals.spendable_balance;
+			retVals.required_balance = call_retVals.required_balance;
+		} else {
+			retVals.errStr_orNil = [NSString stringWithUTF8String:
+				err_msg_from_err_code__create_transaction(call_retVals.errCode).c_str()
+			];
+		}
+		return retVals;
+	}
+	NSMutableArray *retVals__outputs = [NSMutableArray new];
+	{
+		for (vector<SpendableOutput>::const_iterator it = call_retVals.using_outs.begin(); it != call_retVals.using_outs.end(); it++) {
+			Monero_Arg_SpendableOutput *spendableOutput = [Monero_Arg_SpendableOutput new];
+			spendableOutput.amount = (*it).amount;
+			spendableOutput.public_key = [NSString stringWithUTF8String:(*it).public_key.c_str()];
+			if ((*it).rct != none) {
+				spendableOutput.rct = [NSString stringWithUTF8String:(*(*it).rct).c_str()];
+			}
+			spendableOutput.global_index = (*it).global_index;
+			spendableOutput.index = (*it).index;
+			spendableOutput.tx_pub_key = [NSString stringWithUTF8String:(*it).tx_pub_key.c_str()];
+			[retVals__outputs addObject:spendableOutput];
+		}
+	}
+	// TODO: need to return mixin here?
+	retVals.using_outs = retVals__outputs;
+	retVals.using_fee = call_retVals.using_fee;
+	retVals.final_total_wo_fee = call_retVals.final_total_wo_fee;
+	retVals.change_amount = call_retVals.change_amount;
+	//
+	return retVals;
+}
++ (nonnull Monero_Send_Step2_RetVals *)send_step2__try_create_transactionWithNetType:(NetType)objcNetType
+																 from_address_string:(NSString *)from_address_string
+																  sec_viewKey_string:(NSString *)sec_viewKey_string
+																 sec_spendKey_string:(NSString *)sec_spendKey_string
+																   to_address_string:(NSString *)to_address_string
+																   payment_id_string:(NSString *)payment_id_string
+																  final_total_wo_fee:(uint64_t)final_total_wo_fee
+																	   change_amount:(uint64_t)change_amount
+																		   using_fee:(uint64_t)using_fee
+																			priority:(uint32_t)priority
+																		  using_outs:(NSArray<Monero_Arg_SpendableOutput *> *)args_using_outs
+																			mix_outs:(NSArray<Monero_Arg_RandomAmountAndOuts *> *)args_mix_outs
+																		   fee_per_b:(uint64_t)fee_per_b
+																		 unlock_time:(uint64_t)unlock_time
+{
+	Monero_Send_Step2_RetVals *retVals = [Monero_Send_Step2_RetVals new];
+	vector<SpendableOutput> outputs;
+	for (Monero_Arg_SpendableOutput *usingOut in args_using_outs) {
+		SpendableOutput output{};
+		output.amount = usingOut.amount;
+		output.public_key = string(usingOut.public_key.UTF8String);
+		optional<string> rct = none;
+		if (usingOut.rct) {
+			rct = string(usingOut.rct.UTF8String);
+		}
+		output.rct = rct;
+		output.global_index = usingOut.global_index;
+		output.index = usingOut.index;
+		output.tx_pub_key = string(usingOut.tx_pub_key.UTF8String);
+		outputs.push_back(output);
+	}
 	vector<RandomAmountOutputs> mix_outs;
 	for (Monero_Arg_RandomAmountAndOuts *mixOutDesc in args_mix_outs) {
 		auto amountAndOuts = RandomAmountOutputs{};
@@ -582,23 +641,24 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		}
 		mix_outs.push_back(amountAndOuts);
 	}
-	//
 	optional<string> optl_pid = none;
 	if (payment_id_string != nil) {
 		optl_pid = std::string(payment_id_string.UTF8String);
 	}
-	Convenience_TransactionConstruction_RetVals call_retVals;
-	monero_transfer_utils::convenience__create_transaction(
+	Send_Step2_RetVals call_retVals; // the C++ one
+	monero_transfer_utils::send_step2__try_create_transaction(
 		call_retVals,
 		std::string(from_address_string.UTF8String),
 		std::string(sec_viewKey_string.UTF8String),
 		std::string(sec_spendKey_string.UTF8String),
 		std::string(to_address_string.UTF8String),
 		optl_pid,
-		sending_amount,
+		final_total_wo_fee,
 		change_amount,
-		fee_amount,
+		using_fee,
+		priority,
 		outputs,
+		fee_per_b,
 		mix_outs,
 		[] (uint8_t version, int64_t early_blocks) -> bool
 		{
@@ -614,13 +674,20 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		//
 		return retVals;
 	}
+	bool tx_must_be_reconstructed = call_retVals.tx_must_be_reconstructed;
+	retVals.tx_must_be_reconstructed = tx_must_be_reconstructed;
+	if (tx_must_be_reconstructed) {
+		retVals.fee_actually_needed = call_retVals.fee_actually_needed;
+		//
+		return retVals;
+	}
 	NSAssert(call_retVals.signed_serialized_tx_string != none, @"Not expecting no signed_serialized_tx_string given no error");
 	retVals.serialized_signed_tx = [NSString stringWithUTF8String:
 		(*call_retVals.signed_serialized_tx_string).c_str()
 	];
 	retVals.tx_hash = [NSString stringWithUTF8String:(*call_retVals.tx_hash_string).c_str()];
 	retVals.tx_key = [NSString stringWithUTF8String:(*call_retVals.tx_key_string).c_str()];
-	//
+
 	return retVals;
 }
 

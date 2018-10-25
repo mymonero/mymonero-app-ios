@@ -701,7 +701,9 @@ class Wallet: PersistableObject
 	//
 	var balanceAmount: MoneroAmount {
 		let balanceAmount = (self.totalReceived ?? MoneroAmount(0)) - (self.totalSent ?? MoneroAmount(0))
-		//
+		if balanceAmount < 0 {
+			return MoneroAmount("0")!
+		}
 		return balanceAmount
 	}
 	var lockedBalanceAmount: MoneroAmount {
@@ -717,7 +719,12 @@ class Wallet: PersistableObject
 		return true
 	}
 	var unlockedBalance: MoneroAmount {
-		return self.balanceAmount - self.lockedBalanceAmount
+		let lb = self.lockedBalanceAmount
+		let b = self.balanceAmount
+		if b < lb {
+			return 0
+		}
+		return b - lb
 	}
 	var new_pendingBalanceAmount: MoneroAmount {
 		var amount = MoneroAmount(0)
