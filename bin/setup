@@ -10,4 +10,5 @@ echo "🔁  pod repo update";
 pod repo update;
 
 echo "🔁  pod install";
+echo "☝️  NOTE: This might take a long time due to the Boost pod (TODO: vendor source)";
 pod install;
