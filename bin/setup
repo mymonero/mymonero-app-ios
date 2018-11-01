@@ -6,15 +6,6 @@ git submodule update;
 git submodule foreach git checkout master;
 git submodule foreach git pull;
 
-echo "🔁  cd Modules/MyMoneroCore/";
-cd Modules/MyMoneroCore/;
-
-echo "🔁  Modules/MyMoneroCore/bin/setup";
-bin/setup;
-
-echo "🔁  cd ../..";
-cd ../..;
-
 echo "🔁  pod repo update";
 pod repo update;
 
