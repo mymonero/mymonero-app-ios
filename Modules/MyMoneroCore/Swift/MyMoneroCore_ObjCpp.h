@@ -189,6 +189,40 @@ typedef enum {
 							 pub_spendKey:(nonnull NSString *)pub_spendKey_NSString
 								out_index:(uint64_t)out_index;
 //
++ (void)async__send_fundsFromAddressString:(nonnull NSString *)from_address_string
+						sec_viewKey_string:(nonnull NSString *)sec_viewKey_string
+					   sec_spendKey_string:(nonnull NSString *)sec_spendKey_string
+					   pub_spendKey_string:(nonnull NSString *)pub_spendKey_string
+						 to_address_string:(nonnull NSString *)to_address_string
+						 payment_id_string:(nullable NSString *)payment_id_string
+							sending_amount:(uint64_t)sending_amount
+								  priority:(uint32_t)priority
+							   is_sweeping:(BOOL)is_sweeping
+					   get_unspent_outs_fn:(void(^ _Nonnull)(
+															 NSString *_Nonnull req_params_str,
+															 void(^ _Nonnull cb)(NSString *_Nullable errStr_orNil, NSString *_Nullable res_json_str)
+															 ))get_unspent_outs_fn
+						get_random_outs_fn:(void(^ _Nonnull)(
+															 NSString *_Nonnull req_params_str,
+															 void(^ _Nonnull cb)(NSString *_Nullable errStr_orNil, NSString *_Nullable res_json_str)
+															 ))get_random_outs_fn
+						  submit_raw_tx_fn:(void(^ _Nonnull)(
+															 NSString *_Nonnull req_params_str,
+															 void(^ _Nonnull cb)(NSString *_Nullable errStr_orNil, NSString *_Nullable res_json_str)
+															 ))submit_raw_tx_fn
+						  status_update_fn:(void(^ _Nonnull)(uint32_t code))status_update_fn
+								  error_fn:(void(^ _Nonnull)(NSString *_Nonnull errStr))error_fn
+								success_fn:(void(^ _Nonnull)(
+															 uint64_t used_fee,
+															 uint64_t total_sent,
+															 size_t mixin,
+															 NSString *_Nonnull signed_serialized_tx_string,
+															 NSString *_Nonnull tx_hash_string,
+															 NSString *_Nonnull tx_key_string,
+															 NSString *_Nonnull tx_pub_key_string
+															 ))success_fn;
+//
+
 + (nonnull Monero_Send_Step1_RetVals *)send_step1__prepare_params_for_get_decoysWithSweeping:(BOOL)sweeping
 																	   sending_amount:(uint64_t)sending_amount
 																			fee_per_b:(uint64_t)fee_per_b

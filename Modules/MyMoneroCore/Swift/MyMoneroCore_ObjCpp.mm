@@ -34,6 +34,9 @@
 //
 #import "MyMoneroCore_ObjCpp.h"
 //
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+//
 #include "cryptonote_basic_impl.h"
 #include "string_tools.h"
 using namespace epee;
@@ -47,6 +50,8 @@ using namespace boost;
 #include "monero_fork_rules.hpp"
 using namespace monero_fork_rules;
 using namespace monero_transfer_utils;
+#include "monero_send_routine.hpp"
+using namespace monero_send_routine;
 //
 // Accessory types
 @implementation Monero_DecodedAddress_RetVals
@@ -507,6 +512,183 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 	NSString *key_image_hex_NSString = [NSString stringWithUTF8String:key_image_hex_string.c_str()];
 	//
 	return key_image_hex_NSString;
+}
+
++ (void)async__send_fundsFromAddressString:(nonnull NSString *)from_address_string
+						sec_viewKey_string:(nonnull NSString *)sec_viewKey_string
+					   sec_spendKey_string:(nonnull NSString *)sec_spendKey_string
+					   pub_spendKey_string:(nonnull NSString *)pub_spendKey_string
+						 to_address_string:(nonnull NSString *)to_address_string
+						 payment_id_string:(nullable NSString *)payment_id_string
+							sending_amount:(uint64_t)sending_amount
+								  priority:(uint32_t)priority
+							   is_sweeping:(BOOL)is_sweeping
+					   get_unspent_outs_fn:(void(^ _Nonnull)(
+															 NSString *_Nonnull req_params_str,
+															 void(^ _Nonnull cb)(NSString *_Nullable errStr_orNil, NSString *_Nullable res_json_str)
+															 ))get_unspent_outs_fn
+						get_random_outs_fn:(void(^ _Nonnull)(
+															 NSString *_Nonnull req_params_str,
+															 void(^ _Nonnull cb)(NSString *_Nullable errStr_orNil, NSString *_Nullable res_json_str)
+															 ))get_random_outs_fn
+						  submit_raw_tx_fn:(void(^ _Nonnull)(
+															 NSString *_Nonnull req_params_str,
+															 void(^ _Nonnull cb)(NSString *_Nullable errStr_orNil, NSString *_Nullable res_json_str)
+															 ))submit_raw_tx_fn
+						  status_update_fn:(void(^ _Nonnull)(uint32_t code))status_update_fn
+								  error_fn:(void(^ _Nonnull)(NSString *_Nonnull errStr))error_fn
+								success_fn:(void(^ _Nonnull)(
+															 uint64_t used_fee,
+															 uint64_t total_sent,
+															 size_t mixin,
+															 NSString *_Nonnull signed_serialized_tx_string,
+															 NSString *_Nonnull tx_hash_string,
+															 NSString *_Nonnull tx_key_string,
+															 NSString *_Nonnull tx_pub_key_string
+															 ))success_fn
+{
+	optional<string> optl__pid_std_string = none;
+	if (payment_id_string) {
+		optl__pid_std_string = std::string(payment_id_string.UTF8String);
+	}
+	Async_SendFunds_Args args =
+	{
+		std::string(from_address_string.UTF8String),
+		std::string(sec_viewKey_string.UTF8String),
+		std::string(sec_spendKey_string.UTF8String),
+		std::string(pub_spendKey_string.UTF8String),
+		std::string(to_address_string.UTF8String),
+		optl__pid_std_string,
+		sending_amount, // sending amount
+		is_sweeping, // is sweeping
+		priority, // priority
+		[get_unspent_outs_fn, error_fn] ( // get_unspent_outs
+			const LightwalletAPI_Req_GetUnspentOuts &req_params,
+			api_fetch_cb_fn get_unspent_outs_fn__cb_fn
+		) -> void {
+			boost::property_tree::ptree req_params_root;
+			req_params_root.put("address", req_params.address);
+			req_params_root.put("view_key", req_params.view_key);
+			req_params_root.put("amount", req_params.amount);
+			req_params_root.put("dust_threshold", req_params.dust_threshold);
+			req_params_root.put("use_dust", req_params.use_dust);
+			req_params_root.put("mixin", req_params.mixin);
+			stringstream req_params_ss;
+			boost::property_tree::write_json(req_params_ss, req_params_root, false/*pretty*/);
+			//
+			get_unspent_outs_fn(
+				[NSString stringWithUTF8String:req_params_ss.str().c_str()],
+				^void(NSString *errStr_orNil, NSString *res_json_str)
+				{
+					if (errStr_orNil) {
+						error_fn(errStr_orNil); // just redirect so consumer has one cb they can observe
+						return;
+					}
+					boost::property_tree::ptree res;
+					stringstream ss;
+					ss << res_json_str;
+					boost::property_tree::json_parser::read_json(ss, res);
+					//
+					get_unspent_outs_fn__cb_fn(res);
+				}
+			);
+		},
+		[get_random_outs_fn, error_fn] ( // get_random_outs_fn
+			const LightwalletAPI_Req_GetRandomOuts &req_params,
+			const api_fetch_cb_fn get_random_outs_fn__cb_fn
+		) -> void {
+			boost::property_tree::ptree req_params_root;
+			boost::property_tree::ptree amounts_ptree;
+			BOOST_FOREACH(const string &amount_string, req_params.amounts)
+			{
+				property_tree::ptree amount_child;
+				amount_child.put("", amount_string);
+				amounts_ptree.push_back(std::make_pair("", amount_child));
+			}
+			req_params_root.add_child("amounts", amounts_ptree);
+			req_params_root.put("count", req_params.count);
+			stringstream req_params_ss;
+			boost::property_tree::write_json(req_params_ss, req_params_root, false/*pretty*/);
+			//
+			get_random_outs_fn(
+				[NSString stringWithUTF8String:req_params_ss.str().c_str()],
+				^void(NSString *errStr_orNil, NSString *res_json_str)
+				{
+					if (errStr_orNil) {
+						error_fn(errStr_orNil); // just redirect so consumer has one cb they can observe
+						return;
+					}
+					boost::property_tree::ptree res;
+					stringstream ss;
+					ss << res_json_str;
+					boost::property_tree::json_parser::read_json(ss, res);
+					//
+					get_random_outs_fn__cb_fn(res);
+				}
+			);
+		},
+		[submit_raw_tx_fn, error_fn] ( // submit_raw_tx_fn
+			const LightwalletAPI_Req_SubmitRawTx &req_params,
+			const api_fetch_cb_fn submit_raw_tx_fn__cb_fn
+		) -> void {
+			boost::property_tree::ptree req_params_root;
+			boost::property_tree::ptree amounts_ptree;
+			req_params_root.put("address", std::move(req_params.address));
+			req_params_root.put("view_key", std::move(req_params.view_key));
+			req_params_root.put("tx", std::move(req_params.tx));
+			stringstream req_params_ss;
+			boost::property_tree::write_json(req_params_ss, req_params_root, false/*pretty*/);
+			auto req_params_string = req_params_ss.str();
+			//
+			submit_raw_tx_fn(
+				[NSString stringWithUTF8String:req_params_ss.str().c_str()],
+				^void(NSString *errStr_orNil, NSString *res_json_str)
+				{
+					if (errStr_orNil) {
+						error_fn(errStr_orNil); // just redirect so consumer has one cb they can observe
+						return;
+					}
+					boost::property_tree::ptree res;
+					stringstream ss;
+					ss << res_json_str;
+					boost::property_tree::json_parser::read_json(ss, res);
+					//
+					submit_raw_tx_fn__cb_fn(res);
+				}
+			);
+		},
+		[status_update_fn] ( // status update fn
+			SendFunds_ProcessStep code
+		) -> void {
+			status_update_fn(code);
+		},
+		[error_fn] ( // error
+			const SendFunds_Error_RetVals &err_retVals
+		) -> void {
+			if (err_retVals.explicit_errMsg != none) {
+				error_fn([NSString stringWithUTF8String:(*(err_retVals.explicit_errMsg)).c_str()]);
+			} else {
+				// TODO: manually construct the reply to include spendable_balance and required_balance
+				error_fn([NSString stringWithUTF8String:(err_msg_from_err_code__create_transaction(*(err_retVals.errCode))).c_str()]);
+			}
+		},
+		[success_fn] ( // success
+			const SendFunds_Success_RetVals &success_retVals
+		) -> void {
+			success_fn(
+				success_retVals.used_fee,
+				success_retVals.total_sent,
+				success_retVals.mixin,
+				[NSString stringWithUTF8String:success_retVals.signed_serialized_tx_string.c_str()],
+				[NSString stringWithUTF8String:success_retVals.tx_hash_string.c_str()],
+				[NSString stringWithUTF8String:success_retVals.tx_key_string.c_str()],
+				[NSString stringWithUTF8String:success_retVals.tx_pub_key_string.c_str()]
+			);
+		},
+		0,
+		MAINNET
+	};
+	async__send_funds(args);
 }
 
 + (nonnull Monero_Send_Step1_RetVals *)send_step1__prepare_params_for_get_decoysWithSweeping:(BOOL)sweeping

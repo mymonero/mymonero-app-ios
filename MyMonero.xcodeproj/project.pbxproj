@@ -32,6 +32,7 @@
 		9F2119271F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191D1F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift */; };
 		9F2119281F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191E1F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift */; };
 		9F2119291F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F21191F1F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift */; };
+		9F220B0921B7368F00DA1437 /* monero_send_routine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F220B0721B7368F00DA1437 /* monero_send_routine.cpp */; };
 		9F22B7991EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */; };
 		9F22B79D1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */; };
 		9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F22B79E1EFF44B60036B02F /* InlineMessages.swift */; };
@@ -351,6 +352,8 @@
 		9F21191D1F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet_MetaInfo_ViewController.swift; sourceTree = "<group>"; };
 		9F21191E1F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickCreateOrUseExisting_Landing_ViewController.swift; sourceTree = "<group>"; };
 		9F21191F1F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UseExisting_MetaInfo_ViewController.swift; sourceTree = "<group>"; };
+		9F220B0721B7368F00DA1437 /* monero_send_routine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monero_send_routine.cpp; sourceTree = "<group>"; };
+		9F220B0821B7368F00DA1437 /* monero_send_routine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_send_routine.hpp; sourceTree = "<group>"; };
 		9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walletColorPicker_selectionIndicator_stretchable@3x.png"; sourceTree = "<group>"; };
 		9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "highlightableCellBG_disabled@3x.png"; sourceTree = "<group>"; };
 		9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walletColorPicker_selectionIndicator_disabled_stretchable@3x.png"; sourceTree = "<group>"; };
@@ -1984,6 +1987,8 @@
 				9FEFBEB0215954D700CCAB6C /* monero_paymentID_utils.cpp */,
 				9FEFBEAD215954D700CCAB6C /* monero_key_image_utils.hpp */,
 				9FEFBEB3215954D700CCAB6C /* monero_key_image_utils.cpp */,
+				9F220B0821B7368F00DA1437 /* monero_send_routine.hpp */,
+				9F220B0721B7368F00DA1437 /* monero_send_routine.cpp */,
 				9FEFBEA7215954D700CCAB6C /* monero_transfer_utils.hpp */,
 				9FEFBEB5215954D700CCAB6C /* monero_transfer_utils.cpp */,
 			);
@@ -2375,6 +2380,7 @@
 				9F5A24CA2178066900DF2B9C /* mlocker.cpp in Sources */,
 				9FEFBEEF215954D700CCAB6C /* monero_wallet_utils.cpp in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
+				9F220B0921B7368F00DA1437 /* monero_send_routine.cpp in Sources */,
 				9FC8AE911F241D2600AA553D /* IconAndMessage.swift in Sources */,
 				9F5A24BD2178066900DF2B9C /* tree-hash.c in Sources */,
 				9FA734181F05AFAB00C674D6 /* ContactsTabNavigationViewController.swift in Sources */,
