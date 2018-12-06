@@ -300,95 +300,68 @@ extension MyMoneroCore
 			)!
 		}
 		//
-		func send_step1__prepare_params_for_get_decoys(
-			sweeping: Bool,
+		func async__send_funds(
+			from_address_string: String,
+			sec_viewKey_string: MoneroKey,
+			sec_spendKey_string: MoneroKey,
+			pub_spendKey_string: MoneroKey,
+			to_address_string: MoneroAddress,
+			payment_id_string: MoneroPaymentID?,
 			sending_amount: UInt64,
-			fee_per_b: UInt64,
-			priority: MoneroTransferSimplifiedPriority,
-			unspent_outs: [MoneroOutputDescription],
-			payment_id: MoneroPaymentID?,
-			optl__passedIn_attemptAt_fee: UInt64?
-		) -> Monero_Send_Step1_RetVals {
-			var args_outputs = [Monero_Arg_SpendableOutput]()
-			for (_, this_out) in unspent_outs.enumerated() {
-				let output = Monero_Arg_SpendableOutput()
-				output.amount = this_out.amount.integerRepresentation
-				output.public_key = this_out.public_key
-				output.rct = this_out.rct
-				output.global_index = this_out.globalIndex
-				output.index = this_out.index
-				output.tx_pub_key = this_out.tx_pub_key
-				args_outputs.append(output)
-			}
-			var optl__passedIn_attemptAt_fee_string: String? = nil
-			if optl__passedIn_attemptAt_fee != nil {
-				optl__passedIn_attemptAt_fee_string = "\(optl__passedIn_attemptAt_fee!)"
-			}
-			let retVals = MyMoneroCore_ObjCpp.send_step1__prepare_params_for_get_decoys(
-				withSweeping: sweeping,
+			priority: UInt32,
+			is_sweeping: Bool,
+			get_unspent_outs_fn: @escaping (
+				_ req_params_str: String,
+				_ cb: @escaping (_ err_str: String?, _ res_json_str: String?) -> Void
+			) -> Void,
+			get_random_outs_fn: @escaping (
+				_ req_params_str: String,
+				_ cb: @escaping (_ err_str: String?, _ res_json_str: String?) -> Void
+			) -> Void,
+			submit_raw_tx_fn: @escaping (
+				_ req_params_str: String,
+				_ cb: @escaping (_ err_str: String?, _ res_json_str: String?) -> Void
+			) -> Void,
+			status_update_fn: @escaping (_ code: UInt32) -> Void,
+			error_fn: @escaping (_ err_str: String) -> Void,
+			success_fn: @escaping (
+				_ used_fee: UInt64,
+				_ total_sent: UInt64,
+				_ mixin: Int, // should be UInt32 but objc block requires Int, which seems fine here
+				_ final_payment_id: String?,
+				_ signed_serialized_tx_string: String,
+				_ tx_hash_string: String,
+				_ tx_key_string: String,
+				_ tx_pub_key_string: String
+			) -> Void
+		) {
+			MyMoneroCore_ObjCpp.async__send_funds(
+				fromAddressString: from_address_string,
+				sec_viewKey_string: sec_viewKey_string,
+				sec_spendKey_string: sec_spendKey_string,
+				pub_spendKey_string: pub_spendKey_string,
+				to_address_string: to_address_string,
+				payment_id_string: payment_id_string,
 				sending_amount: sending_amount,
-				fee_per_b: fee_per_b,
-				priority: priority.cppRepresentation,
-				unspent_outputs: args_outputs,
-				payment_id_string: payment_id,
-				optl__passedIn_attemptAt_fee_string: optl__passedIn_attemptAt_fee_string // using a string allows passing a nil
+				priority: priority,
+				is_sweeping: is_sweeping,
+				get_unspent_outs_fn: get_unspent_outs_fn,
+				get_random_outs_fn: get_random_outs_fn,
+				submit_raw_tx_fn: submit_raw_tx_fn,
+				status_update_fn: status_update_fn,
+				error_fn: error_fn,
+				success_fn: success_fn
 			)
-			if retVals.reconstructErr_needMoreMoneyThanFound { // must rewrite this error in this special case
-				retVals.errStr_orNil = String(format:
-					NSLocalizedString("Spendable balance too low. Have %@ %@; need %@ %@.", comment: ""),
-					FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.spendable_balance)")!),
-					MoneroConstants.currency_symbol,
-					FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.required_balance)")!),
-					MoneroConstants.currency_symbol
-				);
-			}
-			return retVals;
-		}
-		func send_step2__try_create_transaction(
-			from_address: MoneroStandardAddress,
-			wallet__private_keys: MoneroKeyDuo,
-			to_address: MoneroAddress,
-			payment_id: MoneroPaymentID?,
-			final_total_wo_fee: UInt64,
-			change_amount: UInt64,
-			using_fee: UInt64,
-			priority: MoneroTransferSimplifiedPriority,
-			using_outs: [Monero_Arg_SpendableOutput], // returned by step1
-			mix_outs: [MoneroRandomAmountAndOutputs],
-			fee_per_b: UInt64,
-			unlock_time: UInt64 = 0
-		) -> Monero_Send_Step2_RetVals {
-			var args_mixOuts = [Monero_Arg_RandomAmountAndOuts]()
-			for (_, randomAmountAndOut) in mix_outs.enumerated() {
-				let arg_el = Monero_Arg_RandomAmountAndOuts()
-				arg_el.amount = randomAmountAndOut.amount.integerRepresentation
-				var arg_el_mixOutOutputs = [Monero_Arg_RandomAmountOut]()
-				for (_, randomAmountOut) in randomAmountAndOut.outputs.enumerated() {
-					let arg_el_mixOutOutput = Monero_Arg_RandomAmountOut()
-					arg_el_mixOutOutput.public_key = randomAmountOut.public_key
-					arg_el_mixOutOutput.rct = randomAmountOut.rct
-					arg_el_mixOutOutput.global_index = randomAmountOut.globalIndex
-					arg_el_mixOutOutputs.append(arg_el_mixOutOutput)
-				}
-				arg_el.outputs = arg_el_mixOutOutputs
-				args_mixOuts.append(arg_el)
-			}
-			return MyMoneroCore_ObjCpp.send_step2__try_create_transaction(
-				with: MM_MAINNET,
-				from_address_string: from_address,
-				sec_viewKey_string: wallet__private_keys.view,
-				sec_spendKey_string: wallet__private_keys.spend,
-				to_address_string: to_address,
-				payment_id_string: payment_id,
-				final_total_wo_fee: final_total_wo_fee,
-				change_amount: change_amount,
-				using_fee: using_fee,
-				priority: priority.cppRepresentation,
-				using_outs: using_outs, // passed to step2 from step1
-				mix_outs: args_mixOuts,
-				fee_per_b: fee_per_b,
-				unlock_time: unlock_time
-			)
+			// TODO sometime
+//			if retVals.reconstructErr_needMoreMoneyThanFound { // must rewrite this error in this special case
+//				retVals.errStr_orNil = String(format:
+//					NSLocalizedString("Spendable balance too low. Have %@ %@; need %@ %@.", comment: ""),
+//											  FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.spendable_balance)")!),
+//											  MoneroConstants.currency_symbol,
+//											  FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.required_balance)")!),
+//											  MoneroConstants.currency_symbol
+//				);
+//			}
 		}
 	}
 }

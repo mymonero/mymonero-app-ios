@@ -34,27 +34,6 @@
 //
 #import <Foundation/Foundation.h>
 //
-// Types - Arguments - Create Transactions - Accessible from Swift
-@interface Monero_Arg_SpendableOutput: NSObject
-@property (nonatomic) uint64_t amount;
-@property (nonatomic, copy, nonnull) NSString *public_key;
-@property (nonatomic, copy, nonnull) NSString *tx_pub_key;
-@property (nonatomic, copy, nullable) NSString *rct;
-@property (nonatomic) uint64_t global_index;
-@property (nonatomic) uint64_t index;
-@end
-//
-@interface Monero_Arg_RandomAmountOut: NSObject
-@property (nonatomic, copy, nonnull) NSString *public_key;
-@property (nonatomic, copy, nullable) NSString *rct;
-@property (nonatomic) uint64_t global_index;
-@end
-//
-@interface Monero_Arg_RandomAmountAndOuts: NSObject
-@property (nonatomic) uint64_t amount;
-@property (nonatomic, strong, nonnull) NSArray<Monero_Arg_RandomAmountOut *> *outputs;
-@end
-//
 // Types - Return values
 @interface Monero_DecodedAddress_RetVals: NSObject
 @property (nonatomic, copy, nullable) NSString *errStr_orNil;
@@ -63,30 +42,6 @@
 @property (nonatomic, copy, nullable) NSString *pub_spendKey_NSString;
 @property (nonatomic) BOOL isSubaddress;
 @property (nonatomic, copy, nullable) NSString *paymentID_NSString_orNil;
-@end
-//
-@interface Monero_Send_Step1_RetVals: NSObject
-@property (nonatomic, copy, nullable) NSString *errStr_orNil;
-// or
-@property (nonatomic) BOOL reconstructErr_needMoreMoneyThanFound;
-@property (nonatomic) uint64_t spendable_balance;
-@property (nonatomic) uint64_t required_balance;
-// or
-@property (nonatomic) uint64_t final_total_wo_fee;
-@property (nonatomic) uint64_t change_amount;
-@property (nonatomic) uint64_t using_fee;
-@property (nonatomic, strong, nullable) NSArray<Monero_Arg_SpendableOutput *> *using_outs; // returned as JSON so it can be passed directly into step2
-@end
-
-@interface Monero_Send_Step2_RetVals: NSObject
-@property (nonatomic, copy, nullable) NSString *errStr_orNil;
-// or
-@property (nonatomic) BOOL tx_must_be_reconstructed;
-@property (nonatomic) uint64_t fee_actually_needed;
-// or
-@property (nonatomic, copy, nullable) NSString *serialized_signed_tx;
-@property (nonatomic, copy, nullable) NSString *tx_hash;
-@property (nonatomic, copy, nullable) NSString *tx_key;
 @end
 //
 // Constants
@@ -216,34 +171,11 @@ typedef enum {
 															 uint64_t used_fee,
 															 uint64_t total_sent,
 															 size_t mixin,
+															 NSString *_Nullable final_payment_id,
 															 NSString *_Nonnull signed_serialized_tx_string,
 															 NSString *_Nonnull tx_hash_string,
 															 NSString *_Nonnull tx_key_string,
 															 NSString *_Nonnull tx_pub_key_string
 															 ))success_fn;
-//
-
-+ (nonnull Monero_Send_Step1_RetVals *)send_step1__prepare_params_for_get_decoysWithSweeping:(BOOL)sweeping
-																	   sending_amount:(uint64_t)sending_amount
-																			fee_per_b:(uint64_t)fee_per_b
-																			 priority:(uint32_t)priority
-																	  unspent_outputs:(NSArray<Monero_Arg_SpendableOutput *> *_Nonnull)args_outputs
-																	payment_id_string:(nullable NSString *)payment_id_string
-												  optl__passedIn_attemptAt_fee_string:(nullable NSString *)passedIn_attemptAt_fee_string;
-//
-+ (nonnull Monero_Send_Step2_RetVals *)send_step2__try_create_transactionWithNetType:(NetType)objcNetType
-														  from_address_string:(nonnull NSString *)from_address_string
-														   sec_viewKey_string:(nonnull NSString *)sec_viewKey_string
-														  sec_spendKey_string:(nonnull NSString *)sec_spendKey_string
-															to_address_string:(nonnull NSString *)to_address_string
-															payment_id_string:(nullable NSString *)payment_id_string
-														   final_total_wo_fee:(uint64_t)final_total_wo_fee
-																change_amount:(uint64_t)change_amount
-																	using_fee:(uint64_t)using_fee
-																	 priority:(uint32_t)priority
-																		  using_outs:(NSArray<Monero_Arg_SpendableOutput *> *_Nonnull)using_outs
-																	 mix_outs:(NSArray<Monero_Arg_RandomAmountAndOuts *> *_Nonnull)args_mix_outs
-																	fee_per_b:(uint64_t)fee_per_b
-																  unlock_time:(uint64_t)unlock_time;
 //
 @end

@@ -656,7 +656,6 @@ extension HostedMonero
 				address: address,
 				view_key__private: view_key__private
 			)
-			//
 			let endpoint = HostedMoneroAPI_Endpoint.AddressTransactions
 			let requestHandle = self._request(endpoint, parameters)
 			{ [unowned self] (err_str, response_data, response_jsonDict) in
@@ -712,81 +711,43 @@ extension HostedMonero
 		// Sending funds
 		@discardableResult
 		func UnspentOuts(
-			wallet_keyImageCache: MoneroUtils.KeyImageCache,
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			spend_key__public: MoneroKey,
-			spend_key__private: MoneroKey,
+			req_params: [String: Any],
 			_ fn: @escaping (
 				_ err_str: String?,
-				_ result: ParsedResult_UnspentOuts?
+				_ res_dict: [String: Any]?
 			) -> Void
 		) -> RequestHandle? {
-			let mixinSize = MyMoneroCore.fixedMixin
-			let parameters: [String: Any] =
-			[
-				"address": address,
-				"view_key": view_key__private,
-				"amount": "0",
-				"mixin": mixinSize,
-				"use_dust": true, // send-funds is now coded to filter unmixable and below threshold dust properly when sweeping and not sweeping
-				"dust_threshold": String(MoneroConstants.dustThreshold, radix: 10)
-			]
 			let endpoint = HostedMoneroAPI_Endpoint.UnspentOuts
-			let requestHandle = self._request(endpoint, parameters)
+			let requestHandle = self._request(endpoint, req_params)
 			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let (err_str, result) = ParsedResult_UnspentOuts.newByParsing(
-					response_jsonDict: response_jsonDict!,
-					address: address,
-					view_key__private: view_key__private,
-					spend_key__public: spend_key__public,
-					spend_key__private: spend_key__private,
-					wallet_keyImageCache: wallet_keyImageCache
-				)
-				self._shared_onMain_callBackFromRequest(err_str, result, fn)
+				self._shared_onMain_callBackFromRequest(err_str, response_jsonDict, fn)
 			}
 			return requestHandle
 		}
 		func RandomOuts(
-			using_outs: [Monero_Arg_SpendableOutput],
+			req_params: [String: Any],
 			_ fn: @escaping (
 				_ err_str: String?,
-				_ result: ParsedResult_RandomOuts?
+				_ res_dict: [String: Any]?
 			) -> Void
 		) -> RequestHandle? {
-			let mixinSize = MyMoneroCore.fixedMixin
-			//
-			var amounts = [String]()
-			for (_, using_out_desc) in using_outs.enumerated() {
-				amounts.append(using_out_desc.rct != nil ? "0" : String(using_out_desc.amount))
-			}
-			let parameters: [String: Any] =
-			[
-				"amounts": amounts,
-				"count": mixinSize + 1 // Add one to mixin so we can skip real output key if necessary
-			]
 			let endpoint = HostedMoneroAPI_Endpoint.RandomOuts
-			let requestHandle = self._request(endpoint, parameters)
+			let requestHandle = self._request(endpoint, req_params)
 			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let (err_str, result) = ParsedResult_RandomOuts.newByParsing(
-					response_jsonDict: response_jsonDict!
-				)
-				self._shared_onMain_callBackFromRequest(err_str, result, fn)
+				self._shared_onMain_callBackFromRequest(err_str, response_jsonDict, fn)
 			}
 			return requestHandle
 		}
 		func SubmitSerializedSignedTransaction(
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			serializedSignedTx: MoneroSerializedSignedTransaction,
+			req_params: [String: Any],
 			_ fn: @escaping (
 				_ err_str: String?, // if nil, succeeded
 				_ nilResult: Any? // merely for callback conformance (janky :\) - disregard arg
@@ -800,14 +761,8 @@ extension HostedMonero
 				#endif
 			#endif
 			DDLog.Do("HostedMonero", "Submitting transaction…")
-			let parameters: [String: Any] =
-			[
-				"address": address,
-				"view_key": view_key__private,
-				"tx": serializedSignedTx
-			]
 			let endpoint = HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction
-			let requestHandle = self._request(endpoint, parameters)
+			let requestHandle = self._request(endpoint, req_params)
 			{ [unowned self] (err_str, response_data, response_jsonDict) in
 				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 			}
@@ -885,11 +840,9 @@ extension HostedMonero
 										statusCode,
 										embeddedErrorMessage
 									)
-								} else {
 								}
 							} catch {
 							}
-						} else {
 						}
 						fn(errStr, nil, nil) // localized description ok here?
 						return
