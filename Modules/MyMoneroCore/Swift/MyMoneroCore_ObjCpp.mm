@@ -39,6 +39,7 @@
 //
 #include "cryptonote_basic_impl.h"
 #include "string_tools.h"
+#include "wallet_errors.h"
 using namespace epee;
 using namespace std;
 using namespace boost;
@@ -570,11 +571,14 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 						error_fn(errStr_orNil); // just redirect so consumer has one cb they can observe
 						return;
 					}
+					std::istringstream ss(std::string(res_json_str.UTF8String));
 					boost::property_tree::ptree res;
-					stringstream ss;
-					ss << res_json_str;
-					boost::property_tree::json_parser::read_json(ss, res);
-					//
+					try {
+						boost::property_tree::read_json(ss, res);
+					} catch (std::exception const& e) {
+						error_fn(NSLocalizedString(@"Invalid response JSON", nil));
+						return;
+					}
 					get_unspent_outs_fn__cb_fn(res);
 				}
 			);
@@ -604,11 +608,14 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 						error_fn(errStr_orNil); // just redirect so consumer has one cb they can observe
 						return;
 					}
+					std::istringstream ss(std::string(res_json_str.UTF8String));
 					boost::property_tree::ptree res;
-					stringstream ss;
-					ss << res_json_str;
-					boost::property_tree::json_parser::read_json(ss, res);
-					//
+					try {
+						boost::property_tree::read_json(ss, res);
+					} catch (std::exception const& e) {
+						error_fn(NSLocalizedString(@"Invalid response JSON", nil));
+						return;
+					}
 					get_random_outs_fn__cb_fn(res);
 				}
 			);
@@ -634,11 +641,14 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 						error_fn(errStr_orNil); // just redirect so consumer has one cb they can observe
 						return;
 					}
+					std::istringstream ss(std::string(res_json_str.UTF8String));
 					boost::property_tree::ptree res;
-					stringstream ss;
-					ss << res_json_str;
-					boost::property_tree::json_parser::read_json(ss, res);
-					//
+					try {
+						boost::property_tree::read_json(ss, res);
+					} catch (std::exception const& e) {
+						error_fn(NSLocalizedString(@"Invalid response JSON", nil));
+						return;
+					}
 					submit_raw_tx_fn__cb_fn(res);
 				}
 			);

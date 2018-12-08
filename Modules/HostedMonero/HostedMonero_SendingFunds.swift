@@ -212,6 +212,7 @@ extension HostedMonero
 								res_data = try JSONSerialization.data(withJSONObject: res_dict!, options: [])
 							} catch (let e) {
 								thisSelf.failWithErr_fn?(e.localizedDescription)
+								return
 							}
 							let res_json_str = String(data: res_data, encoding: .utf8)!
 							cb(nil, res_json_str)
@@ -256,6 +257,7 @@ extension HostedMonero
 								res_data = try JSONSerialization.data(withJSONObject: res_dict!, options: [])
 							} catch (let e) {
 								thisSelf.failWithErr_fn?(e.localizedDescription)
+								return
 							}
 							let res_json_str = String(data: res_data, encoding: .utf8)!
 							cb(nil, res_json_str)
