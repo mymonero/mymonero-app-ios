@@ -56,6 +56,13 @@ extension WalletDetails
 			var receive_actionButtonView: UICommonComponents.ActionButton!
 			var send_actionButtonView: UICommonComponents.ActionButton!
 			//
+			// Properties - External - Settable after init
+			var _requestButton_tapped: (() -> Void)!
+			func set_requestButton_tapped(_ fn: @escaping (() -> Void))
+			{
+				self._requestButton_tapped = fn
+			}
+			//
 			// Lifecycle - Init - Overrides
 			override func setup()
 			{
@@ -129,9 +136,7 @@ extension WalletDetails
 			}
 			@objc func receive_tapped()
 			{
-				let configuration = self.configuration!
-				let wallet = configuration.dataObject as! Wallet
-				WalletAppWalletActionsCoordinator.Trigger_receiveFunds(toWallet: wallet)
+				self._requestButton_tapped()
 			}
 		}
 	}

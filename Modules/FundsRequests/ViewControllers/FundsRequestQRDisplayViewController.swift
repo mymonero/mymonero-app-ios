@@ -42,14 +42,16 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 	//
 	// Properties
 	var fundsRequest: FundsRequest
+	var presentedAsModal: Bool = false
 	//
 	var informationalLabel: UICommonComponents.FormAccessoryMessageLabel!
 	var imageView: UIImageView!
 	//
 	// Lifecycle - Init
-	init(fundsRequest: FundsRequest)
+	init(fundsRequest: FundsRequest, presentedAsModal: Bool = false)
 	{
 		self.fundsRequest = fundsRequest
+		self.presentedAsModal = presentedAsModal
 		super.init()
 	}
 	required init?(coder aDecoder: NSCoder) {
@@ -108,7 +110,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		}
 		do {
 			self.navigationItem.title = NSLocalizedString("Scan Code to Pay", comment: "")
-			if self.fundsRequest.is_displaying_local_wallet != true {
+			if self.fundsRequest.is_displaying_local_wallet != true || self.presentedAsModal {
 				self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 					type: .go,
 					tapped_fn:

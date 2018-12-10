@@ -41,9 +41,6 @@ class WalletAppWalletActionsCoordinator
 		case willTrigger_sendFundsFromWallet = "WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_sendFundsFromWallet"
 		case didTrigger_sendFundsFromWallet = "WalletAppWalletActionsCoordinator.NotificationNames.didTrigger_sendFundsFromWallet"
 		//
-		case willTrigger_receiveFundsToWallet = "WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_receiveFundsToWallet"
-		case didTrigger_receiveFundsToWallet = "WalletAppWalletActionsCoordinator.NotificationNames.didTrigger_receiveFundsToWallet"
-		//
 		var notificationName: NSNotification.Name {
 			return NSNotification.Name(self.rawValue)
 		}
@@ -79,21 +76,6 @@ class WalletAppWalletActionsCoordinator
 		//
 		NotificationCenter.default.post(
 			name: NotificationNames.didTrigger_sendFundsFromWallet.notificationName,
-			object: nil,
-			userInfo: common_userInfo
-		)
-	}
-	static func Trigger_receiveFunds(toWallet wallet: Wallet)
-	{
-		let common_userInfo = self.common__notification_userInfo(withWallet: wallet)
-		NotificationCenter.default.post(
-			name: NotificationNames.willTrigger_receiveFundsToWallet.notificationName,
-			object: nil,
-			userInfo: common_userInfo
-		)
-		//
-		NotificationCenter.default.post(
-			name: NotificationNames.didTrigger_receiveFundsToWallet.notificationName,
 			object: nil,
 			userInfo: common_userInfo
 		)

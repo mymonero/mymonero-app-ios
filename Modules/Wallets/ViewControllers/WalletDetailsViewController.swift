@@ -431,6 +431,29 @@ extension WalletDetails
 						lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
 						if lazy_cell == nil {
 							lazy_cell = cellType.init()
+							if indexPath.section == SectionName.actionButtons.indexInTable {
+								(lazy_cell as! WalletDetails.ActionButtons.Cell).set_requestButton_tapped(
+									{ [weak self] in
+										guard let thisSelf = self else {
+											return
+										}
+										var requestForWallet: FundsRequest?
+										for (_, o) in FundsRequestsListController.shared.records.enumerated() {
+											let r = o as! FundsRequest
+											if r.is_displaying_local_wallet == true && r.to_address == thisSelf.wallet.public_address {
+												requestForWallet = r
+												break
+											}
+										}
+										if requestForWallet == nil {
+											fatalError("Expected requestForWallet to be non nil")
+										}
+										let viewController = FundsRequestQRDisplayViewController(fundsRequest: requestForWallet!, presentedAsModal: true/* for Done button */)
+										let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+										thisSelf.navigationController!.present(navigationController, animated: true, completion: nil)
+									}
+								)
+							}
 						}
 						break
 				}
