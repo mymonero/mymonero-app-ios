@@ -293,9 +293,9 @@ extension CreateWallet_InformOfMnemonic
 				view.numberOfLines = 0
 				self.addSubview(view)
 				//
-//				let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(did_longPress(_:)))
-//				gestureRecognizer.minimumPressDuration = 0.3
-//				view.addGestureRecognizer(gestureRecognizer)
+				let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(did_longPress(_:)))
+				gestureRecognizer.minimumPressDuration = 0.3
+				view.addGestureRecognizer(gestureRecognizer)
 			}
 		}
 		//
@@ -338,10 +338,6 @@ extension CreateWallet_InformOfMnemonic
 		}
 		//
 		// Delegation - Interactions
-/*
-
-NOTE: Copying mnemonic to pasteboard has been explicitly disabled as it can expose secret data
-
 		@objc func did_longPress(_ recognizer: UIGestureRecognizer)
 		{
 			guard recognizer.state == .began else { // instead of .recognized - so user knows asap that it's long-pressable
@@ -360,8 +356,5 @@ NOTE: Copying mnemonic to pasteboard has been explicitly disabled as it can expo
 			menuController.setTargetRect(recognizerView.frame, in: recognizerSuperView)
 			menuController.setMenuVisible(true, animated:true)
 		}
-		
-*/
-		
 	}
 }
