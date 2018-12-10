@@ -134,7 +134,7 @@ class ContactDetailsViewController: UICommonComponents.Details.ViewController
 				let iconImage = UIImage(named: "actionButton_iconImage__send")!
 				let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
 				view.addTarget(self, action: #selector(send_tapped), for: .touchUpInside)
-				view.setTitle(NSLocalizedString("Send", comment: ""), for: .normal)
+				view.setTitle(NSLocalizedString("Pay", comment: ""), for: .normal)
 				view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 				self.send_actionButtonView = view
 				self.view.addSubview(view)

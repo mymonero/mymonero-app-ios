@@ -75,7 +75,7 @@ extension WalletDetails
 					let iconImage = UIImage(named: "actionButton_iconImage__request")! // TODO: borrowing the 'request' image for this - not great
 					let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: true, iconImage: iconImage)
 					view.addTarget(self, action: #selector(receive_tapped), for: .touchUpInside)
-					view.setTitle(NSLocalizedString("Receive At", comment: ""), for: .normal)
+					view.setTitle(NSLocalizedString("Deposit", comment: ""), for: .normal)
 					view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 					self.receive_actionButtonView = view
 					self.addSubview(view)
@@ -84,7 +84,7 @@ extension WalletDetails
 					let iconImage = UIImage(named: "actionButton_iconImage__send")!
 					let view = UICommonComponents.ActionButton(pushButtonType: .utility, isLeftOfTwoButtons: false, iconImage: iconImage)
 					view.addTarget(self, action: #selector(send_tapped), for: .touchUpInside)
-					view.setTitle(NSLocalizedString("Send From", comment: ""), for: .normal)
+					view.setTitle(NSLocalizedString("Send", comment: ""), for: .normal)
 					view.titleEdgeInsets = UICommonComponents.ActionButton.new_titleEdgeInsets_withIcon
 					self.send_actionButtonView = view
 					self.addSubview(view)
