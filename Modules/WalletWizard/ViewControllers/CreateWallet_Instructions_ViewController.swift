@@ -133,7 +133,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Use it like an actual wallet", comment: ""),
-			description: NSLocalizedString("For keeping large amounts long-term, make a cold-storage wallet instead.", comment: "") // NOTE: non break space
+			description: NSLocalizedString("For larger amounts and enhanced privacy, make a cold-storage wallet or set your own server in Preferences.", comment: "") // NOTE: non break space
 		))
 		//
 		return list

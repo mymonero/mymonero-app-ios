@@ -99,7 +99,7 @@ extension UICommonComponents
 				attributes:
 				[
 					NSAttributedString.Key.foregroundColor: UIColor(rgb: 0x8D8B8D),
-					NSAttributedString.Key.font: UIFont.middlingRegularSansSerif,
+					NSAttributedString.Key.font: UIFont.shouldStepDownLargerFontSizes ? UIFont.smallRegularSansSerif : UIFont.middlingRegularSansSerif,
 					NSAttributedString.Key.paragraphStyle: paragraphStyle
 				]
 			)
