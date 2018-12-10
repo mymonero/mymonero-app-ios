@@ -161,7 +161,26 @@ extension WalletDetails
 				}
 			}
 		}
-
+		class DisplayViewLabel: UILabel
+		{
+			//
+			// Accessors - Overrides - UIResponder
+			override var canBecomeFirstResponder: Bool {
+				return true
+			}
+			//
+			// Accessors - Overrides
+			override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool
+			{
+				return action == #selector(copy(_:))
+			}
+			//
+			// Imperatives - Overrides - UIResponderStandardEditActions
+			override func copy(_ sender: Any?)
+			{
+				UIPasteboard.general.string = self.text
+			}
+		}
 		class DisplayView: UIImageView
 		{
 			//
@@ -182,7 +201,7 @@ extension WalletDetails
 			}
 			//
 			// Properties
-			let label = UILabel()
+			let label = DisplayViewLabel()
 			//
 			// Init
 			init()
@@ -197,11 +216,17 @@ extension WalletDetails
 			{
 				do {
 					let view = self.label
+					view.isUserInteractionEnabled = true // allow pass through of touches for menu
 					view.numberOfLines = 1
 					view.lineBreakMode = .byTruncatingTail
 					view.font = UIFont(name: UIFont.lightMonospaceFontName, size: 32)
 					self.addSubview(view)
+					//
+					let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(did_longPress(_:)))
+					gestureRecognizer.minimumPressDuration = 0.3
+					view.addGestureRecognizer(gestureRecognizer)
 				}
+				self.isUserInteractionEnabled = true // for long press
 			}
 			//
 			// Overrides
@@ -350,6 +375,26 @@ extension WalletDetails
 			func _configureBackgroundColor(withWallet wallet: Wallet)
 			{
 				self.image = type(of: self).stretchableBackgroundImage(forSwatchColor: wallet.swatchColor ?? Wallet.SwatchColor.blue)
+			}
+			//
+			// Delegation - Interactions
+			@objc func did_longPress(_ recognizer: UIGestureRecognizer)
+			{
+				guard recognizer.state == .began else { // instead of .recognized - so user knows asap that it's long-pressable
+					return
+				}
+				guard let recognizerView = recognizer.view else {
+					return
+				}
+				guard let recognizerSuperView = recognizerView.superview else {
+					return
+				}
+				guard recognizerView.becomeFirstResponder() else {
+					return
+				}
+				let menuController = UIMenuController.shared
+				menuController.setTargetRect(recognizerView.frame, in: recognizerSuperView)
+				menuController.setMenuVisible(true, animated:true)
 			}
 		}
 	}
