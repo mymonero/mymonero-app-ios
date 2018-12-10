@@ -234,17 +234,17 @@ extension WalletDetails
 				title: NSLocalizedString("Address", comment: ""),
 				valueToDisplayIfZero: nil
 			)
-			let disclosed__fieldView_viewKey = InfoDisclosing_NonCopyableLongStringFieldView(
+			let disclosed__fieldView_viewKey = InfoDisclosing_CopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Secret View Key", comment: ""),
 				valueToDisplayIfZero: nil
 			)
-			let disclosed__fieldView_spendKey = InfoDisclosing_NonCopyableLongStringFieldView(
+			let disclosed__fieldView_spendKey = InfoDisclosing_CopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Secret Spend Key", comment: ""),
 				valueToDisplayIfZero: nil
 			)
-			let disclosed__fieldView_mnemonic = InfoDisclosing_NonCopyableLongStringFieldView(
+			let disclosed__fieldView_mnemonic = InfoDisclosing_CopyableLongStringFieldView(
 				labelVariant: .middling,
 				title: NSLocalizedString("Secret Mnemonic", comment: ""),
 				valueToDisplayIfZero: nil
