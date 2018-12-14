@@ -213,8 +213,7 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 	func collectionView(
 		_ collectionView: UICollectionView,
 		cellForItemAt indexPath: IndexPath
-	) -> UICollectionViewCell
-	{
+	) -> UICollectionViewCell {
 		var optl_cell: EmojiPickerCollectionViewCell? = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiPickerCollectionViewCell.reuseIdentifier, for: indexPath) as? EmojiPickerCollectionViewCell
 		if optl_cell == nil {
 			optl_cell = EmojiPickerCollectionViewCell()
@@ -228,8 +227,7 @@ class EmojiPickerContentView: UIView, UICollectionViewDelegate, UICollectionView
 	func collectionView(
 		_ collectionView: UICollectionView,
 		numberOfItemsInSection section: Int
-	) -> Int
-	{
+	) -> Int {
 		return Emoji.numberOfEmoji
 	}
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)

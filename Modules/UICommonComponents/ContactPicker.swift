@@ -935,7 +935,7 @@ extension UICommonComponents.Form
 		}
 		func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
 		{
-			return 1
+			return 3
 		}
 		func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
 		{
@@ -1001,7 +1001,7 @@ extension UICommonComponents.Form
 		func setup()
 		{
 			do {
-				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 0.9)
+				self.backgroundColor = UIColor.contentBackgroundColor
 				self.translatesAutoresizingMaskIntoConstraints = false // this must be turned off for height not to end up being set to 0 by conflicting constraint
 			}
 			do {
@@ -1009,7 +1009,7 @@ extension UICommonComponents.Form
 				layout.scrollDirection = .horizontal
 				//
 				let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-				view.contentInset = UIEdgeInsets.init(top: 0, left: 1, bottom: 0, right: 1)
+				view.contentInset = UIEdgeInsets.init(top: 0, left: 3, bottom: 0, right: 3)
 				view.showsHorizontalScrollIndicator = false
 				view.layer.masksToBounds = true
 				view.backgroundColor = self.backgroundColor
@@ -1095,7 +1095,8 @@ extension UICommonComponents.Form
 		{
 			do {
 				self.isOpaque = true // performance
-				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 0.9)
+				self.layer.cornerRadius = 4
+				self.backgroundColor = UIColor(red: 252/255, green: 251/255, blue: 252/255, alpha: 1)
 			}
 			do {
 				let view = UIView()
@@ -1299,8 +1300,7 @@ extension UICommonComponents.Form
 			withX x: CGFloat,
 			y: CGFloat,
 			inWidth containerWidth: CGFloat
-		)
-		{
+		) {
 			self.frame = CGRect(
 				x: x,
 				y: y,
