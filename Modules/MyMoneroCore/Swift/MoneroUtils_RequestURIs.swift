@@ -133,7 +133,12 @@ extension MoneroUtils.URIs
 				}
 				return (NSLocalizedString("No Monero request info", comment: ""), nil)
 			}
-			guard let urlComponents = URLComponents(string: string) else {
+			guard let final_string = string.addingPercentEncoding( // harden against malformed URIs
+				withAllowedCharacters: .urlQueryAllowed
+			) else {
+				return (err_str: NSLocalizedString("Unable to add percent encoding to QR URI", comment: ""), parsedRequest: nil)
+			}
+			guard let urlComponents = URLComponents(string: final_string) else {
 				return (err_str: NSLocalizedString("Unrecognized URI format", comment: ""), parsedRequest: nil)
 			}
 			let scheme = urlComponents.scheme
