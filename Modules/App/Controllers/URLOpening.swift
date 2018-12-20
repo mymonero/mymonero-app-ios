@@ -156,7 +156,7 @@ class URLOpening: DeleteEverythingRegistrant
 				PasswordController.shared.OnceBootedAndPasswordObtained(
 					{ (password, passwordType) in // it might be slightly more rigorous to observe the contact list controller for its next boot to do this but then we have to worry about whether that is waiting for all the information we would end up actually needing… so I'm opting for the somewhat more janky but probably safer option of using a delay to wait for things to load
 						DispatchQueue.main.asyncAfter(
-							deadline: .now() + 0.3, // which is probably excessive but it's ok and possibly preferred in order to let the user orient first
+							deadline: .now() + 0.5, // which is probably excessive but it's ok and possibly preferred in order to let the user orient first
 							execute:
 							{
 								if self.requestURLToOpen_pendingFromDisallowedFromOpening != nil { // if still have one - aka not cancelled
