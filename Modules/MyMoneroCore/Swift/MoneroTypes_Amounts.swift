@@ -91,6 +91,20 @@ extension MoneroAmount
 		}
 		return _doubleFormatter!
 	}
+	static func shared_localized_twoDecimalPlaceDoubleFormatter() -> NumberFormatter
+	{
+		if _doubleFormatter == nil {
+			let formatter = NumberFormatter()
+			_doubleFormatter = formatter
+			formatter.minimumFractionDigits = 2
+			formatter.maximumFractionDigits = MoneroConstants.currency_unitPlaces + 1
+			formatter.roundingMode = .down
+			formatter.numberStyle = .decimal
+			formatter.usesGroupingSeparator = false // so as not to complicate matters.. for now
+			formatter.locale = Locale.current // to be explicit ... this could be reworked to be a "."-decimalSeparator-specific formatter
+		}
+		return _doubleFormatter!
+	}
 	//
 	//
 	var atomicUnitsBigIntString: String {
