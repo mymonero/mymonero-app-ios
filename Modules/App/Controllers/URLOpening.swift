@@ -159,8 +159,6 @@ class URLOpening: DeleteEverythingRegistrant
 							deadline: .now() + 0.3, // which is probably excessive but it's ok and possibly preferred in order to let the user orient first
 							execute:
 							{
-								assert(self.isAllowedToReceiveURLs) // assumption
-								//
 								if self.requestURLToOpen_pendingFromDisallowedFromOpening != nil { // if still have one - aka not cancelled
 									self._yieldThatTimeToHandleReceivedMoneroURL(
 										url: self.requestURLToOpen_pendingFromDisallowedFromOpening!
