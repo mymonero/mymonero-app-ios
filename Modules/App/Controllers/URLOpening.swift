@@ -138,10 +138,6 @@ class URLOpening: DeleteEverythingRegistrant
 				DDLog.Info("URLOpening", "User is changing pw - not waiting for that to finish since the user probably doesn't want to open the URL in this state anyway")
 				return false
 			}
-			if WalletsListController.shared.records.count == 0 {
-				DDLog.Info("URLOpening", "No wallet - not waiting for PW entry to open this URL since that may not be what the user intends")
-				return false
-			}
 			let hasAPasswordBeenSaved = PasswordController.shared.hasUserSavedAPassword
 			if hasAPasswordBeenSaved == false {
 				// app is blank - no wallets have been created, password hasn't been entered…… ignore so as not to cause a superfluous password entry request
