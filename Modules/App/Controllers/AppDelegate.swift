@@ -135,7 +135,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 			) { (finished) in
 				// TODO: maybe animate this fading away
 				view.removeFromSuperview() // must be removed
-
 			}
 		}
 	}

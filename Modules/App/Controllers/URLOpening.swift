@@ -134,6 +134,14 @@ class URLOpening: DeleteEverythingRegistrant
 			return false
 		}
 		if self.isAllowedToReceiveURLs == false { // then defer this til we are ready (as gracefully as we can)
+			if PasswordController.shared.isUserChangingPassword {
+				DDLog.Info("URLOpening", "User is changing pw - not waiting for that to finish since the user probably doesn't want to open the URL in this state anyway")
+				return false
+			}
+			if WalletsListController.shared.records.count == 0 {
+				DDLog.Info("URLOpening", "No wallet - not waiting for PW entry to open this URL since that may not be what the user intends")
+				return false
+			}
 			let hasAPasswordBeenSaved = PasswordController.shared.hasUserSavedAPassword
 			if hasAPasswordBeenSaved == false {
 				// app is blank - no wallets have been created, password hasn't been entered…… ignore so as not to cause a superfluous password entry request
@@ -167,14 +175,13 @@ class URLOpening: DeleteEverythingRegistrant
 				DDLog.Warn("URLOpening", "Already had a URL pending app unlock so not adding another request for PW entry notification.")
 			}
 		} else {
-			self._yieldThatTimeToHandleReceivedMoneroURL(url: url) // this will probably never get hit b/c the app will always be locked out - unless the app is active at time of reception? ever possible on iOS?
+			self._yieldThatTimeToHandleReceivedMoneroURL(url: url)
 		}
 		return true
 	}
 	func _yieldThatTimeToHandleReceivedMoneroURL(
 		url: URL
-	)
-	{
+	) {
 		self.requestURLToOpen_pendingFromDisallowedFromOpening = nil // jic
 		//
 		DispatchQueue.main.async
