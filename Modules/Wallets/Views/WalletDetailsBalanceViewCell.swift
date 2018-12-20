@@ -128,11 +128,10 @@ extension WalletDetails
 						)
 						text += String(
 							format: NSLocalizedString(
-								"%@ %@ pending",
+								"%@ pending",
 								comment: ""
 							),
-							components.formattedAmount,
-							components.final_ccy.symbol
+							components.formattedAmount
 						)
 					}
 					if lockedAmount > 0 {
@@ -146,11 +145,10 @@ extension WalletDetails
 						)
 						text += String(
 							format: NSLocalizedString(
-								"%@ %@ locked",
+								"%@ locked",
 								comment: ""
 							),
-							components.formattedAmount,
-							components.final_ccy.symbol
+							components.formattedAmount
 						)
 					}
 					self.secondaryBalancesLabel.text = text
