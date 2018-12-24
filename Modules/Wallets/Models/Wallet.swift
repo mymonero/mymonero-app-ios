@@ -888,7 +888,10 @@ class Wallet: PersistableObject
 			self.private_keys = verifiedComponentsForLogIn!.privateKeys
 			self.isInViewOnlyMode = verifiedComponentsForLogIn!.isInViewOnlyMode
 			self.local_wasAGeneratedWallet = wasAGeneratedWallet
-			//
+			do { // this state must be reset or a prior failure may appear not to reset state (more of an issue in the JS app since the state was not reset on boot success)
+				self.didFailToBoot_errStr = nil
+				self.didFailToBoot_flag = nil
+			}
 			self.logIn_requestHandle = HostedMonero.APIClient.shared.LogIn(
 				address: address,
 				view_key__private: view_key__private,
