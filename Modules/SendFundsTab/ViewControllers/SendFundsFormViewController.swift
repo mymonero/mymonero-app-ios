@@ -67,7 +67,6 @@ extension SendFundsForm
 		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var amount_label: UICommonComponents.Form.FieldLabel!
-		var amount_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
 		var networkFeeEstimate_label: UICommonComponents.FormFieldAccessoryMessageLabel!
 		var feeEstimate_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
@@ -138,23 +137,6 @@ extension SendFundsForm
 					sizeToFit: true
 				)
 				self.amount_label = view
-				self.scrollView.addSubview(view)
-			}
-			do {
-				let view = UICommonComponents.TooltipSpawningLinkButtonView(
-					tooltipText: String(
-						format: NSLocalizedString(
-							"Ring size value set to\nMonero default of %d.",
-							comment: ""
-						),
-						MyMoneroCore.fixedRingsize
-					)
-				)
-				view.willPresentTipView_fn =
-				{ [unowned self] in
-					self.view.resignCurrentFirstResponder() // if any
-				}
-				self.amount_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -1184,16 +1166,6 @@ extension SendFundsForm
 					width: self.amount_label.frame.size.width,
 					height: self.amount_label.frame.size.height
 				).integral
-				do {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-					self.amount_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.amount_label.frame.origin.x + self.amount_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-						y: self.amount_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.amount_label.frame.size.height)/2,
-						width: tooltipSpawn_buttonView_w,
-						height: tooltipSpawn_buttonView_h
-					).integral
-				}
 				self.amount_fieldset.frame = CGRect(
 					x: input_x,
 					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
