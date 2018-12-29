@@ -129,7 +129,7 @@ class CreateWallet_Instructions_ViewController: AddWalletWizardScreen_BaseViewCo
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Keep it secret and safe", comment: ""),
-			description: NSLocalizedString("If you save it to an insecure location, it may be viewable by other apps.", comment: "") // NOTE: non break space
+			description: NSLocalizedString("If you save it to an insecure location, copy, screenshot, or email it, it may be viewable by other apps.", comment: "") // NOTE: non break space
 		))
 		list.append(TitleAndDescription(
 			title: NSLocalizedString("Use it like an actual wallet", comment: ""),
