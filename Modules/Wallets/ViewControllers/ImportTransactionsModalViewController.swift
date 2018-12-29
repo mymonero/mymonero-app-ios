@@ -92,9 +92,9 @@ extension ImportTransactionsModal
 			}
 			do {
 				let view = UICommonComponents.TooltipSpawningLinkButtonView(
-					tooltipText: NSLocalizedString(
-						"Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process places heavy load on the server, import is triggered by sending a fee with the specific payment ID below to the server at e.g. \(approximate_importOAAddress).",
-						comment: ""
+					tooltipText: String(
+						format: NSLocalizedString("Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.\n\nAs this process places heavy load on the server, import is triggered by sending a fee with the specific payment ID below to the server at e.g. %@.", comment: ""),
+						approximate_importOAAddress
 					)
 				)
 				view.tooltipDirectionFromOrigin = .left // b/c we're at the top of the screen but also so close to the right side - would be nice to be able to go down-left - but since the right edge/space ends up being the limiting factor, we must choose .left instead of .down
@@ -385,9 +385,12 @@ extension ImportTransactionsModal
 			}
 			do {
 				self.set(
-					validationMessage: NSLocalizedString(
-						"Sending \(self.importRequestInfoAndStatus_receivedResult!.import_fee.localized_formattedString) XMR…",
-						comment: ""
+					validationMessage: String(
+						format: NSLocalizedString(
+							"Sending %@ XMR…",
+							comment: ""
+						),
+						self.importRequestInfoAndStatus_receivedResult!.import_fee.localized_formattedString
 					),
 					wantsXButton: false
 				)

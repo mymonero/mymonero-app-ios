@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+find Modules/ \( -name "*.swift" -o -name "*.m" -o -name "*.mm" \)  -print0 | tr '\n' '\0'  | xargs -0 genstrings -o ./Modules/App/Resources/en.lproj/

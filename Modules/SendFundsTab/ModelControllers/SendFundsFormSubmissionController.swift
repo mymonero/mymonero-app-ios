@@ -179,9 +179,12 @@ extension SendFundsForm
 			let (err_str, decodedAddressComponents) = MyMoneroCore.shared_objCppBridge.decoded(address: xmrAddress_toDecode)
 			if err_str != nil {
 				self.parameters.preSuccess_terminal_validationMessage_fn(
-					NSLocalizedString(
-						String(format: "Couldn't validate destination Monero address of %@.", xmrAddress_toDecode),
-						comment: ""
+					String(format:
+						NSLocalizedString(
+							"Couldn't validate destination Monero address of %@.",
+							comment: ""
+						),
+						xmrAddress_toDecode
 					)
 				)
 				return

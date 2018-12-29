@@ -632,9 +632,9 @@ class ContactFormViewController: UICommonComponents.FormViewController
 		)
 		if err_str != nil {
 			self.set(
-				validationMessage: NSLocalizedString(
-					"Unable to use the result of decoding that QR code: \(err_str!)",
-					comment: ""
+				validationMessage: String(format:
+					NSLocalizedString("Unable to use the result of decoding that QR code: %@", comment: ""),
+					err_str!
 				),
 				wantsXButton: true
 			)

@@ -1371,9 +1371,9 @@ extension SendFundsForm
 			)
 			if err_str != nil {
 				self.set(
-					validationMessage: NSLocalizedString(
-						"Unable to use the result of decoding that QR code: \(err_str!)",
-						comment: ""
+					validationMessage: String(format:
+						NSLocalizedString("Unable to use the result of decoding that QR code: %@", comment: ""),
+						err_str!
 					),
 					wantsXButton: true
 				)
@@ -1390,7 +1390,7 @@ extension SendFundsForm
 			)
 			if err_str != nil {
 				self.set(
-					validationMessage: NSLocalizedString("Unable to decode that URL: \(err_str!)", comment: ""),
+					validationMessage: String(format: NSLocalizedString("Unable to decode that URL: %@", comment: ""), err_str!),
 					wantsXButton: true
 				)
 				return
