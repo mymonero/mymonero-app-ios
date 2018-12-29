@@ -69,7 +69,7 @@ class FundsRequestsListViewController: ListViewController
 	// Accessors - Required overrides
 	override func new_navigationTitle() -> String
 	{
-		return NSLocalizedString("Monero Requests", comment: "")
+		return NSLocalizedString("Receive Monero", comment: "")
 	}
 	override func new_emptyStateView() -> UIView?
 	{
