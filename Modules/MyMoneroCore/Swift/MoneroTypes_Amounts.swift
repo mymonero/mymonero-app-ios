@@ -121,11 +121,6 @@ extension MoneroAmount
 		return FormattedString(fromMoneroAmount: self) // defaults to locale's decimalSeparator
 	}
 	//
-	var jsRepresentationString:String
-	{ // because we need to convert it back for calls like create_transaction 
-		return "new mymonero_core_js.JSBigInt(\"\(self)\")"
-	}
-	//
 	static func new(withDouble doubleValue: HumanUnderstandableCurrencyAmountDouble) -> MoneroAmount
 	{
 		let amountAsFormattedString = MoneroAmount.shared_localized_doubleFormatter().string(for: doubleValue)!

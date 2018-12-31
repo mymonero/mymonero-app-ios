@@ -63,15 +63,6 @@ struct MoneroConstants
 typealias MoneroTypeString = String // a type to, so far, provide some JSON serialization conveniences
 extension MoneroTypeString
 {
-	static func jsArrayString(
-		_ array: [MoneroTypeString]
-		) -> String
-	{
-		return "[" + array.map{ $0.jsRepresentationString }.joined(separator: ",") + "]"
-	}
-	var jsRepresentationString: String {
-		return "\"\(self)\"" // wrap in quotes, cause it's a string
-	}
 	var objcSerialized: String {
 		return self
 	}
@@ -115,9 +106,6 @@ struct MoneroDecodedAddressComponents
 		self.spend = spend
 	}
 	//
-	var jsRepresentationString: String {
-		return "{\"view\":\"\(view)\",\"spend\":\"\(spend)\"}"
-	}
 	var jsonRepresentation: [String: Any] {
 		return [
 			"view": view,
@@ -368,25 +356,29 @@ class MoneroHistoricalTransactionRecord: Equatable
 		if (unlock_time < Double(MoneroConstants.maxBlockNumber)) { // then unlock time is block height
 			let numBlocks = unlock_time - Double(blockchain_height)
 			if (numBlocks <= 0) {
-				return "Transaction is unlocked"
+				return NSLocalizedString("Transaction is unlocked", comment: "")
 			}
 			let timeUntilUnlock_s = numBlocks * Double(MoneroConstants.avgBlockTime)
 			let unlockPrediction_Date = Date().addingTimeInterval(timeUntilUnlock_s)
 			let unlockPrediction_fromNow_String = colloquiallyFormattedDate(unlockPrediction_Date)
 			//
-			return "Will be unlocked in \(numBlocks) blocks, about \(unlockPrediction_fromNow_String)"
+			return String(format:
+				NSLocalizedString("Will be unlocked in %@ blocks, about %@", comment: ""),
+				numBlocks,
+				unlockPrediction_fromNow_String
+			)
 		}
 		let unlock_time_TimeInterval = TimeInterval(unlock_time)
 		// then unlock time is s timestamp as TimeInterval
 		let currentTime_s = round(Date().timeIntervalSince1970) // TODO: round was ported from cryptonote_utils.js; Do we need it?
 		let time_difference = unlock_time_TimeInterval - currentTime_s
 		if(time_difference <= 0) {
-			return "Transaction is unlocked"
+			return NSLocalizedString("Transaction is unlocked", comment: "")
 		}
 		let unlockTime_Date = Date(timeIntervalSince1970: unlock_time_TimeInterval)
 		let unlockTime_fromNow_String = colloquiallyFormattedDate(unlockTime_Date)
 		//
-		return "Will be unlocked \(unlockTime_fromNow_String)"
+		return String(format: NSLocalizedString("Will be unlocked %@", comment: ""), unlockTime_fromNow_String)
 	}
 	//
 	// Equatable

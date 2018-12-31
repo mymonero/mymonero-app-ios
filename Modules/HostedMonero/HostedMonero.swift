@@ -898,11 +898,11 @@ extension HostedMonero
 						break
 				}
 				guard let result_value = response.result.value else {
-					fn("Unable to find data in response from server.", nil, nil)
+					fn(NSLocalizedString("Unable to find data in response from server.", comment: ""), nil, nil)
 					return
 				}
 				guard let JSON = result_value as? [String: Any] else {
-					fn("Unable to find JSON in response from server.", nil, nil)
+					fn(NSLocalizedString("Unable to find JSON in response from server.", comment: ""), nil, nil)
 					return
 				}
 				fn(nil, response.data, JSON)
