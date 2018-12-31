@@ -315,7 +315,7 @@ extension ImportTransactionsModal
 					String(
 						format: NSLocalizedString(
 							"This requires a one-time import fee of %@ XMR", // no break spaces btwn of and amt and amt and ccy 
-							comment: ""
+							comment: "This requires a one-time import fee of {amount} XMR"
 						),
 						formatted_importFee
 					) + (
@@ -388,7 +388,7 @@ extension ImportTransactionsModal
 					validationMessage: String(
 						format: NSLocalizedString(
 							"Sending %@ XMR…",
-							comment: ""
+							comment: "Sending {amount} XMR…"
 						),
 						self.importRequestInfoAndStatus_receivedResult!.import_fee.localized_formattedString
 					),

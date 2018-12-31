@@ -171,7 +171,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 			value += String(
 				format: NSLocalizedString(
 					"Someone has requested a %@ payment.",
-					comment: ""
+					comment: "Someone has requested a {Monero} payment."
 				),
 				MoneroConstants.currency_name
 			)
@@ -179,7 +179,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 			value += String(
 				format: NSLocalizedString(
 					"Someone has requested a %@ payment of %@ %@.",
-					comment: ""
+					comment: "Someone has requested a {Monero} payment of {amount} {currency symbol}."
 				),
 				MoneroConstants.currency_name,
 				self.fundsRequest.amount!,
@@ -194,7 +194,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 				value += String(
 					format: NSLocalizedString(
 						"Memo: \"%@\"",
-						comment: ""
+						comment: "Memo: \"{Monero request message memo}\""
 					),
 					message
 				)
@@ -206,7 +206,7 @@ class FundsRequestDetailsViewController: UICommonComponents.Details.ViewControll
 				value += String(
 					format: NSLocalizedString(
 						"Description: \"%@\"",
-						comment: ""
+						comment: "Description: \"{Monero request message description}\""
 					),
 					description
 				)

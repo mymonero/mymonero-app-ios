@@ -289,7 +289,7 @@ extension UICommonComponents.Form.Amounts
 				finalizable_text = String(
 					format: NSLocalizedString(
 						"~ %@ %@",
-						comment: ""
+						comment: "~ {amount} {currency symbol}"
 					),
 					displayCurrency.nonAtomicCurrency_localized_formattedString(final_amountDouble: displayCurrencyAmount),
 					displayCurrency.symbol

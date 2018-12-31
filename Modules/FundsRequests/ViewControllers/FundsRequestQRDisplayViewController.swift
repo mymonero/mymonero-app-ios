@@ -70,14 +70,14 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 				let ccySymbol = self.fundsRequest.amountCurrency ?? xmrSymbol // handles nil default
 				if ccySymbol == xmrSymbol {
 					text = String(
-						format: NSLocalizedString("Scan this code to send %@ %@ to %@.", comment: ""),
+						format: NSLocalizedString("Scan this code to send %@ %@ to %@.", comment: "Scan this code to send {amount} {XMR} to {address}."),
 						self.fundsRequest.amount!,
 						CcyConversionRates.Currency.XMR.symbol,
 						to_address
 					)
 				} else {
 					text = String(
-						format: NSLocalizedString("Scan this code to send %@ %@ in Monero to %@.", comment: ""),
+						format: NSLocalizedString("Scan this code to send %@ %@ in Monero to %@.", comment: "Scan this code to send {amount} {currency symbol} in Monero to {address}."),
 						self.fundsRequest.amount!,
 						self.fundsRequest.amountCurrency!, // actually the symbol
 						to_address
@@ -85,7 +85,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 				}
 			} else {
 				text = String(
-					format: NSLocalizedString("Scan this code to send Monero to %@.", comment: ""),
+					format: NSLocalizedString("Scan this code to send Monero to %@.", comment: "Scan this code to send Monero to {address}."),
 					to_address
 				)
 			}

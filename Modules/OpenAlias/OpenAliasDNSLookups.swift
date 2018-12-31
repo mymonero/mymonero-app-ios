@@ -75,7 +75,7 @@ struct OpenAliasDNSLookups
 		}
 		if isReachable == false {
 			let err_str = String(
-				format: NSLocalizedString("Couldn't look up %@… No Internet Connection Found", comment: ""),
+				format: NSLocalizedString("Couldn't look up %@… No Internet Connection Found", comment: "Couldn't look up {web address}… No Internet Connection Found"),
 				openAliasAddress				
 			)
 			fn(err_str, nil)
@@ -104,7 +104,7 @@ struct OpenAliasDNSLookups
 				
 				if err_str != nil {
 					let returnable__err_str = String(
-						format: NSLocalizedString("Couldn't look up %@… %@", comment: ""),
+						format: NSLocalizedString("Couldn't look up %@… %@", comment: "Couldn't look up {web address}… {error}"),
 						openAliasAddress,
 						err_str!
 					)
@@ -178,7 +178,7 @@ struct OpenAliasDNSLookups
 				let addressDescriptions_count = addressDescriptions.count
 				if addressDescriptions_count == 0 {
 					let err_str = String(
-						format: NSLocalizedString("No valid OpenAlias records with prefix %@ found for %@", comment: ""),
+						format: NSLocalizedString("No valid OpenAlias records with prefix %@ found for %@", comment: "No valid OpenAlias records with prefix {currency symbol} found for {web address}"),
 						currency.txtRecordPrefixTokenForCurrency,
 						openAliasAddress
 					)
@@ -187,7 +187,7 @@ struct OpenAliasDNSLookups
 				}
 				if addressDescriptions_count > 1 {
 					let err_str = String(
-						format: NSLocalizedString("Multiple %@ target addresses found for domain %@", comment: ""),
+						format: NSLocalizedString("Multiple %@ target addresses found for domain %@", comment: "Multiple {currency symbol} target addresses found for domain {web address}"),
 						currency.txtRecordPrefixTokenForCurrency,
 						openAliasAddress
 					)

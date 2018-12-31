@@ -255,7 +255,7 @@ extension SendFundsForm
 			let statusMessage_prefix = self.parameters.isSweeping
 				? NSLocalizedString("Sending wallet balance…", comment: "")
 				: String(
-					format: NSLocalizedString("Sending %@ XMR…", comment: ""),
+					format: NSLocalizedString("Sending %@ XMR…", comment: "Sending {amount} XMR…"),
 					MoneroAmount.new(withDouble: self.parameters.amount_submittableDouble!).localized_formattedString
 				)
 			self.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(statusMessage_prefix) // start with just prefix

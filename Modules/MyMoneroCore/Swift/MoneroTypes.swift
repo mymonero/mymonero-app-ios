@@ -363,7 +363,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 			let unlockPrediction_fromNow_String = colloquiallyFormattedDate(unlockPrediction_Date)
 			//
 			return String(format:
-				NSLocalizedString("Will be unlocked in %@ blocks, about %@", comment: ""),
+				NSLocalizedString("Will be unlocked in %d blocks, about %@", comment: "Will be unlocked in {number} blocks, about {duration of time plus 'from now'}"),
 				numBlocks,
 				unlockPrediction_fromNow_String
 			)
@@ -378,7 +378,7 @@ class MoneroHistoricalTransactionRecord: Equatable
 		let unlockTime_Date = Date(timeIntervalSince1970: unlock_time_TimeInterval)
 		let unlockTime_fromNow_String = colloquiallyFormattedDate(unlockTime_Date)
 		//
-		return String(format: NSLocalizedString("Will be unlocked %@", comment: ""), unlockTime_fromNow_String)
+		return String(format: NSLocalizedString("Will be unlocked %@", comment: "Will be unlocked {duration of time plus 'from now'}"), unlockTime_fromNow_String)
 	}
 	//
 	// Equatable

@@ -79,7 +79,7 @@ extension WalletDetails
 					accessoryLabelText: String(
 						format: NSLocalizedString(
 							"%d blocks behind",
-							comment: ""
+							comment: "{number} blocks behind"
 						),
 						self.wallet.nBlocksBehind
 					)

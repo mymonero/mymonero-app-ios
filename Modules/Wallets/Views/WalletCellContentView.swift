@@ -193,13 +193,13 @@ class WalletCellContentView: UIView
 		var str: String
 		if self.wantsOnlySpendableBalance && self.object!.hasLockedFunds {
 			str = String(
-				format: NSLocalizedString("%@ %@ unlocked", comment: ""),
+				format: NSLocalizedString("%@ %@ unlocked", comment: "{amount} {currency symbol} unlocked"),
 				components.formattedAmount,
 				components.final_ccy.symbol
 			)
 		} else {
 			str = String(
-				format: NSLocalizedString("%@ %@", comment: ""),
+				format: NSLocalizedString("%@ %@", comment: "{amount} {currency symbol}"),
 				components.formattedAmount,
 				components.final_ccy.symbol
 			)
@@ -266,7 +266,7 @@ class WalletCellContentView: UIView
 					subtitleLabel_text! += String(
 						format: NSLocalizedString(
 							"%@ %@ pending",
-							comment: ""
+							comment: "{amount} {currency symbol} pending"
 						),
 						components.formattedAmount,
 						components.final_ccy.symbol
@@ -281,7 +281,7 @@ class WalletCellContentView: UIView
 					subtitleLabel_text! += String(
 						format: NSLocalizedString(
 							"%@%@ %@ locked",
-							comment: ""
+							comment: "{' or ;'}{amount} {currency symbol}"
 						),
 						subtitleLabel_text != "" ? "; " : "",
 						components.formattedAmount,

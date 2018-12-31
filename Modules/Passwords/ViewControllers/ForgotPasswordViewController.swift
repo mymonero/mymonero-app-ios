@@ -84,7 +84,7 @@ class ForgotPasswordViewController: UIViewController
 	}
 	func setup_navigation()
 	{
-		self.navigationItem.title = String(format: NSLocalizedString("Forgot %@?", comment: ""), PasswordController.shared.passwordType.capitalized_humanReadableString)
+		self.navigationItem.title = String(format: NSLocalizedString("Forgot %@?", comment: "Forgot {PIN/password}?"), PasswordController.shared.passwordType.capitalized_humanReadableString)
 		do {
 			let item = UICommonComponents.NavigationBarButtonItem(
 				type: .back,

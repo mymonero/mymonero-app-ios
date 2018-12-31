@@ -335,7 +335,7 @@ extension MyMoneroCore
 			)
 			if retVals.reconstructErr_needMoreMoneyThanFound { // must rewrite this error in this special case
 				retVals.errStr_orNil = String(format:
-					NSLocalizedString("Spendable balance too low. Have %@ %@; need %@ %@.", comment: ""),
+					NSLocalizedString("Spendable balance too low. Have %@ %@; need %@ %@.", comment: "Spendable balance too low. Have {amount} {XMR}; need {amount} {XMR}."),
 					FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.spendable_balance)")!),
 					MoneroConstants.currency_symbol,
 					FormattedString(fromMoneroAmount: MoneroAmount("\(retVals.required_balance)")!),

@@ -240,13 +240,13 @@ class FundsRequestsCellContentView: UIView
 			var amountLabel_text: String!
 			if is_displaying_local_wallet {
 				amountLabel_text = String(format:
-					NSLocalizedString("To \"%@\"", comment: ""),
+					NSLocalizedString("To \"%@\"", comment: "To \"{wallet name}\""),
 					wallet_ifRecordForQRDisplay!.walletLabel!
 				)
 			} else {
 				if object.amount != nil {
 					amountLabel_text = String(format:
-						NSLocalizedString("%@ %@", comment: ""),
+						NSLocalizedString("%@ %@", comment: "{amount} {currency symbol}"),
 						object.amount!,
 						(object.amountCurrency ?? "XMR")
 					)

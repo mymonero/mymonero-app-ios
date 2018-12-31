@@ -77,7 +77,7 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		let title = self.customNavigationBarTitle ?? String(
 			format: NSLocalizedString(
 				"Enter %@",
-				comment: ""
+				comment: "Enter {PIN/password}"
 			),
 			PasswordController.shared.passwordType.capitalized_humanReadableString
 		)

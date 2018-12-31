@@ -129,7 +129,7 @@ extension WalletDetails
 						text += String(
 							format: NSLocalizedString(
 								"%@ pending",
-								comment: ""
+								comment: "{amount} pending"
 							),
 							components.formattedAmount
 						)
@@ -146,7 +146,7 @@ extension WalletDetails
 						text += String(
 							format: NSLocalizedString(
 								"%@ locked",
-								comment: ""
+								comment: "{amount} locked"
 							),
 							components.formattedAmount
 						)

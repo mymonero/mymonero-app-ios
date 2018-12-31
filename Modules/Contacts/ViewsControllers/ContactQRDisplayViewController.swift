@@ -63,7 +63,7 @@ class ContactQRDisplayViewController: UICommonComponents.ScrollableValidatingInf
 			let to_address = self.contact.address!
 			var text: String
 			text = String(
-				format: NSLocalizedString("Scan to import %@.", comment: ""),
+				format: NSLocalizedString("Scan to import %@.", comment: "Scan to import {address}."),
 				to_address
 			)
 			let view = UICommonComponents.FormAccessoryMessageLabel(

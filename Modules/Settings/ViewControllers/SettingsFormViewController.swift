@@ -436,7 +436,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					&& mutable_value!.contains(":") == false
 					&& mutable_value!.contains("localhost") == false {
 					preSubmission_validationError = String(
-						format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
+						format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: "Please enter a valid URL authority, e.g. {API url example}."),
 						HostedMonero.APIClient.mymonero_apiAddress_authority
 					)
 				} else { // important else
@@ -460,7 +460,7 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 					let url = URL(string: _urlString)
 					if url == nil {
 						preSubmission_validationError = String(
-							format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: ""),
+							format: NSLocalizedString("Please enter a valid URL authority, e.g. %@.", comment: "Please enter a valid URL authority, e.g. {API url example}."),
 							HostedMonero.APIClient.mymonero_apiAddress_authority
 						)
 					} else {
@@ -665,13 +665,13 @@ class SettingsFormViewController: UICommonComponents.FormViewController, Setting
 		// TODO: This configuration is not the optimal place to do this - change to upon a notification from PasswordController
 		do { // config change pw btn text
 			self.changePasswordButton.setTitle(
-				String(format: NSLocalizedString("Change %@", comment: ""), PasswordController.shared.passwordType.capitalized_humanReadableString),
+				String(format: NSLocalizedString("Change %@", comment: "Change {password/PIN}"), PasswordController.shared.passwordType.capitalized_humanReadableString),
 				for: .normal
 			)
 			self.appTimeoutAfterS_fieldAccessoryMessageLabel!.text = String(
 				format: NSLocalizedString(
 					"Idle time before your %@ is required",
-					comment: ""
+					comment: "Idle time before your {PIN/password} is required"
 				),
 				PasswordController.shared.passwordType.humanReadableString
 			)
