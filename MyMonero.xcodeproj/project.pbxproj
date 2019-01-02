@@ -791,6 +791,8 @@
 		9FF6C9A61F7C919B00B20D40 /* MyMoneroScreenshotsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMoneroScreenshotsUITests.swift; sourceTree = "<group>"; };
 		9FF6C9A81F7C919B00B20D40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FF6C9B11F7D435100B20D40 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
+		9FFBA42B21DD1721009E0A79 /* af-ZA */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "af-ZA"; path = "af-ZA.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		9FFBA42C21DD1721009E0A79 /* af-ZA */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "af-ZA"; path = "af-ZA.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		9FFC5FA020BA409100D29D51 /* MyMoneroCore_ObjCpp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MyMoneroCore_ObjCpp.mm; sourceTree = "<group>"; };
 		9FFC5FA120BA409100D29D51 /* MyMoneroCore_ObjCpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyMoneroCore_ObjCpp.h; sourceTree = "<group>"; };
 		9FFC5FA220BA409100D29D51 /* MyMoneroCore_ObjCppBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMoneroCore_ObjCppBridge.swift; sourceTree = "<group>"; };
@@ -2141,6 +2143,7 @@
 				pl,
 				fa,
 				id,
+				"af-ZA",
 			);
 			mainGroup = 9F24AE101EBA7D3A00841BCB;
 			productRefGroup = 9F24AE1A1EBA7D3A00841BCB /* Products */;
@@ -2577,6 +2580,7 @@
 				9F4B8FE121DA78960005CAA4 /* pl */,
 				9F4B8FE321DA78C60005CAA4 /* fa */,
 				9F4B8FE521DA79180005CAA4 /* id */,
+				9FFBA42B21DD1721009E0A79 /* af-ZA */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -2604,6 +2608,7 @@
 				9F4B8FE221DA78960005CAA4 /* pl */,
 				9F4B8FE421DA78C70005CAA4 /* fa */,
 				9F4B8FE621DA79180005CAA4 /* id */,
+				9FFBA42C21DD1721009E0A79 /* af-ZA */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
