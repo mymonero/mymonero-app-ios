@@ -434,6 +434,10 @@
 		9F3826651F5678AE00800CA0 /* DNSLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DNSLookup.h; sourceTree = "<group>"; };
 		9F3826661F5678AE00800CA0 /* DNSLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DNSLookup.m; sourceTree = "<group>"; };
 		9F3826671F5678AE00800CA0 /* DNSLookupHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DNSLookupHandle.swift; sourceTree = "<group>"; };
+		9F3DDFD921DEE40000A1B3D6 /* eo */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eo; path = eo.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		9F3DDFDA21DEE40000A1B3D6 /* eo */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eo; path = eo.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9F3DDFDB21DEE40600A1B3D6 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		9F3DDFDC21DEE40600A1B3D6 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		9F453FA51F267A65004590DC /* SendFundsFormSubmissionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormSubmissionController.swift; sourceTree = "<group>"; };
 		9F453FA71F267A65004590DC /* SendFundsFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsFormViewController.swift; sourceTree = "<group>"; };
 		9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsTabNavigationViewController.swift; sourceTree = "<group>"; };
@@ -2144,6 +2148,8 @@
 				fa,
 				id,
 				"af-ZA",
+				eo,
+				"pt-PT",
 			);
 			mainGroup = 9F24AE101EBA7D3A00841BCB;
 			productRefGroup = 9F24AE1A1EBA7D3A00841BCB /* Products */;
@@ -2581,6 +2587,8 @@
 				9F4B8FE321DA78C60005CAA4 /* fa */,
 				9F4B8FE521DA79180005CAA4 /* id */,
 				9FFBA42B21DD1721009E0A79 /* af-ZA */,
+				9F3DDFD921DEE40000A1B3D6 /* eo */,
+				9F3DDFDB21DEE40600A1B3D6 /* pt-PT */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -2609,6 +2617,8 @@
 				9F4B8FE421DA78C70005CAA4 /* fa */,
 				9F4B8FE621DA79180005CAA4 /* id */,
 				9FFBA42C21DD1721009E0A79 /* af-ZA */,
+				9F3DDFDA21DEE40000A1B3D6 /* eo */,
+				9F3DDFDC21DEE40600A1B3D6 /* pt-PT */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
