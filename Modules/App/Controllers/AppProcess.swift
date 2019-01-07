@@ -3,7 +3,7 @@
 //  MyMonero
 //
 //  Created by Paul Shapiro on 10/3/17.
-//  Copyright © 2018 MyMonero. All rights reserved.
+//  Copyright © 2019 MyMonero. All rights reserved.
 //
 //
 import Foundation
