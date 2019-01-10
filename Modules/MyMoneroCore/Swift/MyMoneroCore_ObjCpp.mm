@@ -512,6 +512,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 + (nonnull Monero_Send_Step1_RetVals *)send_step1__prepare_params_for_get_decoysWithSweeping:(BOOL)sweeping
 																			  sending_amount:(uint64_t)sending_amount
 																				   fee_per_b:(uint64_t)fee_per_b
+																					fee_mask:(uint64_t)fee_mask
 																					priority:(uint32_t)priority
 																			 unspent_outputs:(NSArray<Monero_Arg_SpendableOutput *> *)args_outputs
 																		   payment_id_string:(nullable NSString *)payment_id_string
@@ -555,6 +556,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		},
 		outputs,
 		fee_per_b,
+		fee_mask,
 		//
 		passedIn_attemptAt_fee
 	);
@@ -606,6 +608,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 																		  using_outs:(NSArray<Monero_Arg_SpendableOutput *> *)args_using_outs
 																			mix_outs:(NSArray<Monero_Arg_RandomAmountAndOuts *> *)args_mix_outs
 																		   fee_per_b:(uint64_t)fee_per_b
+																			fee_mask:(uint64_t)fee_mask
 																		 unlock_time:(uint64_t)unlock_time
 {
 	Monero_Send_Step2_RetVals *retVals = [Monero_Send_Step2_RetVals new];
@@ -659,6 +662,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		priority,
 		outputs,
 		fee_per_b,
+		fee_mask,
 		mix_outs,
 		[] (uint8_t version, int64_t early_blocks) -> bool
 		{

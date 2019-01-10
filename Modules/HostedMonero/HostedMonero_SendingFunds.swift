@@ -176,6 +176,7 @@ extension HostedMonero
 			self.updateProcessStep(to: .fetchingLatestBalance)
 			var original_unusedOuts: [MoneroOutputDescription]!
 			var feePerB: MoneroAmount!
+			var fee_mask: UInt64!
 			self._current_request = HostedMonero.APIClient.shared.UnspentOuts(
 				wallet_keyImageCache: wallet__keyImageCache,
 				address: wallet__public_address,
@@ -195,6 +196,7 @@ extension HostedMonero
 						return
 					}
 					feePerB = result!.feePerB
+					fee_mask = result!.fee_mask
 					original_unusedOuts = result!.unusedOutputs
 					//
 					// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
@@ -212,6 +214,7 @@ extension HostedMonero
 					sweeping: isSweeping,
 					sending_amount: sending_amount.integerRepresentation,
 					fee_per_b: feePerB.integerRepresentation,
+					fee_mask: fee_mask,
 					priority: priority,
 					unspent_outs: original_unusedOuts,
 					payment_id: using__payment_id,
@@ -256,7 +259,8 @@ extension HostedMonero
 						priority: priority,
 						using_outs: step1_retVals.using_outs!,
 						mix_outs: mix_outs,
-						fee_per_b: feePerB.integerRepresentation
+						fee_per_b: feePerB.integerRepresentation,
+						fee_mask: fee_mask
 					)
 					if let err_str = step2_retVals.errStr_orNil {
 						self.failWithErr_fn?(err_str)

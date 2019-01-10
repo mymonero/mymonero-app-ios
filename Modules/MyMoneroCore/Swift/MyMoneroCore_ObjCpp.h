@@ -192,6 +192,7 @@ typedef enum {
 + (nonnull Monero_Send_Step1_RetVals *)send_step1__prepare_params_for_get_decoysWithSweeping:(BOOL)sweeping
 																	   sending_amount:(uint64_t)sending_amount
 																			fee_per_b:(uint64_t)fee_per_b
+																					fee_mask:(uint64_t)fee_mask
 																			 priority:(uint32_t)priority
 																	  unspent_outputs:(NSArray<Monero_Arg_SpendableOutput *> *_Nonnull)args_outputs
 																	payment_id_string:(nullable NSString *)payment_id_string
@@ -210,6 +211,7 @@ typedef enum {
 																		  using_outs:(NSArray<Monero_Arg_SpendableOutput *> *_Nonnull)using_outs
 																	 mix_outs:(NSArray<Monero_Arg_RandomAmountAndOuts *> *_Nonnull)args_mix_outs
 																	fee_per_b:(uint64_t)fee_per_b
+																			fee_mask:(uint64_t)fee_mask
 																  unlock_time:(uint64_t)unlock_time;
 //
 @end

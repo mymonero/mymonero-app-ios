@@ -285,6 +285,7 @@ extension HostedMonero
 	{
 		let unusedOutputs: [MoneroOutputDescription]
 		let feePerB: MoneroAmount
+		let fee_mask: UInt64
 		//
 		static func newByParsing(
 			response_jsonDict: [String: Any],
@@ -299,7 +300,20 @@ extension HostedMonero
 		) {
 			let raw__per_byte_fee = response_jsonDict["per_byte_fee"]
 			let raw__per_kb_fee = response_jsonDict["per_kb_fee"]
-			
+			let raw__fee_mask = response_jsonDict["fee_mask"]
+			var final__fee_mask: UInt64 = 10000
+			if raw__fee_mask != nil {
+				if let v = raw__fee_mask as? String {
+					final__fee_mask = UInt64(v)!
+				} else if let v = raw__fee_mask as? Int {
+					final__fee_mask = UInt64(v)
+				} else {
+					return (
+						err_str: NSLocalizedString("Unspent outs: Unrecognized fee_mask format", comment: ""),
+						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
+					)
+				}
+			}			
 			var final__per_byte_fee: MoneroAmount!
 			if raw__per_byte_fee != nil {
 				var per_byte_fee__string: String?
@@ -310,7 +324,7 @@ extension HostedMonero
 				} else {
 					return (
 						err_str: NSLocalizedString("Unspent outs: Unrecognized per-byte fee format", comment: ""),
-						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!)
+						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
 					)
 				}
 				final__per_byte_fee = MoneroAmount(per_byte_fee__string!)!
@@ -323,7 +337,7 @@ extension HostedMonero
 				} else {
 					return (
 						err_str: NSLocalizedString("Didn't find any fee rate in unspent outs response", comment: ""),
-						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!)
+						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
 					)
 				}
 				final__per_byte_fee = MoneroAmount(per_kb_fee__string!)! / MoneroAmount("1024")! // scale from kib to b and convert back to string
@@ -331,19 +345,21 @@ extension HostedMonero
 			if final__per_byte_fee == nil {
 				return (
 					err_str: NSLocalizedString("Unable to derive per_byte_fee string", comment: ""),
-					result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!)
+					result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
 				)
 			}
 			guard let outputs_value__orNSNull = response_jsonDict["outputs"] else { // empty… or maybe still empty bc it could be NSNull
 				return (nil, ParsedResult_UnspentOuts( // empty
 					unusedOutputs: [],
-					feePerB: final__per_byte_fee
+					feePerB: final__per_byte_fee,
+					fee_mask: final__fee_mask
 				))
 			}
 			guard let outputs_dicts = outputs_value__orNSNull as? [[String: Any]] else { // imprecise bc it doesn't distinguish btwn legit empty but NSNull , and invalid input format… but we must catch NSNull too
 				return (nil, ParsedResult_UnspentOuts( // empty
 					unusedOutputs: [],
-					feePerB: final__per_byte_fee
+					feePerB: final__per_byte_fee,
+					fee_mask: final__fee_mask
 				))
 			}
 			var mutable_unusedOutputs: [MoneroOutputDescription] = []
@@ -381,7 +397,8 @@ extension HostedMonero
 			let final_unusedOutputs = mutable_unusedOutputs
 			let result = ParsedResult_UnspentOuts(
 				unusedOutputs: final_unusedOutputs,
-				feePerB: final__per_byte_fee
+				feePerB: final__per_byte_fee,
+				fee_mask: final__fee_mask
 			)
 			return (nil, result)
 		}

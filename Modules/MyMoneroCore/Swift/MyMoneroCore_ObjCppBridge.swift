@@ -304,6 +304,7 @@ extension MyMoneroCore
 			sweeping: Bool,
 			sending_amount: UInt64,
 			fee_per_b: UInt64,
+			fee_mask: UInt64,
 			priority: MoneroTransferSimplifiedPriority,
 			unspent_outs: [MoneroOutputDescription],
 			payment_id: MoneroPaymentID?,
@@ -328,6 +329,7 @@ extension MyMoneroCore
 				withSweeping: sweeping,
 				sending_amount: sending_amount,
 				fee_per_b: fee_per_b,
+				fee_mask: fee_mask,
 				priority: priority.cppRepresentation,
 				unspent_outputs: args_outputs,
 				payment_id_string: payment_id,
@@ -356,6 +358,7 @@ extension MyMoneroCore
 			using_outs: [Monero_Arg_SpendableOutput], // returned by step1
 			mix_outs: [MoneroRandomAmountAndOutputs],
 			fee_per_b: UInt64,
+			fee_mask: UInt64,
 			unlock_time: UInt64 = 0
 		) -> Monero_Send_Step2_RetVals {
 			var args_mixOuts = [Monero_Arg_RandomAmountAndOuts]()
@@ -387,6 +390,7 @@ extension MyMoneroCore
 				using_outs: using_outs, // passed to step2 from step1
 				mix_outs: args_mixOuts,
 				fee_per_b: fee_per_b,
+				fee_mask: fee_mask,
 				unlock_time: unlock_time
 			)
 		}
