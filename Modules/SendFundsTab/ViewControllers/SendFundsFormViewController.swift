@@ -79,6 +79,7 @@ extension SendFundsForm
 		var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
 		//
 		var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
+		var generatePaymentID_linkButtonView: UICommonComponents.LinkButtonView!
 		var manualPaymentID_inputView: UICommonComponents.FormInputField!
 		//
 		var priority_label: UICommonComponents.Form.FieldLabel!
@@ -384,10 +385,17 @@ extension SendFundsForm
 			//
 			do {
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("PAYMENT ID", comment: "")
+					title: NSLocalizedString("ENTER PAYMENT ID OR", comment: "")
 				)
 				view.isHidden = true // initially
 				self.manualPaymentID_label = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("GENERATE ONE", comment: ""))
+				view.addTarget(self, action: #selector(tapped_generatePaymentID), for: .touchUpInside)
+				view.isHidden = true // initially
+				self.generatePaymentID_linkButtonView = view
 				self.scrollView.addSubview(view)
 			}
 			do {
@@ -741,6 +749,10 @@ extension SendFundsForm
 				touched = true
 				self.manualPaymentID_inputView.isHidden = isHidden
 			}
+			if self.generatePaymentID_linkButtonView.isHidden != isHidden {
+				touched = true
+				self.generatePaymentID_linkButtonView.isHidden = isHidden
+			}
 			if touched {
 				self.view.setNeedsLayout()
 			}
@@ -824,6 +836,7 @@ extension SendFundsForm
 				pillView.xButton.isEnabled = true
 			}
 			self.manualPaymentID_inputView.isEnabled = false
+			self.generatePaymentID_linkButtonView.isEnabled = false
 			self.addPaymentID_buttonView.isEnabled = false
 			//
 			self.qrPicking_actionButtons.set(isEnabled: false)
@@ -847,6 +860,7 @@ extension SendFundsForm
 				pillView.xButton.isEnabled = true
 			}
 			self.manualPaymentID_inputView.isEnabled = true
+			self.generatePaymentID_linkButtonView.isEnabled = true
 			self.addPaymentID_buttonView.isEnabled = true
 			//
 			self.qrPicking_actionButtons.set(isEnabled: true)
@@ -1243,8 +1257,18 @@ extension SendFundsForm
 				self.manualPaymentID_label.frame = CGRect(
 					x: label_x,
 					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + interSectionSpacing,
-					width: fullWidth_label_w,
+					width: 0,
 					height: self.manualPaymentID_label.frame.size.height
+				).integral
+				self.manualPaymentID_label.sizeToFit() // get exact width
+				if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
+					self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
+				}
+				self.generatePaymentID_linkButtonView.frame = CGRect(
+					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
+					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
+					width: self.generatePaymentID_linkButtonView.frame.size.width,
+					height: self.generatePaymentID_linkButtonView.frame.size.height
 				).integral
 				self.manualPaymentID_inputView.frame = CGRect(
 					x: input_x,
@@ -1352,6 +1376,10 @@ extension SendFundsForm
 			{ [unowned self] in
 				self.manualPaymentID_inputView.becomeFirstResponder()
 			}
+		}
+		@objc func tapped_generatePaymentID()
+		{
+			self.manualPaymentID_inputView.text = MyMoneroCore_ObjCpp.new_short_plain_paymentID()
 		}
 		//
 		// Delegation - URL picking (also used by QR picking)

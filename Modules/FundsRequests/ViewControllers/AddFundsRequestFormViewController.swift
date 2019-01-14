@@ -58,7 +58,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
 	//
 	var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
-	var manualPaymentID_accessoryLabel: UICommonComponents.Form.FieldLabelAccessoryLabel!
+	var generatePaymentID_linkButtonView: UICommonComponents.LinkButtonView!
 	var manualPaymentID_inputView: UICommonComponents.FormInputField!
 	//
 	// Lifecycle - Init
@@ -298,16 +298,17 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		//
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("PAYMENT ID", comment: "")
+				title: NSLocalizedString("ENTER PAYMENT ID OR", comment: "")
 			)
 			view.isHidden = true // initially
 			self.manualPaymentID_label = view
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("GENERATE ONE", comment: ""))
+			view.addTarget(self, action: #selector(tapped_generatePaymentID), for: .touchUpInside)
 			view.isHidden = true // initially
-			self.manualPaymentID_accessoryLabel = view
+			self.generatePaymentID_linkButtonView = view
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -416,8 +417,8 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 	func set_manualPaymentIDField(isHidden: Bool)
 	{
 		self.manualPaymentID_label.isHidden = isHidden
-		self.manualPaymentID_accessoryLabel.isHidden = isHidden
 		self.manualPaymentID_inputView.isHidden = isHidden
+		self.generatePaymentID_linkButtonView.isHidden = isHidden
 		self.view.setNeedsLayout()
 	}
 	func show_manualPaymentIDField(withValue paymentID: String?)
@@ -471,6 +472,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			pillView.xButton.isEnabled = true
 		}
 		self.manualPaymentID_inputView.isEnabled = false
+		self.generatePaymentID_linkButtonView.isEnabled = false
 	}
 	override func reEnableForm()
 	{
@@ -489,6 +491,7 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			pillView.xButton.isEnabled = true
 		}
 		self.manualPaymentID_inputView.isEnabled = true
+		self.generatePaymentID_linkButtonView.isEnabled = true
 	}
 	var formSubmissionController: AddFundsRequestFormSubmissionController? // TODO: maybe standardize into FormViewController
 	override func _tryToSubmitForm()
@@ -719,15 +722,19 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 			self.manualPaymentID_label.frame = CGRect(
 				x: label_x,
 				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
-				width: fullWidth_label_w,
+				width: 0,
 				height: self.manualPaymentID_label.frame.size.height
 			).integral
-			self.manualPaymentID_accessoryLabel.frame = CGRect(
-				x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
-				y: self.manualPaymentID_label.frame.origin.y,
-				width: fullWidth_label_w,
-				height: self.manualPaymentID_accessoryLabel.frame.size.height
-			).integral
+			self.manualPaymentID_label.sizeToFit() // get exact width
+			if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
+				self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
+			}
+			self.generatePaymentID_linkButtonView.frame = CGRect(
+				x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
+				y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
+				width: self.generatePaymentID_linkButtonView.frame.size.width,
+				height: self.generatePaymentID_linkButtonView.frame.size.height
+				).integral
 			self.manualPaymentID_inputView.frame = CGRect(
 				x: input_x,
 				y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -816,5 +823,9 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		{ [unowned self] in
 			self.manualPaymentID_inputView.becomeFirstResponder()
 		}
+	}
+	@objc func tapped_generatePaymentID()
+	{
+		self.manualPaymentID_inputView.text = MyMoneroCore_ObjCpp.new_short_plain_paymentID()
 	}
 }

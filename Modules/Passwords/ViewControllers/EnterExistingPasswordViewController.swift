@@ -205,8 +205,8 @@ class EnterExistingPasswordViewController: PasswordEntryScreenBaseViewController
 		if let buttonView = self.forgot_linkButtonView  {
 			assert(buttonView.frame.size.height > self.password_label.frame.size.height, "self.forgot_linkButtonView!.frame.size.height <= self.password_label.frame.size.height")
 			buttonView.frame = CGRect(
-				x: input_x + textField_w - buttonView.frame.size.width - fabs(label_x - input_x),
-				y: self.password_label.frame.origin.y - fabs(buttonView.frame.size.height - self.password_label.frame.size.height)/2, // since this button is taller than the label, we can't use the same y offset; we have to vertically center the buttonView with the label
+				x: input_x + textField_w - buttonView.frame.size.width - abs(label_x - input_x),
+				y: self.password_label.frame.origin.y - abs(buttonView.frame.size.height - self.password_label.frame.size.height)/2, // since this button is taller than the label, we can't use the same y offset; we have to vertically center the buttonView with the label
 				width: buttonView.frame.size.width,
 				height: buttonView.frame.size.height
 			).integral
