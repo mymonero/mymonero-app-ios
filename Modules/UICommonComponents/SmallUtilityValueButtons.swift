@@ -206,14 +206,27 @@ extension UICommonComponents
 				applicationActivities: nil
 			)
 			controller.modalPresentationStyle = .popover // to prevent iPad crash
-			let presentInViewController = WindowController.presentModalsInViewController! // TODO: is this ok? or is it preferable to yield items and controller to present / ask for or be initialized with presentInViewController?
+			//
+			let presentModalsInViewController = WindowController.presentModalsInViewController! // TODO: is this ok? or is it preferable to yield items and controller to present / ask for or be initialized with presentInViewController?
+			var presentIn_viewController: UIViewController
+			do {
+				if let already_presentedViewController = presentModalsInViewController.presentedViewController { // must be able to display on top of existing modals
+					if already_presentedViewController.isBeingDismissed == false { // e.g. the About modal when backgrounding the app
+						presentIn_viewController = already_presentedViewController
+					} else {
+						presentIn_viewController = presentModalsInViewController
+					}
+				} else {
+					presentIn_viewController = presentModalsInViewController
+				}
+			}
 			if let popoverPresentationController = controller.popoverPresentationController { // iPad support
 				popoverPresentationController.sourceView = self
 				var sourceRect: CGRect = .zero
 				sourceRect.origin.y += frame.size.height/2 // vertical middle instead of top edge
 				popoverPresentationController.sourceRect = sourceRect
 			}
-			presentInViewController.present(controller, animated: true, completion: nil)
+			presentIn_viewController.present(controller, animated: true, completion: nil)
 		}
 		//
 		// Delegation - Overrides

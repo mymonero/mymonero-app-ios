@@ -45,6 +45,7 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 	var presentedAsModal: Bool = false
 	//
 	var informationalLabel: UICommonComponents.FormAccessoryMessageLabel!
+	var shareButton: UICommonComponents.SmallUtilityShareValueButton!
 	var imageView: UIImageView!
 	//
 	// Lifecycle - Init
@@ -99,10 +100,16 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 			self.scrollView.addSubview(view)
 		}
 		do {
+			let view = UICommonComponents.SmallUtilityShareValueButton()
+			self.shareButton = view
+			self.scrollView.addSubview(view)
+		}
+		do {
 			let image = QRCodeImages.new_qrCode_UIImage( // generating a new image here - is this performant enough?
 				fromCGImage: self.fundsRequest.qrCode_cgImage,
 				withQRSize: .large
 			)
+			self.shareButton.setButtonValue(image: image) // must set this now that we have it
 			let view = UIImageView(image: image)
 			view.image = image
 			self.imageView = view
@@ -173,9 +180,15 @@ class FundsRequestQRDisplayViewController: UICommonComponents.ScrollableValidati
 		let qrSize: QRCodeImages.QRSize = .large
 		self.imageView.frame = CGRect(
 			x: (self.scrollView/*not self.view*/.frame.size.width - qrSize.width)/2,
-			y: self.informationalLabel.frame.origin.y + self.informationalLabel.frame.size.height + 32,
+			y: self.informationalLabel.frame.origin.y + self.informationalLabel.frame.size.height + 32 + UICommonComponents.SmallUtilityCopyValueButton.h,
 			width: qrSize.width,
 			height: qrSize.height
+		).integral
+		self.shareButton.frame = CGRect(
+			x: self.imageView.frame.origin.x + self.imageView.frame.size.width - UICommonComponents.SmallUtilityCopyValueButton.w(),
+			y: self.imageView.frame.origin.y - UICommonComponents.SmallUtilityCopyValueButton.h, // proper y alignment since SmallUtilityCopyValueButton.h is increased for usability
+			width: UICommonComponents.SmallUtilityCopyValueButton.w(),
+			height: UICommonComponents.SmallUtilityCopyValueButton.h
 		).integral
 		//
 		self.scrollableContentSizeDidChange(withBottomView: self.imageView, bottomPadding: 24)
