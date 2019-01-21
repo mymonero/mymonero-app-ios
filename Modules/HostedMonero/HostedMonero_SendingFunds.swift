@@ -169,7 +169,6 @@ extension HostedMonero
 			}
 			var sending_amount = MoneroAmount.new(withDouble: self.isSweeping ? 0 : self.amount_orNilIfSweeping!) // this will get reassigned below if sweeping, so it's a var
 			var using__payment_id = payment_id == "" ? nil : payment_id
-
 			//
 			// now _proceedTo_getUnspentOutsUsableForMixin
 			assert(self._current_request == nil)
@@ -322,54 +321,5 @@ extension HostedMonero
 				}
 			}
 		}
-	}
-	//
-	static func __randomIndex(_ list: [Any]) -> Int
-	{
-		let randomIndex = Int(arc4random_uniform(UInt32(list.count)))
-		return randomIndex
-	}
-	static func _outputsAndAmountToUseForMixin(
-		target_amount: MoneroAmount,
-		unusedOuts: [MoneroOutputDescription],
-		isSweeping: Bool
-	) -> (
-		usingOuts: [MoneroOutputDescription],
-		usingOutsAmount: MoneroAmount,
-		remaining_unusedOuts: [MoneroOutputDescription]
-	) {
-		DDLog.Info("HostedMonero", "Selecting outputs to use. target: \(FormattedString(fromMoneroAmount: target_amount))")
-		var toFinalize_usingOutsAmount = MoneroAmount(0)
-		var toFinalize_usingOuts: [MoneroOutputDescription] = []
-		var remaining_unusedOuts = unusedOuts // take 'copy' instead of using original so as to prevent issue if we must re-enter tx building fn if fee too low after building
-		while toFinalize_usingOutsAmount < target_amount && remaining_unusedOuts.count > 0 {
-			// now select and remove a random element from the unused outputs
-			let idx = __randomIndex(remaining_unusedOuts)
-			let out = remaining_unusedOuts[idx]
-			remaining_unusedOuts.remove(at: idx)
-			// now select it for usage
-			let out_amount = out.amount
-			DDLog.Info("HostedMonero", "Found unused output with amount: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")
-			if out_amount < MoneroConstants.dustThreshold {
-				if isSweeping == false {
-					DDLog.Info("HostedMonero", "Not sweeping, and found a dusty (though maybe mixable) output... skipping it!")
-					continue
-				}
-				if out.rct == nil || out.rct == "" {
-					DDLog.Info("HostedMonero", "Sweeping, and found a dusty but unmixable (non-rct) output... skipping it!")
-					continue
-				} else {
-					DDLog.Info("HostedMonero", "Sweeping and found a dusty but mixable (rct) amount... keeping it!")
-				}
-			}
-			toFinalize_usingOuts.append(out)
-			toFinalize_usingOutsAmount = toFinalize_usingOutsAmount + out_amount
-			DDLog.Info("HostedMonero", "Using output: \(FormattedString(fromMoneroAmount: out_amount)) - \(out)")
-		}
-		return (
-			usingOuts: toFinalize_usingOuts,
-			usingOutsAmount: toFinalize_usingOutsAmount,
-			remaining_unusedOuts: remaining_unusedOuts
-		)
 	}
 }
