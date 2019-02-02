@@ -487,7 +487,6 @@ extension SendFundsForm
 						return
 					}
 					thisSelf.clearValidationMessage() // in case there was a parsing err etc displaying
-					thisSelf._clearForm() // may as well
 				}
 				buttons.didPick_fn =
 				{ [weak self] (possibleUriString) in
@@ -1386,7 +1385,7 @@ extension SendFundsForm
 		func ___shared_initialResetFormFor_didPick()
 		{
 			self.clearValidationMessage() // in case there was a parsing err etc displaying
-			self._clearForm()
+//			self._clearForm() // specifically not clearing the form - b/c we want to allow priority and even amount to remain set ... dest addr/contact will always be set by a request URI/QR ..
 			//
 			self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
 		}
@@ -1524,13 +1523,17 @@ extension SendFundsForm
 					}
 				}
 				// and no matter what, display payment id from request, if present
-				self.hideAndClear_manualPaymentIDField()
 				if payment_id_orNil != nil { // but display it as a 'detected' pid which we can pick up on submit
+					self.hideAndClear_manualPaymentIDField()
 					self.set_addPaymentID_buttonView(isHidden: true) // hide
 					self.sendTo_inputView._display(resolved_paymentID: payment_id_orNil!) // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
 				} else {
 					self.sendTo_inputView._hide_resolved_paymentID() // jic // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
-					self.set_addPaymentID_buttonView(isHidden: false) // show
+					if self.manualPaymentID_inputView.text == nil || self.manualPaymentID_inputView.text!.count == 0 {
+						// if no pid already in the manual pid field, just be sure to reset the form to its proper state
+						self.hideAndClear_manualPaymentIDField()
+						self.set_addPaymentID_buttonView(isHidden: false) // show
+					}
 				}
 			}
 			self.set_isFormSubmittable_needsUpdate() // now that we've updated values
