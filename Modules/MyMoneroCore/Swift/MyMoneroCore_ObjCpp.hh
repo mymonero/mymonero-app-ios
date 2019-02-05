@@ -1,5 +1,5 @@
 //
-//  MyMoneroCore_ObjCpp.h
+//  MyMoneroCore_ObjCpp.hpp
 //  MyMonero
 //
 //  Created by Paul Shapiro on 11/22/17.
@@ -100,6 +100,8 @@ typedef enum {
 	MM_TESTNET,
 	MM_STAGENET
 } NetType;
+//
+extern uint8_t nettype_from_objcType(NetType nettype); // cast the return to cryptonote::network_type
 //
 @interface MyMoneroCore_ObjCpp : NSObject
 //

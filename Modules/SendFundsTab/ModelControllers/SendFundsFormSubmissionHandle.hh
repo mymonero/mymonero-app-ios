@@ -1,8 +1,8 @@
 //
-//  Bridging-Header.h
+//  SendFundsFormSubmissionHandle.h
 //  MyMonero
 //
-//  Created by Paul Shapiro on 8/29/17.
+//  Created by Paul Shapiro on 2/4/19.
 //  Copyright (c) 2014-2019, MyMonero.com
 //
 //  All rights reserved.
@@ -31,14 +31,34 @@
 //  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-//
 
+#import <Foundation/Foundation.h>
+#include "SendFundsFormSubmissionController.hpp"
 
-#ifndef MyMonero_BridgingHeader_h
-#define MyMonero_BridgingHeader_h
+typedef void (^SendFundsForm_StatusUpdateFn)(SendFunds::ProcessStep code);
+typedef void (^SendFundsForm_RequestCallFn)(NSString *req_params_json_string);
+typedef void (^SendFundsForm_ErrorFn)(
+	SendFunds::PreSuccessTerminalCode code,
+	NSString *optl__errMsg,
+	monero_transfer_utils::CreateTransactionErrorCode optl__createTx_errCode,
+	uint64_t optl__spendable_balance,
+	uint64_t optl__required_balance
+);
+typedef void (^SendFundsForm_SuccessFn)(
+	uint64_t used_fee,
+	uint64_t total_sent,
+	size_t mixin,
+	NSString *optl__final_payment_id,
+	NSString *signed_serialized_tx_string,
+	NSString *tx_hash_string,
+	NSString *tx_key_string,
+	NSString *tx_pub_key_string,
+	NSString *target_address,
+	uint64_t final_total_wo_fee,
+	BOOL isXMRAddressIntegrated,
+	NSString *optl__integratedAddressPIDForDisplay
+);
 
-#import "DNSLookup.h"
-#import "MyMoneroCore_ObjCpp.h"
+@interface SendFundsFormSubmissionHandle : NSObject
 
-#endif /* MyMonero_BridgingHeader_h */
-
+@end
