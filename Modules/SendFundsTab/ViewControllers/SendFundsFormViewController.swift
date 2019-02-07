@@ -1273,7 +1273,7 @@ extension SendFundsForm
 					x: input_x,
 					y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
-					height: self.manualPaymentID_inputView.frame.size.height
+					height: UICommonComponents.FormInputField.height
 				).integral
 			}
 			//
