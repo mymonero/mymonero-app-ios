@@ -32,10 +32,11 @@
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import "SendFundsFormSubmissionHandle.hh"
+#import "SendFundsFormSubmissionHandle.h"
+#include "SendFundsFormSubmissionController.hpp"
 #include "serial_bridge_utils.hpp"
 #include "cryptonote_basic_impl.h"
-#include "MyMoneroCore_ObjCpp.hh"
+#include "MyMoneroCore_ObjCpp.h"
 
 using namespace std;
 using namespace boost;
@@ -62,12 +63,15 @@ using namespace monero_send_routine;
 @implementation SendFundsFormSubmissionHandle
 //
 // Lifecycle - Init/deinit
-- (id)init_canceled_fn:(void(^)(void))canceled_fn
-	   authenticate_fn:(void(^)(void))authenticate_fn
-   willBeginSending_fn:(void(^)(void))willBeginSending_fn
-	  status_update_fn:(SendFundsForm_StatusUpdateFn)status_update_fn
-			  error_fn:(SendFundsForm_ErrorFn)error_fn
-			success_fn:(SendFundsForm_SuccessFn)success_fn
+- (id _Nonnull )init_canceled_fn:(void(^ _Nonnull)(void))canceled_fn
+				 authenticate_fn:(void(^ _Nonnull)(void))authenticate_fn
+			 willBeginSending_fn:(void(^_Nonnull)(void))willBeginSending_fn
+				status_update_fn:(SendFundsForm_StatusUpdateFn _Nonnull)status_update_fn
+			 get_unspent_outs_fn:(SendFundsForm_RequestCallFn _Nonnull)get_unspent_outs_fn
+			  get_random_outs_fn:(SendFundsForm_RequestCallFn _Nonnull)get_random_outs_fn
+				submit_raw_tx_fn:(SendFundsForm_RequestCallFn _Nonnull)submit_raw_tx_fn
+						error_fn:(SendFundsForm_ErrorFn _Nonnull)error_fn
+					  success_fn:(SendFundsForm_SuccessFn _Nonnull)success_fn
 {
 	if (self = [super init]) {
 		controller_ptr = NULL; // safety init
@@ -75,6 +79,9 @@ using namespace monero_send_routine;
 		self.canceled_fn = canceled_fn;
 		self.authenticate_fn = authenticate_fn;
 		self.willBeginSending_fn = willBeginSending_fn;
+		self.get_unspent_outs_fn = get_unspent_outs_fn;
+		self.get_random_outs_fn = get_random_outs_fn;
+		self.submit_raw_tx_fn = submit_raw_tx_fn;
 		self.status_update_fn = status_update_fn;
 		self.error_fn = error_fn;
 		self.success_fn = success_fn;
@@ -96,7 +103,7 @@ using namespace monero_send_routine;
 						fromWallet_didFailToBoot:(BOOL)fromWallet_didFailToBoot
 						  fromWallet_needsImport:(BOOL)fromWallet_needsImport
 						   requireAuthentication:(BOOL)requireAuthentication
-					sending_amount_double_string:(NSString *)sending_amount_double_string
+				  sending_amount_double_NSString:(nullable NSString *)sending_amount_double_NSString
 									 is_sweeping:(BOOL)is_sweeping
 										priority:(uint32_t)priority
 							   hasPickedAContact:(BOOL)hasPickedAContact
@@ -105,10 +112,10 @@ using namespace monero_send_routine;
 				 optl__cached_OAResolved_address:(nullable NSString *)optl__cached_OAResolved_address
 						   optl__contact_address:(nullable NSString *)optl__contact_address
 										 nettype:(NetType)objcNetType
-							 from_address_string:(NSString *)from_address_string
-							  sec_viewKey_string:(NSString *)sec_viewKey_string
-							 sec_spendKey_string:(NSString *)sec_spendKey_string
-							 pub_spendKey_string:(NSString *)pub_spendKey_string
+							 from_address_string:(nonnull NSString *)from_address_string
+							  sec_viewKey_string:(nonnull NSString *)sec_viewKey_string
+							 sec_spendKey_string:(nonnull NSString *)sec_spendKey_string
+							 pub_spendKey_string:(nonnull NSString *)pub_spendKey_string
 					   optl__enteredAddressValue:(nullable NSString *)optl__enteredAddressValue
 						   optl__resolvedAddress:(nullable NSString *)optl__resolvedAddress
 				  resolvedAddress_fieldIsVisible:(BOOL)resolvedAddress_fieldIsVisible
@@ -117,6 +124,10 @@ using namespace monero_send_routine;
 						 optl__resolvedPaymentID:(nullable NSString *)optl__resolvedPaymentID
 				resolvedPaymentID_fieldIsVisible:(BOOL)resolvedPaymentID_fieldIsVisible
 {
+	optional<string> sending_amount_double_string = none;
+	if (sending_amount_double_NSString != nil && sending_amount_double_NSString.length > 0) {
+		sending_amount_double_string = string(sending_amount_double_NSString.UTF8String);
+	}
 	optional<string> contact_payment_id = none;
 	if (optl__contact_payment_id != nil) {
 		contact_payment_id = string(optl__contact_payment_id.UTF8String);
@@ -156,7 +167,7 @@ using namespace monero_send_routine;
 		//
 		requireAuthentication,
 		//
-		string(sending_amount_double_string.UTF8String),
+		sending_amount_double_string,
 		is_sweeping,
 		priority,
 		//
@@ -260,7 +271,7 @@ using namespace monero_send_routine;
 	NSAssert(controller_ptr != NULL, @"Expected non-NULL controller_ptr");
 	(*controller_ptr).cb__authentication(did_pass);
 }
-- (void)cb_I__got_unspent_outs:(NSString *)optl__err_msg args_string:(NSString *)args_NSString
+- (void)cb_I__got_unspent_outs:(nullable NSString *)optl__err_msg args_string:(nullable NSString *)args_NSString
 {
 	NSAssert(controller_ptr != NULL, @"Expected non-NULL controller_ptr");
 	boost::optional<string> err_msg__optional = boost::none;
@@ -271,14 +282,14 @@ using namespace monero_send_routine;
 		return;
 	}
 	boost::property_tree::ptree json_root;
-	std::string args_string = std::string(optl__err_msg.UTF8String);
+	std::string args_string = std::string(args_NSString.UTF8String);
 	if (!parsed_json_root(args_string, json_root)) {
 		self.error_fn(SendFunds::PreSuccessTerminalCode::msgProvided, @"Invalid JSON", monero_transfer_utils::CreateTransactionErrorCode::noError, 0, 0);
 		return;
 	}
 	(*controller_ptr).cb_I__got_unspent_outs(err_msg__optional, json_root);
 }
-- (void)cb_II__got_random_outs:(NSString *)optl__err_msg args_string:(NSString *)args_NSString
+- (void)cb_II__got_random_outs:(nullable NSString *)optl__err_msg args_string:(nullable NSString *)args_NSString
 {
 	NSAssert(controller_ptr != NULL, @"Expected non-NULL controller_ptr");
 	boost::optional<string> err_msg__optional = boost::none;
@@ -289,14 +300,14 @@ using namespace monero_send_routine;
 		return;
 	}
 	boost::property_tree::ptree json_root;
-	std::string args_string = std::string(optl__err_msg.UTF8String);
+	std::string args_string = std::string(args_NSString.UTF8String);
 	if (!parsed_json_root(args_string, json_root)) {
 		self.error_fn(SendFunds::PreSuccessTerminalCode::msgProvided, @"Invalid JSON", monero_transfer_utils::CreateTransactionErrorCode::noError, 0, 0);
 		return;
 	}
 	(*controller_ptr).cb_II__got_random_outs(err_msg__optional, json_root);
 }
-- (void)cb_III__submitted_tx:(NSString *)optl__err_msg
+- (void)cb_III__submitted_tx:(nullable NSString *)optl__err_msg
 {
 	boost::optional<string> err_msg__optional = boost::none;
 	if (optl__err_msg != NULL || optl__err_msg.length != 0) {

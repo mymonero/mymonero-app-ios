@@ -64,48 +64,46 @@ extension ImportTransactionsModal
 		// Imperatives
 		func handle()
 		{
-			let target_address = self.parameters.infoRequestParsingResult.payment_address
-			let payment_id = self.parameters.infoRequestParsingResult.payment_id
-			let amount = self.parameters.infoRequestParsingResult.import_fee
-			//
-			let statusMessage_prefix = String(
-				format: NSLocalizedString("Sending %@ XMR…", comment: "Sending {amount} XMR…"),
-				amount.localized_formattedString
-			)
-			self.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(statusMessage_prefix) // start with just prefix
-			//
 			self.parameters.fromWallet.sendFunds(
-				target_address: target_address,
-				amount_orNilIfSweeping: DoubleFromMoneroAmount(moneroAmount: amount), // TODO:? this may be a bit round-about
+				enteredAddressValue: self.parameters.infoRequestParsingResult.payment_address,
+				resolvedAddress: nil,
+				manuallyEnteredPaymentID: self.parameters.infoRequestParsingResult.payment_id,
+				resolvedPaymentID: nil,
+				hasPickedAContact: false,
+				resolvedAddress_fieldIsVisible: false,
+				manuallyEnteredPaymentID_fieldIsVisible: true,
+				resolvedPaymentID_fieldIsVisible: false,
+				//
+				contact_payment_id: nil,
+				cached_OAResolved_address: nil,
+				contact_hasOpenAliasAddress: nil,
+				contact_address: nil,
+				//
+				raw_amount_string: self.parameters.infoRequestParsingResult.import_fee.doubleParseable_formattedString, // sort of a shame to go back and forth but not a big deal, especially in this case
 				isSweeping: false,
-				payment_id: payment_id,
-				integratedAddressPIDForDisplay_orNil: nil, // not currently using an integrated addr  ... if we were, we could decode target_address and use its pid here instead .. in fact, it might be a good idea to do that validation in case of some sort of code fault elsewhere
-				priority: MoneroTransferSimplifiedPriority.defaultPriority, // .med
-				didUpdateProcessStep_fn:
-				{ [weak self] (processStep) in
+				simple_priority: MoneroTransferSimplifiedPriority.defaultPriority,
+				//
+				didUpdateProcessStep_fn: { [weak self] (msg) in
 					guard let thisSelf = self else {
 						return
 					}
-					let str = statusMessage_prefix + " " + processStep.localizedDescription // TODO: localize this concatenationn
-					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(str)
+					thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(msg)
 				},
-				success_fn:
-				{ [weak self] (sentAmountDouble, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction) in
+				success_fn: { [weak self] (sentTo_address, isXMRAddressIntegrated, integratedAddressPIDForDisplay_orNil, final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction) in
 					guard let thisSelf = self else {
 						return
 					}
 					// TODO: show transactionHash to user somehow!
 					thisSelf.parameters.success_fn()
+
 				},
-				canceled_fn:
-				{ [weak self] in
+				canceled_fn: { [weak self] in
 					guard let thisSelf = self else {
 						return
 					}
 					thisSelf.parameters.canceled_fn()
 				},
-				failWithErr_fn:
-				{ [weak self] (err_str) in
+				failWithErr_fn: { [weak self] (err_str) in
 					guard let thisSelf = self else {
 						return
 					}

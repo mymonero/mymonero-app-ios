@@ -1,5 +1,5 @@
 //
-//  Bridging-Header.hh
+//  Bridging-Header.h
 //  MyMonero
 //
 //  Created by Paul Shapiro on 8/29/17.
@@ -38,8 +38,8 @@
 #define MyMonero_BridgingHeader_hh
 
 #import "DNSLookup.h"
-#import "MyMoneroCore_ObjCpp.hh"
-//#import "SendFundsFormSubmissionHandle.hh"
+#import "MyMoneroCore_ObjCpp.h"
+#import "SendFundsFormSubmissionHandle.h"
 
 #endif /* MyMonero_BridgingHeader_hh */
 

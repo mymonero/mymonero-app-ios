@@ -895,14 +895,14 @@ extension SendFundsForm
 				let selectedContact = self.sendTo_inputView.selectedContact
 				let enteredAddressValue = self.sendTo_inputView.inputField.text
 				//
-				let resolvedAddress = self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text
 				let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
+				let resolvedAddress = resolvedAddress_fieldIsVisible ? self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text : nil
 				//
-				let manuallyEnteredPaymentID = self.manualPaymentID_inputView.text
 				let manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentID_inputView.isHidden == false
+				let manuallyEnteredPaymentID = manuallyEnteredPaymentID_fieldIsVisible ? self.manualPaymentID_inputView.text : nil
 				//
-				let resolvedPaymentID = self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? ""
 				let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
+				let resolvedPaymentID = resolvedPaymentID_fieldIsVisible ? self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? "" : nil
 				//
 				let priority = self.selected_priority
 				//

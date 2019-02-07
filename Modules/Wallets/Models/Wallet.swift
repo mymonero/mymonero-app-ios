@@ -158,6 +158,67 @@ class Wallet: PersistableObject
 				}
 		}
 	}
+	static let statusMessage_suffixesByCode: [Int32: String] =
+	[
+		0: "", // 'none'
+		1: "", // "initiating send" - so we don't want a suffix
+		2: NSLocalizedString("Fetching latest balance.", comment: "") ,
+		3: NSLocalizedString("Calculating fee.", comment: ""),
+		4: NSLocalizedString("Fetching decoy outputs.", comment: ""),
+		5: NSLocalizedString("Constructing transaction.", comment: ""), // may go back to .calculatingFee
+		6: NSLocalizedString("Submitting transaction.", comment: ""),
+	]
+	static let failureCodeMessage_byEnumVal: [Int32: String] =
+	[
+		0: "--", // message is provided - this should never get requested
+		1: NSLocalizedString("Unable to load that wallet.", comment: ""),
+		2: NSLocalizedString("Unable to log into that wallet.", comment: ""),
+		3: NSLocalizedString("This wallet must first be imported.", comment: ""),
+		4: NSLocalizedString("Please specify the recipient of this transfer.", comment: ""),
+		5: NSLocalizedString("Couldn't resolve this OpenAlias address.", comment: ""),
+		6: NSLocalizedString("Couldn't validate destination Monero address.", comment: ""),
+		7: NSLocalizedString("Please enter a valid payment ID.", comment: ""),
+		8: NSLocalizedString("Couldn't construct integrated address with short payment ID.", comment: ""),
+		9: NSLocalizedString("The amount you've entered is too low.", comment: ""),
+		10: NSLocalizedString("Please enter a valid amount to send.", comment: ""),
+		11: "--", // errInServerResponse_withMsg
+		12: "--", // createTransactionCode_balancesProvided
+		13: "--", // createTranasctionCode_noBalances
+		14: NSLocalizedString("Unable to construct transaction after many attempts.", comment: ""),
+		//
+		99900: "Please contact support with code: 99900.", // codeFault_manualPaymentID_while_hasPickedAContact
+		99901: "Please contact support with code: 99901.", // codeFault_unableToFindResolvedAddrOnOAContact
+		99902: "Please contact support with code: 99902.",// codeFault_detectedPIDVisibleWhileManualInputVisible
+		99903: "Please contact support with code: 99903.", // codeFault_invalidSecViewKey
+		99904: "Please contact support with code: 99904.", // codeFault_invalidSecSpendKey
+		99905: "Please contact support with code: 99905." // codeFault_invalidPubSpendKey
+	]
+	static let createTxErrCodeMessage_byEnumVal: [Int32: String] =
+	[
+		0: "No error",
+		1: NSLocalizedString("No destinations provided", comment: ""),
+		2: NSLocalizedString("Wrong number of mix outputs provided", comment: ""),
+		3: NSLocalizedString("Not enough outputs for mixing", comment: ""),
+		4: NSLocalizedString("Invalid secret keys", comment: ""),
+		5: NSLocalizedString("Output amount overflow", comment: ""),
+		6: NSLocalizedString("Input amount overflow", comment: ""),
+		7: NSLocalizedString("Mix RCT outs missing commit", comment: ""),
+		8: NSLocalizedString("Result fee not equal to given fee", comment: ""),
+		9: NSLocalizedString("Invalid destination address", comment: ""),
+		10: NSLocalizedString("Payment ID must be blank when using an integrated address", comment: ""),
+		11: NSLocalizedString("Payment ID must be blank when using a subaddress", comment: ""),
+		12: NSLocalizedString("Couldn't add nonce to tx extra", comment: ""),
+		13: NSLocalizedString("Invalid pub key", comment: ""),
+		14: NSLocalizedString("Invalid commit or mask on output rct", comment: ""),
+		15: NSLocalizedString("Transaction not constructed", comment: ""),
+		16: NSLocalizedString("Transaction too big", comment: ""),
+		17: NSLocalizedString("Not yet implemented", comment: ""),
+		18: NSLocalizedString("Couldn't decode address", comment: ""),
+		19: NSLocalizedString("Invalid payment ID", comment: ""),
+		20: NSLocalizedString("The amount you've entered is too low", comment: ""),
+		21: NSLocalizedString("Can't get decrypted mask from 'rct' hex", comment: ""),
+		90: NSLocalizedString("Spendable balance too low", comment: "")
+	]
 	enum NotificationNames: String
 	{
 		case labelChanged		= "Wallet_NotificationNames_labelChanged"
@@ -266,7 +327,8 @@ class Wallet: PersistableObject
 	var logIn_requestHandle: HostedMonero.APIClient.RequestHandle?
 	var hostPollingController: Wallet_HostPollingController? // strong
 	var txCleanupController: Wallet_TxCleanupController? // strong
-	var fundsSender: HostedMonero.FundsSender?
+	var _current_sendFunds_request: HostedMonero.APIClient.RequestHandle?
+	var submitter: SendFundsFormSubmissionHandle?
 	//
 	// 'Protocols' - Persistable Object
 	override func new_dictRepresentation() -> [String: Any]
@@ -473,8 +535,10 @@ class Wallet: PersistableObject
 			UserIdle.shared.reEnable_userIdle()
 			ScreenSleep.reEnable_screenSleep()
 		}
-		self.fundsSender?.cancel() // to get the network request cancel immediately
-		self.fundsSender = nil
+		if self._current_sendFunds_request != nil { // to get the network request cancel immediately
+			self._current_sendFunds_request!.cancel()
+			self._current_sendFunds_request = nil
+		}
 	}
 	func deBoot()
 	{
@@ -1024,14 +1088,29 @@ class Wallet: PersistableObject
 	//
 	// Runtime (Booted) - Imperatives - Sending Funds
 	func sendFunds(
-		target_address: MoneroAddress, // currency-ready wallet address, but not an OA address (resolve before calling)
-		amount_orNilIfSweeping: HumanUnderstandableCurrencyAmountDouble?, // human-understandable number, e.g. input 0.5 for 0.5 XMR
-		isSweeping: Bool,
-		payment_id: MoneroPaymentID?,
-		integratedAddressPIDForDisplay_orNil: MoneroPaymentID?, // this is not a parameter for sending - it's merely so that it can be used as the final pid for display in the mockedTransaction and sent back to the consumer
-		priority: MoneroTransferSimplifiedPriority,
-		didUpdateProcessStep_fn: @escaping ((_ processStep: HostedMonero.FundsSender.ProcessStep) -> Void),
+		enteredAddressValue: MoneroAddress?, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
+		resolvedAddress: MoneroAddress?,
+		manuallyEnteredPaymentID: MoneroPaymentID?,
+		resolvedPaymentID: MoneroPaymentID?,
+		hasPickedAContact: Bool,
+		resolvedAddress_fieldIsVisible: Bool,
+		manuallyEnteredPaymentID_fieldIsVisible: Bool,
+		resolvedPaymentID_fieldIsVisible: Bool,
+		//
+		contact_payment_id: MoneroPaymentID?,
+		cached_OAResolved_address: String?,
+		contact_hasOpenAliasAddress: Bool?,
+		contact_address: String?,
+		//
+		raw_amount_string: String?, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+		isSweeping: Bool, // when true, amount will be ignored
+		simple_priority: MoneroTransferSimplifiedPriority,
+		//
+		didUpdateProcessStep_fn: @escaping ((_ msg: String) -> Void),
 		success_fn: @escaping (
+			_ sentTo_address: MoneroAddress,
+			_ isXMRAddressIntegrated: Bool,
+			_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?,
 			_ final_sentAmountWithoutFee: MoneroAmount,
 			_ sentPaymentID_orNil: MoneroPaymentID?,
 			_ tx_hash: MoneroTransactionHash,
@@ -1048,104 +1127,231 @@ class Wallet: PersistableObject
 			failWithErr_fn(NSLocalizedString("This wallet must first be imported.", comment: ""))
 			return
 		}
-		func __isLocked() -> Bool { return self.isSendingFunds }
+		func __isLocked() -> Bool { return self.isSendingFunds || self.submitter != nil }
 		if __isLocked() {
 			failWithErr_fn(NSLocalizedString("Currently sending funds. Please try again when complete.", comment: ""))
 			return // TODO nil
 		}
-		func __really_proceed()
-		{
-			self.__lock_sending()
-			assert(self.fundsSender == nil)
-			if amount_orNilIfSweeping == 0 || amount_orNilIfSweeping == nil {
-				assert(isSweeping, "Missing amount and not sweeping")
-			}
-			let fundsSender = HostedMonero.FundsSender(
-				target_address: target_address,
-				amount_orNilIfSweeping: amount_orNilIfSweeping,
-				isSweeping: isSweeping,
-				wallet__public_address: self.public_address,
-				wallet__private_keys: self.private_keys,
-				wallet__public_keys: self.public_keys,
-				payment_id: payment_id,
-				priority: priority,
-				wallet__keyImageCache: self.keyImageCache
+		assert(self._current_sendFunds_request == nil)
+		let statusMessage_prefix = isSweeping
+			? NSLocalizedString("Sending wallet balance…", comment: "")
+			: String(
+				format: NSLocalizedString("Sending %@ XMR…", comment: "Sending {amount} XMR…"),
+				raw_amount_string!
 			)
-			fundsSender.success_fn =
-			{ [weak self] (final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key) in
-				guard let thisSelf = self else {
-					return
-				}
-				thisSelf.__unlock_sending()
-				//
-				var outgoingAmountForDisplay = final_sentAmountWithoutFee + tx_fee // mutable copy
-				outgoingAmountForDisplay.sign = .minus // make negative as it's outgoing
-				//
-				let mockedTransaction = MoneroHistoricalTransactionRecord(
-					amount: outgoingAmountForDisplay,
-					totalSent: final_sentAmountWithoutFee + tx_fee,
-					totalReceived: MoneroAmount("0"),
-					approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: outgoingAmountForDisplay),
-					spent_outputs: nil, // TODO: is this ok?
-					timestamp: Date(), // faking this
-					hash: tx_hash,
-					paymentId: sentPaymentID_orNil ?? integratedAddressPIDForDisplay_orNil, // transaction.paymentId will be nil for integrated addresses but we show it here anyway and, in the situation where they used a std xmr addr and a short pid, an int addr would get fabricated anyway, leaving sentWith_paymentID nil even though user is expecting a pid - so we want to make sure it gets saved in either case
-					mixin: MyMoneroCore.fixedMixin,
-					//
-					mempool: true, // is this correct?
-					unlock_time: 0,
-					height: nil, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
-					//
-//					coinbase: false, // TODO
-					//
-					isFailed: nil, // since we've just created it
-					//
-					cached__isConfirmed: false, // important
-					cached__isUnlocked: true, // TODO: not sure about this
-					cached__lockedReason: nil,
-					//
-					isJustSentTransientTransactionRecord: true,
-					//
-					tx_key: tx_key,
-					tx_fee: tx_fee,
-					to_address: target_address
-					//				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
-				)
-				//
-				success_fn(final_sentAmountWithoutFee, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction)
-				//
-				// manually insert .. and subsequent fetches from the server will be
-				// diffed against this, preserving the tx_fee, tx_key, to_address...
-				thisSelf._manuallyInsertTransactionRecord(mockedTransaction);
+		self.submitter = SendFundsFormSubmissionHandle.init(_canceled_fn: { [weak self] in
+			guard let thisSelf = self else {
+				return
 			}
-			fundsSender.didUpdateProcessStep_fn = didUpdateProcessStep_fn
-			fundsSender.failWithErr_fn =
-			{ [weak self] err_str in
-				guard let thisSelf = self else {
-					return
-				}
-				thisSelf.__unlock_sending()
-				failWithErr_fn(err_str)
+			thisSelf.__unlock_sending()
+			canceled_fn()
+			thisSelf.submitter = nil // free
+		}, authenticate_fn: { [weak self] in
+			guard let thisSelf = self else {
+				return
 			}
-			self.fundsSender = fundsSender
-			fundsSender.send() // kick off; after having set property
-		}
-		if SettingsController.shared.authentication__requireWhenSending == false {
-			__really_proceed()
-		} else {
 			PasswordController.shared.initiate_verifyUserAuthenticationForAction(
 				customNavigationBarTitle: NSLocalizedString("Authenticate", comment: ""),
-				canceled_fn: {
-					canceled_fn()
+				canceled_fn: { [weak thisSelf] in
+					guard let thisThisSelf = thisSelf else {
+						return
+					}
+					thisThisSelf.submitter!.cb__authentication(false)
 				},
 				// all failures show in entry UI
-				entryAttempt_succeeded_fn: {
-					__really_proceed()
+				entryAttempt_succeeded_fn: { [weak thisSelf] in
+					guard let thisThisSelf = thisSelf else {
+						return
+					}
+					thisThisSelf.submitter!.cb__authentication(true)
 				}
 			)
-		}
-		//
-		return
+		}, willBeginSending_fn: { [weak self] in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.__lock_sending()
+			didUpdateProcessStep_fn(statusMessage_prefix)
+		}, status_update_fn: { (processStep_code) in
+			let str = statusMessage_prefix + " " + Wallet.statusMessage_suffixesByCode[processStep_code]! // TODO: localize this concatenation
+			didUpdateProcessStep_fn(str)
+		}, get_unspent_outs_fn: { [weak self] (req_params_json_string) in
+			guard let thisSelf = self else {
+				return
+			}
+			var parameters: [String: Any]
+			do {
+				let json_data = req_params_json_string.data(using: .utf8)!
+				parameters = try JSONSerialization.jsonObject(with: json_data) as! [String: Any]
+			} catch let e {
+				fatalError("req_params_json_string parse error … \(e)")
+			}
+			thisSelf._current_sendFunds_request = HostedMonero.APIClient.shared.UnspentOuts(
+				parameters: parameters,
+				{ [weak thisSelf] (err_str, response_data) in
+					guard let thisThisSelf = thisSelf else {
+						return
+					}
+					thisThisSelf._current_sendFunds_request = nil
+					var args_string: String? = nil
+					if response_data != nil {
+						args_string = String(data: response_data!, encoding: .utf8)
+					}
+					thisThisSelf.submitter!.cb_I__got_unspent_outs(err_str, args_string: args_string)
+				}
+			)
+		}, get_random_outs_fn: { [weak self] (req_params_json_string) in
+			guard let thisSelf = self else {
+				return
+			}
+			var parameters: [String: Any]
+			do {
+				let json_data = req_params_json_string.data(using: .utf8)!
+				parameters = try JSONSerialization.jsonObject(with: json_data) as! [String: Any]
+			} catch let e {
+				fatalError("req_params_json_string parse error … \(e)")
+			}
+			thisSelf._current_sendFunds_request = HostedMonero.APIClient.shared.RandomOuts(
+				parameters: parameters,
+				{ [weak thisSelf] (err_str, response_data) in
+					guard let thisThisSelf = thisSelf else {
+						return
+					}
+					thisThisSelf._current_sendFunds_request = nil
+					var args_string: String? = nil
+					if response_data != nil {
+						args_string = String(data: response_data!, encoding: .utf8)
+					}
+					thisThisSelf.submitter!.cb_II__got_random_outs(err_str, args_string: args_string)
+				}
+			)
+		}, submit_raw_tx_fn: { [weak self] (req_params_json_string) in
+			guard let thisSelf = self else {
+				return
+			}
+			let parameters = [String: Any]()
+			thisSelf._current_sendFunds_request = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
+				parameters: parameters,
+				{ [weak thisSelf] (err_str, response_data) in
+					guard let thisThisSelf = thisSelf else {
+						return
+					}
+					thisThisSelf._current_sendFunds_request = nil
+					thisThisSelf.submitter!.cb_III__submitted_tx(err_str)
+				}
+			)
+		}, error_fn: { [weak self] (code, optl_errMsg, optl_createTx_errCode, optl__spendable_balance, optl__required_balance) in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.__unlock_sending()
+			var errStr: String?
+			if code == 0 { // msgProvided
+				errStr = optl_errMsg! // ought to exist…
+			} else if code == 11 { // errInServerResponse_withMsg
+				errStr = optl_errMsg!
+			} else if code == 12 { // createTransactionCode_balancesProvided
+				if optl_createTx_errCode == 90 { // needMoreMoneyThanFound
+					errStr = String(format:
+						NSLocalizedString("Spendable balance too low. Have %@ %@; need %@ %@.", comment: "Spendable balance too low. Have {amount} {XMR}; need {amount} {XMR}."),
+						   FormattedString(fromMoneroAmount: MoneroAmount("\(optl__spendable_balance)")!),
+						   MoneroConstants.currency_symbol,
+						   FormattedString(fromMoneroAmount: MoneroAmount("\(optl__required_balance)")!),
+						   MoneroConstants.currency_symbol
+					);
+				} else {
+					errStr = Wallet.createTxErrCodeMessage_byEnumVal[optl_createTx_errCode]!
+				}
+			} else if code == 13 { // createTranasctionCode_noBalances
+				errStr = Wallet.createTxErrCodeMessage_byEnumVal[optl_createTx_errCode]!
+			} else {
+				errStr = Wallet.failureCodeMessage_byEnumVal[code]
+			}
+			failWithErr_fn(errStr!)
+			thisSelf.submitter = nil // free
+		}, success_fn: { [weak self] (used_fee, total_sent, mixin, optl__final_payment_id, signed_serialized_tx_string, tx_hash_string, tx_key_string, tx_pub_key_string, target_address, final_total_wo_fee, isXMRAddressIntegrated, optl__integratedAddressPIDForDisplay) in
+			guard let thisSelf = self else {
+				return
+			}
+			thisSelf.__unlock_sending()
+			//
+			var outgoingAmountForDisplay = MoneroAmount.init("\(final_total_wo_fee + used_fee)")!
+			outgoingAmountForDisplay.sign = .minus // make negative as it's outgoing
+			//
+			let mockedTransaction = MoneroHistoricalTransactionRecord(
+				amount: outgoingAmountForDisplay,
+				totalSent: MoneroAmount.init("\(final_total_wo_fee + used_fee)")!,
+				totalReceived: MoneroAmount("0"),
+				approxFloatAmount: DoubleFromMoneroAmount(moneroAmount: outgoingAmountForDisplay),
+				spent_outputs: nil, // TODO: is this ok?
+				timestamp: Date(), // faking this
+				hash: tx_hash_string,
+				paymentId: optl__final_payment_id ?? optl__integratedAddressPIDForDisplay, // transaction.paymentId will be nil for integrated addresses but we show it here anyway and, in the situation where they used a std xmr addr and a short pid, an int addr would get fabricated anyway, leaving sentWith_paymentID nil even though user is expecting a pid - so we want to make sure it gets saved in either case
+				mixin: MyMoneroCore.fixedMixin,
+				//
+				mempool: true, // is this correct?
+				unlock_time: 0,
+				height: nil, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
+				//
+				//					coinbase: false, // TODO
+				//
+				isFailed: nil, // since we've just created it
+				//
+				cached__isConfirmed: false, // important
+				cached__isUnlocked: true, // TODO: not sure about this
+				cached__lockedReason: nil,
+				//
+				isJustSentTransientTransactionRecord: true,
+				//
+				tx_key: tx_key_string,
+				tx_fee: MoneroAmount.init("\(used_fee)")!,
+				to_address: target_address
+//				contact: hasPickedAContact ? self.pickedContact : null, // TODO?
+			)
+			success_fn(
+				target_address,
+				isXMRAddressIntegrated,
+				optl__integratedAddressPIDForDisplay,
+				MoneroAmount.init("\(final_total_wo_fee)")!,
+				optl__final_payment_id,
+				tx_hash_string,
+				MoneroAmount.init("\(used_fee)")!,
+				tx_key_string,
+				mockedTransaction
+			)
+			// manually insert .. and subsequent fetches from the server will be
+			// diffed against this, preserving the tx_fee, tx_key, to_address...
+			thisSelf._manuallyInsertTransactionRecord(mockedTransaction);
+			//
+			thisSelf.submitter = nil // free
+		})
+		self.submitter!.setupWith_fromWallet_didFail(
+			toInitialize: self.didFailToInitialize_flag == true,
+			fromWallet_didFailToBoot: self.didFailToBoot_flag == true,
+			fromWallet_needsImport: self.shouldDisplayImportAccountOption == true,
+			requireAuthentication: SettingsController.shared.authentication__requireWhenSending != false,
+			sending_amount_double_NSString: raw_amount_string,
+			is_sweeping: isSweeping,
+			priority: simple_priority.cppRepresentation,
+			hasPickedAContact: hasPickedAContact,
+			optl__contact_payment_id: contact_payment_id,
+			optl__contact_hasOpenAliasAddress: contact_hasOpenAliasAddress ?? false,
+			optl__cached_OAResolved_address: cached_OAResolved_address,
+			optl__contact_address: contact_address,
+			nettype: MM_MAINNET,
+			from_address_string: self.public_address,
+			sec_viewKey_string: self.private_keys.view,
+			sec_spendKey_string: self.private_keys.spend,
+			pub_spendKey_string: self.public_keys.spend,
+			optl__enteredAddressValue: enteredAddressValue,
+			optl__resolvedAddress: resolvedAddress,
+			resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
+			optl__manuallyEnteredPaymentID: manuallyEnteredPaymentID,
+			manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
+			optl__resolvedPaymentID: resolvedPaymentID,
+			resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible
+		)
+		self.submitter!.handle()
 	}
 	func __lock_sending()
 	{
@@ -1157,7 +1363,6 @@ class Wallet: PersistableObject
 	func __unlock_sending()
 	{
 		self.isSendingFunds = false
-		self.fundsSender = nil // can assume if we're unlocking that this will always be nil… but the flip side of doing this here alone is that we must ensure we always call __unlock() when we need to nil fundsSender()
 		//
 		UserIdle.shared.reEnable_userIdle()
 		ScreenSleep.reEnable_screenSleep()

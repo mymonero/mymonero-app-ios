@@ -281,152 +281,6 @@ extension HostedMonero
 			return (nil, result)
 		}
 	}
-	struct ParsedResult_UnspentOuts
-	{
-		let unusedOutputs: [MoneroOutputDescription]
-		let feePerB: MoneroAmount
-		let fee_mask: UInt64
-		//
-		static func newByParsing(
-			response_jsonDict: [String: Any],
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			spend_key__public: MoneroKey,
-			spend_key__private: MoneroKey,
-			wallet_keyImageCache: MoneroUtils.KeyImageCache
-		) -> (
-			err_str: String?,
-			result: ParsedResult_UnspentOuts
-		) {
-			let raw__per_byte_fee = response_jsonDict["per_byte_fee"]
-			let raw__per_kb_fee = response_jsonDict["per_kb_fee"]
-			let raw__fee_mask = response_jsonDict["fee_mask"]
-			var final__fee_mask: UInt64 = 10000
-			if raw__fee_mask != nil {
-				if let v = raw__fee_mask as? String {
-					final__fee_mask = UInt64(v)!
-				} else if let v = raw__fee_mask as? Int {
-					final__fee_mask = UInt64(v)
-				} else {
-					return (
-						err_str: NSLocalizedString("Unspent outs: Unrecognized fee_mask format", comment: ""),
-						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
-					)
-				}
-			}			
-			var final__per_byte_fee: MoneroAmount!
-			if raw__per_byte_fee != nil {
-				var per_byte_fee__string: String?
-				if let v = raw__per_byte_fee as? String {
-					per_byte_fee__string = v
-				} else if let v = raw__per_byte_fee as? Int {
-					per_byte_fee__string = "\(v)"
-				} else {
-					return (
-						err_str: NSLocalizedString("Unspent outs: Unrecognized per-byte fee format", comment: ""),
-						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
-					)
-				}
-				final__per_byte_fee = MoneroAmount(per_byte_fee__string!)!
-			} else {
-				var per_kb_fee__string: String?
-				if let v = raw__per_kb_fee as? String {
-					per_kb_fee__string = v
-				} else if let v = raw__per_kb_fee as? Int {
-					per_kb_fee__string = "\(v)"
-				} else {
-					return (
-						err_str: NSLocalizedString("Didn't find any fee rate in unspent outs response", comment: ""),
-						result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
-					)
-				}
-				final__per_byte_fee = MoneroAmount(per_kb_fee__string!)! / MoneroAmount("1024")! // scale from kib to b and convert back to string
-			}
-			if final__per_byte_fee == nil {
-				return (
-					err_str: NSLocalizedString("Unable to derive per_byte_fee string", comment: ""),
-					result: ParsedResult_UnspentOuts(unusedOutputs: [], feePerB: MoneroAmount("0")!, fee_mask: final__fee_mask)
-				)
-			}
-			guard let outputs_value__orNSNull = response_jsonDict["outputs"] else { // empty… or maybe still empty bc it could be NSNull
-				return (nil, ParsedResult_UnspentOuts( // empty
-					unusedOutputs: [],
-					feePerB: final__per_byte_fee,
-					fee_mask: final__fee_mask
-				))
-			}
-			guard let outputs_dicts = outputs_value__orNSNull as? [[String: Any]] else { // imprecise bc it doesn't distinguish btwn legit empty but NSNull , and invalid input format… but we must catch NSNull too
-				return (nil, ParsedResult_UnspentOuts( // empty
-					unusedOutputs: [],
-					feePerB: final__per_byte_fee,
-					fee_mask: final__fee_mask
-				))
-			}
-			var mutable_unusedOutputs: [MoneroOutputDescription] = []
-			for (_, output_dict) in outputs_dicts.enumerated() {
-				guard let output__tx_pub_key = output_dict["tx_pub_key"] as? MoneroTransactionPubKey else { // do we ever expect these not to exist?
-					DDLog.Warn("HostedMonero", "This unspent out was missing a tx_pub_key. Skipping.")
-					continue // skip
-				}
-				let output__index = output_dict["index"] as! UInt64 // not expecting it not to exist
-				let spend_key_images = output_dict["spend_key_images"] as! [String] // intended to throw on nil
-				var mutable_isOutputSpent = false // let's see…
-				for (_, output__spend_key_image) in spend_key_images.enumerated() {
-					let generated__keyImage = wallet_keyImageCache.lazy_keyImage(
-						tx_pub_key:output__tx_pub_key,
-						out_index: output__index,
-						public_address: address,
-						sec_keys: MoneroKeyDuo(view: view_key__private, spend: spend_key__private),
-						pub_spendKey: spend_key__public
-					)
-					if generated__keyImage == output__spend_key_image { // output was spent… exclude
-						//					DDLog.Info("HostedMonero", "Output was spent; key image: \(output__spend_key_image)");
-						mutable_isOutputSpent = true
-						break // exit spend key img loop to evaluate mutable_isOutputSpent
-					} else { // output was used for mixing
-						//					DDLog.Info("HostedMonero", "Output used as mixin; key image: \(output__spend_key_image)");
-					}
-				}
-				let isOutputSpent = mutable_isOutputSpent
-				if isOutputSpent == false {
-					let outputDescription = MoneroOutputDescription.new(withAPIJSONDict: output_dict)
-					mutable_unusedOutputs.append(outputDescription)
-				}
-			}
-			//
-			let final_unusedOutputs = mutable_unusedOutputs
-			let result = ParsedResult_UnspentOuts(
-				unusedOutputs: final_unusedOutputs,
-				feePerB: final__per_byte_fee,
-				fee_mask: final__fee_mask
-			)
-			return (nil, result)
-		}
-	}
-	struct ParsedResult_RandomOuts
-	{
-		let amount_outs: [MoneroRandomAmountAndOutputs]
-		//
-		//
-		static func newByParsing(
-			response_jsonDict: [String: Any]
-		) -> (
-			err_str: String?,
-			result: ParsedResult_RandomOuts?
-		) {
-				let amount_outs = response_jsonDict["amount_outs"] as! [[String: Any]]
-				var mutable__amount_outs: [MoneroRandomAmountAndOutputs] = []
-				for (_, dict) in amount_outs.enumerated() {
-					let amountAndOutputs = MoneroRandomAmountAndOutputs.new(withAPIJSONDict: dict)
-					mutable__amount_outs.append(amountAndOutputs)
-				}
-				let final_amount_outs = mutable__amount_outs
-				let result = ParsedResult_RandomOuts(
-					amount_outs: final_amount_outs
-				)
-				return (nil, result)
-		}
-	}
 	struct ParsedResult_ImportRequestInfoAndStatus
 	{
 		let payment_id: MoneroPaymentID
@@ -727,86 +581,58 @@ extension HostedMonero
 		}
 		//
 		// Sending funds
-		@discardableResult
-		func UnspentOuts(
-			wallet_keyImageCache: MoneroUtils.KeyImageCache,
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			spend_key__public: MoneroKey,
-			spend_key__private: MoneroKey,
+		@discardableResult func UnspentOuts(
+			parameters: [String: Any],
 			_ fn: @escaping (
 				_ err_str: String?,
-				_ result: ParsedResult_UnspentOuts?
+				_ response_data: Data?
 			) -> Void
 		) -> RequestHandle? {
-			let mixinSize = MyMoneroCore.fixedMixin
-			let parameters: [String: Any] =
-			[
-				"address": address,
-				"view_key": view_key__private,
-				"amount": "0",
-				"mixin": mixinSize,
-				"use_dust": true, // send-funds is now coded to filter unmixable and below threshold dust properly when sweeping and not sweeping
-				"dust_threshold": String(MoneroConstants.dustThreshold, radix: 10)
-			]
-			let endpoint = HostedMoneroAPI_Endpoint.UnspentOuts
-			let requestHandle = self._request(endpoint, parameters)
-			{ [unowned self] (err_str, response_data, response_jsonDict) in
+			var final_parameters = parameters
+			if let mixin_string = final_parameters["mixin"] as? String {
+				final_parameters["mixin"] = Int(mixin_string)!
+			}
+			if let use_dust_string = final_parameters["use_dust"] as? String {
+				final_parameters["use_dust"] = use_dust_string == "true" || use_dust_string == "1" ? true : false
+			}
+			return self._request(
+				HostedMoneroAPI_Endpoint.UnspentOuts,
+				final_parameters
+			) { [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let (err_str, result) = ParsedResult_UnspentOuts.newByParsing(
-					response_jsonDict: response_jsonDict!,
-					address: address,
-					view_key__private: view_key__private,
-					spend_key__public: spend_key__public,
-					spend_key__private: spend_key__private,
-					wallet_keyImageCache: wallet_keyImageCache
-				)
-				self._shared_onMain_callBackFromRequest(err_str, result, fn)
+				self._shared_onMain_callBackFromRequest(err_str, response_data, fn)
 			}
-			return requestHandle
 		}
 		func RandomOuts(
-			using_outs: [Monero_Arg_SpendableOutput],
+			parameters: [String: Any],
 			_ fn: @escaping (
 				_ err_str: String?,
-				_ result: ParsedResult_RandomOuts?
+				_ response_data: Data?
 			) -> Void
 		) -> RequestHandle? {
-			let mixinSize = MyMoneroCore.fixedMixin
-			//
-			var amounts = [String]()
-			for (_, using_out_desc) in using_outs.enumerated() {
-				amounts.append(using_out_desc.rct != nil ? "0" : String(using_out_desc.amount))
+			var final_parameters = parameters
+			if let mixin_string = final_parameters["count"] as? String {
+				final_parameters["count"] = Int(mixin_string)!
 			}
-			let parameters: [String: Any] =
-			[
-				"amounts": amounts,
-				"count": mixinSize + 1 // Add one to mixin so we can skip real output key if necessary
-			]
-			let endpoint = HostedMoneroAPI_Endpoint.RandomOuts
-			let requestHandle = self._request(endpoint, parameters)
-			{ [unowned self] (err_str, response_data, response_jsonDict) in
+			return self._request(
+				HostedMoneroAPI_Endpoint.RandomOuts,
+				final_parameters
+			) { [unowned self] (err_str, response_data, response_jsonDict) in
 				if let err_str = err_str {
 					self._shared_onMain_callBackFromRequest(err_str, nil, fn)
 					return
 				}
-				let (err_str, result) = ParsedResult_RandomOuts.newByParsing(
-					response_jsonDict: response_jsonDict!
-				)
-				self._shared_onMain_callBackFromRequest(err_str, result, fn)
+				self._shared_onMain_callBackFromRequest(err_str, response_data, fn)
 			}
-			return requestHandle
 		}
 		func SubmitSerializedSignedTransaction(
-			address: MoneroAddress,
-			view_key__private: MoneroKey,
-			serializedSignedTx: MoneroSerializedSignedTransaction,
+			parameters: [String: Any],
 			_ fn: @escaping (
 				_ err_str: String?, // if nil, succeeded
-				_ nilResult: Any? // merely for callback conformance (janky :\) - disregard arg
+				_ response_data: Data?
 			) -> Void
 		) -> RequestHandle? {
 			#if DEBUG
@@ -817,18 +643,12 @@ extension HostedMonero
 				#endif
 			#endif
 			DDLog.Do("HostedMonero", "Submitting transaction…")
-			let parameters: [String: Any] =
-			[
-				"address": address,
-				"view_key": view_key__private,
-				"tx": serializedSignedTx
-			]
-			let endpoint = HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction
-			let requestHandle = self._request(endpoint, parameters)
-			{ [unowned self] (err_str, response_data, response_jsonDict) in
-				self._shared_onMain_callBackFromRequest(err_str, nil, fn)
+			return self._request(
+				HostedMoneroAPI_Endpoint.SubmitSerializedSignedTransaction,
+				parameters
+			) { [unowned self] (err_str, response_data, response_jsonDict) in
+				self._shared_onMain_callBackFromRequest(err_str, response_data, fn)
 			}
-			return requestHandle
 		}
 		//
 		// Private - Runtime - Imperatives - Requests - Shared
