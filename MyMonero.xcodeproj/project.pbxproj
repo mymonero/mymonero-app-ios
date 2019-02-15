@@ -590,6 +590,8 @@
 		9F2C32F32208F76000AA9C5A /* monero_send_routine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = monero_send_routine.hpp; sourceTree = "<group>"; };
 		9F2C333122090B2600AA9C5A /* serial_bridge_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serial_bridge_utils.cpp; sourceTree = "<group>"; };
 		9F2C333222090B2600AA9C5A /* serial_bridge_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = serial_bridge_utils.hpp; sourceTree = "<group>"; };
+		9F2C33382215F8A400AA9C5A /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		9F2C33392215F8A400AA9C5A /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F2FEB37216011A6003FAD8F /* Wallet_TxCleanupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet_TxCleanupController.swift; sourceTree = "<group>"; };
 		9F30470C1EC657CB00190268 /* MoneroTypes_Amounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes_Amounts.swift; sourceTree = "<group>"; };
 		9F30867F209616C0006632C5 /* QRCodeImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeImages.swift; sourceTree = "<group>"; };
@@ -2215,6 +2217,7 @@
 				eo,
 				"pt-PT",
 				az,
+				sl,
 			);
 			mainGroup = 9F24AE101EBA7D3A00841BCB;
 			productRefGroup = 9F24AE1A1EBA7D3A00841BCB /* Products */;
@@ -2659,6 +2662,7 @@
 				9F3DDFD921DEE40000A1B3D6 /* eo */,
 				9F3DDFDB21DEE40600A1B3D6 /* pt-PT */,
 				9F41C69F21E65C3C00D8FA79 /* az */,
+				9F2C33382215F8A400AA9C5A /* sl */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -2690,6 +2694,7 @@
 				9F3DDFDA21DEE40000A1B3D6 /* eo */,
 				9F3DDFDC21DEE40600A1B3D6 /* pt-PT */,
 				9F41C6A021E65C3C00D8FA79 /* az */,
+				9F2C33392215F8A400AA9C5A /* sl */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

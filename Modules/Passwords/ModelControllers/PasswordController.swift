@@ -821,7 +821,7 @@ final class PasswordController
 				}
 				if _isCurrentlyLockedOut == true { // do not try to check pw - return as validation err
 					DDLog.Info("Passwords", "🚫  Received password entry attempt but currently locked out.")
-					validationErr_orNil = "As a security precaution, please wait a few moments before trying again."
+					validationErr_orNil = NSLocalizedString("As a security precaution, please wait a few moments before trying again.", comment: "")
 					// setup or extend unlock timer - NOTE: this is pretty strict - we don't strictly need to extend the timer each time to prevent spam unlocks
 					__cancelAnyAndRebuildUnlockTimer()
 				}
