@@ -96,6 +96,9 @@ extension SendFundsForm
 				)
 				return
 			}
+			let raw_amount_string = self.parameters.amount_submittableDouble != nil // human-understandable number, e.g. input 0.5 for 0.5 XMR
+				? MoneyAmount.newMoneroAmountString(withAmountDouble: self.parameters.amount_submittableDouble!)
+				: nil
 			self.parameters.fromWallet.sendFunds(
 				enteredAddressValue: self.parameters.enteredAddressValue,
 				resolvedAddress: self.parameters.resolvedAddress,
@@ -111,7 +114,7 @@ extension SendFundsForm
 				contact_hasOpenAliasAddress: self.parameters.selectedContact?.hasOpenAliasAddress,
 				contact_address: self.parameters.selectedContact?.address,
 				//
-				raw_amount_string: self.parameters.amount_submittableDouble != nil ? "\(self.parameters.amount_submittableDouble!)" : nil, // human-understandable number, e.g. input 0.5 for 0.5 XMR
+				raw_amount_string: raw_amount_string,
 				isSweeping: self.parameters.isSweeping,
 				simple_priority: self.parameters.priority,
 				//

@@ -1137,7 +1137,10 @@ class Wallet: PersistableObject
 			? NSLocalizedString("Sending wallet balance…", comment: "")
 			: String(
 				format: NSLocalizedString("Sending %@ XMR…", comment: "Sending {amount} XMR…"),
-				raw_amount_string!
+				FormattedString(fromMoneroAmount: MoneroAmount.new( // converting it from string back to string so as to get the locale-specific separator character
+					withMoneyAmountDoubleString: raw_amount_string!,
+					decimalSeparator: "."
+				))
 			)
 		self.submitter = SendFundsFormSubmissionHandle.init(_canceled_fn: { [weak self] in
 			guard let thisSelf = self else {

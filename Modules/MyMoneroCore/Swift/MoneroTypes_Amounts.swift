@@ -44,7 +44,7 @@ struct MoneyAmount
 	static let _dotDecimal_formatter = NumberFormatter()
 	static let _dotDecimal_separator = "."
 	static var __hasConfigured_formatters = false
-	static func newDouble(withUserInputAmountString string: String) -> Double?
+	static func _lazy_configureFormatters()
 	{
 		if __hasConfigured_formatters == false {
 			_localized_formatter.numberStyle = .decimal
@@ -55,6 +55,36 @@ struct MoneyAmount
 			//
 			__hasConfigured_formatters = true
 		}
+	}
+	static func newMoneroAmountString(withAmountDouble double: Double) -> String
+	{
+		var str = String.init( // this has the down-side of padding the end of the string with lots of zeroes but at least it works... NumberFormatter doesn't appear to work for some reason
+			format: "%20.20f",
+			locale: Locale.init(identifier: "en_US"), // ensure we get "." separator
+			double
+		)
+		str = str.replacingOccurrences(of: ",", with: "") // since String(format: puts in "," chars...)
+		// now strip trailing 0s, leaving one:
+		if str.contains(".") { // so definitely do not strip *anything* if there's no decimal place present
+			while str.count > 2 { // so at least ".0"
+				if str.last == "0" && str.suffix(2) != ".0"/*leave one*/ {
+					str.removeLast()
+				} else {
+					break // must exit or we'll get infinite loop
+				}
+			}
+		}
+		// and, for aesthetic and consistency purposes, also strip unneeded precision off the end
+		if str.suffix(2) == ".0" {
+			str.removeLast()
+			str.removeLast()
+		}
+		//
+		return str
+	}
+	static func newDouble(withUserInputAmountString string: String) -> Double?
+	{
+		_lazy_configureFormatters()
 		var number = _localized_formatter.number(from: string)
 		if number == nil {
 			let string_NSString = string as NSString
@@ -137,7 +167,11 @@ extension MoneroAmount
 		if string == "" {
 			return MoneroAmount(0)
 		}
-		let signed_NSString = string as NSString
+		var final_string = string
+		if final_string.contains(decimalSeparator) == false {
+			final_string = final_string + decimalSeparator + "0" // to keep this function simple, just tack on decimal - avoids crash / complexity below with using NSNotFound value of decimalLocation
+		}
+		let signed_NSString = final_string as NSString
 		let isNegative = signed_NSString.substring(to: 1) == "-" ? true : false
 		var unsignedDouble_NSString: NSString
 		if isNegative {
