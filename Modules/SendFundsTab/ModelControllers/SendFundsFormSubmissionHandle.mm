@@ -160,6 +160,7 @@ using namespace monero_send_routine;
 	if (optl__manuallyEnteredPaymentID != nil) {
 		manuallyEnteredPaymentID = string(optl__manuallyEnteredPaymentID.UTF8String);
 	}
+	__weak SendFundsFormSubmissionHandle *refToSelf = self;
 	SendFunds::Parameters parameters{
 		fromWallet_didFailToInitialize ? true : false,
 		fromWallet_didFailToBoot ? true : false,
@@ -194,18 +195,18 @@ using namespace monero_send_routine;
 		resolvedPaymentID,
 		resolvedPaymentID_fieldIsVisible ? true : false,
 		//
-		[self] (SendFunds::ProcessStep step)
+		[refToSelf] (SendFunds::ProcessStep step)
 		{ // preSuccess_nonTerminal_validationMessageUpdate_fn
-			self.status_update_fn(step);
+			refToSelf.status_update_fn(step);
 		},
-		[self] ( // failure_fn
+		[refToSelf] ( // failure_fn
 			SendFunds::PreSuccessTerminalCode code,
 			optional<string> msg,
 			optional<monero_transfer_utils::CreateTransactionErrorCode> createTx_errCode,
 			optional<uint64_t> spendable_balance,
 			optional<uint64_t> required_balance
 		) -> void {
-			self.error_fn(
+			refToSelf.error_fn(
 				code,
 				msg != none ? [NSString stringWithUTF8String:(*msg).c_str()] : nil,
 				createTx_errCode ? *createTx_errCode : monero_transfer_utils::CreateTransactionErrorCode::noError,
@@ -213,16 +214,16 @@ using namespace monero_send_routine;
 				required_balance ? *required_balance : 0
 			);
 		},
-		[self] () -> void { // preSuccess_passedValidation_willBeginSending
-			self.willBeginSending_fn();
+		[refToSelf] () -> void { // preSuccess_passedValidation_willBeginSending
+			refToSelf.willBeginSending_fn();
 		},
 		//
-		[self] () -> void { // canceled_fn
-			self.canceled_fn();
+		[refToSelf] () -> void { // canceled_fn
+			refToSelf.canceled_fn();
 		},
-		[self] (SendFunds::Success_RetVals retVals) -> void
+		[refToSelf] (SendFunds::Success_RetVals retVals) -> void
 		{ // success_fn
-			self.success_fn(
+			refToSelf.success_fn(
 				retVals.used_fee,
 				retVals.total_sent,
 				retVals.mixin,
@@ -240,24 +241,24 @@ using namespace monero_send_routine;
 	};
 	controller_ptr = new SendFunds::FormSubmissionController{parameters}; // heap alloc
 	if (!controller_ptr) { // exception will be thrown if oom but JIC, since null ptrs are somehow legal in WASM
-		self.error_fn(SendFunds::PreSuccessTerminalCode::msgProvided, @"Out of memory (form submission controller)", monero_transfer_utils::CreateTransactionErrorCode::noError, 0, 0);
+		refToSelf.error_fn(SendFunds::PreSuccessTerminalCode::msgProvided, @"Out of memory (form submission controller)", monero_transfer_utils::CreateTransactionErrorCode::noError, 0, 0);
 		return;
 	}
-	(*controller_ptr).set__authenticate_fn([self] () -> void
+	(*controller_ptr).set__authenticate_fn([refToSelf] () -> void
 	{ // authenticate_fn - this is not guaranteed to be called but it will be if requireAuthentication is true
-		self.authenticate_fn();
+		refToSelf.authenticate_fn();
 	});
-	(*controller_ptr).set__get_unspent_outs_fn([self] (LightwalletAPI_Req_GetUnspentOuts req_params) -> void
+	(*controller_ptr).set__get_unspent_outs_fn([refToSelf] (LightwalletAPI_Req_GetUnspentOuts req_params) -> void
 	{
-		self.get_unspent_outs_fn([NSString stringWithUTF8String:monero_send_routine::json_string_from_req_GetUnspentOuts(req_params).c_str()]);
+		refToSelf.get_unspent_outs_fn([NSString stringWithUTF8String:monero_send_routine::json_string_from_req_GetUnspentOuts(req_params).c_str()]);
 	});
-	(*controller_ptr).set__get_random_outs_fn([self] (LightwalletAPI_Req_GetRandomOuts req_params) -> void
+	(*controller_ptr).set__get_random_outs_fn([refToSelf] (LightwalletAPI_Req_GetRandomOuts req_params) -> void
 	{
-		self.get_random_outs_fn([NSString stringWithUTF8String:monero_send_routine::json_string_from_req_GetRandomOuts(req_params).c_str()]);
+		refToSelf.get_random_outs_fn([NSString stringWithUTF8String:monero_send_routine::json_string_from_req_GetRandomOuts(req_params).c_str()]);
 	});
-	(*controller_ptr).set__submit_raw_tx_fn([self] (LightwalletAPI_Req_SubmitRawTx req_params) -> void
+	(*controller_ptr).set__submit_raw_tx_fn([refToSelf] (LightwalletAPI_Req_SubmitRawTx req_params) -> void
 	{
-		self.submit_raw_tx_fn([NSString stringWithUTF8String:monero_send_routine::json_string_from_req_SubmitRawTx(req_params).c_str()]);
+		refToSelf.submit_raw_tx_fn([NSString stringWithUTF8String:monero_send_routine::json_string_from_req_SubmitRawTx(req_params).c_str()]);
 	});
 }
 //
