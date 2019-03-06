@@ -85,7 +85,6 @@
 		9F2C33022208F76000AA9C5A /* crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C32442208F76000AA9C5A /* crypto.cpp */; };
 		9F2C33032208F76000AA9C5A /* skein.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C32462208F76000AA9C5A /* skein.c */; };
 		9F2C33042208F76000AA9C5A /* crypto-ops-data.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C32482208F76000AA9C5A /* crypto-ops-data.c */; };
-		9F2C33052208F76000AA9C5A /* slow-hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C324C2208F76000AA9C5A /* slow-hash.c */; settings = {COMPILER_FLAGS = "-maes"; }; };
 		9F2C33062208F76000AA9C5A /* aesb.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C324D2208F76000AA9C5A /* aesb.c */; };
 		9F2C33072208F76000AA9C5A /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C324F2208F76000AA9C5A /* logger.cpp */; };
 		9F2C33082208F76000AA9C5A /* string_tools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F2C32692208F76000AA9C5A /* string_tools.cpp */; };
@@ -227,6 +226,7 @@
 		9F8E30451EEDAB9400F89A1D /* wallet-EACF12@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */; };
 		9F8E30461EEDAB9400F89A1D /* wallet-EB8316@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */; };
 		9F8E30471EEDAB9400F89A1D /* wallet-F97777@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */; };
+		9F919DC4223034C0000C4BC1 /* slow-hash-dummied.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F919DC3223034C0000C4BC1 /* slow-hash-dummied.cpp */; };
 		9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */; };
 		9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */; };
 		9F96C3081F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96C3071F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift */; };
@@ -452,7 +452,6 @@
 		9F2C32492208F76000AA9C5A /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
 		9F2C324A2208F76000AA9C5A /* crypto-ops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "crypto-ops.h"; sourceTree = "<group>"; };
 		9F2C324B2208F76000AA9C5A /* random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
-		9F2C324C2208F76000AA9C5A /* slow-hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "slow-hash.c"; sourceTree = "<group>"; };
 		9F2C324D2208F76000AA9C5A /* aesb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aesb.c; sourceTree = "<group>"; };
 		9F2C324F2208F76000AA9C5A /* logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logger.cpp; sourceTree = "<group>"; };
 		9F2C32502208F76000AA9C5A /* logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logger.h; sourceTree = "<group>"; };
@@ -724,6 +723,7 @@
 		9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EACF12@3x.png"; sourceTree = "<group>"; };
 		9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-EB8316@3x.png"; sourceTree = "<group>"; };
 		9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wallet-F97777@3x.png"; sourceTree = "<group>"; };
+		9F919DC3223034C0000C4BC1 /* slow-hash-dummied.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "slow-hash-dummied.cpp"; sourceTree = "<group>"; };
 		9F96C3011F439D650016CEFC /* WalletDetailsActionButtonsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletDetailsActionButtonsCell.swift; sourceTree = "<group>"; };
 		9F96C3031F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAppWalletActionsCoordinator.swift; sourceTree = "<group>"; };
 		9F96C3071F44B0E70016CEFC /* FundsRequestQRDisplayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FundsRequestQRDisplayViewController.swift; sourceTree = "<group>"; };
@@ -1144,7 +1144,7 @@
 				9F2C32492208F76000AA9C5A /* hash.h */,
 				9F2C324A2208F76000AA9C5A /* crypto-ops.h */,
 				9F2C324B2208F76000AA9C5A /* random.h */,
-				9F2C324C2208F76000AA9C5A /* slow-hash.c */,
+				9F919DC3223034C0000C4BC1 /* slow-hash-dummied.cpp */,
 				9F2C324D2208F76000AA9C5A /* aesb.c */,
 			);
 			path = crypto;
@@ -2475,6 +2475,7 @@
 				9FA734311F077DF300C674D6 /* EmojiPickerPopoverView.swift in Sources */,
 				9F22B7A51F0063760036B02F /* ReadableInfoLabels.swift in Sources */,
 				9F2119291F5E0EC300B8FA0E /* UseExisting_MetaInfo_ViewController.swift in Sources */,
+				9F919DC4223034C0000C4BC1 /* slow-hash-dummied.cpp in Sources */,
 				9F7298C81F33E1FE00CD59E1 /* SettingsFormViewController.swift in Sources */,
 				9F2C33182208F76000AA9C5A /* verify.c in Sources */,
 				9F2119221F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift in Sources */,
@@ -2593,7 +2594,6 @@
 				9F33E6EF1F1ABDE300610662 /* WalletDetailsBalanceViewCell.swift in Sources */,
 				9FA734261F07610E00C674D6 /* UIView+Debug.swift in Sources */,
 				9F2C33262208F76000AA9C5A /* monero_address_utils.cpp in Sources */,
-				9F2C33052208F76000AA9C5A /* slow-hash.c in Sources */,
 				9F8E302A1EED7D7800F89A1D /* PasswordEntryNavigationViewController.swift in Sources */,
 				9F7ADB021EBD30330073C2BB /* AppSingletonsController.swift in Sources */,
 				9FA734171F05AFAB00C674D6 /* ContactsListViewController.swift in Sources */,
