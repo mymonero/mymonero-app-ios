@@ -161,17 +161,17 @@ using namespace monero_send_routine;
 		manuallyEnteredPaymentID = string(optl__manuallyEnteredPaymentID.UTF8String);
 	}
 	SendFunds::Parameters parameters{
-		fromWallet_didFailToInitialize,
-		fromWallet_didFailToBoot,
-		fromWallet_needsImport,
+		fromWallet_didFailToInitialize ? true : false,
+		fromWallet_didFailToBoot ? true : false,
+		fromWallet_needsImport ? true : false,
 		//
-		requireAuthentication,
+		requireAuthentication ? true : false,
 		//
 		sending_amount_double_string,
-		is_sweeping,
+		is_sweeping ? true : false,
 		priority,
 		//
-		hasPickedAContact,
+		hasPickedAContact ? true : false,
 		contact_payment_id,
 		contact_hasOpenAliasAddress,
 		cached_OAResolved_address,
@@ -186,13 +186,13 @@ using namespace monero_send_routine;
 		enteredAddressValue,
 		//
 		resolvedAddress,
-		resolvedAddress_fieldIsVisible,
+		resolvedAddress_fieldIsVisible ? true : false,
 		//
 		manuallyEnteredPaymentID,
-		manuallyEnteredPaymentID_fieldIsVisible,
+		manuallyEnteredPaymentID_fieldIsVisible ? true : false,
 		//
 		resolvedPaymentID,
-		resolvedPaymentID_fieldIsVisible,
+		resolvedPaymentID_fieldIsVisible ? true : false,
 		//
 		[self] (SendFunds::ProcessStep step)
 		{ // preSuccess_nonTerminal_validationMessageUpdate_fn
