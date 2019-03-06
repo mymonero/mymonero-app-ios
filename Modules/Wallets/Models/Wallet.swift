@@ -1229,7 +1229,13 @@ class Wallet: PersistableObject
 			guard let thisSelf = self else {
 				return
 			}
-			let parameters = [String: Any]()
+			var parameters: [String: Any]
+			do {
+				let json_data = req_params_json_string.data(using: .utf8)!
+				parameters = try JSONSerialization.jsonObject(with: json_data) as! [String: Any]
+			} catch let e {
+				fatalError("req_params_json_string parse error … \(e)")
+			}
 			thisSelf._current_sendFunds_request = HostedMonero.APIClient.shared.SubmitSerializedSignedTransaction(
 				parameters: parameters,
 				{ [weak thisSelf] (err_str, response_data) in
