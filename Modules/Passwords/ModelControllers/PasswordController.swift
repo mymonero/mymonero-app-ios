@@ -508,9 +508,6 @@ final class PasswordController
 	}
 	//
 	// Runtime - Imperatives - Password change
-	
-	//
-	// Runtime - Imperatives - Delete everything
 	var weakRefsTo_changePasswordRegistrants: [WeakRefTo_ChangePasswordRegistrant] = []
 	func addRegistrantForChangePassword(
 		_ registrant: ChangePasswordRegistrant
