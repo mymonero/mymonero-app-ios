@@ -706,8 +706,7 @@ extension HostedMonero
 				switch response.result
 				{
 					case .failure(let error):
-						print(error)
-						DDLog.Error("HostedMonero", "\(url) \(statusCode)")
+						DDLog.Error("HostedMonero", "\(url) \(statusCode) - \(error)")
 						var errStr = error.localizedDescription
 						if let data = response.data {
 							var errDataJSON: [String: Any]
