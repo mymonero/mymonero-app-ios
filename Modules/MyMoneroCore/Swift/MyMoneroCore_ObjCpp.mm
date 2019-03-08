@@ -440,7 +440,7 @@ uint32_t const MyMoneroCore_ObjCpp_SimplePriority_High = 4;
 		fee_per_b,
 		priority,
 		[] (uint8_t version, int64_t early_blocks) -> bool
-		{
+		{ // For the moment, keeping the hardcoded use_fork_rules here since we don't have a source for fork_version at the point where this function would be called
 			return lightwallet_hardcoded__use_fork_rules(version, early_blocks);
 		}
 	);
