@@ -51,11 +51,6 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 		//
 		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
 	}
-	enum Notifications_userInfoKeys: String
-	{
-		case err_str = "err_str"
-		case record = "record"
-	}
 	//
 	// Properties - Initializing inputs and constants
 	var listedObjectType: PersistableObject.Type!
@@ -222,14 +217,10 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 		DDLog.Error("Lists", "\(self) failed to boot with err: \(err_str)")
 		DispatchQueue.main.async
 		{ [unowned self] in // on next tick to avoid instantiator missing this
-			let userInfo: [String: Any] =
-			[
-				Notifications_userInfoKeys.err_str.rawValue: err_str
-			]
 			NotificationCenter.default.post(
 				name: Notifications_Boot.failed.notificationName,
 				object: self,
-				userInfo: userInfo
+				userInfo: nil
 			)
 		}
 	}
@@ -372,11 +363,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	func _listUpdated_records(
 		updatedRecord record: PersistableObject? = nil // no one's actually looking for this in Notifications_List.updated userInfo at present
 	) {
-		var userInfo = [String: Any]()
-		if record != nil {
-			userInfo[Notifications_userInfoKeys.record.rawValue] = record
-		}
-		NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: userInfo)
+		NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: nil)
 	}
 	func __dispatchAsync_listUpdated_records(updatedRecord record: PersistableObject? = nil)
 	{
