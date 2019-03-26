@@ -51,12 +51,6 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 		//
 		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
 	}
-	enum Notifications_Record: String
-	{
-		case deleted = "PersistedObjectListController_Notifications_Record_deleted"
-		//
-		var notificationName: NSNotification.Name { return NSNotification.Name(self.rawValue) }
-	}
 	enum Notifications_userInfoKeys: String
 	{
 		case err_str = "err_str"
