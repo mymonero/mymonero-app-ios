@@ -327,7 +327,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 	func _removeFromList(_ object: PersistableObject)
 	{
 		self._removeFromList_noListUpdatedNotify(object)
-		self._listUpdated_records(updatedRecord: object)
+		self._listUpdated_records()
 	}
 	func _removeFromList_noListUpdatedNotify(_ object: PersistableObject)
 	{
@@ -346,7 +346,7 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 		if self.overridable_shouldSortOnEveryRecordAdditionAtRuntime() == true { // this is no longer actually used by anything
 			self.overridable_finalizeAndSortRecords()
 		}
-		self.__dispatchAsync_listUpdated_records(updatedRecord: listedObject)
+		self.__dispatchAsync_listUpdated_records()
 		// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
 	}
 	func _atRuntime__record_wasSuccessfullySetUp_noSortNoListUpdated(
@@ -360,19 +360,18 @@ class PersistedObjectListController: DeleteEverythingRegistrant, ChangePasswordR
 //		self.overridable_startObserving(record: recordInstance) // TODO if necessary - but shouldn't be at the moment - if implemented, be sure to add corresponding stopObserving in _removeFromList_noListUpdatedNotify
 	}
 	//
-	func _listUpdated_records(
-		updatedRecord record: PersistableObject? = nil // no one's actually looking for this in Notifications_List.updated userInfo at present
-	) {
+	func _listUpdated_records()
+	{
 		NotificationCenter.default.post(name: Notifications_List.updated.notificationName, object: self, userInfo: nil)
 	}
-	func __dispatchAsync_listUpdated_records(updatedRecord record: PersistableObject? = nil)
+	func __dispatchAsync_listUpdated_records()
 	{
 		DispatchQueue.main.async
 		{ [weak self] in
 			guard let thisSelf = self else {
 				return
 			}
-			thisSelf._listUpdated_records(updatedRecord: record)
+			thisSelf._listUpdated_records()
 		}
 	}
 	//
