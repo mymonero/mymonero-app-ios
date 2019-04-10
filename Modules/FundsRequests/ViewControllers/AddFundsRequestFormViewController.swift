@@ -509,12 +509,15 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		}
 		//
 		let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
-		
+		if amount != nil && amount!.isPureDecimalNoGroupingNumeric == false {
+			self.setValidationMessage(NSLocalizedString("Please enter an amount with only numbers and the '.' character.", comment: ""))
+			return
+		}
 		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableAmountRawDouble_orNil
 		do {
 			assert(submittableDoubleAmount != nil || amount == nil || amount == "")
 			if submittableDoubleAmount == nil && (amount != nil && amount != "") { // something entered but not usable
-				self.setValidationMessage(NSLocalizedString("Please enter a valid amount  Monero.", comment: ""))
+				self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
 				return
 			}
 		}
@@ -525,10 +528,10 @@ class AddFundsRequestFormViewController: UICommonComponents.FormViewController
 		var submittableAmountFinalString: String?
 		if submittableDoubleAmount != nil {
 			submittableAmountFinalString = amount!
-			if amount!.first! == "." || amount!.first == (Locale.current.decimalSeparator ?? ".").first! {
+			if amount!.first! == "." {
 				submittableAmountFinalString = "0" + submittableAmountFinalString!
 			}
-			if submittableAmountFinalString!.last! == (Locale.current.decimalSeparator ?? ".").first! {
+			if submittableAmountFinalString!.last! == ".".first! {
 				submittableAmountFinalString! += "0"
 			}
 		}

@@ -258,7 +258,7 @@ extension WalletDetails
 				assert(self.object != nil)
 				let object = self.object!
 				do {
-					self.amountLabel.text = "\(object.amount.localized_formattedString)"
+					self.amountLabel.text = "\(object.amount.formattedString)"
 					if object.approxFloatAmount < 0 {
 						self.amountLabel.textColor = UIColor(rgb: 0xF97777)
 					} else {

@@ -107,7 +107,7 @@ class WalletsListController: PersistedObjectListController
 	func CreateNewWallet_NoBootNoListAdd(
 		_ localeCode: String,
 		_ fn: @escaping (_ err: String?, _ walletInstance: Wallet?) -> Void
-	) -> Void { // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
+	) -> Void { // call this first, then call OnceBooted_ObtainPW_AddNewlyGeneratedWallet
 		MyMoneroCore.shared_objCppBridge.NewlyCreatedWallet(
 			localeCode,
 			{ (err_str, walletDescription) in

@@ -722,11 +722,11 @@ extension SendFundsForm
 				if converted_amountDouble == nil {
 					return nil // rate not ready yet
 				}
-				return displayCurrency.nonAtomicCurrency_localized_formattedString(
+				return displayCurrency.nonAtomicCurrency_formattedString(
 					final_amountDouble: converted_amountDouble!
 				)
 			}
-			return xmr_estMaxAmount.localized_formattedString // then it's an xmr amount
+			return xmr_estMaxAmount.formattedString // then it's an xmr amount
 		}
 		var new_displayCcyFormatted_estMaxAmount_fullInputText: String {
 			guard let string = self.new_displayCcyFormatted_estMaxAmountString else {
@@ -872,6 +872,10 @@ extension SendFundsForm
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
 			let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
 			let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
+			if amountText != nil && amountText!.isPureDecimalNoGroupingNumeric == false {
+				self.setValidationMessage(NSLocalizedString("Please enter an amount with only numbers and the '.' character.", comment: ""))
+				return
+			}
 			let amount_submittableDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
 				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
 			)
@@ -1043,7 +1047,7 @@ extension SendFundsForm
 						UIAlertAction(
 							title: String(
 								format: NSLocalizedString("Agree and Send %@ %@", comment: "Agree and Send {amount} {XMR}"),
-								MoneroAmount.shared_localized_doubleFormatter().string(for: amount_submittableDouble!)!,
+								MoneroAmount.shared_doubleFormatter().string(for: amount_submittableDouble!)!,
 								CcyConversionRates.Currency.XMR.symbol
 							),
 							style: .destructive // or is red negative b/c the action is also constructive? (use .default)
@@ -1076,7 +1080,7 @@ extension SendFundsForm
 								"Send %@ %@?",
 								comment: "Send {amount} {XMR}?"
 							),
-							MoneroAmount.shared_localized_doubleFormatter().string(for: amount_submittableDouble!)!,
+							MoneroAmount.shared_doubleFormatter().string(for: amount_submittableDouble!)!,
 							CcyConversionRates.Currency.XMR.symbol
 						),
 						preferredStyle: .alert

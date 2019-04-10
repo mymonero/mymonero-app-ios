@@ -309,7 +309,7 @@ extension ImportTransactionsModal
 			let import_fee = result.import_fee
 			let feeReceiptStatus = result.feeReceiptStatus
 			//
-			let formatted_importFee = import_fee.localized_formattedString
+			let formatted_importFee = import_fee.formattedString
 			do {
 				self.informationalLabel.setMessageText(
 					String(
@@ -335,7 +335,7 @@ extension ImportTransactionsModal
 				self.paymentID_labelAccessory_copyButton.set(text: payment_id)
 				//
 				var amountStr = formatted_importFee
-				let locale_decimalSeparator = Locale.current.decimalSeparator ?? "."
+				let locale_decimalSeparator = "."
 				if amountStr.contains(locale_decimalSeparator) == false {
 					amountStr += locale_decimalSeparator + "00"
 				}
@@ -390,7 +390,7 @@ extension ImportTransactionsModal
 							"Sending %@ XMR…",
 							comment: "Sending {amount} XMR…"
 						),
-						self.importRequestInfoAndStatus_receivedResult!.import_fee.localized_formattedString
+						self.importRequestInfoAndStatus_receivedResult!.import_fee.formattedString
 					),
 					wantsXButton: false
 				)

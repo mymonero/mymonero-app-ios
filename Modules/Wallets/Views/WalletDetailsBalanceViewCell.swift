@@ -292,7 +292,7 @@ extension WalletDetails
 					let display_coinUnitPlaces = displayCurrency.unitsForDisplay
 					//
 					// TODO: the following should probably be factored and placed into something like an/the Amounts class
-					let locale_decimalSeparator = Locale.current.decimalSeparator ?? "."
+					let locale_decimalSeparator = "."
 					let raw_balanceString__components = raw_balanceString.components(separatedBy: locale_decimalSeparator)
 					if raw_balanceString__components.count == 1 {
 						let balance_aspect_integer = raw_balanceString__components[0]
