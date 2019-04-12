@@ -1430,7 +1430,7 @@ extension SendFundsForm
 		}
 		func __shared_havingClearedForm_didPick(requestPayload: MoneroUtils.URIs.Requests.ParsedRequest)
 		{
-			var currencyToSelect: CcyConversionRates.Currency = .XMR // the default; to be finalized as follows…
+			var currencyToSelect: CcyConversionRates.Currency?
 			if let amountCurrencySymbol = requestPayload.amountCurrency,
 				amountCurrencySymbol != ""
 			{
@@ -1446,14 +1446,23 @@ extension SendFundsForm
 				}
 				currencyToSelect = currency!
 			}
-			self.amount_fieldset.currencyPickerButton.set( // set no matter what, jic different
-				selectedCurrency: currencyToSelect,
-				skipSettingOnPickerView: false
-			)
+			var didSetAmountFromRequest = false // to be finalized as follows…
 			// as long as currency was valid…
 			if let amountString = requestPayload.amount, amountString != "" {
+				didSetAmountFromRequest = true
 				self.amount_fieldset.inputField.text = amountString
 				self.amount_fieldset.configure_effectiveMoneroAmountLabel() // b/c we just manually changed the text - would be nice to have an abstraction to do all this :P
+			}
+			if (currencyToSelect != nil) {
+				if ((self.amount_fieldset.inputField.text == nil || self.amount_fieldset.inputField.text == "")
+					|| didSetAmountFromRequest) { // so either the ccy and amount were on the request OR there was a ccy but the amount field was left empty by the user, i.e. we can assume it's ok to modify the ccy since there was one on the request
+					self.amount_fieldset.currencyPickerButton.set(
+						selectedCurrency: currencyToSelect!, // permissable to fall back to XMR here if no ccy present on the request
+						skipSettingOnPickerView: false
+					)
+				}
+			} else {
+				// otherwise, just keep it as it is …… because if they set it to, e.g. CAD, and there's no ccy on the request, then they might accidentally send the same numerical value in XMR despite having wanted it to be in CAD
 			}
 			do {
 				let target_address = requestPayload.address
