@@ -1453,9 +1453,9 @@ extension SendFundsForm
 				self.amount_fieldset.inputField.text = amountString
 				self.amount_fieldset.configure_effectiveMoneroAmountLabel() // b/c we just manually changed the text - would be nice to have an abstraction to do all this :P
 			}
-			if (currencyToSelect != nil) {
-				if ((self.amount_fieldset.inputField.text == nil || self.amount_fieldset.inputField.text == "")
-					|| didSetAmountFromRequest) { // so either the ccy and amount were on the request OR there was a ccy but the amount field was left empty by the user, i.e. we can assume it's ok to modify the ccy since there was one on the request
+			if currencyToSelect != nil {
+				if (self.amount_fieldset.inputField.text == nil || self.amount_fieldset.inputField.text == "")
+					|| didSetAmountFromRequest { // so either the ccy and amount were on the request OR there was a ccy but the amount field was left empty by the user, i.e. we can assume it's ok to modify the ccy since there was one on the request
 					self.amount_fieldset.currencyPickerButton.set(
 						selectedCurrency: currencyToSelect!, // permissable to fall back to XMR here if no ccy present on the request
 						skipSettingOnPickerView: false
