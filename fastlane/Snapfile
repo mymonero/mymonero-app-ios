@@ -4,6 +4,7 @@
 devices([
 	# "iPhone XS", # apparently generates wrong sized image.. maybe pending frameit support for XS ?
 	# "iPhone 8",
+	"iPhone Xs Max",
 	"iPhone 8 Plus",
 	# "iPhone SE",
 	"iPad Pro (12.9-inch)"
