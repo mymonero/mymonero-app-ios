@@ -1519,6 +1519,7 @@ class Wallet: PersistableObject
 					}
 				}
 				if incoming_tx.mempool == true { // since the server has an issue sending the spent outputs at present, and only sends the (positive) change amount, this is a workaround to always prefer the existing cached tx's amounts rather than the ones sent by the server
+					// NOTE: This will also apply to *incoming* txs just due to the naiveness of the logic
 					finalized_incoming_tx.totalSent = existing_same_tx.totalSent;
 					finalized_incoming_tx.totalReceived = existing_same_tx.totalReceived;
 					finalized_incoming_tx.amount = existing_same_tx.amount;
