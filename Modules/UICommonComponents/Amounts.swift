@@ -560,8 +560,14 @@ extension UICommonComponents.Form.Amounts
 			replacementString string: String
 		) -> Bool {
 			let decimalPlaceCharacter = "."
+			var characters = "0123456789\(decimalPlaceCharacter)"
+			let localeDecimalSepChar = Locale.current.decimalSeparator ?? "."
+			if decimalPlaceCharacter != localeDecimalSepChar {
+				characters += localeDecimalSepChar
+			}
+			// ^------- so first, what we do is we actually allow the locale's decimal sep… but so that the user can actually type it … but then we auto-replace it with the "." so as to parse properly
 			do { // first check legal characters
-				let aSet = NSCharacterSet(charactersIn:"0123456789\(decimalPlaceCharacter)").inverted
+				let aSet = NSCharacterSet(charactersIn:characters).inverted
 				let compSepByCharInSet = string.components(separatedBy: aSet)
 				let numberFiltered = compSepByCharInSet.joined(separator: "")
 				if string != numberFiltered {
@@ -579,6 +585,19 @@ extension UICommonComponents.Form.Amounts
 				if let text = textField.text {
 					let newLength = text.count + string.count - range.length
 					if newLength >= MoneroConstants.currency_unitPlaces + 2 + 1 { // I figure 14 numerals is a pretty good upper bound guess for inputs no matter what the currency… I might be wrong…
+						return false
+					}
+				}
+			}
+			do { // now, as we allowed the locale decimal sep from before, we have to replace it, if it exists
+				let text: NSString = (textField.text ?? "") as NSString
+				let resultString = text.replacingCharacters(in: range, with: string)
+				if decimalPlaceCharacter != localeDecimalSepChar {
+					if resultString.contains(localeDecimalSepChar) {
+						let formattedText = resultString.replacingOccurrences(of: localeDecimalSepChar, with: decimalPlaceCharacter)
+						textField.text = formattedText
+						//
+						// return false so the user's input is not applied to the text field as we're doing it on their behalf
 						return false
 					}
 				}
