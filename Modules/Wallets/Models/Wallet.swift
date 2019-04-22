@@ -1297,7 +1297,7 @@ class Wallet: PersistableObject
 				paymentId: optl__final_payment_id ?? optl__integratedAddressPIDForDisplay, // transaction.paymentId will be nil for integrated addresses but we show it here anyway and, in the situation where they used a std xmr addr and a short pid, an int addr would get fabricated anyway, leaving sentWith_paymentID nil even though user is expecting a pid - so we want to make sure it gets saved in either case
 				mixin: MyMoneroCore.fixedMixin,
 				//
-				mempool: true, // is this correct?
+				mempool: true,
 				unlock_time: 0,
 				height: nil, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
 				//
@@ -1518,12 +1518,12 @@ class Wallet: PersistableObject
 						finalized_incoming_tx.mixin = existing_same_tx.mixin // if the tx lost it.. say, while it's being scanned, keep mixin
 					}
 				}
-				//
-				// We could probably check if the existing_same_tx has a
-				// negative amount and the incoming_tx has a positive amount and
-				// then cause the existing_tx to use the negative amount ... but
-				// those criteria are too loose, and the potential for incorrect
-				// behavior too great imo.
+				if incoming_tx.mempool == true { // since the server has an issue sending the spent outputs at present, and only sends the (positive) change amount, this is a workaround to always prefer the existing cached tx's amounts rather than the ones sent by the server
+					finalized_incoming_tx.totalSent = existing_same_tx.totalSent;
+					finalized_incoming_tx.totalReceived = existing_same_tx.totalReceived;
+					finalized_incoming_tx.amount = existing_same_tx.amount;
+					finalized_incoming_tx.approxFloatAmount = existing_same_tx.approxFloatAmount;
+				}
 			}
 			// always overwrite existing ones:
 			txs_by_hash[incoming_tx.hash] = finalized_incoming_tx; // the finalized tx

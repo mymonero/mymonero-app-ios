@@ -229,10 +229,10 @@ class MoneroHistoricalTransactionRecord: Equatable
 	}
 	//
 	// Properties
-	let amount: MoneroAmount
-	let totalSent: MoneroAmount
-	let totalReceived: MoneroAmount
-	let approxFloatAmount: Double
+	var amount: MoneroAmount
+	var totalSent: MoneroAmount
+	var totalReceived: MoneroAmount
+	var approxFloatAmount: Double
 	let spent_outputs: [MoneroSpentOutputDescription]?
 	let timestamp: Date
 	let hash: MoneroTransactionHash
