@@ -153,6 +153,24 @@
 		9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */; };
 		9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F46F1D01F58E1A60046348C /* MoneroTypes.swift */; };
 		9F46F1D31F58EC250046348C /* MoneroUtils_PaymentIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */; };
+		9F4802DF22DE65070028D488 /* PersistedObjectListController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802A422DE65060028D488 /* PersistedObjectListController.cpp */; };
+		9F4802E022DE65070028D488 /* HostedMonero.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802A722DE65060028D488 /* HostedMonero.cpp */; };
+		9F4802E122DE65070028D488 /* mutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802AD22DE65060028D488 /* mutils.c */; };
+		9F4802E222DE65070028D488 /* rncryptor_c.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802B022DE65060028D488 /* rncryptor_c.c */; };
+		9F4802E422DE65070028D488 /* Currencies.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802B622DE65060028D488 /* Currencies.cpp */; };
+		9F4802E522DE65070028D488 /* WalletsListController.Full.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802BC22DE65060028D488 /* WalletsListController.Full.cpp */; };
+		9F4802E622DE65070028D488 /* Wallet_HostPollingController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802BD22DE65060028D488 /* Wallet_HostPollingController.cpp */; };
+		9F4802E722DE65070028D488 /* Wallet_TxCleanupController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802BF22DE65060028D488 /* Wallet_TxCleanupController.cpp */; };
+		9F4802E922DE65070028D488 /* Wallet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802C322DE65060028D488 /* Wallet.cpp */; };
+		9F4802EA22DE65070028D488 /* Wallet_KeyImageCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802C422DE65060028D488 /* Wallet_KeyImageCache.cpp */; };
+		9F4802EB22DE65070028D488 /* WalletsListController_Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802C522DE65060028D488 /* WalletsListController_Base.cpp */; };
+		9F4802EC22DE65070028D488 /* UserIdle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802C722DE65060028D488 /* UserIdle.cpp */; };
+		9F4802ED22DE65070028D488 /* AppBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802CC22DE65070028D488 /* AppBridge.cpp */; };
+		9F4802EE22DE65070028D488 /* PersistableObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802CF22DE65070028D488 /* PersistableObject.cpp */; };
+		9F4802EF22DE65070028D488 /* document_persister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802D122DE65070028D488 /* document_persister.cpp */; };
+		9F4802F022DE65070028D488 /* SettingsController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802D422DE65070028D488 /* SettingsController.cpp */; };
+		9F4802F122DE65070028D488 /* SettingsProviders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802D622DE65070028D488 /* SettingsProviders.cpp */; };
+		9F4802F222DE65070028D488 /* PasswordController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4802DA22DE65070028D488 /* PasswordController.cpp */; };
 		9F651660207A7066001BE504 /* MoneroUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65165F207A7065001BE504 /* MoneroUtils.swift */; };
 		9F6DB7612095485400ED7286 /* QRPickingActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DB7602095485400ED7286 /* QRPickingActionButtons.swift */; };
 		9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7298B61F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift */; };
@@ -180,6 +198,8 @@
 		9F8441561F39405C00BED8E3 /* Tooltips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8441551F39405C00BED8E3 /* Tooltips.swift */; };
 		9F8587FA1F8A98B700E0F38F /* UIView+SafeArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8587F91F8A98B700E0F38F /* UIView+SafeArea.swift */; };
 		9F86738A1F2C396C00F89EAB /* URLOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8673891F2C396C00F89EAB /* URLOpening.swift */; };
+		9F8E04C022E1085800AB7277 /* AppBridgeHandle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E04BC22E1085800AB7277 /* AppBridgeHandle.mm */; };
+		9F8E04C122E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E04BD22E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp */; };
 		9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */; };
 		9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */; };
 		9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */; };
@@ -629,6 +649,83 @@
 		9F453FA81F267A65004590DC /* SendFundsTabNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendFundsTabNavigationViewController.swift; sourceTree = "<group>"; };
 		9F46F1D01F58E1A60046348C /* MoneroTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroTypes.swift; sourceTree = "<group>"; };
 		9F46F1D21F58EC250046348C /* MoneroUtils_PaymentIDs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_PaymentIDs.swift; sourceTree = "<group>"; };
+		9F48027922DE65050028D488 /* rapidjson_defines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidjson_defines.hpp; sourceTree = "<group>"; };
+		9F48027B22DE65050028D488 /* fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fwd.h; sourceTree = "<group>"; };
+		9F48027C22DE65050028D488 /* memorystream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memorystream.h; sourceTree = "<group>"; };
+		9F48027D22DE65050028D488 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
+		9F48027E22DE65050028D488 /* prettywriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prettywriter.h; sourceTree = "<group>"; };
+		9F48027F22DE65050028D488 /* ostreamwrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ostreamwrapper.h; sourceTree = "<group>"; };
+		9F48028022DE65050028D488 /* encodedstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encodedstream.h; sourceTree = "<group>"; };
+		9F48028122DE65050028D488 /* filereadstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filereadstream.h; sourceTree = "<group>"; };
+		9F48028222DE65050028D488 /* cursorstreamwrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cursorstreamwrapper.h; sourceTree = "<group>"; };
+		9F48028322DE65050028D488 /* istreamwrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = istreamwrapper.h; sourceTree = "<group>"; };
+		9F48028422DE65050028D488 /* stringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stringbuffer.h; sourceTree = "<group>"; };
+		9F48028622DE65050028D488 /* ieee754.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ieee754.h; sourceTree = "<group>"; };
+		9F48028722DE65050028D488 /* strtod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strtod.h; sourceTree = "<group>"; };
+		9F48028822DE65050028D488 /* swap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swap.h; sourceTree = "<group>"; };
+		9F48028922DE65050028D488 /* regex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regex.h; sourceTree = "<group>"; };
+		9F48028A22DE65050028D488 /* diyfp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = diyfp.h; sourceTree = "<group>"; };
+		9F48028B22DE65050028D488 /* biginteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = biginteger.h; sourceTree = "<group>"; };
+		9F48028C22DE65050028D488 /* strfunc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strfunc.h; sourceTree = "<group>"; };
+		9F48028D22DE65050028D488 /* itoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = itoa.h; sourceTree = "<group>"; };
+		9F48028E22DE65050028D488 /* stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stack.h; sourceTree = "<group>"; };
+		9F48028F22DE65050028D488 /* dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dtoa.h; sourceTree = "<group>"; };
+		9F48029022DE65050028D488 /* meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = meta.h; sourceTree = "<group>"; };
+		9F48029122DE65050028D488 /* pow10.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pow10.h; sourceTree = "<group>"; };
+		9F48029222DE65050028D488 /* encodings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encodings.h; sourceTree = "<group>"; };
+		9F48029322DE65050028D488 /* schema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = schema.h; sourceTree = "<group>"; };
+		9F48029422DE65050028D488 /* stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream.h; sourceTree = "<group>"; };
+		9F48029522DE65050028D488 /* filewritestream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filewritestream.h; sourceTree = "<group>"; };
+		9F48029622DE65050028D488 /* rapidjson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rapidjson.h; sourceTree = "<group>"; };
+		9F48029722DE65050028D488 /* document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = document.h; sourceTree = "<group>"; };
+		9F48029822DE65050028D488 /* allocators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = allocators.h; sourceTree = "<group>"; };
+		9F48029922DE65050028D488 /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
+		9F48029B22DE65050028D488 /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
+		9F48029C22DE65050028D488 /* en.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = en.h; sourceTree = "<group>"; };
+		9F48029D22DE65050028D488 /* memorybuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memorybuffer.h; sourceTree = "<group>"; };
+		9F48029E22DE65050028D488 /* pointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pointer.h; sourceTree = "<group>"; };
+		9F4802A322DE65060028D488 /* PersistedObjectListController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PersistedObjectListController.hpp; sourceTree = "<group>"; };
+		9F4802A422DE65060028D488 /* PersistedObjectListController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PersistedObjectListController.cpp; sourceTree = "<group>"; };
+		9F4802A722DE65060028D488 /* HostedMonero.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HostedMonero.cpp; sourceTree = "<group>"; };
+		9F4802A922DE65060028D488 /* parsing.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parsing.hpp; sourceTree = "<group>"; };
+		9F4802AA22DE65060028D488 /* HTTPRequests_Interface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HTTPRequests_Interface.hpp; sourceTree = "<group>"; };
+		9F4802AB22DE65060028D488 /* HostedMonero.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HostedMonero.hpp; sourceTree = "<group>"; };
+		9F4802AD22DE65060028D488 /* mutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mutils.c; sourceTree = "<group>"; };
+		9F4802AE22DE65060028D488 /* rncryptor_c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rncryptor_c.h; sourceTree = "<group>"; };
+		9F4802AF22DE65060028D488 /* mutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mutils.h; sourceTree = "<group>"; };
+		9F4802B022DE65060028D488 /* rncryptor_c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rncryptor_c.c; sourceTree = "<group>"; };
+		9F4802B322DE65060028D488 /* AppServiceLocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AppServiceLocator.hpp; sourceTree = "<group>"; };
+		9F4802B522DE65060028D488 /* Currencies.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Currencies.hpp; sourceTree = "<group>"; };
+		9F4802B622DE65060028D488 /* Currencies.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Currencies.cpp; sourceTree = "<group>"; };
+		9F4802B822DE65060028D488 /* Wallet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallet.hpp; sourceTree = "<group>"; };
+		9F4802B922DE65060028D488 /* Wallet_KeyImageCache.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallet_KeyImageCache.hpp; sourceTree = "<group>"; };
+		9F4802BA22DE65060028D488 /* WalletsListController_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WalletsListController_Base.hpp; sourceTree = "<group>"; };
+		9F4802BB22DE65060028D488 /* Wallet_TxCleanupController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallet_TxCleanupController.hpp; sourceTree = "<group>"; };
+		9F4802BC22DE65060028D488 /* WalletsListController.Full.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WalletsListController.Full.cpp; sourceTree = "<group>"; };
+		9F4802BD22DE65060028D488 /* Wallet_HostPollingController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wallet_HostPollingController.cpp; sourceTree = "<group>"; };
+		9F4802BF22DE65060028D488 /* Wallet_TxCleanupController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wallet_TxCleanupController.cpp; sourceTree = "<group>"; };
+		9F4802C022DE65060028D488 /* WalletsListController.Full.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WalletsListController.Full.hpp; sourceTree = "<group>"; };
+		9F4802C122DE65060028D488 /* Wallet_HostPollingController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Wallet_HostPollingController.hpp; sourceTree = "<group>"; };
+		9F4802C322DE65060028D488 /* Wallet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wallet.cpp; sourceTree = "<group>"; };
+		9F4802C422DE65060028D488 /* Wallet_KeyImageCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wallet_KeyImageCache.cpp; sourceTree = "<group>"; };
+		9F4802C522DE65060028D488 /* WalletsListController_Base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WalletsListController_Base.cpp; sourceTree = "<group>"; };
+		9F4802C722DE65060028D488 /* UserIdle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserIdle.cpp; sourceTree = "<group>"; };
+		9F4802C822DE65060028D488 /* UserIdle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UserIdle.hpp; sourceTree = "<group>"; };
+		9F4802CA22DE65070028D488 /* HTTPRequests_Handle_bridge.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HTTPRequests_Handle_bridge.hpp; sourceTree = "<group>"; };
+		9F4802CB22DE65070028D488 /* AppBridge.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AppBridge.hpp; sourceTree = "<group>"; };
+		9F4802CC22DE65070028D488 /* AppBridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppBridge.cpp; sourceTree = "<group>"; };
+		9F4802CE22DE65070028D488 /* document_persister.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = document_persister.hpp; sourceTree = "<group>"; };
+		9F4802CF22DE65070028D488 /* PersistableObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PersistableObject.cpp; sourceTree = "<group>"; };
+		9F4802D022DE65070028D488 /* PersistableObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PersistableObject.hpp; sourceTree = "<group>"; };
+		9F4802D122DE65070028D488 /* document_persister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = document_persister.cpp; sourceTree = "<group>"; };
+		9F4802D322DE65070028D488 /* SettingsProviders.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SettingsProviders.hpp; sourceTree = "<group>"; };
+		9F4802D422DE65070028D488 /* SettingsController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsController.cpp; sourceTree = "<group>"; };
+		9F4802D522DE65070028D488 /* SettingsController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SettingsController.hpp; sourceTree = "<group>"; };
+		9F4802D622DE65070028D488 /* SettingsProviders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsProviders.cpp; sourceTree = "<group>"; };
+		9F4802D822DE65070028D488 /* base64.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = base64.hpp; sourceTree = "<group>"; };
+		9F4802DA22DE65070028D488 /* PasswordController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PasswordController.cpp; sourceTree = "<group>"; };
+		9F4802DB22DE65070028D488 /* PasswordController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PasswordController.hpp; sourceTree = "<group>"; };
+		9F4802DE22DE65070028D488 /* Dispatch_Interface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dispatch_Interface.hpp; sourceTree = "<group>"; };
 		9F4B8FD321DA77EF0005CAA4 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		9F4B8FD421DA77EF0005CAA4 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F4B8FD521DA77F70005CAA4 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -677,6 +774,10 @@
 		9F8441551F39405C00BED8E3 /* Tooltips.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tooltips.swift; sourceTree = "<group>"; };
 		9F8587F91F8A98B700E0F38F /* UIView+SafeArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+SafeArea.swift"; sourceTree = "<group>"; };
 		9F8673891F2C396C00F89EAB /* URLOpening.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLOpening.swift; sourceTree = "<group>"; };
+		9F8E04BC22E1085800AB7277 /* AppBridgeHandle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppBridgeHandle.mm; sourceTree = "<group>"; };
+		9F8E04BD22E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppServiceLocator.bridge.ios.cpp; sourceTree = "<group>"; };
+		9F8E04BE22E1085800AB7277 /* AppBridgeHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppBridgeHandle.h; sourceTree = "<group>"; };
+		9F8E04BF22E1085800AB7277 /* Dispatch.ios.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dispatch.ios.hpp; sourceTree = "<group>"; };
 		9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Bold.otf"; sourceTree = "<group>"; };
 		9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Light.otf"; sourceTree = "<group>"; };
 		9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Regular.otf"; sourceTree = "<group>"; };
@@ -1033,9 +1134,23 @@
 		9F2C31FA2208F72200AA9C5A /* src */ = {
 			isa = PBXGroup;
 			children = (
-				9F2C32062208F72200AA9C5A /* SendFunds */,
+				9F4802A522DE65060028D488 /* APIClient */,
+				9F4802B122DE65060028D488 /* App */,
+				9F4802C922DE65070028D488 /* AppBridge */,
+				9F4802D722DE65070028D488 /* base64 */,
+				9F48027822DE65050028D488 /* contrib */,
+				9F4802B422DE65060028D488 /* Currencies */,
+				9F4802DC22DE65070028D488 /* Dispatch */,
+				9F4802A222DE65060028D488 /* Lists */,
 				9F2C320C2208F72200AA9C5A /* mymonero-core-cpp */,
 				9F2C32122208F72200AA9C5A /* OpenAlias */,
+				9F4802D922DE65070028D488 /* Passwords */,
+				9F4802CD22DE65070028D488 /* Persistence */,
+				9F4802AC22DE65060028D488 /* RNCryptor-C */,
+				9F2C32062208F72200AA9C5A /* SendFunds */,
+				9F4802D222DE65070028D488 /* Settings */,
+				9F4802C622DE65060028D488 /* UserIdle */,
+				9F4802B722DE65060028D488 /* Wallets */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1499,6 +1614,230 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		9F48027822DE65050028D488 /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				9F48027922DE65050028D488 /* rapidjson_defines.hpp */,
+				9F48027A22DE65050028D488 /* rapidjson */,
+			);
+			name = contrib;
+			path = "../../../../../../mymonero-libapp-cpp/src/contrib";
+			sourceTree = "<group>";
+		};
+		9F48027A22DE65050028D488 /* rapidjson */ = {
+			isa = PBXGroup;
+			children = (
+				9F48027B22DE65050028D488 /* fwd.h */,
+				9F48027C22DE65050028D488 /* memorystream.h */,
+				9F48027D22DE65050028D488 /* reader.h */,
+				9F48027E22DE65050028D488 /* prettywriter.h */,
+				9F48027F22DE65050028D488 /* ostreamwrapper.h */,
+				9F48028022DE65050028D488 /* encodedstream.h */,
+				9F48028122DE65050028D488 /* filereadstream.h */,
+				9F48028222DE65050028D488 /* cursorstreamwrapper.h */,
+				9F48028322DE65050028D488 /* istreamwrapper.h */,
+				9F48028422DE65050028D488 /* stringbuffer.h */,
+				9F48028522DE65050028D488 /* internal */,
+				9F48029222DE65050028D488 /* encodings.h */,
+				9F48029322DE65050028D488 /* schema.h */,
+				9F48029422DE65050028D488 /* stream.h */,
+				9F48029522DE65050028D488 /* filewritestream.h */,
+				9F48029622DE65050028D488 /* rapidjson.h */,
+				9F48029722DE65050028D488 /* document.h */,
+				9F48029822DE65050028D488 /* allocators.h */,
+				9F48029922DE65050028D488 /* writer.h */,
+				9F48029A22DE65050028D488 /* error */,
+				9F48029D22DE65050028D488 /* memorybuffer.h */,
+				9F48029E22DE65050028D488 /* pointer.h */,
+			);
+			path = rapidjson;
+			sourceTree = "<group>";
+		};
+		9F48028522DE65050028D488 /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				9F48028622DE65050028D488 /* ieee754.h */,
+				9F48028722DE65050028D488 /* strtod.h */,
+				9F48028822DE65050028D488 /* swap.h */,
+				9F48028922DE65050028D488 /* regex.h */,
+				9F48028A22DE65050028D488 /* diyfp.h */,
+				9F48028B22DE65050028D488 /* biginteger.h */,
+				9F48028C22DE65050028D488 /* strfunc.h */,
+				9F48028D22DE65050028D488 /* itoa.h */,
+				9F48028E22DE65050028D488 /* stack.h */,
+				9F48028F22DE65050028D488 /* dtoa.h */,
+				9F48029022DE65050028D488 /* meta.h */,
+				9F48029122DE65050028D488 /* pow10.h */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		9F48029A22DE65050028D488 /* error */ = {
+			isa = PBXGroup;
+			children = (
+				9F48029B22DE65050028D488 /* error.h */,
+				9F48029C22DE65050028D488 /* en.h */,
+			);
+			path = error;
+			sourceTree = "<group>";
+		};
+		9F4802A222DE65060028D488 /* Lists */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802A322DE65060028D488 /* PersistedObjectListController.hpp */,
+				9F4802A422DE65060028D488 /* PersistedObjectListController.cpp */,
+			);
+			name = Lists;
+			path = "../../../../../../mymonero-libapp-cpp/src/Lists";
+			sourceTree = "<group>";
+		};
+		9F4802A522DE65060028D488 /* APIClient */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802AB22DE65060028D488 /* HostedMonero.hpp */,
+				9F4802A722DE65060028D488 /* HostedMonero.cpp */,
+				9F4802A922DE65060028D488 /* parsing.hpp */,
+				9F4802AA22DE65060028D488 /* HTTPRequests_Interface.hpp */,
+			);
+			name = APIClient;
+			path = "../../../../../../mymonero-libapp-cpp/src/APIClient";
+			sourceTree = "<group>";
+		};
+		9F4802AC22DE65060028D488 /* RNCryptor-C */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802AD22DE65060028D488 /* mutils.c */,
+				9F4802AE22DE65060028D488 /* rncryptor_c.h */,
+				9F4802AF22DE65060028D488 /* mutils.h */,
+				9F4802B022DE65060028D488 /* rncryptor_c.c */,
+			);
+			name = "RNCryptor-C";
+			path = "../../../../../../mymonero-libapp-cpp/src/RNCryptor-C";
+			sourceTree = "<group>";
+		};
+		9F4802B122DE65060028D488 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802B322DE65060028D488 /* AppServiceLocator.hpp */,
+			);
+			name = App;
+			path = "../../../../../../mymonero-libapp-cpp/src/App";
+			sourceTree = "<group>";
+		};
+		9F4802B422DE65060028D488 /* Currencies */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802B522DE65060028D488 /* Currencies.hpp */,
+				9F4802B622DE65060028D488 /* Currencies.cpp */,
+			);
+			name = Currencies;
+			path = "../../../../../../mymonero-libapp-cpp/src/Currencies";
+			sourceTree = "<group>";
+		};
+		9F4802B722DE65060028D488 /* Wallets */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802B822DE65060028D488 /* Wallet.hpp */,
+				9F4802B922DE65060028D488 /* Wallet_KeyImageCache.hpp */,
+				9F4802BA22DE65060028D488 /* WalletsListController_Base.hpp */,
+				9F4802BB22DE65060028D488 /* Wallet_TxCleanupController.hpp */,
+				9F4802BC22DE65060028D488 /* WalletsListController.Full.cpp */,
+				9F4802BD22DE65060028D488 /* Wallet_HostPollingController.cpp */,
+				9F4802BF22DE65060028D488 /* Wallet_TxCleanupController.cpp */,
+				9F4802C022DE65060028D488 /* WalletsListController.Full.hpp */,
+				9F4802C122DE65060028D488 /* Wallet_HostPollingController.hpp */,
+				9F4802C322DE65060028D488 /* Wallet.cpp */,
+				9F4802C422DE65060028D488 /* Wallet_KeyImageCache.cpp */,
+				9F4802C522DE65060028D488 /* WalletsListController_Base.cpp */,
+			);
+			name = Wallets;
+			path = "../../../../../../mymonero-libapp-cpp/src/Wallets";
+			sourceTree = "<group>";
+		};
+		9F4802C622DE65060028D488 /* UserIdle */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802C722DE65060028D488 /* UserIdle.cpp */,
+				9F4802C822DE65060028D488 /* UserIdle.hpp */,
+			);
+			name = UserIdle;
+			path = "../../../../../../mymonero-libapp-cpp/src/UserIdle";
+			sourceTree = "<group>";
+		};
+		9F4802C922DE65070028D488 /* AppBridge */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802CA22DE65070028D488 /* HTTPRequests_Handle_bridge.hpp */,
+				9F4802CB22DE65070028D488 /* AppBridge.hpp */,
+				9F4802CC22DE65070028D488 /* AppBridge.cpp */,
+			);
+			name = AppBridge;
+			path = "../../../../../../mymonero-libapp-cpp/src/AppBridge";
+			sourceTree = "<group>";
+		};
+		9F4802CD22DE65070028D488 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802CE22DE65070028D488 /* document_persister.hpp */,
+				9F4802D122DE65070028D488 /* document_persister.cpp */,
+				9F4802D022DE65070028D488 /* PersistableObject.hpp */,
+				9F4802CF22DE65070028D488 /* PersistableObject.cpp */,
+			);
+			name = Persistence;
+			path = "../../../../../../mymonero-libapp-cpp/src/Persistence";
+			sourceTree = "<group>";
+		};
+		9F4802D222DE65070028D488 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802D322DE65070028D488 /* SettingsProviders.hpp */,
+				9F4802D422DE65070028D488 /* SettingsController.cpp */,
+				9F4802D522DE65070028D488 /* SettingsController.hpp */,
+				9F4802D622DE65070028D488 /* SettingsProviders.cpp */,
+			);
+			name = Settings;
+			path = "../../../../../../mymonero-libapp-cpp/src/Settings";
+			sourceTree = "<group>";
+		};
+		9F4802D722DE65070028D488 /* base64 */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802D822DE65070028D488 /* base64.hpp */,
+			);
+			name = base64;
+			path = "../../../../../../mymonero-libapp-cpp/src/base64";
+			sourceTree = "<group>";
+		};
+		9F4802D922DE65070028D488 /* Passwords */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802DA22DE65070028D488 /* PasswordController.cpp */,
+				9F4802DB22DE65070028D488 /* PasswordController.hpp */,
+			);
+			name = Passwords;
+			path = "../../../../../../mymonero-libapp-cpp/src/Passwords";
+			sourceTree = "<group>";
+		};
+		9F4802DC22DE65070028D488 /* Dispatch */ = {
+			isa = PBXGroup;
+			children = (
+				9F4802DE22DE65070028D488 /* Dispatch_Interface.hpp */,
+			);
+			name = Dispatch;
+			path = "../../../../../../mymonero-libapp-cpp/src/Dispatch";
+			sourceTree = "<group>";
+		};
+		9F4802F922DE7E080028D488 /* AppLibBridge */ = {
+			isa = PBXGroup;
+			children = (
+				9F8E04BE22E1085800AB7277 /* AppBridgeHandle.h */,
+				9F8E04BC22E1085800AB7277 /* AppBridgeHandle.mm */,
+				9F8E04BD22E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp */,
+				9F8E04BF22E1085800AB7277 /* Dispatch.ios.hpp */,
+			);
+			path = AppLibBridge;
+			sourceTree = "<group>";
+		};
 		9F7298C21F33E1FE00CD59E1 /* ModelControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1521,6 +1860,7 @@
 			isa = PBXGroup;
 			children = (
 				9F7ADAA61EBD2B420073C2BB /* App */,
+				9F4802F922DE7E080028D488 /* AppLibBridge */,
 				9FA7341F1F07610E00C674D6 /* Logging */,
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
 				9F7E516D1EC61550001EAB3F /* HostedMonero */,
@@ -2192,6 +2532,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 				"pt-BR",
@@ -2365,7 +2706,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AMPopTip/AMPopTip.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
@@ -2390,7 +2731,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2413,6 +2754,8 @@
 				9FA734161F05AFAB00C674D6 /* ContactsListController.swift in Sources */,
 				9F2119241F5E0EC300B8FA0E /* CreateWallet_ConfirmMnemonic_ViewController.swift in Sources */,
 				9F2C33152208F76000AA9C5A /* rctTypes.cpp in Sources */,
+				9F4802E222DE65070028D488 /* rncryptor_c.c in Sources */,
+				9F4802E622DE65070028D488 /* Wallet_HostPollingController.cpp in Sources */,
 				9F2119231F5E0EC300B8FA0E /* AddWalletWizardScreen_MetaInfo_BaseViewController.swift in Sources */,
 				9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
@@ -2479,10 +2822,13 @@
 				9F7298C81F33E1FE00CD59E1 /* SettingsFormViewController.swift in Sources */,
 				9F2C33182208F76000AA9C5A /* verify.c in Sources */,
 				9F2119221F5E0EC300B8FA0E /* AddWalletWizardScreen_BaseViewController.swift in Sources */,
+				9F4802E722DE65070028D488 /* Wallet_TxCleanupController.cpp in Sources */,
 				9F453FA91F267A65004590DC /* SendFundsFormSubmissionController.swift in Sources */,
+				9F4802F022DE65070028D488 /* SettingsController.cpp in Sources */,
 				9F453FAB1F267A65004590DC /* SendFundsTabNavigationViewController.swift in Sources */,
 				9F2C33032208F76000AA9C5A /* skein.c in Sources */,
 				9F7298B71F32578000CD59E1 /* WalletAppContactActionsCoordinator.swift in Sources */,
+				9F4802EA22DE65070028D488 /* Wallet_KeyImageCache.cpp in Sources */,
 				9F2C331A2208F76000AA9C5A /* cryptonote_basic_impl.cpp in Sources */,
 				9F2BFECD1EF33015006B2F7D /* Contact.swift in Sources */,
 				9F2BFE601EEE2EE1006B2F7D /* WalletsListViewCell.swift in Sources */,
@@ -2497,12 +2843,15 @@
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
 				9F7298BF1F33C0EE00CD59E1 /* ScreenSleep.swift in Sources */,
+				9F4802E422DE65070028D488 /* Currencies.cpp in Sources */,
 				9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */,
 				9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */,
 				9F8E30181EED6FD100F89A1D /* EmptyScreens.swift in Sources */,
+				9F4802E522DE65070028D488 /* WalletsListController.Full.cpp in Sources */,
 				9FA734081F05AF4E00C674D6 /* WalletsTabNavigationViewController.swift in Sources */,
 				9F8E30141EED6F2600F89A1D /* PushButton.swift in Sources */,
 				9F6DB7612095485400ED7286 /* QRPickingActionButtons.swift in Sources */,
+				9F8E04C122E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp in Sources */,
 				9F33E6F11F1ABEF300610662 /* WalletDetailsInfoDisclosingCell.swift in Sources */,
 				9F2C33012208F76000AA9C5A /* hash-extra-skein.c in Sources */,
 				9F2C32FD2208F76000AA9C5A /* jh.c in Sources */,
@@ -2520,6 +2869,7 @@
 				9F0801461F1965DD0074B35A /* WalletDetailsViewController.swift in Sources */,
 				9F2BFED01EF34FA3006B2F7D /* FundsRequest.swift in Sources */,
 				9F2BFE741EEEDEE3006B2F7D /* HighlightableCells.swift in Sources */,
+				9F4802EF22DE65070028D488 /* document_persister.cpp in Sources */,
 				9F2C33022208F76000AA9C5A /* crypto.cpp in Sources */,
 				9FA734241F07610E00C674D6 /* Logging.swift in Sources */,
 				9F2C331C2208F76000AA9C5A /* util.cpp in Sources */,
@@ -2532,20 +2882,26 @@
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
 				9FB603081F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift in Sources */,
 				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,
+				9F4802ED22DE65070028D488 /* AppBridge.cpp in Sources */,
 				9F2C33132208F76000AA9C5A /* rctSigs.cpp in Sources */,
+				9F4802F122DE65070028D488 /* SettingsProviders.cpp in Sources */,
 				9F2C33232208F76000AA9C5A /* device.cpp in Sources */,
 				9F7298CB1F34148100CD59E1 /* AboutMyMoneroViewController.swift in Sources */,
 				9F065FC81F9FF98E0074A6B4 /* StringPicker.swift in Sources */,
 				9FA734071F05AF4E00C674D6 /* WalletsListViewController.swift in Sources */,
 				9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */,
 				9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */,
+				9F4802EE22DE65070028D488 /* PersistableObject.cpp in Sources */,
 				9F22B7AA1F01BAD20036B02F /* SmallUtilityValueButtons.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
+				9F4802EB22DE65070028D488 /* WalletsListController_Base.cpp in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
 				9F2119281F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */,
 				9FA7340F1F05AF8800C674D6 /* FundsRequestsListViewController.swift in Sources */,
 				9F33E6FD1F200CC000610662 /* TransactionDetailsViewController.swift in Sources */,
 				9F2C331F2208F76000AA9C5A /* threadpool.cpp in Sources */,
+				9F4802EC22DE65070028D488 /* UserIdle.cpp in Sources */,
+				9F4802F222DE65070028D488 /* PasswordController.cpp in Sources */,
 				9F2C33272208F76000AA9C5A /* monero_send_routine.cpp in Sources */,
 				9FA7342F1F077C7200C674D6 /* Emoji.swift in Sources */,
 				9F2C32F82208F76000AA9C5A /* oaes_lib.c in Sources */,
@@ -2566,6 +2922,8 @@
 				9F2BFECA1EF0AA15006B2F7D /* WalletsListEmptyView.swift in Sources */,
 				9F2C33302208F76000AA9C5A /* monero_transfer_utils.cpp in Sources */,
 				9FEFBEF4215980C400CCAB6C /* MoneroUtils_KeyImageCache.swift in Sources */,
+				9F4802E922DE65070028D488 /* Wallet.cpp in Sources */,
+				9F4802E122DE65070028D488 /* mutils.c in Sources */,
 				9F2C330E2208F76000AA9C5A /* wipeable_string.cpp in Sources */,
 				9F2C332D2208F76000AA9C5A /* monero_fork_rules.cpp in Sources */,
 				9F2C333322090B2600AA9C5A /* serial_bridge_utils.cpp in Sources */,
@@ -2574,6 +2932,7 @@
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
 				9F2C33192208F76000AA9C5A /* cryptonote_format_utils.cpp in Sources */,
 				9F2C32252208F72200AA9C5A /* OpenAlias.cpp in Sources */,
+				9F8E04C022E1085800AB7277 /* AppBridgeHandle.mm in Sources */,
 				9F2C33072208F76000AA9C5A /* logger.cpp in Sources */,
 				9F2C31ED2208F53C00AA9C5A /* SendFundsFormSubmissionHandle.mm in Sources */,
 				9F2C32F92208F76000AA9C5A /* random.c in Sources */,
@@ -2586,6 +2945,7 @@
 				9F1D00321EE3466300A4B3A5 /* LinkButtonView.swift in Sources */,
 				9F2C330F2208F76000AA9C5A /* rctCryptoOps.c in Sources */,
 				9FA734101F05AF8800C674D6 /* FundsRequestsTabNavigationViewController.swift in Sources */,
+				9F4802DF22DE65070028D488 /* PersistedObjectListController.cpp in Sources */,
 				9F2C32FA2208F76000AA9C5A /* crypto-ops.c in Sources */,
 				9F2C33252208F76000AA9C5A /* electrum-words.cpp in Sources */,
 				9FA7341A1F05AFC000C674D6 /* ContactFormViewController.swift in Sources */,
@@ -2603,6 +2963,7 @@
 				9FD70E091F1988FB000FE675 /* Tables.swift in Sources */,
 				9F2C33082208F76000AA9C5A /* string_tools.cpp in Sources */,
 				9F33E6F91F20016000610662 /* EditWalletViewController.swift in Sources */,
+				9F4802E022DE65070028D488 /* HostedMonero.cpp in Sources */,
 				9F9C59F11F0C45AD003B9266 /* ScrollableInfo.swift in Sources */,
 				9F651660207A7066001BE504 /* MoneroUtils.swift in Sources */,
 				9F2BFE621EEE2EEB006B2F7D /* WalletCellContentView.swift in Sources */,
@@ -2820,10 +3181,11 @@
 			baseConfigurationReference = B9235B9A658A8ABD74A66866 /* Pods-MyMonero.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj msinttypes";
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2835,6 +3197,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/ofxiOSBoost\"",
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
+					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/contrib/**",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -2859,10 +3222,11 @@
 			baseConfigurationReference = F56E327D2325F7E70A93F182 /* Pods-MyMonero.app store.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj msinttypes";
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -2871,6 +3235,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/ofxiOSBoost\"",
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
+					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/contrib/**",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -2948,10 +3313,11 @@
 			baseConfigurationReference = A237A0EC6E6CA80522825966 /* Pods-MyMonero.internal.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj msinttypes";
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -2960,6 +3326,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/ofxiOSBoost\"",
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
+					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/contrib/**",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -3036,10 +3403,11 @@
 			baseConfigurationReference = 5B74196A259183D102DC72F7 /* Pods-MyMonero.profiling.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj msinttypes";
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -3048,6 +3416,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/ofxiOSBoost\"",
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
+					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/contrib/**",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -3131,10 +3500,11 @@
 			baseConfigurationReference = D0D2F9849281841843DBFAA5 /* Pods-MyMonero.testing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj msinttypes";
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3146,6 +3516,7 @@
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/ofxiOSBoost\"",
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
+					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/contrib/**",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;

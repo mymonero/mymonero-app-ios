@@ -1,8 +1,8 @@
 //
-//  Bridging-Header.h
+//  AppBridgeHandle.h
 //  MyMonero
 //
-//  Created by Paul Shapiro on 8/29/17.
+//  Created by Paul Shapiro on 2/4/19.
 //  Copyright (c) 2014-2019, MyMonero.com
 //
 //  All rights reserved.
@@ -31,16 +31,11 @@
 //  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 //  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-//
 
+#import <Foundation/Foundation.h>
 
-#ifndef MyMonero_BridgingHeader_hh
-#define MyMonero_BridgingHeader_hh
+@interface AppBridgeHandle : NSObject
 
-#import "DNSLookup.h"
-#import "MyMoneroCore_ObjCpp.h"
-#import "SendFundsFormSubmissionHandle.h"
-#import "AppBridgeHandle.h"
+- (id _Nonnull )init;
 
-#endif /* MyMonero_BridgingHeader_hh */
-
+@end
