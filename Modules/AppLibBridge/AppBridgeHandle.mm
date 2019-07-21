@@ -113,7 +113,7 @@ using namespace App;
 {
 	using namespace Bridge_event;
 	//
-	NSLog(@"event occurred... %@", msg);
+	NSLog(@"event occurred... TODO: route %@", msg);
 	//
 	_Convenience__Event ev = new_convenience__event_with(string(msg.UTF8String));
 	if (ev.eventName == Name__getUserToEnterExistingPassword) {

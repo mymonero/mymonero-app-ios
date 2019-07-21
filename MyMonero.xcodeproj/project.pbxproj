@@ -200,6 +200,7 @@
 		9F86738A1F2C396C00F89EAB /* URLOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8673891F2C396C00F89EAB /* URLOpening.swift */; };
 		9F8E04C022E1085800AB7277 /* AppBridgeHandle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E04BC22E1085800AB7277 /* AppBridgeHandle.mm */; };
 		9F8E04C122E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E04BD22E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp */; };
+		9F8E04C322E4FFAA00AB7277 /* Dispatch.ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E04C222E4FFA900AB7277 /* Dispatch.ios.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */; };
 		9F8E2F5F1EE4B3FB00F89A1D /* Native-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */; };
 		9F8E2F601EE4B3FB00F89A1D /* Native-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */; };
@@ -778,6 +779,7 @@
 		9F8E04BD22E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppServiceLocator.bridge.ios.cpp; sourceTree = "<group>"; };
 		9F8E04BE22E1085800AB7277 /* AppBridgeHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppBridgeHandle.h; sourceTree = "<group>"; };
 		9F8E04BF22E1085800AB7277 /* Dispatch.ios.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dispatch.ios.hpp; sourceTree = "<group>"; };
+		9F8E04C222E4FFA900AB7277 /* Dispatch.ios.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Dispatch.ios.mm; sourceTree = "<group>"; };
 		9F8E2F5B1EE4B3FB00F89A1D /* Native-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Bold.otf"; sourceTree = "<group>"; };
 		9F8E2F5C1EE4B3FB00F89A1D /* Native-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Light.otf"; sourceTree = "<group>"; };
 		9F8E2F5D1EE4B3FB00F89A1D /* Native-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Native-Regular.otf"; sourceTree = "<group>"; };
@@ -1834,6 +1836,7 @@
 				9F8E04BC22E1085800AB7277 /* AppBridgeHandle.mm */,
 				9F8E04BD22E1085800AB7277 /* AppServiceLocator.bridge.ios.cpp */,
 				9F8E04BF22E1085800AB7277 /* Dispatch.ios.hpp */,
+				9F8E04C222E4FFA900AB7277 /* Dispatch.ios.mm */,
 			);
 			path = AppLibBridge;
 			sourceTree = "<group>";
@@ -2810,6 +2813,7 @@
 				9F9C59F31F0C4716003B9266 /* UIResponder+Current.swift in Sources */,
 				9F2C332C2208F76000AA9C5A /* monero_wallet_utils.cpp in Sources */,
 				9F2C332F2208F76000AA9C5A /* monero_fee_utils.cpp in Sources */,
+				9F8E04C322E4FFAA00AB7277 /* Dispatch.ios.mm in Sources */,
 				9FA7340E1F05AF8800C674D6 /* FundsRequestsListController.swift in Sources */,
 				9F2C33222208F76000AA9C5A /* log.cpp in Sources */,
 				9F8E30291EED7D7800F89A1D /* ForgotPasswordViewController.swift in Sources */,
