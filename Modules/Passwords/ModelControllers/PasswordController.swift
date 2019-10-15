@@ -237,8 +237,18 @@ final class PasswordController
 	}
 	func setup()
 	{
+		self.startObserving_bridge()
 		self.startObserving_userIdle()
 		self.initializeRuntimeAndBoot()
+	}
+	func startObserving_bridge()
+	{
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(AppBridgeHandle__eventOccurred(_:)),
+			name: NSNotification.Name(AppBridgeHandle_note_name__eventOccurred),
+			object: nil
+		)
 	}
 	func startObserving_userIdle()
 	{
@@ -1242,5 +1252,23 @@ final class PasswordController
 			optl__hasFiredWill_fn: nil,
 			optl__fn: nil
 		)
+	}
+	//
+	// Delegation - AppBridgeHandle
+	@objc func AppBridgeHandle__eventOccurred(_ note: Notification)
+	{
+		guard let userInfo = note.userInfo else {
+			return
+		}
+		guard let moduleName = userInfo[AppBridgeHandle_note_userInfo_key__moduleName] as? String else {
+			return
+		}
+		if moduleName != AppBridgeHandle.shared().moduleName_passwordController() {
+			return
+		}
+		guard let eventName = userInfo[AppBridgeHandle_note_userInfo_key__eventName] as? String else {
+			return
+		}
+		DDLog.Info("Bridge todo", "Handle \(moduleName)/\(eventName)")
 	}
 }

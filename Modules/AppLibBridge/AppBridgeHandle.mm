@@ -2,7 +2,6 @@
 //  AppBridgeHandle.mm
 //  MyMonero
 //
-//  Created by Paul Shapiro on 2/4/19.
 //  Copyright (c) 2014-2019, MyMonero.com
 //
 //  All rights reserved.
@@ -53,6 +52,15 @@ using namespace App;
 @implementation AppBridgeHandle
 //
 // Lifecycle - Init/deinit
++ (instancetype)shared
+{
+	static AppBridgeHandle *s = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		s = [[self alloc] init];
+	});
+	return s;
+}
 - (id _Nonnull )init
 {
 	if (self = [super init]) {
@@ -95,6 +103,12 @@ using namespace App;
 	});
 }
 //
+// Accessors
+- (NSString *)moduleName_passwordController
+{
+	return [NSString stringWithCString:Bridge_modules::Name__PasswordController.c_str() encoding:NSUTF8StringEncoding];
+}
+//
 // Imperatives
 
 // TODO: delete..... just an example
@@ -108,22 +122,39 @@ using namespace App;
 	(*bridge_ptr).exec(rep_msg);
 }
 
-	
 - (void)event_occurred:(NSString *)msg
 {
 	using namespace Bridge_event;
 	//
-	NSLog(@"event occurred... TODO: route %@", msg);
-	//
-	_Convenience__Event ev = new_convenience__event_with(string(msg.UTF8String));
-	if (ev.eventName == Name__getUserToEnterExistingPassword) {
-	} else {
-		BOOST_ASSERT_MSG(false, "Unrecognized event name");
+	NSError *error = nil;
+	id object = [NSJSONSerialization JSONObjectWithData:[msg dataUsingEncoding:NSUTF8StringEncoding]
+												options:0
+												  error:&error];
+	
+	if (error) {
+		[[NSException exceptionWithName:@"AppBridgeHandle json parse" reason:error.description userInfo:nil] raise];
+		return;
 	}
+	if (![object isKindOfClass:[NSDictionary class]]) {
+		[[NSException exceptionWithName:@"AppBridgeHandle json parse" reason:@"Expected a JSON object at the root" userInfo:nil] raise];
+		return;
+	}
+	NSDictionary *d = object;
+	NSString *moduleName = d[[NSString stringWithCString:App::Bridge_event::_msg_key__moduleName.c_str() encoding:NSUTF8StringEncoding]];
+	NSCAssert(moduleName != nil, @"Expected an moduleName");
+	NSString *eventName = d[[NSString stringWithCString:App::Bridge_event::_msg_key__eventName.c_str() encoding:NSUTF8StringEncoding]];
+	NSCAssert(eventName != nil, @"Expected an eventName");
+	NSDictionary *params = d[[NSString stringWithCString:App::Bridge_event::_msg_key__params.c_str() encoding:NSUTF8StringEncoding]]; // this may stay as nil
+	NSMutableDictionary *userInfo = [NSMutableDictionary new];
+	userInfo[AppBridgeHandle_note_userInfo_key__moduleName] = moduleName;
+	userInfo[AppBridgeHandle_note_userInfo_key__eventName] = eventName;
+	if (params) {
+		userInfo[AppBridgeHandle_note_userInfo_key__params] = params;
+	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:AppBridgeHandle_note_name__eventOccurred
+														object:nil
+													  userInfo:userInfo];
 }
-
-	
-	
 	
 @end
 

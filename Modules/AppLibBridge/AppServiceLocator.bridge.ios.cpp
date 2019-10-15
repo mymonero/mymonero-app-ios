@@ -49,6 +49,7 @@ using namespace App;
 //
 ServiceLocator::~ServiceLocator()
 {
+	// NOTE: for iOS this will be NULL since we don't need one
 	if (_pImpl != NULL) {
 		delete _pImpl; // must free .... and here, since we can only free in the place where the type is completely defined
 		_pImpl = NULL;
@@ -56,21 +57,4 @@ ServiceLocator::~ServiceLocator()
 	teardown();
 }
 //
-//ServiceLocator &ServiceLocator::build(
-//	std::shared_ptr<string> documentsPath,
-//	network_type nettype,
-//	std::shared_ptr<Passwords::PasswordEntryDelegate> initial_passwordEntryDelegate_ptr
-//) {
-//	ServiceLocator_SpecificImpl *pImpl_ptr = new ServiceLocator_SpecificImpl();
-//	//
-//	return shared_build(
-//		pImpl_ptr,
-//		documentsPath,
-//		nettype,
-//		std::make_shared<HTTPRequests::RequestFactory_beast>(pImpl_ptr->io_ctx),
-//		std::make_shared<Dispatch_asio>(pImpl_ptr->ctx_thread_holder),
-//		initial_passwordEntryDelegate_ptr
-//	);
-//}
-
 

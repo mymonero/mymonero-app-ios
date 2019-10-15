@@ -2,7 +2,6 @@
 //  AppBridgeHandle.h
 //  MyMonero
 //
-//  Created by Paul Shapiro on 2/4/19.
 //  Copyright (c) 2014-2019, MyMonero.com
 //
 //  All rights reserved.
@@ -34,8 +33,16 @@
 
 #import <Foundation/Foundation.h>
 
+static NSString *_Nonnull const AppBridgeHandle_note_name__eventOccurred = @"AppBridgeHandle_note_name__eventOccurred";
+static NSString *_Nonnull const AppBridgeHandle_note_userInfo_key__moduleName = @"moduleName";
+static NSString *_Nonnull const AppBridgeHandle_note_userInfo_key__eventName = @"eventName";
+static NSString *_Nonnull const AppBridgeHandle_note_userInfo_key__params = @"params";
+
 @interface AppBridgeHandle : NSObject
 
++ (instancetype)shared;
 - (id _Nonnull )init;
+
+- (NSString *)moduleName_passwordController;
 
 @end

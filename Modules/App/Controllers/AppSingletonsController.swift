@@ -36,8 +36,6 @@ import UIKit
 //
 class AppSingletonsController
 {
-	var bridgeHandle: AppBridgeHandle!
-	//
 	init()
 	{
 		setup()
@@ -50,6 +48,6 @@ class AppSingletonsController
 		let _ = MyMoneroCore.shared // we want to be able to detect a failure to load this on boot
 		// TODO: ^---------when can we remove this?
 		//
-		self.bridgeHandle = AppBridgeHandle()
+		let _ = AppBridgeHandle.shared()
 	}
 }
