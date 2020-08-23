@@ -11,7 +11,7 @@ All app source code and assets copyright © 2014-2019 by MyMonero. All rights re
 * `MyMoneroCore`: Bridged MyMonero JS app core crypto code via async Swift calls; implemented specific functionality in Swift to keep synchrony 
 
 * `Persistence`, `Lists`, `Passwords`: Object encryption, document persistence, password management, and business object implementations nearly equivalent to [MyMonero JS app](https://github.com/mymonero/mymonero-app-js) with various improvements
-	* *Of note:* This iOS app presently encrypts whole document; JS app encrypts values at specified keys. This can and possibly should be ported to to the JS app for simplicity.
+	* *Of note:* This iOS app presently encrypts whole document; JS app encrypts values at specified keys. This can and possibly should be ported to the JS app for simplicity.
 
 * `OpenAlias`, `DNSLookup`: DNS lookup of TXT record content for OpenAlias address resolution now implemented via zero-configuration system-level API (`dnssd`) instead of via server API endpoint, enabling proper DNSSEC status validation
 
