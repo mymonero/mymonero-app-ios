@@ -2192,6 +2192,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 				"pt-BR",
@@ -2365,7 +2366,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AMPopTip/AMPopTip.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
@@ -2390,7 +2391,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MyMonero/Pods-MyMonero-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2822,10 +2823,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_INPUT_FILETYPE = automatic;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
@@ -2837,17 +2842,19 @@
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
+				MARKETING_VERSION = 1.1.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
-				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/** $(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/**";
@@ -2861,11 +2868,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -2873,17 +2884,19 @@
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
+				MARKETING_VERSION = 1.1.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/** $(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/**";
@@ -2950,11 +2963,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -2962,16 +2979,18 @@
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
+				MARKETING_VERSION = 1.1.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-internal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/** $(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/**";
@@ -3038,11 +3057,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -3050,16 +3073,18 @@
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
+				MARKETING_VERSION = 1.1.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-profiling";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/** $(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/**";
@@ -3133,10 +3158,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_INPUT_FILETYPE = automatic;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
@@ -3148,17 +3177,19 @@
 					"$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/contrib/monero-core-custom/contrib/libsodium/include",
 				);
 				INFOPLIST_FILE = Modules/App/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
+				MARKETING_VERSION = 1.1.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-testing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
-				SWIFT_OBJC_BRIDGING_HEADER = "Modules/App/Headers/Bridging-Header.hh";
+				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/** $(SRCROOT)/Modules/MyMoneroCore/sub_modules/mymonero-libapp-cpp/src/mymonero-core-cpp/**";

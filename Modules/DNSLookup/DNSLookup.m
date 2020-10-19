@@ -305,8 +305,8 @@ static void DNSSD_API queryRecordHandler(
 	} else {
 		DNSServiceFlags dnssecStatusCheckable_flags = flags;
 		{ // must first clear all o/p bits, and then check for dnssec status
-			dnssecStatusCheckable_flags &= ~kDNSServiceOutputFlags;
-			NSCAssert(dnssecStatusCheckable_flags != 0, @"check_flags ought to have DNSSEC status set on it");
+			//dnssecStatusCheckable_flags &= ~kDNSServiceOutputFlags;
+			//NSCAssert(dnssecStatusCheckable_flags != 0, @"check_flags ought to have DNSSEC status set on it");
 		}
 		enum DNSLookup_DNSSECStatus dnssecStatus;
 		if (dnssecStatusCheckable_flags & kDNSServiceFlagsSecure) {
