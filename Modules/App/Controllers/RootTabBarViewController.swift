@@ -228,18 +228,19 @@ class RootTabBarViewController: UITabBarController
 	{
 		self.programmatically_set(selectedIndex: 2)
 	}
-	func selectTab_contacts()
+	func selectTab_exchange()
 	{
 		self.programmatically_set(selectedIndex: 3)
+	}
+	func selectTab_contacts()
+	{
+		self.programmatically_set(selectedIndex: 5)
 	}
 	func selectTab_settings()
 	{
 		self.programmatically_set(selectedIndex: 4)
 	}
-	func selectTab_exchange()
-	{
-		self.programmatically_set(selectedIndex: 5)
-	}
+
 	//
 	// Delegation - Notifications
 	@objc func PasswordController_didDeconstructBootedStateAndClearPassword()
