@@ -39,7 +39,7 @@ class ExchangeAppExchangeActionsController
 	//
 	// Imperatives - Interface
 
-	static func Trigger_sendFunds(fromWallet wallet: Wallet) // We're getting info back from the wallet here
+	static func Trigger_sendFunds(fromWallet wallet: Wallet)
 	{
 		let common_userInfo = self.common__notification_userInfo(withWallet: wallet)
 		NotificationCenter.default.post(
