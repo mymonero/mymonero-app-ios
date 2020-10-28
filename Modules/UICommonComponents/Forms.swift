@@ -293,8 +293,6 @@ extension UICommonComponents
 		func textFieldDidBeginEditing(_ textField: UITextField)
 		{
 			self.aField_didBeginEditing(textField)
-			print textField.value(forKey: <#T##String#>)
-			print("The value is \(string: textField.value!)")
 		}
 		func textFieldShouldReturn(_ textField: UITextField) -> Bool
 		{
