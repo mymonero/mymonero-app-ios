@@ -6,4 +6,14 @@
 //  Copyright © 2020 MyMonero. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+protocol MyTextFieldDelegate: AnyObject {
+	func textFieldDidDelete()
+}
+
+class MyTextField: UITextField {
+
+	weak var myDelegate: MyTextFieldDelegate?
+	
+}

@@ -103,7 +103,7 @@ extension ExchangeSendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			//
-			do {
+			do { // Amount label
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("AMOUNT", comment: ""),
 					sizeToFit: true
@@ -483,7 +483,7 @@ extension ExchangeSendFundsForm
 		override func setup_navigation()
 		{
 			super.setup_navigation()
-			self.navigationItem.title = NSLocalizedString("Send Monero", comment: "")
+			self.navigationItem.title = NSLocalizedString("Exchange XMR", comment: "")
 			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 				type: .send,
 				target: self,
