@@ -87,6 +87,59 @@ extension ExchangeSendFundsForm
 			print("ThisDidBeginEditting")
 			print("\(textField.text)")
 		}
+		@objc func inputAmount_Send(_ textField: UITextField) {
+			// Try get wallet send to work from here
+			print("inputAmountSend")
+			/*
+			This is the JS equivalent for sendfunds
+			
+			let enteredAddressValue = xmr_send_address; //;
+   let resolvedAddress = "";
+   let manuallyEnteredPaymentID = "";
+   let resolvedPaymentID = "";
+   let hasPickedAContact = false;
+   let manuallyEnteredPaymentID_fieldIsVisible = false;
+   let resolvedPaymentID_fieldIsVisible = false;
+   let resolvedAddress_fieldIsVisible = false;
+   let contact_payment_id = undefined;
+   let cached_OAResolved_address = undefined;
+   let contact_hasOpenAliasAddress = undefined;
+   let contact_address = undefined;
+   let raw_amount_string = xmr_amount; // XMR amount in double
+   let sweeping = sweep_wallet;
+   let simple_priority = 1;
+
+   wallet.SendFunds(
+	   enteredAddressValue,
+	   resolvedAddress,
+	   manuallyEnteredPaymentID,
+	   resolvedPaymentID,
+	   hasPickedAContact,
+	   resolvedAddress_fieldIsVisible,
+	   manuallyEnteredPaymentID_fieldIsVisible,
+	   resolvedPaymentID_fieldIsVisible,
+	   contact_payment_id,
+	   cached_OAResolved_address,
+	   contact_hasOpenAliasAddress,
+	   contact_address,
+	   raw_amount_string,
+	   sweeping,
+	   simple_priority,
+	   validation_status_fn,
+	   cancelled_fn,
+	   handle_response_fn
+   );
+
+			*/
+			
+			
+			var wallet = fromWallet_inputView.selectedWallet?.sendFunds(enteredAddressValue: <#T##MoneroAddress?#>, resolvedAddress: <#T##MoneroAddress?#>, manuallyEnteredPaymentID: <#T##MoneroPaymentID?#>, resolvedPaymentID: <#T##MoneroPaymentID?#>, hasPickedAContact: <#T##Bool#>, resolvedAddress_fieldIsVisible: <#T##Bool#>, manuallyEnteredPaymentID_fieldIsVisible: <#T##Bool#>, resolvedPaymentID_fieldIsVisible: <#T##Bool#>, contact_payment_id: <#T##MoneroPaymentID?#>, cached_OAResolved_address: <#T##String?#>, contact_hasOpenAliasAddress: <#T##Bool?#>, contact_address: <#T##String?#>, raw_amount_string: <#T##String?#>, isSweeping: <#T##Bool#>, simple_priority: <#T##MoneroTransferSimplifiedPriority#>, didUpdateProcessStep_fn: <#T##((String) -> Void)##((String) -> Void)##(String) -> Void#>, success_fn: <#T##(MoneroAddress, Bool, MoneroPaymentID?, MoneroAmount, MoneroPaymentID?, MoneroTransactionHash, MoneroAmount, MoneroTransactionSecKey, MoneroHistoricalTransactionRecord) -> Void#>, canceled_fn: <#T##() -> Void#>, failWithErr_fn: <#T##(String) -> Void#>)
+			debugPrint(wallet)
+			print("\(textField.text)")
+			var response = self.exchangeFunctions.getInfo()
+			debugPrint("Are we non-blocking?")
+		}
+		
 		@objc func inputAmount_Changed(_ textField: UITextField) {
 			print("inputAmountChanged")
 			print("\(textField.text)")
@@ -176,11 +229,11 @@ extension ExchangeSendFundsForm
 				inputField.keyboardType = UIKeyboardType.decimalPad
 				inputField.delegate = self
 				inputField.addTarget(self, action: #selector(inputAmount_Changed), for: .editingChanged)
+				inputField.addTarget(self, action: #selector(inputAmount_Send), for: .editingChanged)
 				inputField.returnKeyType = .next
 				self.inAmount_inputView = view
 				self.scrollView.addSubview(view)
 			}
-			
 			//
 			do { // Amount label
 				let view = UICommonComponents.Form.FieldLabel(
@@ -1709,18 +1762,19 @@ extension ExchangeSendFundsForm
 		//
 		@objc func WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_ notification: Notification)
 		{
-			self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // whether we should force-dismiss these (create new contact) is debatable…
-			self.navigationController?.popToRootViewController(animated: false) // now pop pushed stack views - essential for the case they're viewing a transaction
-			//
-			if self.isFormEnabled == false {
-				DDLog.Warn("SendFunds", "Triggered send funds from contact while submit btn disabled. Beep.")
-				// TODO: is a .failure haptic appropriate here?
-				// TODO: mayyybe alert tx in progress
-				return
-			}
-			self._clearForm() // figure that since this method is called when user is trying to initiate a new request we should clear the form
-			let contact = notification.userInfo![WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
-			self.sendTo_inputView.pick(contact: contact) // simulate user picking the contact
+			
+//			self.navigationController?.presentedViewController?.dismiss(animated: false, completion: nil) // whether we should force-dismiss these (create new contact) is debatable…
+//			self.navigationController?.popToRootViewController(animated: false) // now pop pushed stack views - essential for the case they're viewing a transaction
+//			//
+//			if self.isFormEnabled == false {
+//				DDLog.Warn("SendFunds", "Triggered send funds from contact while submit btn disabled. Beep.")
+//				// TODO: is a .failure haptic appropriate here?
+//				// TODO: mayyybe alert tx in progress
+//				return
+//			}
+//			self._clearForm() // figure that since this method is called when user is trying to initiate a new request we should clear the form
+//			let contact = notification.userInfo![WalletAppContactActionsCoordinator.NotificationUserInfoKeys.contact.key] as! Contact
+//			self.sendTo_inputView.pick(contact: contact) // simulate user picking the contact
 		}
 		@objc func WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_ notification: Notification)
 		{
