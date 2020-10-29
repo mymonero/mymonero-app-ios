@@ -13,6 +13,7 @@
 		6576417F25485CB000DE76A8 /* ExchangeAmountInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576417E25485CB000DE76A8 /* ExchangeAmountInput.swift */; };
 		657641812548659300DE76A8 /* ExchangeFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641802548659300DE76A8 /* ExchangeFields.swift */; };
 		6576418325486C9900DE76A8 /* ExchangeCurrencyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */; };
+		6576418A2549A82800DE76A8 /* ExchangeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641892549A82800DE76A8 /* ExchangeFunctions.swift */; };
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
 		9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */; };
 		9F00B8E11EC276C30040F52A /* MoneroUtils_RequestURIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */; };
@@ -343,6 +344,7 @@
 		6576417E25485CB000DE76A8 /* ExchangeAmountInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeAmountInput.swift; sourceTree = "<group>"; };
 		657641802548659300DE76A8 /* ExchangeFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeFields.swift; sourceTree = "<group>"; };
 		6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeCurrencyPicker.swift; sourceTree = "<group>"; };
+		657641892549A82800DE76A8 /* ExchangeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeFunctions.swift; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
 		9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryPresentationController.swift; sourceTree = "<group>"; };
 		9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_RequestURIs.swift; sourceTree = "<group>"; };
@@ -872,6 +874,7 @@
 		65764171254810B200DE76A8 /* Exchange */ = {
 			isa = PBXGroup;
 			children = (
+				657641882549A80D00DE76A8 /* XHR */,
 				6576417D25485C9600DE76A8 /* FormElements */,
 				657641772548146400DE76A8 /* ModelControllers */,
 				6576417C2548431200DE76A8 /* Resources */,
@@ -918,6 +921,14 @@
 				6576417E25485CB000DE76A8 /* ExchangeAmountInput.swift */,
 			);
 			path = FormElements;
+			sourceTree = "<group>";
+		};
+		657641882549A80D00DE76A8 /* XHR */ = {
+			isa = PBXGroup;
+			children = (
+				657641892549A82800DE76A8 /* ExchangeFunctions.swift */,
+			);
+			path = XHR;
 			sourceTree = "<group>";
 		};
 		9F00B8D81EC276C30040F52A /* Swift */ = {
@@ -2596,6 +2607,7 @@
 				9FEFDD6A1F991B83001C3CFD /* CurrencyPicker.swift in Sources */,
 				9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */,
 				9F043BF02097677F00F6ADFD /* AddContactFromSendFundsTabFormViewController.swift in Sources */,
+				6576418A2549A82800DE76A8 /* ExchangeFunctions.swift in Sources */,
 				9FA7342A1F076DB700C674D6 /* EditContactFormViewController.swift in Sources */,
 				9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */,
 				9F2C331B2208F76000AA9C5A /* account.cpp in Sources */,
@@ -2825,7 +2837,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -2879,7 +2891,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3019,7 +3031,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3113,7 +3125,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3213,7 +3225,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;

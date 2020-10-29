@@ -7,6 +7,7 @@
 //
 import UIKit
 import ImageIO
+import Alamofire
 //
 struct ExchangeSendFundsForm
 {
@@ -20,6 +21,7 @@ extension ExchangeSendFundsForm
 	{
 		//
 		// Static - Shared singleton
+				
 		static let shared = ExchangeSendFundsForm.ViewController()
 		//
 		// Properties/Protocols - DeleteEverythingRegistrant
@@ -32,10 +34,21 @@ extension ExchangeSendFundsForm
 		// KB here
 		
 		// KB end
+		
+		var exchangeFunctions = ExchangeFunctions();
+		
+		var xmrToSend_label: UICommonComponents.Form.FieldLabel!
+		var btcToSend_label: UICommonComponents.Form.FieldLabel!
+		
+		
+		
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
 		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
+		var inAmount_inputView: UICommonComponents.FormInputField!
+		var inAmount_label: UICommonComponents.Form.FieldLabel!
 		//
+		
 		
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
@@ -59,6 +72,49 @@ extension ExchangeSendFundsForm
 		//
 		var qrPicking_actionButtons: UICommonComponents.QRPickingActionButtons!
 		//
+		
+//		override func textFieldDidBeginEditing(_ textField: UITextField) {
+//			print("ThisDidBeginEditting")
+//		}
+		
+		func setOutAmount(outCurrencyAmount: Float) {
+			let outString = NSString(format: "%.8f", outCurrencyAmount)
+			debugPrint(outString)
+			self.inAmount_inputView.set(placeholder: outString as String)
+		}
+		
+		@objc override func textFieldDidBeginEditing(_ textField: UITextField) {
+			print("ThisDidBeginEditting")
+			print("\(textField.text)")
+		}
+		@objc func inputAmount_Changed(_ textField: UITextField) {
+			print("inputAmountChanged")
+			print("\(textField.text)")
+			var response = self.exchangeFunctions.getInfo()
+			debugPrint("Are we non-blocking?")
+			debugPrint(response)
+//			DispatchQueue.global(qos: .utility).async {
+//				let result = self.ExchangeFunctionsgetInfo()
+//					.flatMap {
+//						//self.setOutAmount($0)
+//						debugPrint($0)
+//					}
+//					.flatMap { //self.andAnotherAPICall($0) }
+//
+//				DispatchQueue.main.async {
+//					switch result {
+//					case let .success(data):
+//						print(data)
+//					case let .failure(error):
+//						print(error)
+//					}
+//				}
+//			}
+			
+			
+			
+		}
+		
 		// Lifecycle - Init
 		override init()
 		{
@@ -102,6 +158,29 @@ extension ExchangeSendFundsForm
 				self.fromWallet_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
+			do { // inAmount label
+				let view = UICommonComponents.Form.FieldLabel(
+					title: NSLocalizedString("XMR AMOUNT", comment: ""),
+					sizeToFit: true
+				)
+				self.inAmount_label = view
+				self.scrollView.addSubview(view)
+			}
+			do { // In Amount
+				let view = UICommonComponents.FormInputField(
+					placeholder: NSLocalizedString("Lulz", comment: "")
+				)
+				let inputField = view
+				inputField.autocorrectionType = .no
+				inputField.autocapitalizationType = .none
+				inputField.keyboardType = UIKeyboardType.decimalPad
+				inputField.delegate = self
+				inputField.addTarget(self, action: #selector(inputAmount_Changed), for: .editingChanged)
+				inputField.returnKeyType = .next
+				self.inAmount_inputView = view
+				self.scrollView.addSubview(view)
+			}
+			
 			//
 			do { // Amount label
 				let view = UICommonComponents.Form.FieldLabel(
@@ -111,6 +190,7 @@ extension ExchangeSendFundsForm
 				self.amount_label = view
 				self.scrollView.addSubview(view)
 			}
+			
 			do {
 				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
 					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
@@ -128,6 +208,7 @@ extension ExchangeSendFundsForm
 				inputField.delegate = self
 				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
 				inputField.returnKeyType = .next
+				
 //				view.didUpdateValueAvailability_fn =
 //				{ [weak self] in
 //					// this will be called when the ccyConversion rate changes and when the selected currency changes
@@ -727,6 +808,42 @@ extension ExchangeSendFundsForm
 				self.view.setNeedsLayout()
 			}
 		}
+		func set_inAmountField(isHidden: Bool)
+		{
+			var touched: Bool = false
+			if self.inAmount_inputView.isHidden != isHidden {
+				touched = true
+				self.inAmount_inputView.isHidden = isHidden
+			}
+			if self.inAmount_inputView.isHidden != isHidden {
+				touched = true
+				self.inAmount_inputView.isHidden = isHidden
+			}
+			if self.inAmount_inputView.isHidden != isHidden {
+				touched = true
+				self.inAmount_inputView.isHidden = isHidden
+			}
+			if touched {
+				self.view.setNeedsLayout()
+			}
+		}
+		func show_inAmount_inputView(withValue paymentID: String?)
+		{
+			self.inAmount_inputView.text = paymentID ?? "" // nil to empty field
+			self.set_inAmount_inputView(isHidden: false)
+		}
+		func set_inAmount_inputView(isHidden: Bool)
+		{
+			self.inAmount_inputView.isHidden = isHidden
+			self.view.setNeedsLayout()
+		}
+		func hideAndClear_inAmount_inputView()
+		{
+			self.set_inAmount_inputView(isHidden: true)
+			if self.inAmount_inputView.text != "" {
+				self.inAmount_inputView.text = ""
+			}
+		}
 		func show_manualPaymentIDField(withValue paymentID: String?)
 		{
 			self.manualPaymentID_inputView.text = paymentID ?? "" // nil to empty field
@@ -829,6 +946,7 @@ extension ExchangeSendFundsForm
 			if let pillView = self.sendTo_inputView.selectedContactPillView {
 				pillView.xButton.isEnabled = true
 			}
+			self.inAmount_inputView.isEnabled = true
 			self.manualPaymentID_inputView.isEnabled = true
 			self.generatePaymentID_linkButtonView.isEnabled = true
 			self.addPaymentID_buttonView.isEnabled = true
@@ -1147,111 +1265,133 @@ extension ExchangeSendFundsForm
 					height: type(of: self.fromWallet_inputView).fixedHeight
 				).integral
 			}
+//			do {
+//				self.amount_label.frame = CGRect(
+//					x: label_x,
+//					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + interSectionSpacing,
+//					width: self.amount_label.frame.size.width,
+//					height: self.amount_label.frame.size.height
+//				).integral
+//				self.amount_fieldset.frame = CGRect(
+//					x: input_x,
+//					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//					width: textField_w, // full-size width
+//					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
+//				).integral
+//				do {
+//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+//					//
+//					self.networkFeeEstimate_label.frame = CGRect(
+//						x: label_x,
+//						y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
+//						width: 0,
+//						height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+//					).integral
+//					self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+//					var final__frame = self.networkFeeEstimate_label.frame
+//					let max_w = fullWidth_label_w - 6 // or so
+//					if final__frame.size.width < max_w {
+//						final__frame.size.width = final__frame.size.width
+//					} else {
+//						final__frame.size.width = max_w
+//					}
+//					final__frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+//					self.networkFeeEstimate_label.frame = final__frame // kinda sucks to set this three times in this method. any alternative?
+//					//
+//					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
+//						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+//						y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,
+//						width: tooltipSpawn_buttonView_w,
+//						height: tooltipSpawn_buttonView_h
+//					).integral
+//				}
+//			}
+//			do {
+//				self.sendTo_label.frame = CGRect(
+//					x: label_x,
+//					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + interSectionSpacing,
+//					width: 18,
+//					height: self.sendTo_label.frame.size.height
+//				).integral
+//				do {
+//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+//					self.sendTo_tooltipSpawn_buttonView.frame = CGRect(
+//						x: self.sendTo_label.frame.origin.x + self.sendTo_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+//						y: self.sendTo_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.sendTo_label.frame.size.height)/2,
+//						width: tooltipSpawn_buttonView_w,
+//						height: tooltipSpawn_buttonView_h
+//					).integral
+//				}
+//				self.sendTo_inputView.frame = CGRect(
+//					x: input_x,
+//					y: self.sendTo_label.frame.origin.y + self.sendTo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//					width: textField_w,
+//					height: self.sendTo_inputView.frame.size.height
+//				).integral
+//			}
+//			//
+//			if self.addPaymentID_buttonView.isHidden == false {
+//				assert(self.manualPaymentID_label.isHidden == true)
+//				let lastMostVisibleView = self.sendTo_inputView!
+//				self.addPaymentID_buttonView!.frame = CGRect(
+//					x: label_x,
+//					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
+//					width: self.addPaymentID_buttonView!.frame.size.width,
+//					height: self.addPaymentID_buttonView!.frame.size.height
+//				)
+//			}
+			//
+//			if self.manualPaymentID_label.isHidden == false {
+//				assert(self.addPaymentID_buttonView.isHidden == true)
+//				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
+//				self.manualPaymentID_label.frame = CGRect(
+//					x: label_x,
+//					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + interSectionSpacing,
+//					width: 0,
+//					height: self.manualPaymentID_label.frame.size.height
+//				).integral
+//				self.manualPaymentID_label.sizeToFit() // get exact width
+//				if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
+//					self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
+//				}
+//				self.generatePaymentID_linkButtonView.frame = CGRect(
+//					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
+//					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
+//					width: self.generatePaymentID_linkButtonView.frame.size.width,
+//					height: self.generatePaymentID_linkButtonView.frame.size.height
+//				).integral
+//				self.manualPaymentID_inputView.frame = CGRect(
+//					x: input_x,
+//					y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//					width: textField_w,
+//					height: UICommonComponents.FormInputField.height
+//				).integral
+//			}
+			//
 			do {
-				self.amount_label.frame = CGRect(
+				self.inAmount_label.frame = CGRect(
 					x: label_x,
 					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + interSectionSpacing,
-					width: self.amount_label.frame.size.width,
-					height: self.amount_label.frame.size.height
+					width: self.inAmount_label.frame.size.width,
+					height: self.inAmount_label.frame.size.height
 				).integral
-				self.amount_fieldset.frame = CGRect(
+				self.inAmount_label.sizeToFit() // get exact width
+//				self.generatePaymentID_linkButtonView.frame = CGRect(
+//					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
+//					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
+//					width: self.generatePaymentID_linkButtonView.frame.size.width,
+//					height: self.generatePaymentID_linkButtonView.frame.size.height
+//				).integral
+				self.inAmount_inputView.frame = CGRect(
 					x: input_x,
-					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-					width: textField_w, // full-size width
-					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
-				).integral
-				do {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-					//
-					self.networkFeeEstimate_label.frame = CGRect(
-						x: label_x,
-						y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
-						width: 0,
-						height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					).integral
-					self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
-					var final__frame = self.networkFeeEstimate_label.frame
-					let max_w = fullWidth_label_w - 6 // or so
-					if final__frame.size.width < max_w {
-						final__frame.size.width = final__frame.size.width
-					} else {
-						final__frame.size.width = max_w
-					}
-					final__frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-					self.networkFeeEstimate_label.frame = final__frame // kinda sucks to set this three times in this method. any alternative?
-					//
-					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-						y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,
-						width: tooltipSpawn_buttonView_w,
-						height: tooltipSpawn_buttonView_h
-					).integral
-				}
-			}
-			do {
-				self.sendTo_label.frame = CGRect(
-					x: label_x,
-					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + interSectionSpacing,
-					width: 18,
-					height: self.sendTo_label.frame.size.height
-				).integral
-				do {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-					self.sendTo_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.sendTo_label.frame.origin.x + self.sendTo_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-						y: self.sendTo_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.sendTo_label.frame.size.height)/2,
-						width: tooltipSpawn_buttonView_w,
-						height: tooltipSpawn_buttonView_h
-					).integral
-				}
-				self.sendTo_inputView.frame = CGRect(
-					x: input_x,
-					y: self.sendTo_label.frame.origin.y + self.sendTo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-					width: textField_w,
-					height: self.sendTo_inputView.frame.size.height
-				).integral
-			}
-			//
-			if self.addPaymentID_buttonView.isHidden == false {
-				assert(self.manualPaymentID_label.isHidden == true)
-				let lastMostVisibleView = self.sendTo_inputView!
-				self.addPaymentID_buttonView!.frame = CGRect(
-					x: label_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
-					width: self.addPaymentID_buttonView!.frame.size.width,
-					height: self.addPaymentID_buttonView!.frame.size.height
-				)
-			}
-			//
-			if self.manualPaymentID_label.isHidden == false {
-				assert(self.addPaymentID_buttonView.isHidden == true)
-				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
-				self.manualPaymentID_label.frame = CGRect(
-					x: label_x,
-					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + interSectionSpacing,
-					width: 0,
-					height: self.manualPaymentID_label.frame.size.height
-				).integral
-				self.manualPaymentID_label.sizeToFit() // get exact width
-				if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
-					self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
-				}
-				self.generatePaymentID_linkButtonView.frame = CGRect(
-					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
-					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
-					width: self.generatePaymentID_linkButtonView.frame.size.width,
-					height: self.generatePaymentID_linkButtonView.frame.size.height
-				).integral
-				self.manualPaymentID_inputView.frame = CGRect(
-					x: input_x,
-					y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+					y: self.inAmount_label.frame.origin.y + self.inAmount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: UICommonComponents.FormInputField.height
 				).integral
 			}
-			//
+			
 			do {
 				let previousSectionBottomView: UIView
 				do {
