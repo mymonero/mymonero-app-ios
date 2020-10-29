@@ -8,6 +8,7 @@
 import UIKit
 import ImageIO
 import Alamofire
+import Swift
 //
 struct ExchangeSendFundsForm
 {
@@ -84,12 +85,12 @@ extension ExchangeSendFundsForm
 		}
 		
 		@objc override func textFieldDidBeginEditing(_ textField: UITextField) {
-			print("ThisDidBeginEditting")
-			print("\(textField.text)")
+			debugPrint("ThisDidBeginEditting")
+			debugPrint("\(textField.text)")
 		}
 		@objc func inputAmount_Send(_ textField: UITextField) {
 			// Try get wallet send to work from here
-			print("inputAmountSend")
+			debugPrint("inputAmountSend")
 			/*
 			This is the JS equivalent for sendfunds
 			
@@ -131,21 +132,39 @@ extension ExchangeSendFundsForm
    );
 
 			*/
-			
-			
-			var wallet = fromWallet_inputView.selectedWallet?.sendFunds(enteredAddressValue: <#T##MoneroAddress?#>, resolvedAddress: <#T##MoneroAddress?#>, manuallyEnteredPaymentID: <#T##MoneroPaymentID?#>, resolvedPaymentID: <#T##MoneroPaymentID?#>, hasPickedAContact: <#T##Bool#>, resolvedAddress_fieldIsVisible: <#T##Bool#>, manuallyEnteredPaymentID_fieldIsVisible: <#T##Bool#>, resolvedPaymentID_fieldIsVisible: <#T##Bool#>, contact_payment_id: <#T##MoneroPaymentID?#>, cached_OAResolved_address: <#T##String?#>, contact_hasOpenAliasAddress: <#T##Bool?#>, contact_address: <#T##String?#>, raw_amount_string: <#T##String?#>, isSweeping: <#T##Bool#>, simple_priority: <#T##MoneroTransferSimplifiedPriority#>, didUpdateProcessStep_fn: <#T##((String) -> Void)##((String) -> Void)##(String) -> Void#>, success_fn: <#T##(MoneroAddress, Bool, MoneroPaymentID?, MoneroAmount, MoneroPaymentID?, MoneroTransactionHash, MoneroAmount, MoneroTransactionSecKey, MoneroHistoricalTransactionRecord) -> Void#>, canceled_fn: <#T##() -> Void#>, failWithErr_fn: <#T##(String) -> Void#>)
-			debugPrint(wallet)
-			print("\(textField.text)")
-			var response = self.exchangeFunctions.getInfo()
-			debugPrint("Are we non-blocking?")
 		}
+			
+			private let apiUrl = "https://api.mymonero.com:8443/cx/get_info"
+			
+			public func getInfo() {
+				let params = ["in_currency": "XMR", "out_currency": "BTC"]
+				Alamofire.request(apiUrl, method: .post, parameters: params).responseJSON {
+					response in Swift.debugPrint(response)
+					// add error handlers
+				}
+			}
+			
+			public func getOffer(in_currency: String, out_currency: String, in_amount: String) {
+				let params = ["in_currency": "XMR", "out_currency": "BTC"]
+				Alamofire.request(apiUrl, method: .post).responseJSON {
+					response in Swift.debugPrint(response)
+					// add error handlers
+					Swift.debugPrint(response)
+				}
+			}
+//		var wallet = fromWallet_inputView.selectedWallet?.sendFunds(enteredAddressValue: <#T##MoneroAddress?#>, resolvedAddress: <#T##MoneroAddress?#>, manuallyEnteredPaymentID: <#T##MoneroPaymentID?#>, resolvedPaymentID: <#T##MoneroPaymentID?#>, hasPickedAContact: <#T##Bool#>, resolvedAddress_fieldIsVisible: <#T##Bool#>, manuallyEnteredPaymentID_fieldIsVisible: <#T##Bool#>, resolvedPaymentID_fieldIsVisible: <#T##Bool#>, contact_payment_id: <#T##MoneroPaymentID?#>, cached_OAResolved_address: <#T##String?#>, contact_hasOpenAliasAddress: <#T##Bool?#>, contact_address: <#T##String?#>, raw_amount_string: <#T##String?#>, isSweeping: <#T##Bool#>, simple_priority: <#T##MoneroTransferSimplifiedPriority#>, didUpdateProcessStep_fn: <#T##((String) -> Void)##((String) -> Void)##(String) -> Void#>, success_fn: <#T##(MoneroAddress, Bool, MoneroPaymentID?, MoneroAmount, MoneroPaymentID?, MoneroTransactionHash, MoneroAmount, MoneroTransactionSecKey, MoneroHistoricalTransactionRecord) -> Void#>, canceled_fn: <#T##() -> Void#>, failWithErr_fn: <#T##(String) -> Void#>);
+//			Swift.debugPrint(wallet)
+//		Swift.debugPrint("\(textField.text)")
+			//var response = self.exchangeFunctions.getInfo()
+			//debugPrint("Are we non-blocking?")
+		
 		
 		@objc func inputAmount_Changed(_ textField: UITextField) {
 			print("inputAmountChanged")
 			print("\(textField.text)")
-			var response = self.exchangeFunctions.getInfo()
+			//var response = self.exchangeFunctions.getInfo()
 			debugPrint("Are we non-blocking?")
-			debugPrint(response)
+			//debugPrint(response)
 //			DispatchQueue.global(qos: .utility).async {
 //				let result = self.ExchangeFunctionsgetInfo()
 //					.flatMap {
