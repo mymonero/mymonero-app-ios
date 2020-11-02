@@ -72,9 +72,10 @@ class RootTabBarViewController: UITabBarController
 			self.walletsTabViewController,
 			self.sendFundsTabViewController,
 			self.fundsRequestsTabViewController,
+			self.exchangeTabViewController,
 			self.contactsTabViewController,
 			self.settingsTabViewController,
-			self.exchangeTabViewController
+			
 		]
 		//
 		// vertically center tab bar item images
@@ -188,10 +189,11 @@ class RootTabBarViewController: UITabBarController
 		//
 		self.walletsTabViewController.tabBarItem.isEnabled = !shouldDisable_wallets
 		self.sendFundsTabViewController.tabBarItem.isEnabled = !shouldDisable_sendFunds
+		self.exchangeTabViewController.tabBarItem.isEnabled = !shouldDisable_exchange
 		self.fundsRequestsTabViewController.tabBarItem.isEnabled = !shouldDisable_fundsRequests
 		self.contactsTabViewController.tabBarItem.isEnabled = !shouldDisable_contacts
 		self.settingsTabViewController.tabBarItem.isEnabled = !shouldDisable_settings
-		self.exchangeTabViewController.tabBarItem.isEnabled = !shouldDisable_exchange
+
 	}
 	//
 	func resetAllTabContentViewsToRootState(animated: Bool)
