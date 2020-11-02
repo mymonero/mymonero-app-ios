@@ -14,6 +14,8 @@
 		657641812548659300DE76A8 /* ExchangeFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641802548659300DE76A8 /* ExchangeFields.swift */; };
 		6576418325486C9900DE76A8 /* ExchangeCurrencyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */; };
 		6576418A2549A82800DE76A8 /* ExchangeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641892549A82800DE76A8 /* ExchangeFunctions.swift */; };
+		6576418C254C123200DE76A8 /* ExchangeOrderFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418B254C123100DE76A8 /* ExchangeOrderFormViewController.swift */; };
+		6576418E254C151200DE76A8 /* OrderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418D254C151200DE76A8 /* OrderDetails.swift */; };
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
 		9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */; };
 		9F00B8E11EC276C30040F52A /* MoneroUtils_RequestURIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */; };
@@ -345,6 +347,8 @@
 		657641802548659300DE76A8 /* ExchangeFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeFields.swift; sourceTree = "<group>"; };
 		6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeCurrencyPicker.swift; sourceTree = "<group>"; };
 		657641892549A82800DE76A8 /* ExchangeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeFunctions.swift; sourceTree = "<group>"; };
+		6576418B254C123100DE76A8 /* ExchangeOrderFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeOrderFormViewController.swift; sourceTree = "<group>"; };
+		6576418D254C151200DE76A8 /* OrderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetails.swift; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
 		9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryPresentationController.swift; sourceTree = "<group>"; };
 		9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_RequestURIs.swift; sourceTree = "<group>"; };
@@ -889,6 +893,7 @@
 			children = (
 				657641752548113E00DE76A8 /* ExchangeTabNavigationViewController.swift */,
 				6576417A2548275A00DE76A8 /* ExchangeSendFundsViewController.swift */,
+				6576418B254C123100DE76A8 /* ExchangeOrderFormViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1065,6 +1070,7 @@
 			isa = PBXGroup;
 			children = (
 				9F2BFECF1EF34FA3006B2F7D /* FundsRequest.swift */,
+				6576418D254C151200DE76A8 /* OrderDetails.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2453,6 +2459,7 @@
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -2465,6 +2472,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2590,6 +2598,7 @@
 				9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,
 				9F2119271F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
+				6576418C254C123200DE76A8 /* ExchangeOrderFormViewController.swift in Sources */,
 				9F2C33162208F76000AA9C5A /* multisig.cpp in Sources */,
 				9F2C33142208F76000AA9C5A /* bulletproofs.cc in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
@@ -2613,6 +2622,7 @@
 				9F2C331B2208F76000AA9C5A /* account.cpp in Sources */,
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
 				9FB603081F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift in Sources */,
+				6576418E254C151200DE76A8 /* OrderDetails.swift in Sources */,
 				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,
 				9F2C33132208F76000AA9C5A /* rctSigs.cpp in Sources */,
 				9F2C33232208F76000AA9C5A /* device.cpp in Sources */,
