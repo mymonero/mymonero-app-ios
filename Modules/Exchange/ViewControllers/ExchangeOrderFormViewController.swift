@@ -38,24 +38,13 @@ class ExchangeOrderFormViewController: UICommonComponents.FormViewController
 	//
 	// Lifecycle - Init
 	required init(
-		contact: Contact?,
 		selectedWallet: Wallet?,
 		orderDetails: OrderDetails?
 	) {
 		super.init()
 		// ^ this will call setup (synchronously)
-		if contact != nil {
-			// wait or else animation on resolving indicator will fail
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute:
-			{ [weak self] in
-				guard let thisSelf = self else {
-					return
-				}
-				thisSelf.requestFrom_inputView.pick(contact: contact!)
-			})
-		}
 		if selectedWallet != nil {
-			self.toWallet_inputView.set(selectedWallet: selectedWallet!)
+			//self.toWallet_inputView.set(selectedWallet: selectedWallet!)
 		}
 		if orderDetails != nil {
 			//self.UUID.text = orderDetails.UUID
