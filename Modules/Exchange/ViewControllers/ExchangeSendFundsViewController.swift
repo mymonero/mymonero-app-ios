@@ -9,12 +9,19 @@ import UIKit
 import ImageIO
 import Alamofire
 import Swift
+import SwiftyJSON
 //
 struct ExchangeSendFundsForm
 {
 	static let rateAPI_domain = "cryptocompare.com"
 }
 //
+extension String {
+	var isInteger: Bool { return Int(self) != nil }
+	var isFloat: Bool { return Float(self) != nil }
+	var isDouble: Bool { return Double(self) != nil }
+}
+
 extension ExchangeSendFundsForm
 {
 	//
@@ -35,19 +42,145 @@ extension ExchangeSendFundsForm
 		// KB here
 		
 		// KB end
+		private let apiUrl = "https://api.mymonero.com:8443/cx/"
 		
+		func getInfo() { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
+			let params: [String: String] = ["in_currency": "XMR", "out_currency": "BTC"]
+			debugPrint("Fired getInfo")
+			let method = "get_info"
+			let apiEndpoint = apiUrl + method
+			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
+				.responseJSON {
+					response in
+					if let data = response.data {
+						if let json = try? JSON(data: data) {
+							debugPrint(json)
+							//self.in_min = json?[0]["in_min"].string
+							self.in_min = json["in_min"].floatValue
+							self.in_max = json["in_max"].floatValue
+							self.out_max = json["out_max"].floatValue
+							self.in_min = json["in_min"].floatValue
+							debugPrint(self.in_min)
+						}
+					}
+				}
+		}
+		
+		func validateStringIsValidFloat(input: String) -> Bool {
+			debugPrint("Validating float");
+			if (input.isFloat == true) {
+				debugPrint("True")
+				debugPrint(input)
+				return true
+			} else {
+				debugPrint(input);
+				debugPrint("NaN")
+				
+				return false
+			}
+			
+		}
+		
+		func getOffer(in_amount: String?, callingElement: String?) { https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
+			if validateStringIsValidFloat(input: in_amount!) {
+				self.orderFormValidation_label.text = ""
+				let params = ["in_amount": in_amount!, "in_currency": "XMR", "out_currency": "BTC"]
+				debugPrint("Fired getOffer")
+				debugPrint(in_amount!)
+				let method = "get_offer"
+				let apiEndpoint = apiUrl + method
+				Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
+					.responseJSON {
+						response in
+						if let data = response.data {
+							if let json = try? JSON(data: data) {
+								debugPrint(json)
+								debugPrint(callingElement)
+								//self.in_min = json?[0]["in_min"].string
+								debugPrint(json["out_amount"])
+								debugPrint(json["in_amount"].stringValue)
+								debugPrint(self.in_min)
+								
+								self.offerId = json["offer_id"].stringValue
+								self.in_amount = json["in_amount"].stringValue
+								self.out_amount = json["out_amount"].stringValue
+								
+								debugPrint(json["in_amount"])
+								if callingElement == "out" {
+									self.inAmount_inputView.text = json["in_amount"].stringValue
+								} else if callingElement == "in" {
+									let out_amount = String(json["out_amount"].stringValue)
+									debugPrint(in_amount)
+									self.outAmount_inputView.text = json["out_amount"].stringValue
+									//self.outAmount_inputView.text = in_amount
+								}
+							}
+						}
+					}
+			} else {
+				self.orderFormValidation_label.text = "Please enter a valid amount"
+				debugPrint("Not a valid float")
+				
+			}
+		}
+//			Alamofire.request(apiUrl, method: .post, parameters: params, encoding: JSONEncoding.default)
+//				.validate()
+//				.responseJSON { response in
+//					debugPrint("Response: \(response)")
+//					guard response.result.isSuccess else {
+//					   print("Error while fetching remote rooms: \(String(describing: response.result.error))")
+//					   completion(nil)
+//					   return
+//					 }
+//
+//					debugPrint(response.result)
+//					//self.in_max = response.result.in_min
+//					//debugPrint(self.in_max)
+//					 guard let value = response.result.value as? [String: Any],
+//					   let rows = value["rows"] as? [[String: Any]] else {
+//						 print("Malformed data received from fetchAllRooms service")
+//						 completion(nil)
+//						 return
+//					 }
+//					debugPrint(rows)
+//
+//				// add error handlers
+//
+//			}
+//		}
+		
+		var offerId: String!
+		var orderId: String!
+		// KB - to-do: Make sure we don't exceed or go below the following four values (initialised by getInfo()
+		var in_max: Float = 0.00000000;
+		var in_min: Float = 0.00000000;
+		var out_max: Float = 0.00000000;
+		var out_min: Float = 0.00000000;
 		var exchangeFunctions = ExchangeFunctions();
-		
+		// Floating point calculations get handled server-side, so we can use them as strings so as to not have to keep swapping type
+		var in_currency = "XMR"
+		var out_currency = "BTC"
+		var in_amount = ""
+		var out_amount = ""
+		var btcAddress = ""
 		var xmrToSend_label: UICommonComponents.Form.FieldLabel!
 		var btcToSend_label: UICommonComponents.Form.FieldLabel!
-		
+		var inAmount_inputView: UICommonComponents.FormInputField!
+		var inAmount_label: UICommonComponents.Form.FieldLabel!
+		var outAmount_inputView: UICommonComponents.FormInputField!
+		var outAmount_label: UICommonComponents.Form.FieldLabel!
+		var btcAddress_label: UICommonComponents.Form.FieldLabel!
+		var btcAddress_inputView: UICommonComponents.FormInputField!
+		var offerPageErrors_label: UICommonComponents.Form.FieldLabel!
 		
 		
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
 		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
-		var inAmount_inputView: UICommonComponents.FormInputField!
-		var inAmount_label: UICommonComponents.Form.FieldLabel!
+		
+		var explanation_label: UICommonComponents.Form.FieldLabel!
+		var orderFormValidation_label: UICommonComponents.Form.FieldLabel!
+		var orderStatusValidation_label: UICommonComponents.Form.FieldLabel!
 		//
 		
 		
@@ -91,6 +224,8 @@ extension ExchangeSendFundsForm
 		@objc func inputAmount_Send(_ textField: UITextField) {
 			// Try get wallet send to work from here
 			debugPrint("inputAmountSend")
+			debugPrint(inAmount_inputView.text)
+		}
 			/*
 			This is the JS equivalent for sendfunds
 			
@@ -132,36 +267,23 @@ extension ExchangeSendFundsForm
    );
 
 			*/
-		}
-			
-			private let apiUrl = "https://api.mymonero.com:8443/cx/get_info"
-			
-			public func getInfo() {
-				let params = ["in_currency": "XMR", "out_currency": "BTC"]
-				Alamofire.request(apiUrl, method: .post, parameters: params).responseJSON {
-					response in Swift.debugPrint(response)
-					// add error handlers
-				}
-			}
-			
-			public func getOffer(in_currency: String, out_currency: String, in_amount: String) {
-				let params = ["in_currency": "XMR", "out_currency": "BTC"]
-				Alamofire.request(apiUrl, method: .post).responseJSON {
-					response in Swift.debugPrint(response)
-					// add error handlers
-					Swift.debugPrint(response)
-				}
-			}
+
+	
+		
 //		var wallet = fromWallet_inputView.selectedWallet?.sendFunds(enteredAddressValue: <#T##MoneroAddress?#>, resolvedAddress: <#T##MoneroAddress?#>, manuallyEnteredPaymentID: <#T##MoneroPaymentID?#>, resolvedPaymentID: <#T##MoneroPaymentID?#>, hasPickedAContact: <#T##Bool#>, resolvedAddress_fieldIsVisible: <#T##Bool#>, manuallyEnteredPaymentID_fieldIsVisible: <#T##Bool#>, resolvedPaymentID_fieldIsVisible: <#T##Bool#>, contact_payment_id: <#T##MoneroPaymentID?#>, cached_OAResolved_address: <#T##String?#>, contact_hasOpenAliasAddress: <#T##Bool?#>, contact_address: <#T##String?#>, raw_amount_string: <#T##String?#>, isSweeping: <#T##Bool#>, simple_priority: <#T##MoneroTransferSimplifiedPriority#>, didUpdateProcessStep_fn: <#T##((String) -> Void)##((String) -> Void)##(String) -> Void#>, success_fn: <#T##(MoneroAddress, Bool, MoneroPaymentID?, MoneroAmount, MoneroPaymentID?, MoneroTransactionHash, MoneroAmount, MoneroTransactionSecKey, MoneroHistoricalTransactionRecord) -> Void#>, canceled_fn: <#T##() -> Void#>, failWithErr_fn: <#T##(String) -> Void#>);
 //			Swift.debugPrint(wallet)
 //		Swift.debugPrint("\(textField.text)")
 			//var response = self.exchangeFunctions.getInfo()
 			//debugPrint("Are we non-blocking?")
 		
+		@objc func outAmount_Changed(_ textField: UITextField) {
+			//self.getOffer(in_amount: 1, callingElement: "out")
+		}
 		
-		@objc func inputAmount_Changed(_ textField: UITextField) {
+		@objc func inAmount_Changed(_ textField: UITextField) {
 			print("inputAmountChanged")
 			print("\(textField.text)")
+			self.getOffer(in_amount: textField.text, callingElement: "in")
 			//var response = self.exchangeFunctions.getInfo()
 			debugPrint("Are we non-blocking?")
 			//debugPrint(response)
@@ -191,6 +313,7 @@ extension ExchangeSendFundsForm
 		override init()
 		{
 			super.init()
+			
 		}
 		required init?(coder aDecoder: NSCoder) {
 			fatalError("init(coder:) has not been implemented")
@@ -198,9 +321,34 @@ extension ExchangeSendFundsForm
 		override func setup_views()
 		{
 			super.setup_views()
+			self.getInfo() // KB: We need exception handling on the getinfo loop
+			do { // Explanation Label
+				let view = UICommonComponents.Form.FieldLabel(
+					title: NSLocalizedString("You can convert your XMR into BTC here", comment: ""),
+					sizeToFit: true
+				)
+				self.explanation_label = view
+				self.scrollView.addSubview(view)
+			}
+			do { // Order status validation l Label -- used on onder quotation page
+				let view = UICommonComponents.Form.FieldLabel(
+					title: NSLocalizedString("", comment: ""),
+					sizeToFit: true
+				)
+				self.orderFormValidation_label = view
+				self.scrollView.addSubview(view)
+			}
+//			do { // This validation string should go in the modal -- Order status validation label -- KB -- We may need to put this in a different view controller
+//				let view = UICommonComponents.Form.FieldLabel(
+//					title: NSLocalizedString("ValidationOS", comment: ""),
+//					sizeToFit: true
+//				)
+//				self.orderStatusValidation_label = view
+//				self.scrollView.addSubview(view)
+//			}
 			do { // Label
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("FROMSUCCESS", comment: ""),
+					title: NSLocalizedString("FROM", comment: ""),
 					sizeToFit: true
 				)
 				self.fromWallet_label = view
@@ -215,21 +363,21 @@ extension ExchangeSendFundsForm
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
-			do { // Tooltip
-				let view = UICommonComponents.TooltipSpawningLinkButtonView(
-					tooltipText: NSLocalizedString(
-						"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.",
-						comment: ""
-					)
-				)
-				view.tooltipDirectionFromOrigin = .right // since it's at the top of the page (it tries to go up on its own)
-				view.willPresentTipView_fn =
-				{ [unowned self] in
-					self.view.resignCurrentFirstResponder() // if any
-				}
-				self.fromWallet_tooltipSpawn_buttonView = view
-				self.scrollView.addSubview(view)
-			}
+//			do { // Tooltip
+//				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+//					tooltipText: NSLocalizedString(
+//						"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.",
+//						comment: ""
+//					)
+//				)
+//				view.tooltipDirectionFromOrigin = .right // since it's at the top of the page (it tries to go up on its own)
+//				view.willPresentTipView_fn =
+//				{ [unowned self] in
+//					self.view.resignCurrentFirstResponder() // if any
+//				}
+//				self.fromWallet_tooltipSpawn_buttonView = view
+//				self.scrollView.addSubview(view)
+//			}
 			do { // inAmount label
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("XMR AMOUNT", comment: ""),
@@ -240,67 +388,85 @@ extension ExchangeSendFundsForm
 			}
 			do { // In Amount
 				let view = UICommonComponents.FormInputField(
-					placeholder: NSLocalizedString("Lulz", comment: "")
+					placeholder: NSLocalizedString("0.00", comment: "")
 				)
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
 				inputField.keyboardType = UIKeyboardType.decimalPad
 				inputField.delegate = self
-				inputField.addTarget(self, action: #selector(inputAmount_Changed), for: .editingChanged)
-				inputField.addTarget(self, action: #selector(inputAmount_Send), for: .editingChanged)
+				inputField.addTarget(self, action: #selector(inAmount_Changed), for: .editingChanged)
+				//inputField.addTarget(self, action: #selector(inputAmount_Send), for: .editingChanged)
 				inputField.returnKeyType = .next
 				self.inAmount_inputView = view
 				self.scrollView.addSubview(view)
 			}
 			//
-			do { // Amount label
+			do { // outAmount label
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("AMOUNT", comment: ""),
+					title: NSLocalizedString("BTC AMOUNT", comment: ""),
 					sizeToFit: true
 				)
-				self.amount_label = view
+				self.outAmount_label = view
 				self.scrollView.addSubview(view)
+			}
+			do { // Out Amount
+				let view = UICommonComponents.FormInputField(
+					placeholder: NSLocalizedString("0.00", comment: "")
+				)
+				let inputField = view
+				inputField.autocorrectionType = .no
+				inputField.autocapitalizationType = .none
+				inputField.keyboardType = UIKeyboardType.decimalPad
+				inputField.delegate = self
+				inputField.addTarget(self, action: #selector(outAmount_Changed), for: .editingChanged)
+				inputField.addTarget(self, action: #selector(inputAmount_Send), for: .editingChanged)
+				inputField.returnKeyType = .next
+				self.outAmount_inputView = view
+				self.scrollView.addSubview(view)
+			}
+			do {
+				//let view =
 			}
 			
-			do {
-				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
-					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
-					effectiveAmountTooltipText_orNil: String(
-						format: NSLocalizedString(
-							"Currency selector for\ndisplay purposes only.\nThe app will send %@.\n\nRate providers include\n%@.",
-							comment:"Currency selector for\ndisplay purposes only.\nThe app will send {XMR symbol}.\n\nRate providers include\n{cryptocompare.com domain}."
-						),
-						CcyConversionRates.Currency.XMR.symbol,
-						SendFundsForm.rateAPI_domain // not .authority - don't need subdomain
-					),
-					wantsMAXbutton: true
-				)
-				let inputField = view.inputField
-				inputField.delegate = self
-				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-				inputField.returnKeyType = .next
-				
-//				view.didUpdateValueAvailability_fn =
-//				{ [weak self] in
-//					// this will be called when the ccyConversion rate changes and when the selected currency changes
-//					guard let thisSelf = self else {
-//						return
-//					}
-//					thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
-//					// TODO: do we need to update anything else here?
-//				}
-//				view.didUpdateMAXButtonToggleState_fn =
-//				{ [weak self] in
-//					guard let thisSelf = self else {
-//						return
-//					}
-//					thisSelf.configure_amountInputTextGivenMaxToggledState()
-//					thisSelf.set_isFormSubmittable_needsUpdate()
-//				}
-				self.amount_fieldset = view
-				self.scrollView.addSubview(view)
-			}
+//			do {
+//				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
+//					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
+//					effectiveAmountTooltipText_orNil: String(
+//						format: NSLocalizedString(
+//							"Currency selector for\ndisplay purposes only.\nThe app will send %@.\n\nRate providers include\n%@.",
+//							comment:"Currency selector for\ndisplay purposes only.\nThe app will send {XMR symbol}.\n\nRate providers include\n{cryptocompare.com domain}."
+//						),
+//						CcyConversionRates.Currency.XMR.symbol,
+//						SendFundsForm.rateAPI_domain // not .authority - don't need subdomain
+//					),
+//					wantsMAXbutton: true
+//				)
+//				let inputField = view.inputField
+//				inputField.delegate = self
+//				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//				inputField.returnKeyType = .next
+//
+////				view.didUpdateValueAvailability_fn =
+////				{ [weak self] in
+////					// this will be called when the ccyConversion rate changes and when the selected currency changes
+////					guard let thisSelf = self else {
+////						return
+////					}
+////					thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
+////					// TODO: do we need to update anything else here?
+////				}
+////				view.didUpdateMAXButtonToggleState_fn =
+////				{ [weak self] in
+////					guard let thisSelf = self else {
+////						return
+////					}
+////					thisSelf.configure_amountInputTextGivenMaxToggledState()
+////					thisSelf.set_isFormSubmittable_needsUpdate()
+////				}
+//				self.amount_fieldset = view
+//				self.scrollView.addSubview(view)
+//			}
 			do {
 				let view = UICommonComponents.FormFieldAccessoryMessageLabel(
 					text: nil,
@@ -328,31 +494,55 @@ extension ExchangeSendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			//
-			do {
+//			do {
+//				let view = UICommonComponents.Form.FieldLabel(
+//					title: NSLocalizedString("TO", comment: ""),
+//					sizeToFit: true
+//				)
+//				self.sendTo_label = view
+//				self.scrollView.addSubview(view)
+//			}
+//			do {
+//				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+//					tooltipText: String(
+//						format: NSLocalizedString(
+//							"Please double-check\nyour recipient info as\nMonero transfers are\nnot yet reversible.",
+//							comment: ""
+//						)
+//					)
+//				)
+//				view.tooltipDirectionFromOrigin = .right
+//				view.willPresentTipView_fn =
+//				{ [unowned self] in
+//					self.view.resignCurrentFirstResponder() // if any
+//				}
+//				self.sendTo_tooltipSpawn_buttonView = view
+//				self.scrollView.addSubview(view)
+//			}
+			
+			do { // btcAddress label
 				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("TO", comment: ""),
+					title: NSLocalizedString("BTC ADDRESS", comment: ""),
 					sizeToFit: true
 				)
-				self.sendTo_label = view
+				self.btcAddress_label = view
 				self.scrollView.addSubview(view)
 			}
-			do {
-				let view = UICommonComponents.TooltipSpawningLinkButtonView(
-					tooltipText: String(
-						format: NSLocalizedString(
-							"Please double-check\nyour recipient info as\nMonero transfers are\nnot yet reversible.",
-							comment: ""
-						)
-					)
+			do { // Out Amount
+				let view = UICommonComponents.FormInputField(
+					placeholder: NSLocalizedString("", comment: "")
 				)
-				view.tooltipDirectionFromOrigin = .right
-				view.willPresentTipView_fn =
-				{ [unowned self] in
-					self.view.resignCurrentFirstResponder() // if any
-				}
-				self.sendTo_tooltipSpawn_buttonView = view
+				let inputField = view
+				inputField.autocorrectionType = .no
+				inputField.autocapitalizationType = .none
+				inputField.keyboardType = UIKeyboardType.asciiCapable
+				inputField.delegate = self
+				inputField.addTarget(self, action: #selector(btcAddress_changed), for: .editingChanged)
+				inputField.returnKeyType = .next
+				self.btcAddress_inputView = view
 				self.scrollView.addSubview(view)
 			}
+			
 			do {
 				let view = UICommonComponents.Form.ContactAndAddressPickerView(
 					inputMode: .contactsAndAddresses,
@@ -501,9 +691,10 @@ extension ExchangeSendFundsForm
 			}
 			//
 			do {
-				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
+				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .hidden, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
 				view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
 				self.addPaymentID_buttonView = view
+				
 				self.scrollView.addSubview(view)
 			}
 			//
@@ -631,16 +822,16 @@ extension ExchangeSendFundsForm
 			//
 			// initial configuration; now that references to both the fee estimate layer and the priority select control have been assigned…
 			self.configure_networkFeeEstimate_label()
-			self.configure_amountInputTextGivenMaxToggledState()
+			//self.configure_amountInputTextGivenMaxToggledState()
 		}
 		override func setup_navigation()
 		{
 			super.setup_navigation()
 			self.navigationItem.title = NSLocalizedString("Exchange XMR", comment: "")
 			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .send,
+				type: .createOrder,
 				target: self,
-				action: #selector(tapped_rightBarButtonItem)
+				action: #selector(tapped_createOrderRightBarButtonItem)
 			)
 		}
 		override func startObserving()
@@ -694,33 +885,35 @@ extension ExchangeSendFundsForm
 		override func stopObserving()
 		{
 			super.stopObserving()
-			PasswordController.shared.removeRegistrantForDeleteEverything(self)
-			//
-			NotificationCenter.default.removeObserver(self, name: URLOpening.NotificationNames.saysTimeToHandleReceivedMoneroURL.notificationName, object: nil)
-
-			NotificationCenter.default.removeObserver(self, name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, object: nil)
-			//
-			NotificationCenter.default.removeObserver(
-				self,
-				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
-				object: PasswordController.shared
-			)
-			NotificationCenter.default.removeObserver(
-				self,
-				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
-				object: PasswordController.shared
-			)
-			//
-			NotificationCenter.default.removeObserver(
-				self,
-				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
-				object: nil
-			)
-			NotificationCenter.default.removeObserver(
-				self,
-				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
-				object: nil
-			)
+			debugPrint("Stop observing parent stuff")
+			// KB TODO: Fix up the stop observing stuff to clean properly -- we can clean everything except the order details
+//			PasswordController.shared.removeRegistrantForDeleteEverything(self)
+//			//
+//			NotificationCenter.default.removeObserver(self, name: URLOpening.NotificationNames.saysTimeToHandleReceivedMoneroURL.notificationName, object: nil)
+//
+//			NotificationCenter.default.removeObserver(self, name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, object: nil)
+//			//
+//			NotificationCenter.default.removeObserver(
+//				self,
+//				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
+//				object: PasswordController.shared
+//			)
+//			NotificationCenter.default.removeObserver(
+//				self,
+//				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
+//				object: PasswordController.shared
+//			)
+//			//
+//			NotificationCenter.default.removeObserver(
+//				self,
+//				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+//				object: nil
+//			)
+//			NotificationCenter.default.removeObserver(
+//				self,
+//				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
+//				object: nil
+//			)
 		}
 		//
 		// Accessors - Overrides
@@ -735,20 +928,21 @@ extension ExchangeSendFundsForm
 			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
 				return false
 			}
-			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
-				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
-			)
-			if submittableMoneroAmountDouble_orNil == nil {
-				let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
-				if isSweeping == false { // amount is required unless sweeping
-					return false
-				}
-			}
-			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
-				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
-				&& self.sendTo_inputView.selectedContact == nil {
-				return false
-			}
+//			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
+//				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
+//			)
+//			if submittableMoneroAmountDouble_orNil == nil {
+//				let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
+//				if isSweeping == false { // amount is required unless sweeping
+//					return false
+//				}
+//			}
+			// KB: handle form submittable here
+//			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
+//				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
+//				&& self.sendTo_inputView.selectedContact == nil {
+//				return false
+//			}
 			return true
 		}
 		override func new_contentInset() -> UIEdgeInsets
@@ -819,7 +1013,7 @@ extension ExchangeSendFundsForm
 		var new_xmr_estFeeAmount: MoneroAmount {
 			let estNetworkFee_moneroAmount = MyMoneroCore.ObjCppBridge.estimatedNetworkFee(
 				withFeePerB: MoneroAmount("24658")!, // constant for now pending polling fee_per_kb on account info
-				priority: self.selected_priority
+				priority: MoneroTransferSimplifiedPriority.low
 			)
 			return estNetworkFee_moneroAmount
 		}
@@ -954,14 +1148,14 @@ extension ExchangeSendFundsForm
 		}
 		func configure_amountInputTextGivenMaxToggledState()
 		{
-			let isMaxToggledOn = self.amount_fieldset.maxButtonView!.isToggledOn
-			let toToggledOnText: String? = isMaxToggledOn
-				? self.new_displayCcyFormatted_estMaxAmount_fullInputText // if non xmr ccy but rate nil (amount nil), will display "MAX" til it's ready
-				: nil
-			self.amount_fieldset.inputField.configureWithMAXToggled(
-				on: isMaxToggledOn,
-				toToggledOnText: toToggledOnText
-			)
+//			let isMaxToggledOn = self.amount_fieldset.maxButtonView!.isToggledOn
+//			let toToggledOnText: String? = isMaxToggledOn
+//				? self.new_displayCcyFormatted_estMaxAmount_fullInputText // if non xmr ccy but rate nil (amount nil), will display "MAX" til it's ready
+//				: nil
+//			self.amount_fieldset.inputField.configureWithMAXToggled(
+//				on: isMaxToggledOn,
+//				toToggledOnText: toToggledOnText
+//			)
 		}
 		//
 		// Imperatives - Contact picker, contact picking
@@ -1031,8 +1225,10 @@ extension ExchangeSendFundsForm
 			self.clearValidationMessage()
 			//
 			let fromWallet = self.fromWallet_inputView.selectedWallet!
-			let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
-			let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
+			//let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
+			//let amountText = self.amount_fieldset.inputField.text // we're going to allow empty amounts
+			let amountText = self.inAmount_inputView.text
+			
 			if amountText != nil && amountText!.isPureDecimalNoGroupingNumeric == false {
 				self.setValidationMessage(NSLocalizedString("Please enter an amount with only numbers and the '.' character.", comment: ""))
 				return
@@ -1040,7 +1236,7 @@ extension ExchangeSendFundsForm
 			let amount_submittableDouble = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
 				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
 			)
-			if isSweeping == false {
+			//if isSweeping == false {
 				assert(amount_submittableDouble != nil && amountText != nil && amountText != "")
 				if amount_submittableDouble == nil {
 					self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
@@ -1050,7 +1246,7 @@ extension ExchangeSendFundsForm
 					self.setValidationMessage(NSLocalizedString("The amount to send must be greater than zero.", comment: ""))
 					return
 				}
-			}
+			//}
 			//
 			let selectedCurrency = self.amount_fieldset.currencyPickerButton.selectedCurrency
 			func __proceedTo_disableFormAndExecute()
@@ -1071,11 +1267,12 @@ extension ExchangeSendFundsForm
 				//
 				let priority = self.selected_priority
 				//
-				assert(isSweeping || amount_submittableDouble != nil)
+				//assert(isSweeping || amount_submittableDouble != nil)
+				assert(amount_submittableDouble != nil)
 				let parameters = SendFundsForm.SubmissionController.Parameters(
 					fromWallet: fromWallet,
 					amount_submittableDouble: amount_submittableDouble,
-					isSweeping: isSweeping,
+					isSweeping: false,
 					priority: priority,
 					//
 					selectedContact: selectedContact,
@@ -1274,9 +1471,10 @@ extension ExchangeSendFundsForm
 		// Impertives - Clearing form
 		func _clearForm()
 		{
+			// KB: Fill in clear form stuff if necessary
 			self.clearValidationMessage()
-			self.amount_fieldset.clear()
-			self.sendTo_inputView.clearAndReset()
+			//self.amount_fieldset.clear()
+			//self.sendTo_inputView.clearAndReset()
 			do {
 				self.hideAndClear_manualPaymentIDField()
 				self.set_addPaymentID_buttonView(isHidden: false)
@@ -1313,28 +1511,68 @@ extension ExchangeSendFundsForm
 			//
 			let interSectionSpacing = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
 			//
-			do {
+			// KB Additions
+			let screenSize: CGRect = UIScreen.main.bounds
+					
+			let screenWidth = screenSize.width
+			let screenHeight = screenSize.height
+
+			self.explanation_label.frame = CGRect(
+				x: label_x,
+				y: top_yOffset,
+				width: self.explanation_label.frame.size.width,
+				height: self.explanation_label.frame.size.height
+			).integral
+			do { // Wallet Picker
 				self.fromWallet_label.frame = CGRect(
 					x: label_x,
-					y: top_yOffset,
+					y: self.explanation_label.frame.origin.y + self.fromWallet_inputView.frame.size.height + interSectionSpacing,
 					width: self.fromWallet_label.frame.size.width,
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				do {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.fromWallet_label.frame.origin.x + self.fromWallet_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-						y: self.fromWallet_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.fromWallet_label.frame.size.height)/2,
-						width: tooltipSpawn_buttonView_w,
-						height: tooltipSpawn_buttonView_h
-					).integral
+//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+//					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
+//						x: self.fromWallet_label.frame.origin.x + self.fromWallet_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+//						y: self.fromWallet_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.fromWallet_label.frame.size.height)/2,
+//						width: tooltipSpawn_buttonView_w,
+//						height: tooltipSpawn_buttonView_h
+//					).integral
 				}
 				self.fromWallet_inputView.frame = CGRect(
 					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
 					height: type(of: self.fromWallet_inputView).fixedHeight
+				).integral
+			}
+			do {
+				let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+				let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+				//
+				self.networkFeeEstimate_label.frame = CGRect(
+					x: label_x,
+					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
+					width: 0,
+					height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+				).integral
+				self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
+				var final__frame = self.networkFeeEstimate_label.frame
+				let max_w = fullWidth_label_w - 6 // or so
+				if final__frame.size.width < max_w {
+					final__frame.size.width = final__frame.size.width
+				} else {
+					final__frame.size.width = max_w
+				}
+				final__frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
+				self.networkFeeEstimate_label.frame = final__frame // kinda sucks to set this three times in this method. any alternative?
+				//
+				self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
+					x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+					y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,
+					width: tooltipSpawn_buttonView_w,
+					height: tooltipSpawn_buttonView_h
 				).integral
 			}
 //			do {
@@ -1350,34 +1588,7 @@ extension ExchangeSendFundsForm
 //					width: textField_w, // full-size width
 //					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
 //				).integral
-//				do {
-//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-//					//
-//					self.networkFeeEstimate_label.frame = CGRect(
-//						x: label_x,
-//						y: self.amount_fieldset.frame.origin.y + self.amount_fieldset.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
-//						width: 0,
-//						height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-//					).integral
-//					self.networkFeeEstimate_label.sizeToFit() // so we can place the tooltipSpawn_buttonView next to it
-//					var final__frame = self.networkFeeEstimate_label.frame
-//					let max_w = fullWidth_label_w - 6 // or so
-//					if final__frame.size.width < max_w {
-//						final__frame.size.width = final__frame.size.width
-//					} else {
-//						final__frame.size.width = max_w
-//					}
-//					final__frame.size.height = UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
-//					self.networkFeeEstimate_label.frame = final__frame // kinda sucks to set this three times in this method. any alternative?
-//					//
-//					self.feeEstimate_tooltipSpawn_buttonView.frame = CGRect(
-//						x: self.networkFeeEstimate_label.frame.origin.x + self.networkFeeEstimate_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-//						y: self.networkFeeEstimate_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.networkFeeEstimate_label.frame.size.height)/2,
-//						width: tooltipSpawn_buttonView_w,
-//						height: tooltipSpawn_buttonView_h
-//					).integral
-//				}
+				
 //			}
 //			do {
 //				self.sendTo_label.frame = CGRect(
@@ -1463,6 +1674,35 @@ extension ExchangeSendFundsForm
 					height: UICommonComponents.FormInputField.height
 				).integral
 			}
+			do {
+				self.outAmount_label.frame = CGRect(
+					x: label_x,
+					y: self.inAmount_inputView.frame.origin.y + self.inAmount_inputView.frame.size.height + interSectionSpacing,
+					width: self.inAmount_label.frame.size.width,
+					height: self.inAmount_label.frame.size.height
+				).integral
+				self.outAmount_label.sizeToFit() // get exact width
+//				self.generatePaymentID_linkButtonView.frame = CGRect(
+//					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
+//					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
+//					width: self.generatePaymentID_linkButtonView.frame.size.width,
+//					height: self.generatePaymentID_linkButtonView.frame.size.height
+//				).integral
+				self.outAmount_inputView.frame = CGRect(
+					x: input_x,
+					y: self.outAmount_label.frame.origin.y + self.outAmount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+					width: textField_w,
+					height: UICommonComponents.FormInputField.height
+				).integral
+			}
+			do { // Order status validation l Label
+				self.orderFormValidation_label.frame = CGRect(
+					x: label_x,
+					y: self.outAmount_inputView.frame.origin.y + self.outAmount_inputView.frame.size.height + interSectionSpacing,
+					width: self.outAmount_inputView.frame.size.width,
+					height: self.outAmount_inputView.frame.size.height
+				).integral
+			}
 			
 			do {
 				let previousSectionBottomView: UIView
@@ -1475,9 +1715,10 @@ extension ExchangeSendFundsForm
 						previousSectionBottomView = self.sendTo_inputView
 					}
 				}
-				//
+				
 				self.priority_label.frame = CGRect(
-					x: label_x,
+					//x: label_x,
+					x: CGFloat(-5000),
 					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + interSectionSpacing,
 					width: self.priority_label.frame.size.width,
 					height: self.priority_label.frame.size.height
@@ -1486,15 +1727,18 @@ extension ExchangeSendFundsForm
 					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
 					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
 					self.priority_tooltipSpawn_buttonView.frame = CGRect(
-						x: self.priority_label.frame.origin.x + self.priority_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+						x: CGFloat(-5000),
+//						x: self.priority_label.frame.origin.x + self.priority_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+//
 						y: self.priority_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.priority_label.frame.size.height)/2,
 						width: tooltipSpawn_buttonView_w,
 						height: tooltipSpawn_buttonView_h
 					).integral
 				}
-				//
+				
 				self.priority_inputView.frame = CGRect(
-					x: input_x,
+					//x: input_x,
+					x: CGFloat(-5000),
 					y: self.priority_label.frame.origin.y + self.priority_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
 					width: textField_w,
 					height: self.priority_inputView.fixedHeight
@@ -1510,7 +1754,7 @@ extension ExchangeSendFundsForm
 			//
 			// non-scrolling:
 			let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin
-			self.qrPicking_actionButtons.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
+			//self.qrPicking_actionButtons.givenSuperview_layOut(atY: buttons_y, withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h)
 		}
 		override func viewDidAppear(_ animated: Bool)
 		{
@@ -1530,11 +1774,11 @@ extension ExchangeSendFundsForm
 		{
 			super.viewWillDisappear(animated)
 			self.feeEstimate_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
-			self.sendTo_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
+			//self.sendTo_tooltipSpawn_buttonView.parentViewWillDisappear(animated: animated) // let it dismiss tooltips
 		}
 		//
 		// Delegation - Amounts.InputField UITextField shunt
-		func textField(
+		func exchangeTextField(
 			_ textField: UITextField,
 			shouldChangeCharactersIn range: NSRange,
 			replacementString string: String
@@ -1545,14 +1789,135 @@ extension ExchangeSendFundsForm
 					shouldChangeCharactersIn: range,
 					replacementString: string
 				)
+			} else {
+				debugPrint("pass through")
+				return self.amount_fieldset.inputField.textField(
+					textField,
+					shouldChangeCharactersIn: range,
+					replacementString: string
+				)
 			}
 			return true
 		}
+		
+		
+		/*
+		// Function for creating order
+		//
+		
+		What we send:
+out_address: "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+refund_address: "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
+in_currency: "XMR"
+out_currency: "BTC"
+offer_id: "a812-101"
+out_amount: "0.00175630"
+		
+What we receive:
+		
+		order_id: "a812-xmrto-sFY5uK"
+		expires_at: "2020-11-02T13:03:01Z"
+		in_address: "84YTtjberRQYfTrnsRWs5HPBLkzffAbQ8BkJ8v2rdxiSfYnvS6PEMhUTPfHNJjL2BB2VxYNndSBZC9kBRQxUyqZ8Bo2qgDP"
+		in_currency: "XMR"
+		in_amount: "0.2"
+		out_currency: "BTC"
+		out_amount: "0.0017563"
+		status: "NEW"
+		in_amount_remaining: "0.2"
+		out_address: "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+		provider_name: "xmr.to"
+		provider_url: "https://xmr.to/"
+		provider_order_id: "xmrto-sFY5uK"
+*/
+		
+	
+		func createOrder(offerId: String!, out_amount: String!, completionHandler: @escaping (Result<[String: Any]>) -> Void) {
+			performCreateOrder(offerId: offerId, out_amount: out_amount, completion: completionHandler)
+		}
+		
+		func performCreateOrder(offerId: String!, out_amount: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
+			self.orderFormValidation_label.text = ""
+			self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+			let params: [String: String] = [
+				//"out_address": "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm",
+				"out_address": self.btcAddress_inputView.text!,
+				"refund_address": "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm",
+				"in_currency": "XMR",
+				"out_currency": "BTC",
+				"offer_id": offerId,
+				"out_amount": "0.00175630"
+			]
+			debugPrint(params)
+			debugPrint("Fired getOffer")
+			let method = "create_order"
+			let apiEndpoint = apiUrl + method
+			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
+				.responseJSON {
+					response in
+					// add switch response.result here. Check for cases .success, .failure, default
+					debugPrint(response)
+					switch response.result {
+					case .success(let value as [String: Any]):
+						completion(.success(value))
+
+					case .failure(let error):
+						completion(.failure(error))
+
+					default:
+						fatalError("received non-dictionary JSON response")
+					}
+				}
+		}
+	// Function for retrieving order
+		
+		
+
+		
 		//
 		// Delegation - Interactions
-		@objc func tapped_rightBarButtonItem()
+		@objc func btcAddress_changed()
 		{
-			self.aFormSubmissionButtonWasPressed()
+			debugPrint("btcAddress_changed")
+		}
+		@objc func tapped_createOrderRightBarButtonItem()
+		{
+			/*
+			/
+			self.scrollView.resignCurrentFirstResponder()
+			
+			let viewController = AddContactFromContactsTabFormViewController()
+			let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+			modalViewController.modalPresentationStyle = .formSheet
+			self.navigationController!.present(modalViewController, animated: true, completion: nil)
+			*/
+			debugPrint("Clicked create order button")
+			self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
+				result in
+				debugPrint("Right button clicked to create order -- closure")
+				switch result {
+					case .failure (let error):
+						debugPrint(error)
+					case .success(let value):
+						debugPrint(value)
+//						let viewController = ExchangeShowOrderStatusFormViewController()
+//						let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+//						modalViewController.modalPresentationStyle = .formSheet
+//						self.navigationController!.present(modalViewController, animated: true, completion: nil)
+				}
+			}
+			
+			
+			// we need to create the order here
+			
+			
+			
+//			let orderDetails = OrderDetails(blah);
+//			let viewController = ExchangeOrderFormViewController(orderDetails);
+//			let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+//			modalViewController.modalPresentationStyle = .formSheet
+//			self.navigationController!.present(modalViewController, animated: true, completion: nil)
+			
+			//self._tryToSubmitForm()
 		}
 		@objc func addPaymentID_tapped()
 		{
@@ -1814,12 +2179,12 @@ extension ExchangeSendFundsForm
 		@objc func CcyConversionRates_didUpdateAvailabilityOfRates()
 		{
 			self.configure_networkFeeEstimate_label() // the amount field takes care of observing this for itself but the estimate label doesn't…… could be factored……
-			self.configure_amountInputTextGivenMaxToggledState() // if necessary
+			//self.configure_amountInputTextGivenMaxToggledState() // if necessary
 		}
 		@objc func SettingsController__NotificationNames_Changed__displayCurrencySymbol()
 		{
 			self.configure_networkFeeEstimate_label()
-			self.configure_amountInputTextGivenMaxToggledState()
+			//self.configure_amountInputTextGivenMaxToggledState()
 		}
 	}
 }
