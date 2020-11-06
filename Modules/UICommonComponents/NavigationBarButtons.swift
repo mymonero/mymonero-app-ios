@@ -49,7 +49,8 @@ extension UICommonComponents
 			case openModal
 			case edit
 			case valueDisplayLabel
-			case createOrder
+			case createExchangeOrder
+			case payExchangeOrder
 		}
 		var tapped_fn: (() -> Void)?
 		convenience init(type: ButtonItemType, target: Any?, action: Selector?)
@@ -91,7 +92,7 @@ extension UICommonComponents
 					break
 				case .cancel, // cancel actually seems to look better in blue
 					 .back,
-					 .edit, .save, .send, .go, .openModal, .createOrder:
+					 .edit, .save, .send, .go, .openModal, .createExchangeOrder, .payExchangeOrder:
 					buttonType = .systemStandard
 					break
 				case .valueDisplayLabel: // to be exhaustive
@@ -139,8 +140,12 @@ extension UICommonComponents
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Open", comment: ""), for: .normal)
 					sizeToFit = true
 					break
-				case .createOrder:
+				case .createExchangeOrder:
 					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Create Order", comment: ""), for: .normal)
+					sizeToFit = true
+					break
+				case .payExchangeOrder:
+					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Confirm Order", comment: ""), for: .normal)
 					sizeToFit = true
 					break
 				case .valueDisplayLabel: // to be exhaustive
