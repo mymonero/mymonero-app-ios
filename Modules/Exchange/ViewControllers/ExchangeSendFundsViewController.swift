@@ -43,6 +43,9 @@ extension ExchangeSendFundsForm
 		
 		// KB end
 		private let apiUrl = "https://api.mymonero.com:8443/cx/"
+		var validRateInfoRetrieved: Bool = false;
+		var validOfferRetrieved: Bool = false;
+		//private let apiUrl = "https://stagenet-api.mymonero.rtfm.net/"
 		
 		func getInfo() { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
 			let params: [String: String] = ["in_currency": "XMR", "out_currency": "BTC"]
@@ -54,7 +57,7 @@ extension ExchangeSendFundsForm
 					response in
 					if let data = response.data {
 						if let json = try? JSON(data: data) {
-							debugPrint(json)
+							self.validRateInfoRetrieved = true;
 							//self.in_min = json?[0]["in_min"].string
 							self.in_min = json["in_min"].floatValue
 							self.in_max = json["in_max"].floatValue
@@ -94,6 +97,7 @@ extension ExchangeSendFundsForm
 						response in
 						if let data = response.data {
 							if let json = try? JSON(data: data) {
+								self.validOfferRetrieved = true
 								debugPrint(json)
 								debugPrint(callingElement)
 								//self.in_min = json?[0]["in_min"].string
@@ -171,7 +175,7 @@ extension ExchangeSendFundsForm
 		var outAmount_label: UICommonComponents.Form.FieldLabel!
 		var btcAddress_label: UICommonComponents.Form.FieldLabel!
 		var btcAddress_inputView: UICommonComponents.FormInputField!
-		var offerPageErrors_label: UICommonComponents.Form.FieldLabel!
+		//var offerPageErrors_label: UICommonComponents.Form.FieldLabel!
 		
 		
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
@@ -228,23 +232,7 @@ extension ExchangeSendFundsForm
 		}
 			/*
 			This is the JS equivalent for sendfunds
-			
-			let enteredAddressValue = xmr_send_address; //;
-   let resolvedAddress = "";
-   let manuallyEnteredPaymentID = "";
-   let resolvedPaymentID = "";
-   let hasPickedAContact = false;
-   let manuallyEnteredPaymentID_fieldIsVisible = false;
-   let resolvedPaymentID_fieldIsVisible = false;
-   let resolvedAddress_fieldIsVisible = false;
-   let contact_payment_id = undefined;
-   let cached_OAResolved_address = undefined;
-   let contact_hasOpenAliasAddress = undefined;
-   let contact_address = undefined;
-   let raw_amount_string = xmr_amount; // XMR amount in double
-   let sweeping = sweep_wallet;
-   let simple_priority = 1;
-
+		
    wallet.SendFunds(
 	   enteredAddressValue,
 	   resolvedAddress,
@@ -829,7 +817,7 @@ extension ExchangeSendFundsForm
 			super.setup_navigation()
 			self.navigationItem.title = NSLocalizedString("Exchange XMR", comment: "")
 			self.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-				type: .createOrder,
+				type: .createExchangeOrder,
 				target: self,
 				action: #selector(tapped_createOrderRightBarButtonItem)
 			)
@@ -1852,6 +1840,7 @@ What we receive:
 			let method = "create_order"
 			let apiEndpoint = apiUrl + method
 			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
+				.validate()
 				.responseJSON {
 					response in
 					// add switch response.result here. Check for cases .success, .failure, default
@@ -1891,21 +1880,26 @@ What we receive:
 			self.navigationController!.present(modalViewController, animated: true, completion: nil)
 			*/
 			debugPrint("Clicked create order button")
-			self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
-				result in
-				debugPrint("Right button clicked to create order -- closure")
-				switch result {
-					case .failure (let error):
-						debugPrint(error)
-					case .success(let value):
-						debugPrint(value)
-//						let viewController = ExchangeShowOrderStatusFormViewController()
-//						let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-//						modalViewController.modalPresentationStyle = .formSheet
-//						self.navigationController!.present(modalViewController, animated: true, completion: nil)
+			if self.validOfferRetrieved {
+				self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
+					result in
+					debugPrint("Right button clicked to create order -- closure")
+					switch result {
+						case .failure (let error):
+							self.orderFormValidation_label.text = "An error was encountered: \(error)"
+							debugPrint(error)
+						case .success(let value):
+							debugPrint(value)
+							// handle Unexpectedly found nil while unwrapping an Optional value
+							let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
+							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+							modalViewController.modalPresentationStyle = .formSheet
+							self.navigationController!.present(modalViewController, animated: true, completion: nil)
+					}
 				}
+			} else {
+				self.orderFormValidation_label.text = "Please enter a valid exchange amount"
 			}
-			
 			
 			// we need to create the order here
 			
