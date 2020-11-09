@@ -56,6 +56,7 @@ extension ExchangeSendFundsForm
 		// Imperatives
 		func handle()
 		{
+			debugPrint(self.parameters)
 			let hasPickedAContact = self.parameters.selectedContact != nil
 			let manuallyEnteredPaymentID_exists = self.parameters.manuallyEnteredPaymentID != nil && self.parameters.manuallyEnteredPaymentID != ""
 			let canUseManualPaymentID =

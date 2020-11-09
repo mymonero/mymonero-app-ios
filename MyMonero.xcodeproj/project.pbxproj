@@ -18,6 +18,7 @@
 		6576418E254C151200DE76A8 /* OrderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418D254C151200DE76A8 /* OrderDetails.swift */; };
 		6576419025513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */; };
 		6576419225515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */; };
+		65912EEF2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */; };
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
 		9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */; };
 		9F00B8E11EC276C30040F52A /* MoneroUtils_RequestURIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */; };
@@ -353,6 +354,7 @@
 		6576418D254C151200DE76A8 /* OrderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetails.swift; sourceTree = "<group>"; };
 		6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeShowOrderStatusFormViewController.swift; sourceTree = "<group>"; };
 		6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeOrderStatusViewController.swift; sourceTree = "<group>"; };
+		65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeSendFundsFormSubmissionHandler.swift; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
 		9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryPresentationController.swift; sourceTree = "<group>"; };
 		9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_RequestURIs.swift; sourceTree = "<group>"; };
@@ -915,6 +917,7 @@
 			isa = PBXGroup;
 			children = (
 				657641782548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift */,
+				65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */,
 			);
 			path = ModelControllers;
 			sourceTree = "<group>";
@@ -2640,6 +2643,7 @@
 				9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */,
 				9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* SmallUtilityValueButtons.swift in Sources */,
+				65912EEF2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
 				657641792548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,

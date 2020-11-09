@@ -220,28 +220,32 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					self.orderStatus_inputView.text = value["status"] as? String
 					self.currencyValuePayout_inputView.text = value["out_amount"] as? String
 					self.remainingCurrencyPayable_inputView.text = value["in_amount"] as? String
-					let expiryStr = value["expires_at"] as? String
+					var expiryStr: String?
+					expiryStr = value["expires_at"] as? String
+					
 					//self.expiryDate = Date(value["expires_at"] as! String)
 					// Set up timer
 					debugPrint(expiryStr)
 					debugPrint(expiryStr)
 					var dateFormatter = ISO8601DateFormatter()
 					
-					
-					self.expiryDate = dateFormatter.date(from: expiryStr!)
-					
-					// if not nil, we have a valid date, and we can go ahead and
+					if (!(expiryStr == nil)) {
+						self.expiryDate = dateFormatter.date(from: expiryStr!)
+						
+						// if not nil, we have a valid date, and we can go ahead and
 
-					
-					let calendar = Calendar.current
-					let now = Date()
-					let difference = calendar.dateComponents([.hour, .minute, .second], from: Date(), to: self.expiryDate!)
-					
-					if self.expiryDate != nil {
-						self.startTimer()
+						
+						let calendar = Calendar.current
+						let now = Date()
+						let difference = calendar.dateComponents([.hour, .minute, .second], from: Date(), to: self.expiryDate!)
+						
+						if self.expiryDate != nil {
+							self.startTimer()
+						}
+						debugPrint(difference)
+					} else {
+						debugPrint("Error with server response")
 					}
-					debugPrint(difference)
-					
 					
 					//2020-11-05T10:46:15Z
 					// we need an error output area
@@ -788,96 +792,182 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		self.manualPaymentID_inputView.isEnabled = true
 		self.generatePaymentID_linkButtonView.isEnabled = true
 	}
-	var formSubmissionController: ExchangeSendFundsForm? // TODO: maybe standardize into FormViewController
+	var formSubmissionController: ExchangeSendFundsForm.SubmissionController? // TODO: maybe standardize into FormViewController
 	
-//	override func _tryToSubmitForm()
-//	{
-//		self.clearValidationMessage()
+	override func _tryToSubmitForm()
+	{
+		self.disableForm() // optimistic
+		/* Old Submit form validation logic */
+		//
+//		let selectedContact = self.sendTo_inputView.selectedContact
+//		let enteredAddressValue = self.sendTo_inputView.inputField.text
 //		//
-//		let toWallet = self.toWallet_inputView.selectedWallet!
-//		if toWallet.didFailToInitialize_flag == true {
-//			self.setValidationMessage(NSLocalizedString("Unable to load that wallet.", comment: ""))
-//			return
-//		}
-//		if toWallet.didFailToBoot_flag == true {
-//			self.setValidationMessage(NSLocalizedString("Unable to log into that wallet.", comment: ""))
-//			return
-//		}
+//		let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
+//		let resolvedAddress = resolvedAddress_fieldIsVisible ? self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text : nil
 //		//
-//		let amount = self.amount_fieldset.inputField.text // we're going to allow empty amounts
-//		if amount != nil && amount!.isPureDecimalNoGroupingNumeric == false {
-//			self.setValidationMessage(NSLocalizedString("Please enter an amount with only numbers and the '.' character.", comment: ""))
-//			return
-//		}
-//		let submittableDoubleAmount = self.amount_fieldset.inputField.submittableAmountRawDouble_orNil
-//		do {
-//			assert(submittableDoubleAmount != nil || amount == nil || amount == "")
-//			if submittableDoubleAmount == nil && (amount != nil && amount != "") { // something entered but not usable
-//				self.setValidationMessage(NSLocalizedString("Please enter a valid amount of Monero.", comment: ""))
-//				return
-//			}
-//		}
-//		if submittableDoubleAmount != nil && submittableDoubleAmount! <= 0 {
-//			self.setValidationMessage(NSLocalizedString("Please enter an amount greater than zero.", comment: ""))
-//			return
-//		}
-//		var submittableAmountFinalString: String?
-//		if submittableDoubleAmount != nil {
-//			submittableAmountFinalString = amount!
-//			if amount!.first! == "." {
-//				submittableAmountFinalString = "0" + submittableAmountFinalString!
-//			}
-//			if submittableAmountFinalString!.last! == ".".first! {
-//				submittableAmountFinalString! += "0"
-//			}
-//		}
-//		let submittable_amountCurrency: CcyConversionRates.CurrencySymbol? = submittableAmountFinalString != nil && submittableAmountFinalString! != "" ? self.amount_fieldset.currencyPickerButton.selectedCurrency.symbol : nil
+//		let manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentID_inputView.isHidden == false
+//		let manuallyEnteredPaymentID = manuallyEnteredPaymentID_fieldIsVisible ? self.manualPaymentID_inputView.text : nil
 //		//
-//		let selectedContact = self.requestFrom_inputView.selectedContact
-//		let hasPickedAContact = selectedContact != nil
-//		let requestFrom_input_text = self.requestFrom_inputView.inputField.text
-//		if requestFrom_input_text != nil && requestFrom_input_text! != "" { // they have entered something
-//			if hasPickedAContact == false { // but not picked a contact
-//				self.setValidationMessage(NSLocalizedString("Please select a contact or clear the contact field below to generate this request.", comment: ""))
-//				return
-//			}
-//		}
-//		let fromContact_name_orNil = selectedContact != nil ? selectedContact!.fullname : nil
+//		let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
+//		let resolvedPaymentID = resolvedPaymentID_fieldIsVisible ? self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? "" : nil
 //		//
-//		let paymentID: MoneroPaymentID? = self.manualPaymentID_inputView.isHidden == false ? self.manualPaymentID_inputView.text : nil
-//		let memoString = self.memo_inputView.text
-//		let parameters = AddFundsRequestFormSubmissionController.Parameters(
-//			optl__toWallet_color: toWallet.swatchColor,
-//			toWallet_address: toWallet.public_address,
-//			optl__fromContact_name: fromContact_name_orNil,
-//			paymentID: paymentID,
-//			amount: submittableAmountFinalString, // rather than using amount directly
-//			optl__memo: memoString,
-//			amountCurrency: submittable_amountCurrency,
-//			//
-//			preSuccess_terminal_validationMessage_fn:
-//			{ [unowned self] (localizedString) in
-//				self.setValidationMessage(localizedString)
-//				self.formSubmissionController = nil // must free as this is a terminal callback
-//				self.set_isFormSubmittable_needsUpdate()
-//				self.reEnableForm() // b/c we disabled it
-//			},
-//			success_fn:
-//			{ [unowned self] (instance) in
-//				self.formSubmissionController = nil // must free as this is a terminal callback
-//				self.reEnableForm() // b/c we disabled it
-//				self._didSave(instance: instance)
-//			}
-//		)
-//		let controller = SendFundsForm(parameters: parameters)
-//		self.formSubmissionController = controller
-//		do {
-//			self.disableForm()
-//			self.set_isFormSubmittable_needsUpdate() // update submittability
-//		}
-//		controller.handle()
-//	}
-//	//
+//		let priority = self.selected_priority
+//		//
+		// End of Submit form validation logic
+		
+		//
+				var enteredAddressValue: MoneroAddress? = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
+				var resolvedAddress: MoneroAddress?
+				var manuallyEnteredPaymentID: MoneroPaymentID?
+				var resolvedPaymentID: MoneroPaymentID?
+				var hasPickedAContent: Bool = false
+		//
+				var resolvedAddress_fieldIsVisible: Bool = false
+				var manuallyEnteredPaymentID_fieldIsVisible: Bool = false
+				var resolvedPaymentID_fieldIsVisible: Bool = false
+				var contactPaymentID: MoneroPaymentID?
+		//		var cached_OAResolved_address: String?
+		//		var contact_hasOpenAliasAddress: Bool = false
+		//		var contact_address: String?
+		//		var raw_amount_string: String = "0.000001"
+				var isSweeping: Bool = false
+				var priority: MoneroTransferSimplifiedPriority = .low
+		//		var preSuccess_nonTerminal_validationMessageUpdate_fn: (_ localizedString: String) -> Void
+		//		var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
+		//		var preSuccess_passedValidation_willBeginSending: () -> Void
+		//		var canceled_fn: () -> Void
+		//		var success_fn: (
+		//			_ mockedTransaction: MoneroHistoricalTransactionRecord,
+		//			_ sentTo_address: MoneroAddress, // this may differ from enteredAddress.. e.g. std addr + short pid -> int addr
+		//			_ isXMRAddressIntegrated: Bool, // regarding sentTo_address
+		//			_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
+		//		) -> Void
+		////		var validation_status_fn: Typehere = validation_status_fn "",
+		////		var cancelled_fn: Typehere = cancelled_fn "",
+		////		var handle_response_fn: Typehere = handle_response_fn ""
+		//
+		var fromWallet = self.selectedWallet
+		var selectedContact: Contact?
+				
+		var raw_amount_string: String = "0.000001"
+		var amount_submittableDouble: Double = 0.000001
+		
+		let parameters = ExchangeSendFundsForm.SubmissionController.Parameters(
+			fromWallet: self.selectedWallet,
+			amount_submittableDouble: amount_submittableDouble,
+			isSweeping: isSweeping,
+			priority: priority,
+			//
+			selectedContact: selectedContact,
+			enteredAddressValue: enteredAddressValue,
+			//
+			resolvedAddress: resolvedAddress,
+			resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
+			//
+			manuallyEnteredPaymentID: manuallyEnteredPaymentID,
+			manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
+			resolvedPaymentID: resolvedPaymentID,
+			resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible,
+			//
+			preSuccess_nonTerminal_validationMessageUpdate_fn:
+			{ [unowned self] (localizedString) in
+				self.set(
+					validationMessage: localizedString,
+					wantsXButton: false // false b/c it's nonTerminal
+				)
+			},
+			preSuccess_terminal_validationMessage_fn:
+			{ [unowned self] (localizedString) in
+				self.set(
+					validationMessage: localizedString,
+					wantsXButton: true // true because it's terminal
+				)
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.set_isFormSubmittable_needsUpdate()
+				self.reEnableForm() // b/c we disabled it
+			},
+			preSuccess_passedValidation_willBeginSending:
+			{
+			},
+			canceled_fn:
+			{ [weak self] in
+				guard let thisSelf = self else {
+					return
+				}
+				thisSelf.clearValidationMessage() // un-set "Sending... "
+				//
+				thisSelf.formSubmissionController = nil // must free as this is a terminal callback
+				thisSelf.set_isFormSubmittable_needsUpdate()
+				thisSelf.reEnableForm() // b/c we disabled it
+			},
+			success_fn:
+			{ [unowned self] (
+				mockedTransaction,
+				sentTo_address,
+				isXMRAddressIntegrated,
+				integratedAddressPIDForDisplay_orNil
+			) in
+				self.formSubmissionController = nil // must free as this is a terminal callback
+				// will re-enable form shortly (after presentation)
+				//
+				do {
+					let viewController = TransactionDetails.ViewController(
+						transaction: mockedTransaction,
+						inWallet: fromWallet!
+					)
+					self.navigationController!.pushViewController(
+						viewController,
+						animated: true
+					)
+				}
+				do { // and after a delay, present AddContactFromSendTabView
+					if selectedContact == nil { // so they went with a text input address
+						DispatchQueue.main.asyncAfter(
+							deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+							execute:
+							{ [unowned self] in
+								let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
+									enteredAddressValue: enteredAddressValue!,
+									integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
+									resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
+									sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress
+								)
+								let viewController = AddContactFromSendFundsTabFormViewController(
+									parameters: parameters
+								)
+								let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+								navigationController.modalPresentationStyle = .formSheet
+								self.navigationController!.present(navigationController, animated: true, completion: nil)
+							}
+						)
+					}
+				}
+				do { // finally, clean up form
+					DispatchQueue.main.asyncAfter(
+						deadline: .now() + 0.5, // after the navigation transition just above has taken place
+						execute:
+						{ [unowned self] in
+							self._clearForm()
+							// and lastly, importantly, re-enable everything
+							self.reEnableForm()
+						}
+					)
+				}
+			}
+		)
+		let controller = ExchangeSendFundsForm.SubmissionController(parameters: parameters)
+		self.formSubmissionController = controller
+		do {
+			self.disableForm()
+			self.set_isFormSubmittable_needsUpdate() // update submittability; after setting self.submissionController
+		}
+		controller.handle()
+	}
+	
+	func _clearForm() {
+		debugPrint("Clear form")
+	}
+	//
 	// Delegation - Form submission success
 	func _didSave(instance: FundsRequest)
 	{
@@ -1243,7 +1333,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		debugPrint("Tapped sendfunds")
 		debugPrint(self.selectedWallet!)
 		debugPrint("Try send funds")
-		
+		self.aFormSubmissionButtonWasPressed()
 		
 		// Once all is tested and working, invoke the following:
 		/*
@@ -1308,38 +1398,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			
 			*/
 
-		var enteredAddressValue: MoneroAddress? = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
-		var resolvedAddress: MoneroAddress?
-		var manuallyEnteredPaymentID: MoneroPaymentID?
-		var resolvedPaymentID: MoneroPaymentID?
-		var hasPickedAContent: Bool = false
-		
-		var resolvedAddress_fieldIsVisible: Bool = false
-		var manuallyEnteredPaymentID_fieldIsVisible: Bool = false
-		var resolvedPaymentID_fieldIsVisible: Bool = false
-		var contactPaymentID: MoneroPaymentID?
-		var cached_OAResolved_address: String?
-		var contact_hasOpenAliasAddress: Bool = false
-		var contact_address: String?
-		var raw_amount_string: String = "0.000001"
-		var isSweeping: Bool = false
-		var simple_priority: MoneroTransferSimplifiedPriority = .low
-		var preSuccess_nonTerminal_validationMessageUpdate_fn: (_ localizedString: String) -> Void
-		var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
-		var preSuccess_passedValidation_willBeginSending: () -> Void
-		var canceled_fn: () -> Void
-		var success_fn: (
-			_ mockedTransaction: MoneroHistoricalTransactionRecord,
-			_ sentTo_address: MoneroAddress, // this may differ from enteredAddress.. e.g. std addr + short pid -> int addr
-			_ isXMRAddressIntegrated: Bool, // regarding sentTo_address
-			_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
-		) -> Void
-//		var validation_status_fn: Typehere = validation_status_fn "",
-//		var cancelled_fn: Typehere = cancelled_fn "",
-//		var handle_response_fn: Typehere = handle_response_fn ""
-
-		var selectedContact: Contact?
-		
 //		self.selectedWallet.sendFunds(
 //			enteredAddressValue: enteredAddressValue,
 //			resolvedAddress: resolvedAddress,

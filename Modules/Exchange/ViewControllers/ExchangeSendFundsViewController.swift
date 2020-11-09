@@ -1887,6 +1887,14 @@ What we receive:
 					switch result {
 						case .failure (let error):
 							self.orderFormValidation_label.text = "An error was encountered: \(error)"
+							// TODO: KB: We carry on anyway for testing purposes right now -- remove following four lines
+							var orderId: String
+							orderId = "Failed"
+							//var orderDetails: Dictionary = [:]
+							let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: [:], orderId: orderId)
+							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+							modalViewController.modalPresentationStyle = .formSheet
+							self.navigationController!.present(modalViewController, animated: true, completion: nil)
 							debugPrint(error)
 						case .success(let value):
 							debugPrint(value)
