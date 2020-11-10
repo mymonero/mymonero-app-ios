@@ -56,7 +56,6 @@ extension ExchangeSendFundsForm
 		// Imperatives
 		func handle()
 		{
-			debugPrint(self.parameters)
 			let hasPickedAContact = self.parameters.selectedContact != nil
 			let manuallyEnteredPaymentID_exists = self.parameters.manuallyEnteredPaymentID != nil && self.parameters.manuallyEnteredPaymentID != ""
 			let canUseManualPaymentID =
@@ -133,6 +132,7 @@ extension ExchangeSendFundsForm
 			integratedAddressPIDForDisplay_orNil: MoneroPaymentID?,
 			mockedTransaction: MoneroHistoricalTransactionRecord
 		) {
+			
 			if self.parameters.fromWallet == nil {
 				assert(false, "FYI: wallet freed before end of SendFunds")
 				return
