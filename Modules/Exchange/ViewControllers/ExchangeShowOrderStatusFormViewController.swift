@@ -138,7 +138,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	}
 	
 	@objc func handleRemainingTimeUpdateTimer() {
-		
 			//self.timeRemaining_inputView.text =
 			// Time has expired
 			let now = Date()
@@ -158,7 +157,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				self.timeRemaining_inputView.text = "\(difference.second!) seconds"
 			}
 			debugPrint(difference)
-		
 	}
 	
 	@objc func handleOrderUpdateTimer() {
@@ -173,7 +171,14 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					debugPrint(value["in_currency"])
 					// We only really care about the order state
 					self.orderStatus_inputView.text = value["status"] as? String
-					// TODO: Add code here to check if the state is concluded, and if so, terminate the timers
+					// Code here is to check if the state is concluded, and if so, terminate the timers
+					// if the order is completed successfully, it'll return PAID || PAID_UNCONFIRMED -- we only want to terminate on PAID
+					// if the order has timed out, it'll return TIMED_OUT
+					if (self.orderStatus_inputView.text == "PAID" || self.orderStatus_inputView.text == "TIMED_OUT") {
+						self.stopRemainingTimeTimer()
+						self.stopOrderUpdateTimer()
+					}
+					
 				default:
 					debugPrint("received non-dictionary JSON response")
 			}
@@ -220,9 +225,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		self.selectedWallet = selectedWallet
 		self.orderDetails = orderDetails
 		self.orderId = orderId
-	
-		debugPrint(orderDetails)
-		debugPrint(orderDetails["in_amount"])
+
 		debugPrint("Invoking getOrderStatus with order_id: \(orderId)")
 		super.init()
 		// Dispatch AF call to retrieve order status
@@ -236,20 +239,17 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				case .failure (let error):
 					debugPrint(error)
 				case .success(let value):
-					debugPrint(value["in_currency"])
-					debugPrint("Ya")
 					self.uuid_inputView.text = value["provider_order_id"] as? String
 					self.orderStatus_inputView.text = value["status"] as? String
 					self.currencyValuePayout_inputView.text = value["out_amount"] as? String
 					self.remainingCurrencyPayable_inputView.text = value["in_amount"] as? String
+					
 					var expiryStr: String?
 					expiryStr = value["expires_at"] as? String
-					
+
 					self.startOrderUpdateTimer()
 					//self.expiryDate = Date(value["expires_at"] as! String)
 					// Set up timer
-					debugPrint(expiryStr)
-					debugPrint(expiryStr)
 					var dateFormatter = ISO8601DateFormatter()
 					
 					if (!(expiryStr == nil)) {
@@ -272,40 +272,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					//2020-11-05T10:46:15Z
 					// we need an error output area
 					
-//
-/*
-			var uuid_label: UICommonComponents.Form.FieldLabel!
-			var uuid_inputView: UICommonComponents.FormInputField!
-			var disclaimer_label: UICommonComponents.Form.FieldLabel!
-			var timeRemaining_label: UICommonComponents.Form.FieldLabel!
-			var timeRemaining_inputView: UICommonComponents.FormInputField!
-			var remainingCurrencyPayable_label: UICommonComponents.Form.FieldLabel!
-			var remainingCurrencyPayable_inputView: UICommonComponents.FormInputField!
-			var currencyValuePayout_label: UICommonComponents.Form.FieldLabel!
-			var currencyValuePayout_inputView: UICommonComponents.FormInputField!
-			var orderStatus_label: UICommonComponents.Form.FieldLabel!
-			var orderStatus_inputView: UICommonComponents.FormInputField!
-			var confirmSendFunds_buttonView: UICommonComponents.LinkButtonView!
-			
-			"expires_at" = "2020-11-05T10:46:15Z";
-			"in_address" = 8ATcH57zBGoda8WH2TV4GfPj4KQKMkC4CgrDbB9zEoZGc3LW9u4jEgK9DjoL3zo83JDs4tUmwwseoSi73CqVMiBE54VUYRu;
-			"in_amount" = "0.2297";
-			"in_amount_remaining" = "0.2297";
-			"in_currency" = XMR;
-			"order_id" = "a812-xmrto-RcnqG9";
-			"out_address" = 3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm;
-			"out_amount" = "0.0017563";
-			"out_currency" = BTC;
-			"provider_name" = "xmr.to";
-			"provider_order_id" = "xmrto-RcnqG9";
-			"provider_url" = "https://xmr.to/";
-			status = NEW;
-			
-			*/
-					//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value)
-					//let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-					//modalViewController.modalPresentationStyle = .formSheet
-					//self.navigationController!.present(modalViewController, animated: true, completion: nil)
 			}
 		}
 	}
@@ -832,22 +798,23 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		// End of Submit form validation logic
 		
 		//
-				var enteredAddressValue: MoneroAddress? = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
-				var resolvedAddress: MoneroAddress?
-				var manuallyEnteredPaymentID: MoneroPaymentID?
-				var resolvedPaymentID: MoneroPaymentID?
-				var hasPickedAContent: Bool = false
+		var enteredAddressValue: MoneroAddress? = self.orderDetails["in_address"] as? String
+		var raw_amount_string: String? = self.orderDetails["in_amount"] as? String
+		var resolvedAddress: MoneroAddress?
+		var manuallyEnteredPaymentID: MoneroPaymentID?
+		var resolvedPaymentID: MoneroPaymentID?
+		var hasPickedAContent: Bool = false
 		//
-				var resolvedAddress_fieldIsVisible: Bool = false
-				var manuallyEnteredPaymentID_fieldIsVisible: Bool = false
-				var resolvedPaymentID_fieldIsVisible: Bool = false
-				var contactPaymentID: MoneroPaymentID?
+		var resolvedAddress_fieldIsVisible: Bool = false
+		var manuallyEnteredPaymentID_fieldIsVisible: Bool = false
+		var resolvedPaymentID_fieldIsVisible: Bool = false
+		var contactPaymentID: MoneroPaymentID?
 		//		var cached_OAResolved_address: String?
 		//		var contact_hasOpenAliasAddress: Bool = false
 		//		var contact_address: String?
 		//		var raw_amount_string: String = "0.000001"
-				var isSweeping: Bool = false
-				var priority: MoneroTransferSimplifiedPriority = .low
+		var isSweeping: Bool = false
+		var priority: MoneroTransferSimplifiedPriority = .low
 		//		var preSuccess_nonTerminal_validationMessageUpdate_fn: (_ localizedString: String) -> Void
 		//		var preSuccess_terminal_validationMessage_fn: (_ localizedString: String) -> Void
 		//		var preSuccess_passedValidation_willBeginSending: () -> Void
@@ -864,9 +831,9 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		//
 		var fromWallet = self.selectedWallet
 		var selectedContact: Contact?
-				
-		var raw_amount_string: String = "0.000001"
-		var amount_submittableDouble: Double = 0.000001
+
+		var amount_submittableDouble = Double(raw_amount_string!)
+		//amount_submittableDouble = raw_amount_string.tofl
 		
 		let parameters = ExchangeSendFundsForm.SubmissionController.Parameters(
 			fromWallet: self.selectedWallet,
@@ -971,6 +938,12 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				}
 			}
 		)
+		
+		
+		
+		debugPrint("Exitting in ESOSFVC -- finalising proper order parameters")
+		debugPrint(parameters)
+		return
 		let controller = ExchangeSendFundsForm.SubmissionController(parameters: parameters)
 		self.formSubmissionController = controller
 		do {
