@@ -186,7 +186,8 @@ extension ExchangeSendFundsForm
 		var orderFormValidation_label: UICommonComponents.Form.FieldLabel!
 		var orderStatusValidation_label: UICommonComponents.Form.FieldLabel!
 		//
-		
+		var orderDetails: [String:Any] = [:]
+		var orderExists: Bool = false
 		
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
@@ -1744,14 +1745,19 @@ extension ExchangeSendFundsForm
 		{
 			let isFirstAppearance = self.hasAppearedBefore == false
 			super.viewDidAppear(animated)
-			if isFirstAppearance {
-//				DispatchQueue.main.async
-//				{ [unowned self] in
-//					if self.sanitizedInputValue__selectedContact == nil {
-//						assert(self.sendTo_inputView.inputField.isHidden == false)
-//						self.sendTo_inputView.inputField.becomeFirstResponder()
-//					}
-//				}
+			// this will be called every time the view appears, including when coming back from useridle -- as such, check orderdetails is set, and if so, redirect to orderdetails page
+			if (self.orderExists) {
+				debugPrint("Order exists")
+				debugPrint(self.orderExists)
+				debugPrint(self.orderDetails)
+				debugPrint(self.orderDetails["order_id"])
+				
+				//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: self.orderDetails["order_id"] as! String)
+				//let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+				//modalViewController.modalPresentationStyle = .formSheet
+				//self.navigationController!.present(modalViewController, animated: true, completion: nil)
+			} else {
+				debugPrint("No order yet")
 			}
 		}
 		override func viewWillDisappear(_ animated: Bool)
@@ -1893,7 +1899,8 @@ What we receive:
 							//self.navigationController!.present(modalViewController, animated: true, completion: nil)
 							debugPrint(error)
 						case .success(let value):
-							debugPrint(value)
+							self.orderDetails = value
+							self.orderExists = true
 							// handle Unexpectedly found nil while unwrapping an Optional value
 							let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
 							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
