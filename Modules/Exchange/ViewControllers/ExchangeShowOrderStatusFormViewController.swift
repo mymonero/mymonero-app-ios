@@ -52,6 +52,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	var selectedWallet: Wallet!
 	var sendTransaction_button: UIButton!
 	var orderDetails: [String:Any]
+	var orderId: String?
 	
 
 	var expiryDate: Date?
@@ -68,7 +69,8 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	var orderStatus_inputView: UICommonComponents.FormInputField!
 	var confirmSendFunds_buttonView: UICommonComponents.LinkButtonView!
 	var btcAddress: String!
-	weak var orderTimer: Timer?
+	weak var orderUpdateTimer: Timer?
+	weak var timeRemainingTimer: Timer?
 	var orderCalendar: Calendar
 	private let apiUrl = "https://api.mymonero.com:8443/cx/"
 	//private let apiUrl = "https://stagenet-api.mymonero.rtfm.net/cx/"
@@ -114,7 +116,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			"order_id": orderId
 		]
 		debugPrint(params)
-		debugPrint("Fired order status query")
+		debugPrint("Fired order status update query")
 		let method = "order_status"
 		let apiEndpoint = apiUrl + method
 		Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
@@ -135,7 +137,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			}
 	}
 	
-	@objc func updateTimer() {
+	@objc func handleRemainingTimeUpdateTimer() {
 		
 			//self.timeRemaining_inputView.text =
 			// Time has expired
@@ -143,7 +145,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			
 			if (now > self.expiryDate!) {
 				debugPrint("Time epxired")
-				stopTimer()
+				self.stopRemainingTimeTimer()
 			}
 			
 			let difference = self.orderCalendar.dateComponents([.hour, .minute, .second], from: Date(), to: self.expiryDate!)
@@ -159,18 +161,48 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		
 	}
 	
-	@objc func startTimer()
+	@objc func handleOrderUpdateTimer() {
+		self.updateOrderStatus(orderId: self.orderId) {
+			result in
+			debugPrint("Order update handler")
+			debugPrint(result)
+			switch result {
+				case .failure (let error):
+					debugPrint(error)
+				case .success(let value):
+					debugPrint(value["in_currency"])
+					// We only really care about the order state
+					self.orderStatus_inputView.text = value["status"] as? String
+					// TODO: Add code here to check if the state is concluded, and if so, terminate the timers
+				default:
+					debugPrint("received non-dictionary JSON response")
+			}
+		}
+	}
+	
+	@objc func startRemainingTimeTimer()
 	{
-		orderTimer?.invalidate()
-		orderTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+		timeRemainingTimer?.invalidate()
+		timeRemainingTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(handleRemainingTimeUpdateTimer), userInfo: nil, repeats: true)
 	}
 
-	@objc func stopTimer() {
-		orderTimer?.invalidate()
+	@objc func stopRemainingTimeTimer() {
+		timeRemainingTimer?.invalidate()
+	}
+	
+	@objc func startOrderUpdateTimer()
+	{
+		orderUpdateTimer?.invalidate()
+		orderUpdateTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(handleOrderUpdateTimer), userInfo: nil, repeats: true)
+	}
+	
+	@objc func stopOrderUpdateTimer() {
+		orderUpdateTimer?.invalidate()
 	}
 	
 	deinit {
-		stopTimer()
+		stopRemainingTimeTimer()
+		stopOrderUpdateTimer()
 	}
 	//
 	//
@@ -184,20 +216,10 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		self.orderCalendar = Calendar.current
 		debugPrint("Hello from order details")
 		debugPrint(orderDetails)
-		
-		// ^ this will call setup (synchronously)
-//		if contact != nil {
-//			// wait or else animation on resolving indicator will fail
-//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute:
-//			{ [weak self] in
-//				guard let thisSelf = self else {
-//					return
-//				}
-//				thisSelf.requestFrom_inputView.pick(contact: contact!)
-//			})
-//		}
+
 		self.selectedWallet = selectedWallet
 		self.orderDetails = orderDetails
+		self.orderId = orderId
 	
 		debugPrint(orderDetails)
 		debugPrint(orderDetails["in_amount"])
@@ -223,6 +245,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					var expiryStr: String?
 					expiryStr = value["expires_at"] as? String
 					
+					self.startOrderUpdateTimer()
 					//self.expiryDate = Date(value["expires_at"] as! String)
 					// Set up timer
 					debugPrint(expiryStr)
@@ -240,8 +263,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 						let difference = calendar.dateComponents([.hour, .minute, .second], from: Date(), to: self.expiryDate!)
 						
 						if self.expiryDate != nil {
-							self.startTimer()
-						}
+							self.startRemainingTimeTimer()						}
 						debugPrint(difference)
 					} else {
 						debugPrint("Error with server response")
@@ -286,12 +308,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					//self.navigationController!.present(modalViewController, animated: true, completion: nil)
 			}
 		}
-		
-//		if selectedWallet != nil {
-//			self.toWallet_inputView.set(selectedWallet: selectedWallet!)
-//		}
-
-
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")

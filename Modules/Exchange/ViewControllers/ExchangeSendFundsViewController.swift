@@ -256,45 +256,14 @@ extension ExchangeSendFundsForm
 
 			*/
 
-	
-		
-//		var wallet = fromWallet_inputView.selectedWallet?.sendFunds(enteredAddressValue: <#T##MoneroAddress?#>, resolvedAddress: <#T##MoneroAddress?#>, manuallyEnteredPaymentID: <#T##MoneroPaymentID?#>, resolvedPaymentID: <#T##MoneroPaymentID?#>, hasPickedAContact: <#T##Bool#>, resolvedAddress_fieldIsVisible: <#T##Bool#>, manuallyEnteredPaymentID_fieldIsVisible: <#T##Bool#>, resolvedPaymentID_fieldIsVisible: <#T##Bool#>, contact_payment_id: <#T##MoneroPaymentID?#>, cached_OAResolved_address: <#T##String?#>, contact_hasOpenAliasAddress: <#T##Bool?#>, contact_address: <#T##String?#>, raw_amount_string: <#T##String?#>, isSweeping: <#T##Bool#>, simple_priority: <#T##MoneroTransferSimplifiedPriority#>, didUpdateProcessStep_fn: <#T##((String) -> Void)##((String) -> Void)##(String) -> Void#>, success_fn: <#T##(MoneroAddress, Bool, MoneroPaymentID?, MoneroAmount, MoneroPaymentID?, MoneroTransactionHash, MoneroAmount, MoneroTransactionSecKey, MoneroHistoricalTransactionRecord) -> Void#>, canceled_fn: <#T##() -> Void#>, failWithErr_fn: <#T##(String) -> Void#>);
-//			Swift.debugPrint(wallet)
-//		Swift.debugPrint("\(textField.text)")
-			//var response = self.exchangeFunctions.getInfo()
-			//debugPrint("Are we non-blocking?")
-		
 		@objc func outAmount_Changed(_ textField: UITextField) {
-			//self.getOffer(in_amount: 1, callingElement: "out")
+			self.getOffer(in_amount: textField.text, callingElement: "in")
 		}
 		
 		@objc func inAmount_Changed(_ textField: UITextField) {
 			print("inputAmountChanged")
 			print("\(textField.text)")
 			self.getOffer(in_amount: textField.text, callingElement: "in")
-			//var response = self.exchangeFunctions.getInfo()
-			debugPrint("Are we non-blocking?")
-			//debugPrint(response)
-//			DispatchQueue.global(qos: .utility).async {
-//				let result = self.ExchangeFunctionsgetInfo()
-//					.flatMap {
-//						//self.setOutAmount($0)
-//						debugPrint($0)
-//					}
-//					.flatMap { //self.andAnotherAPICall($0) }
-//
-//				DispatchQueue.main.async {
-//					switch result {
-//					case let .success(data):
-//						print(data)
-//					case let .failure(error):
-//						print(error)
-//					}
-//				}
-//			}
-			
-			
-			
 		}
 		
 		// Lifecycle - Init
@@ -822,6 +791,21 @@ extension ExchangeSendFundsForm
 				action: #selector(tapped_createOrderRightBarButtonItem)
 			)
 		}
+		
+		@objc func handleUserDidBecomeIdle() {
+			debugPrint("we fired when the state became idle")
+			debugPrint(self.offerId)
+			debugPrint(self.in_amount)
+			debugPrint(self.out_amount)
+		}
+		
+		@objc func handleUserDidComeBack() {
+			debugPrint("we fired when the state came back from idle")
+			debugPrint(self.offerId)
+			debugPrint(self.in_amount)
+			debugPrint(self.out_amount)
+		}
+		
 		override func startObserving()
 		{
 			super.startObserving()
@@ -842,6 +826,18 @@ extension ExchangeSendFundsForm
 			)
 			NotificationCenter.default.addObserver(
 				self,
+				selector: #selector(handleUserDidBecomeIdle),
+				name: UserIdle.NotificationNames.userDidBecomeIdle.notificationName, // observe 'did' so we're guaranteed to already be on right tab
+				object: nil
+			)
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(handleUserDidComeBack),
+				name: UserIdle.NotificationNames.userDidComeBackFromIdle.notificationName, // observe 'did' so we're guaranteed to already be on right tab
+				object: nil
+			)
+			NotificationCenter.default.addObserver(
+				self,
 				selector: #selector(PasswordController_willDeconstructBootedStateAndClearPassword),
 				name: PasswordController.NotificationNames.willDeconstructBootedStateAndClearPassword.notificationName,
 				object: PasswordController.shared
@@ -858,12 +854,12 @@ extension ExchangeSendFundsForm
 				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
 				object: nil
 			)
-			NotificationCenter.default.addObserver(
-				self,
-				selector: #selector(SettingsController__NotificationNames_Changed__displayCurrencySymbol),
-				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
-				object: nil
-			)
+//			NotificationCenter.default.addObserver(
+//				self,
+//				selector: #selector(SettingsController__NotificationNames_Changed__displayCurrencySymbol),
+//				name: SettingsController.NotificationNames_Changed.displayCurrencySymbol.notificationName,
+//				object: nil
+//			)
 		}
 		//
 		override func tearDown()
@@ -1888,13 +1884,13 @@ What we receive:
 						case .failure (let error):
 							self.orderFormValidation_label.text = "An error was encountered: \(error)"
 							// TODO: KB: We carry on anyway for testing purposes right now -- remove following four lines
-							var orderId: String
-							orderId = "Failed"
+							//var orderId: String
+							//orderId = "Failed"
 							//var orderDetails: Dictionary = [:]
-							let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: [:], orderId: orderId)
-							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-							modalViewController.modalPresentationStyle = .formSheet
-							self.navigationController!.present(modalViewController, animated: true, completion: nil)
+							//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: [:], orderId: orderId)
+							//let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+							//modalViewController.modalPresentationStyle = .formSheet
+							//self.navigationController!.present(modalViewController, animated: true, completion: nil)
 							debugPrint(error)
 						case .success(let value):
 							debugPrint(value)
@@ -1908,18 +1904,6 @@ What we receive:
 			} else {
 				self.orderFormValidation_label.text = "Please enter a valid exchange amount"
 			}
-			
-			// we need to create the order here
-			
-			
-			
-//			let orderDetails = OrderDetails(blah);
-//			let viewController = ExchangeOrderFormViewController(orderDetails);
-//			let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-//			modalViewController.modalPresentationStyle = .formSheet
-//			self.navigationController!.present(modalViewController, animated: true, completion: nil)
-			
-			//self._tryToSubmitForm()
 		}
 		@objc func addPaymentID_tapped()
 		{
