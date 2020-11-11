@@ -1680,6 +1680,21 @@ extension ExchangeSendFundsForm
 					height: UICommonComponents.FormInputField.height
 				).integral
 			}
+			do {
+				self.btcAddress_label.frame = CGRect(
+					x: label_x,
+					y: self.outAmount_inputView.frame.origin.y + self.outAmount_inputView.frame.size.height + interSectionSpacing,
+					width: self.outAmount_inputView.frame.size.width,
+					height: self.outAmount_inputView.frame.size.height
+				).integral
+				self.btcAddress_label.sizeToFit() // get exact width
+				self.btcAddress_inputView.frame = CGRect(
+					x: input_x,
+					y: self.btcAddress_label.frame.origin.y + self.btcAddress_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+					width: textField_w,
+					height: UICommonComponents.FormInputField.height
+				).integral
+			}
 			do { // Order status validation l Label
 				self.orderFormValidation_label.frame = CGRect(
 					x: label_x,
@@ -1789,37 +1804,6 @@ extension ExchangeSendFundsForm
 			}
 			return true
 		}
-		
-		
-		/*
-		// Function for creating order
-		//
-		
-		What we send:
-out_address: "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
-refund_address: "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
-in_currency: "XMR"
-out_currency: "BTC"
-offer_id: "a812-101"
-out_amount: "0.00175630"
-		
-What we receive:
-		
-		order_id: "a812-xmrto-sFY5uK"
-		expires_at: "2020-11-02T13:03:01Z"
-		in_address: "84YTtjberRQYfTrnsRWs5HPBLkzffAbQ8BkJ8v2rdxiSfYnvS6PEMhUTPfHNJjL2BB2VxYNndSBZC9kBRQxUyqZ8Bo2qgDP"
-		in_currency: "XMR"
-		in_amount: "0.2"
-		out_currency: "BTC"
-		out_amount: "0.0017563"
-		status: "NEW"
-		in_amount_remaining: "0.2"
-		out_address: "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
-		provider_name: "xmr.to"
-		provider_url: "https://xmr.to/"
-		provider_order_id: "xmrto-sFY5uK"
-*/
-		
 	
 		func createOrder(offerId: String!, out_amount: String!, completionHandler: @escaping (Result<[String: Any]>) -> Void) {
 			performCreateOrder(offerId: offerId, out_amount: out_amount, completion: completionHandler)
@@ -1828,6 +1812,7 @@ What we receive:
 		func performCreateOrder(offerId: String!, out_amount: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
 			self.orderFormValidation_label.text = ""
 			self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+	
 			let params: [String: String] = [
 				//"out_address": "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm",
 				"out_address": self.btcAddress_inputView.text!,
@@ -1903,9 +1888,12 @@ What we receive:
 							self.orderExists = true
 							// handle Unexpectedly found nil while unwrapping an Optional value
 							let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
-							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-							modalViewController.modalPresentationStyle = .formSheet
-							self.navigationController!.present(modalViewController, animated: true, completion: nil)
+//							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+//							modalViewController.modalPresentationStyle = .formSheet
+//							self.navigationController!.present(modalViewController, animated: true, completion: nil)
+							
+							self.scrollView.addSubview(viewController.view)
+							self.navigationItem.rightBarButtonItem = nil
 					}
 				}
 			} else {

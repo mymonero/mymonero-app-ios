@@ -617,7 +617,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 //			action: #selector(tapped_rightBarButtonItem)
 //		)
 		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .cancel,
+			type: .back,
 			target: self,
 			action: #selector(tapped_barButtonItem_cancel)
 		)
@@ -835,6 +835,10 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		var amount_submittableDouble = Double(raw_amount_string!)
 		//amount_submittableDouble = raw_amount_string.tofl
 		
+		// TODO: KB: Remove this testing code
+		amount_submittableDouble = 0.000001
+		enteredAddressValue = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
+		// END OF TEST CODE
 		let parameters = ExchangeSendFundsForm.SubmissionController.Parameters(
 			fromWallet: self.selectedWallet,
 			amount_submittableDouble: amount_submittableDouble,
@@ -890,60 +894,67 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				isXMRAddressIntegrated,
 				integratedAddressPIDForDisplay_orNil
 			) in
-				self.formSubmissionController = nil // must free as this is a terminal callback
+				self.formSubmissionController = nil
+				self.set(
+					validationMessage: NSLocalizedString("Your Monero is on its way.", comment: ""),
+					wantsXButton: true // true because it's terminal
+				)
+				
+				// must free as this is a terminal callback
 				// will re-enable form shortly (after presentation)
 				//
-				do {
-					let viewController = TransactionDetails.ViewController(
-						transaction: mockedTransaction,
-						inWallet: fromWallet!
-					)
-					self.navigationController!.pushViewController(
-						viewController,
-						animated: true
-					)
-				}
-				do { // and after a delay, present AddContactFromSendTabView
-					if selectedContact == nil { // so they went with a text input address
-						DispatchQueue.main.asyncAfter(
-							deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
-							execute:
-							{ [unowned self] in
-								let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
-									enteredAddressValue: enteredAddressValue!,
-									integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
-									resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
-									sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress
-								)
-								let viewController = AddContactFromSendFundsTabFormViewController(
-									parameters: parameters
-								)
-								let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-								navigationController.modalPresentationStyle = .formSheet
-								self.navigationController!.present(navigationController, animated: true, completion: nil)
-							}
-						)
-					}
-				}
-				do { // finally, clean up form
-					DispatchQueue.main.asyncAfter(
-						deadline: .now() + 0.5, // after the navigation transition just above has taken place
-						execute:
-						{ [unowned self] in
-							self._clearForm()
-							// and lastly, importantly, re-enable everything
-							self.reEnableForm()
-						}
-					)
-				}
+				
+//				do {
+//					let viewController = TransactionDetails.ViewController(
+//						transaction: mockedTransaction,
+//						inWallet: fromWallet!
+//					)
+//					self.navigationController!.pushViewController(
+//						viewController,
+//						animated: true
+//					)
+//				}
+//				do { // and after a delay, present AddContactFromSendTabView
+//					if selectedContact == nil { // so they went with a text input address
+//						DispatchQueue.main.asyncAfter(
+//							deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+//							execute:
+//							{ [unowned self] in
+//								let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
+//									enteredAddressValue: enteredAddressValue!,
+//									integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
+//									resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
+//									sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress
+//								)
+//								let viewController = AddContactFromSendFundsTabFormViewController(
+//									parameters: parameters
+//								)
+//								let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+//								navigationController.modalPresentationStyle = .formSheet
+//								self.navigationController!.present(navigationController, animated: true, completion: nil)
+//							}
+//						)
+//					}
+//				}
+//				do { // finally, clean up form
+//					DispatchQueue.main.asyncAfter(
+//						deadline: .now() + 0.5, // after the navigation transition just above has taken place
+//						execute:
+//						{ [unowned self] in
+//							self._clearForm()
+//							// and lastly, importantly, re-enable everything
+//							self.reEnableForm()
+//						}
+//					)
+//				}
 			}
 		)
 		
 		
-		
-		debugPrint("Exitting in ESOSFVC -- finalising proper order parameters")
-		debugPrint(parameters)
-		return
+		// TODO: KB: remove this debug code
+//		debugPrint("Exitting in ESOSFVC -- finalising proper order parameters")
+//		debugPrint(parameters)
+//		return
 		let controller = ExchangeSendFundsForm.SubmissionController(parameters: parameters)
 		self.formSubmissionController = controller
 		do {
