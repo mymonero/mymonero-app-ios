@@ -1019,12 +1019,14 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				width: fullWidth_label_w,
 				height: self.disclaimer_label.frame.size.height
 			).integral
+			self.disclaimer_label.numberOfLines = 0
+			self.disclaimer_label.lineBreakMode = NSLineBreakMode.byWordWrapping
 			self.disclaimer_label.sizeToFit()
 		}
 		do {
 			self.uuid_label.frame = CGRect(
 				x: label_x,
-				y: self.disclaimer_label.frame.origin.y + self.uuid_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
+				y: self.disclaimer_label.frame.origin.y + self.disclaimer_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 				width: fullWidth_label_w,
 				height: self.uuid_label.frame.size.height
 			).integral
