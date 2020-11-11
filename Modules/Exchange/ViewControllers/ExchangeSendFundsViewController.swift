@@ -182,7 +182,7 @@ extension ExchangeSendFundsForm
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
 		var fromWallet_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		
-		var explanation_label: UICommonComponents.Form.FieldLabel!
+		var explanation_label: UICommonComponents.Form.Text!
 		var orderFormValidation_label: UICommonComponents.Form.FieldLabel!
 		var orderStatusValidation_label: UICommonComponents.Form.FieldLabel!
 		//
@@ -281,7 +281,7 @@ extension ExchangeSendFundsForm
 			super.setup_views()
 			self.getInfo() // KB: We need exception handling on the getinfo loop
 			do { // Explanation Label
-				let view = UICommonComponents.Form.FieldLabel(
+				let view = UICommonComponents.Form.Text(
 					title: NSLocalizedString("You can convert your XMR into BTC here", comment: ""),
 					sizeToFit: true
 				)
@@ -501,282 +501,282 @@ extension ExchangeSendFundsForm
 				self.scrollView.addSubview(view)
 			}
 			
-			do {
-				let view = UICommonComponents.Form.ContactAndAddressPickerView(
-					inputMode: .contactsAndAddresses,
-					displayMode: .paymentIds_andResolvedAddrs,
-					parentScrollView: self.scrollView
-				)
-				view.inputField.set(
-					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")
-				)
-				view.textFieldDidBeginEditing_fn =
-				{ [unowned self] (textField) in
-					self.view.setNeedsLayout() // to be certain we get the updated bottom padding
-					
-					self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
-					// ^- this does not actually do anything at present, given suppressed scroll
-					self.isWaitingOnFieldBeginEditingScrollTo_sendTo = true // sort of janky
-					DispatchQueue.main.asyncAfter(
-						deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
-					) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
-					{ [unowned self] in
-						self.isWaitingOnFieldBeginEditingScrollTo_sendTo = false // unset
-						if view.inputField.isFirstResponder { // jic
-							self.scrollToVisible_sendTo()
-						}
-					}
-				}
-				view.didUpdateHeight_fn =
-				{ [unowned self] in
-					self.view.setNeedsLayout() // to get following subviews' layouts to update
-					//
-					// scroll to field in case, e.g., results table updated
-					DispatchQueue.main.asyncAfter(
-						deadline: .now() + 0.1
-					) { [unowned self] in
-						if self.isWaitingOnFieldBeginEditingScrollTo_sendTo == true {
-							return // semi-janky -- but is used to prevent potential double scroll oddness
-						}
-						if view.inputField.isFirstResponder {
-							self.scrollToVisible_sendTo()
-						}
-					}
-				}
-				view.textFieldDidEndEditing_fn =
-				{ (textField) in
-					// nothing to do in this case
-				}
-				view.didPickContact_fn =
-				{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
-					self.set_addPaymentID_buttonView(isHidden: true) // hide if showing
-					self.hideAndClear_manualPaymentIDField() // if there's a pid we'll show it as 'Detected' anyway
-					//
-					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
-					//
-					if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
-						// contact picker will show its own resolving indicator while we look up the paymentID again
-						self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
-						return
-					}
-					//
-					// contact picker will handle showing resolved addr / pid etc
-				}
-				view.changedTextContent_fn =
-				{ [unowned self] in
-					self.clearValidationMessage() // in case any from text resolve
-				}
-				view.clearedTextContent_fn =
-				{ [unowned self] in
-					if self.manualPaymentID_inputView.isHidden {
-						self.set_addPaymentID_buttonView(isHidden: false) // show if hidden as we may have hidden it
-					}
-				}
-				view.willValidateNonZeroTextInput_fn =
-				{ [unowned self] in
-					self.set_isFormSubmittable_needsUpdate()
-				}
-				view.finishedValidatingTextInput_foundValidMoneroAddress_fn =
-				{ [unowned self] (detectedEmbedded_paymentID) in
-					assert(Thread.isMainThread)
-					self.set_isFormSubmittable_needsUpdate()
-					if detectedEmbedded_paymentID != nil {
-						self.set_addPaymentID_buttonView(isHidden: true) // i.e. integrated address supplying one - we show it as 'detected'
-						self.hideAndClear_manualPaymentIDField()
-					} else {
-						if self.manualPaymentID_inputView.isHidden {
-							self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid/partial addr or valid std xmr addr
-						}
-					}
-				}
-				view.finishedValidatingTextInput_foundInvalidMoneroAddress_fn =
-				{ [unowned self] in
-					if self.manualPaymentID_inputView.isHidden {
-						self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid address
-					}
-				}
-				view.willBeginResolvingPossibleOATextInput_fn =
-				{ [unowned self] in
-					assert(Thread.isMainThread)
-					self.hideAndClear_manualPaymentIDField()
-					self.set_addPaymentID_buttonView(isHidden: true)
-					self.clearValidationMessage() // this is probably redundant here
-				}
-				view.oaResolve__preSuccess_terminal_validationMessage_fn =
-				{ [unowned self] (localizedString) in
-					assert(Thread.isMainThread)
-					self.setValidationMessage(localizedString)
-					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
-				}
-				view.oaResolve__success_fn =
-				{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
-					assert(Thread.isMainThread)
-					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
-					//
-					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-					//
-					// the ContactPicker also already handles displaying the resolved addr and pids
-					//
-					do { // now since the contact picker's mode is handling resolving text inputs too:
-						if view.hasValidTextInput_resolvedOAAddress {
-							if payment_id != nil && payment_id != "" { // just to make sure we're not showing these,
-								// we already hid the + and manual pid input views
-							} else {
-								if self.manualPaymentID_inputView.isHidden { // if manual payment field not showing
-									self.set_addPaymentID_buttonView(isHidden: false) // then make sure we are at least showing the + payment ID btn
-								} else {
-									// it should be the case here that either add pymt id btn or manual payment field is visible
-								}
-							}
-						} else {
-							assert(view.selectedContact != nil) // or they'd better have selected a contact!!
-						}
-					}
-				}
-				view.didClearPickedContact_fn =
-				{ [unowned self] (preExistingContact) in
-					self.clearValidationMessage() // in case there was an OA addr resolve network err sitting on the screen
-					//
-					self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
-					//
-					self.set_addPaymentID_buttonView(isHidden: false) // show if hidden
-					self.hideAndClear_manualPaymentIDField() // if showing
-				}
-				let inputField = view.inputField
-				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-				self.sendTo_inputView = view
-				self.scrollView.addSubview(view)
-			}
+//			do {
+//				let view = UICommonComponents.Form.ContactAndAddressPickerView(
+//					inputMode: .contactsAndAddresses,
+//					displayMode: .paymentIds_andResolvedAddrs,
+//					parentScrollView: self.scrollView
+//				)
+//				view.inputField.set(
+//					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")
+//				)
+//				view.textFieldDidBeginEditing_fn =
+//				{ [unowned self] (textField) in
+//					self.view.setNeedsLayout() // to be certain we get the updated bottom padding
+//
+//					self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
+//					// ^- this does not actually do anything at present, given suppressed scroll
+//					self.isWaitingOnFieldBeginEditingScrollTo_sendTo = true // sort of janky
+//					DispatchQueue.main.asyncAfter(
+//						deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
+//					) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
+//					{ [unowned self] in
+//						self.isWaitingOnFieldBeginEditingScrollTo_sendTo = false // unset
+//						if view.inputField.isFirstResponder { // jic
+//							self.scrollToVisible_sendTo()
+//						}
+//					}
+//				}
+//				view.didUpdateHeight_fn =
+//				{ [unowned self] in
+//					self.view.setNeedsLayout() // to get following subviews' layouts to update
+//					//
+//					// scroll to field in case, e.g., results table updated
+//					DispatchQueue.main.asyncAfter(
+//						deadline: .now() + 0.1
+//					) { [unowned self] in
+//						if self.isWaitingOnFieldBeginEditingScrollTo_sendTo == true {
+//							return // semi-janky -- but is used to prevent potential double scroll oddness
+//						}
+//						if view.inputField.isFirstResponder {
+//							self.scrollToVisible_sendTo()
+//						}
+//					}
+//				}
+//				view.textFieldDidEndEditing_fn =
+//				{ (textField) in
+//					// nothing to do in this case
+//				}
+//				view.didPickContact_fn =
+//				{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
+//					self.set_addPaymentID_buttonView(isHidden: true) // hide if showing
+//					self.hideAndClear_manualPaymentIDField() // if there's a pid we'll show it as 'Detected' anyway
+//					//
+//					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
+//					//
+//					if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
+//						// contact picker will show its own resolving indicator while we look up the paymentID again
+//						self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
+//						return
+//					}
+//					//
+//					// contact picker will handle showing resolved addr / pid etc
+//				}
+//				view.changedTextContent_fn =
+//				{ [unowned self] in
+//					self.clearValidationMessage() // in case any from text resolve
+//				}
+//				view.clearedTextContent_fn =
+//				{ [unowned self] in
+//					if self.manualPaymentID_inputView.isHidden {
+//						self.set_addPaymentID_buttonView(isHidden: false) // show if hidden as we may have hidden it
+//					}
+//				}
+//				view.willValidateNonZeroTextInput_fn =
+//				{ [unowned self] in
+//					self.set_isFormSubmittable_needsUpdate()
+//				}
+//				view.finishedValidatingTextInput_foundValidMoneroAddress_fn =
+//				{ [unowned self] (detectedEmbedded_paymentID) in
+//					assert(Thread.isMainThread)
+//					self.set_isFormSubmittable_needsUpdate()
+//					if detectedEmbedded_paymentID != nil {
+//						self.set_addPaymentID_buttonView(isHidden: true) // i.e. integrated address supplying one - we show it as 'detected'
+//						self.hideAndClear_manualPaymentIDField()
+//					} else {
+//						if self.manualPaymentID_inputView.isHidden {
+//							self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid/partial addr or valid std xmr addr
+//						}
+//					}
+//				}
+//				view.finishedValidatingTextInput_foundInvalidMoneroAddress_fn =
+//				{ [unowned self] in
+//					if self.manualPaymentID_inputView.isHidden {
+//						self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid address
+//					}
+//				}
+//				view.willBeginResolvingPossibleOATextInput_fn =
+//				{ [unowned self] in
+//					assert(Thread.isMainThread)
+//					self.hideAndClear_manualPaymentIDField()
+//					self.set_addPaymentID_buttonView(isHidden: true)
+//					self.clearValidationMessage() // this is probably redundant here
+//				}
+//				view.oaResolve__preSuccess_terminal_validationMessage_fn =
+//				{ [unowned self] (localizedString) in
+//					assert(Thread.isMainThread)
+//					self.setValidationMessage(localizedString)
+//					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
+//				}
+//				view.oaResolve__success_fn =
+//				{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+//					assert(Thread.isMainThread)
+//					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
+//					//
+//					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+//					//
+//					// the ContactPicker also already handles displaying the resolved addr and pids
+//					//
+//					do { // now since the contact picker's mode is handling resolving text inputs too:
+//						if view.hasValidTextInput_resolvedOAAddress {
+//							if payment_id != nil && payment_id != "" { // just to make sure we're not showing these,
+//								// we already hid the + and manual pid input views
+//							} else {
+//								if self.manualPaymentID_inputView.isHidden { // if manual payment field not showing
+//									self.set_addPaymentID_buttonView(isHidden: false) // then make sure we are at least showing the + payment ID btn
+//								} else {
+//									// it should be the case here that either add pymt id btn or manual payment field is visible
+//								}
+//							}
+//						} else {
+//							assert(view.selectedContact != nil) // or they'd better have selected a contact!!
+//						}
+//					}
+//				}
+//				view.didClearPickedContact_fn =
+//				{ [unowned self] (preExistingContact) in
+//					self.clearValidationMessage() // in case there was an OA addr resolve network err sitting on the screen
+//					//
+//					self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
+//					//
+//					self.set_addPaymentID_buttonView(isHidden: false) // show if hidden
+//					self.hideAndClear_manualPaymentIDField() // if showing
+//				}
+//				let inputField = view.inputField
+//				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//				self.sendTo_inputView = view
+//				self.scrollView.addSubview(view)
+//			}
 			//
-			do {
-				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .hidden, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
-				view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
-				self.addPaymentID_buttonView = view
-				
-				self.scrollView.addSubview(view)
-			}
-			//
-			do {
-				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("ENTER PAYMENT ID OR", comment: "")
-				)
-				view.isHidden = true // initially
-				self.manualPaymentID_label = view
-				self.scrollView.addSubview(view)
-			}
-			do {
-				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("GENERATE ONE", comment: ""))
-				view.addTarget(self, action: #selector(tapped_generatePaymentID), for: .touchUpInside)
-				view.isHidden = true // initially
-				self.generatePaymentID_linkButtonView = view
-				self.scrollView.addSubview(view)
-			}
-			do {
-				let view = UICommonComponents.FormInputField(
-					placeholder: NSLocalizedString("A specific payment ID", comment: "")
-				)
-				view.isHidden = true // initially
-				let inputField = view
-				inputField.autocorrectionType = .no
-				inputField.autocapitalizationType = .none
-				inputField.delegate = self
-				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-				inputField.returnKeyType = .next
-				self.manualPaymentID_inputView = view
-				self.scrollView.addSubview(view)
-			}
-			//
-			do {
-				let view = UICommonComponents.Form.FieldLabel(
-					title: NSLocalizedString("TRANSFER", comment: ""),
-					sizeToFit: true
-				)
-				self.priority_label = view
-				self.scrollView.addSubview(view)
-			}
-			do {
-				let view = UICommonComponents.TooltipSpawningLinkButtonView(
-					tooltipText: NSLocalizedString(
-						"You can pay the Monero\nnetwork a higher fee to\nhave your transfers\nconfirmed faster.",
-						comment: ""
-					)
-				)
-				view.willPresentTipView_fn =
-				{ [unowned self] in
-					self.view.resignCurrentFirstResponder() // if any
-				}
-				self.priority_tooltipSpawn_buttonView = view
-				self.scrollView.addSubview(view)
-			}
-			do {
-				let view = UICommonComponents.Form.StringPicker.PickerButtonFieldView(
-					title: NSLocalizedString("Priority", comment: ""),
-					selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
-					allValues: MoneroTransferSimplifiedPriority.allValues_humanReadableCapitalizedStrings
-				)
-				view.picker_inputField_didBeginEditing =
-				{ [weak self] (inputField) in
-					DispatchQueue.main.asyncAfter( // slightly janky
-						deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
-					) { [weak self] in
-						guard let thisSelf = self else {
-							return
-						}
-						if inputField.isFirstResponder { // jic
-							thisSelf.scrollInputViewToVisible(thisSelf.priority_inputView)
-						}
-					}
-				}
-				view.selectedValue_fn =
-				{ [weak self] in
-					guard let thisSelf = self else {
-						return
-					}
-					thisSelf.configure_networkFeeEstimate_label()
-					thisSelf.configure_amountInputTextGivenMaxToggledState()
-				}
-				self.priority_inputView = view
-				self.scrollView.addSubview(view)
-			}
-			do {
-				let buttons = UICommonComponents.QRPickingActionButtons(
-					containingViewController: self,
-					attachingToView: self.view // not self.scrollView
-				)
-				buttons.havingPickedImage_shouldAllowPicking_fn =
-				{ [weak self] in
-					guard let thisSelf = self else {
-						return false
-					}
-					if thisSelf.isFormEnabled == false {
-						DDLog.Warn("SendFundsTab", "Disallowing QR code pick while form disabled")
-						return false
-					}
-					return true
-				}
-				buttons.willDecodePickedImage_fn =
-				{ [weak self] in
-					guard let thisSelf = self else {
-						return
-					}
-					thisSelf.clearValidationMessage() // in case there was a parsing err etc displaying
-				}
-				buttons.didPick_fn =
-				{ [weak self] (possibleUriString) in
-					guard let thisSelf = self else {
-						return
-					}
-					thisSelf.__shared_didPick(possibleRequestURIStringForAutofill: possibleUriString)
-				}
-				buttons.didEndQRScanWithErrStr_fn =
-				{ [weak self] (localizedValidationMessage) in
-					guard let thisSelf = self else {
-						return
-					}
-					thisSelf.set(validationMessage: localizedValidationMessage, wantsXButton: true)
-				}
-				self.qrPicking_actionButtons = buttons
-			}
+//			do {
+//				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .hidden, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
+//				view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
+//				self.addPaymentID_buttonView = view
+//
+//				self.scrollView.addSubview(view)
+//			}
+//			//
+//			do {
+//				let view = UICommonComponents.Form.FieldLabel(
+//					title: NSLocalizedString("ENTER PAYMENT ID OR", comment: "")
+//				)
+//				view.isHidden = true // initially
+//				self.manualPaymentID_label = view
+//				self.scrollView.addSubview(view)
+//			}
+//			do {
+//				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("GENERATE ONE", comment: ""))
+//				view.addTarget(self, action: #selector(tapped_generatePaymentID), for: .touchUpInside)
+//				view.isHidden = true // initially
+//				self.generatePaymentID_linkButtonView = view
+//				self.scrollView.addSubview(view)
+//			}
+//			do {
+//				let view = UICommonComponents.FormInputField(
+//					placeholder: NSLocalizedString("A specific payment ID", comment: "")
+//				)
+//				view.isHidden = true // initially
+//				let inputField = view
+//				inputField.autocorrectionType = .no
+//				inputField.autocapitalizationType = .none
+//				inputField.delegate = self
+//				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//				inputField.returnKeyType = .next
+//				self.manualPaymentID_inputView = view
+//				self.scrollView.addSubview(view)
+//			}
+//			//
+//			do {
+//				let view = UICommonComponents.Form.FieldLabel(
+//					title: NSLocalizedString("TRANSFER", comment: ""),
+//					sizeToFit: true
+//				)
+//				self.priority_label = view
+//				self.scrollView.addSubview(view)
+//			}
+//			do {
+//				let view = UICommonComponents.TooltipSpawningLinkButtonView(
+//					tooltipText: NSLocalizedString(
+//						"You can pay the Monero\nnetwork a higher fee to\nhave your transfers\nconfirmed faster.",
+//						comment: ""
+//					)
+//				)
+//				view.willPresentTipView_fn =
+//				{ [unowned self] in
+//					self.view.resignCurrentFirstResponder() // if any
+//				}
+//				self.priority_tooltipSpawn_buttonView = view
+//				self.scrollView.addSubview(view)
+//			}
+//			do {
+//				let view = UICommonComponents.Form.StringPicker.PickerButtonFieldView(
+//					title: NSLocalizedString("Priority", comment: ""),
+//					selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
+//					allValues: MoneroTransferSimplifiedPriority.allValues_humanReadableCapitalizedStrings
+//				)
+//				view.picker_inputField_didBeginEditing =
+//				{ [weak self] (inputField) in
+//					DispatchQueue.main.asyncAfter( // slightly janky
+//						deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
+//					) { [weak self] in
+//						guard let thisSelf = self else {
+//							return
+//						}
+//						if inputField.isFirstResponder { // jic
+//							thisSelf.scrollInputViewToVisible(thisSelf.priority_inputView)
+//						}
+//					}
+//				}
+//				view.selectedValue_fn =
+//				{ [weak self] in
+//					guard let thisSelf = self else {
+//						return
+//					}
+//					thisSelf.configure_networkFeeEstimate_label()
+//					thisSelf.configure_amountInputTextGivenMaxToggledState()
+//				}
+//				self.priority_inputView = view
+//				self.scrollView.addSubview(view)
+//			}
+//			do {
+//				let buttons = UICommonComponents.QRPickingActionButtons(
+//					containingViewController: self,
+//					attachingToView: self.view // not self.scrollView
+//				)
+//				buttons.havingPickedImage_shouldAllowPicking_fn =
+//				{ [weak self] in
+//					guard let thisSelf = self else {
+//						return false
+//					}
+//					if thisSelf.isFormEnabled == false {
+//						DDLog.Warn("SendFundsTab", "Disallowing QR code pick while form disabled")
+//						return false
+//					}
+//					return true
+//				}
+//				buttons.willDecodePickedImage_fn =
+//				{ [weak self] in
+//					guard let thisSelf = self else {
+//						return
+//					}
+//					thisSelf.clearValidationMessage() // in case there was a parsing err etc displaying
+//				}
+//				buttons.didPick_fn =
+//				{ [weak self] (possibleUriString) in
+//					guard let thisSelf = self else {
+//						return
+//					}
+//					thisSelf.__shared_didPick(possibleRequestURIStringForAutofill: possibleUriString)
+//				}
+//				buttons.didEndQRScanWithErrStr_fn =
+//				{ [weak self] (localizedValidationMessage) in
+//					guard let thisSelf = self else {
+//						return
+//					}
+//					thisSelf.set(validationMessage: localizedValidationMessage, wantsXButton: true)
+//				}
+//				self.qrPicking_actionButtons = buttons
+//			}
 			//
 			// initial configuration; now that references to both the fee estimate layer and the priority select control have been assigned…
 			self.configure_networkFeeEstimate_label()
@@ -907,12 +907,13 @@ extension ExchangeSendFundsForm
 			if self.formSubmissionController != nil {
 				return false
 			}
-			if self.sendTo_inputView.isResolving {
-				return false
-			}
-			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
-				return false
-			}
+			
+//			if self.sendTo_inputView.isResolving {
+//				return false
+//			}
+//			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
+//				return false
+//			}
 //			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
 //				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
 //			)
@@ -1161,23 +1162,28 @@ extension ExchangeSendFundsForm
 			super.disableForm()
 			//
 //			self.scrollView.isScrollEnabled = false
-			//
-			self.fromWallet_inputView.set(isEnabled: false)
+//			//
+//			self.fromWallet_inputView.set(isEnabled: false)
+//
+//			self.amount_fieldset.inputField.isEnabled = false
+//			self.amount_fieldset.currencyPickerButton.isEnabled = false
+//
+//			self.priority_inputView.set(isEnabled: false)
+//
+//			self.sendTo_inputView.inputField.isEnabled = false
+//			if let pillView = self.sendTo_inputView.selectedContactPillView {
+//				pillView.xButton.isEnabled = true
+//			}
+//			self.manualPaymentID_inputView.isEnabled = false
+//			self.generatePaymentID_linkButtonView.isEnabled = false
+//			self.addPaymentID_buttonView.isEnabled = false
+//			//
+//			self.qrPicking_actionButtons.set(isEnabled: false)
 			
-			self.amount_fieldset.inputField.isEnabled = false
-			self.amount_fieldset.currencyPickerButton.isEnabled = false
+			self.btcAddress_inputView.isEnabled = false
+			self.inAmount_inputView.isEnabled = false
+			self.outAmount_inputView.isEnabled = false
 			
-			self.priority_inputView.set(isEnabled: false)
-			
-			self.sendTo_inputView.inputField.isEnabled = false
-			if let pillView = self.sendTo_inputView.selectedContactPillView {
-				pillView.xButton.isEnabled = true
-			}
-			self.manualPaymentID_inputView.isEnabled = false
-			self.generatePaymentID_linkButtonView.isEnabled = false
-			self.addPaymentID_buttonView.isEnabled = false
-			//
-			self.qrPicking_actionButtons.set(isEnabled: false)
 		}
 		override func reEnableForm()
 		{
@@ -1186,23 +1192,26 @@ extension ExchangeSendFundsForm
 			// allowing scroll so user can check while sending despite no cancel support existing yet
 //			self.scrollView.isScrollEnabled = true
 			//
-			self.fromWallet_inputView.set(isEnabled: true)
-			
-			self.amount_fieldset.inputField.isEnabled = true
-			self.amount_fieldset.currencyPickerButton.isEnabled = true
-			
-			self.priority_inputView.set(isEnabled: true)
-			
-			self.sendTo_inputView.inputField.isEnabled = true
-			if let pillView = self.sendTo_inputView.selectedContactPillView {
-				pillView.xButton.isEnabled = true
-			}
+//			self.fromWallet_inputView.set(isEnabled: true)
+//
+//			self.amount_fieldset.inputField.isEnabled = true
+//			self.amount_fieldset.currencyPickerButton.isEnabled = true
+//
+//			self.priority_inputView.set(isEnabled: true)
+//
+//			self.sendTo_inputView.inputField.isEnabled = true
+//			if let pillView = self.sendTo_inputView.selectedContactPillView {
+//				pillView.xButton.isEnabled = true
+//			}
+//			self.inAmount_inputView.isEnabled = true
+//			self.manualPaymentID_inputView.isEnabled = true
+//			self.generatePaymentID_linkButtonView.isEnabled = true
+//			self.addPaymentID_buttonView.isEnabled = true
+//			//
+//			self.qrPicking_actionButtons.set(isEnabled: true)
+			self.btcAddress_inputView.isEnabled = true
 			self.inAmount_inputView.isEnabled = true
-			self.manualPaymentID_inputView.isEnabled = true
-			self.generatePaymentID_linkButtonView.isEnabled = true
-			self.addPaymentID_buttonView.isEnabled = true
-			//
-			self.qrPicking_actionButtons.set(isEnabled: true)
+			self.outAmount_inputView.isEnabled = true
 		}
 		var formSubmissionController: SendFundsForm.SubmissionController?
 		override func _tryToSubmitForm()
@@ -1515,16 +1524,6 @@ extension ExchangeSendFundsForm
 					width: self.fromWallet_label.frame.size.width,
 					height: self.fromWallet_label.frame.size.height
 				).integral
-				do {
-//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-//					self.fromWallet_tooltipSpawn_buttonView.frame = CGRect(
-//						x: self.fromWallet_label.frame.origin.x + self.fromWallet_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-//						y: self.fromWallet_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.fromWallet_label.frame.size.height)/2,
-//						width: tooltipSpawn_buttonView_w,
-//						height: tooltipSpawn_buttonView_h
-//					).integral
-				}
 				self.fromWallet_inputView.frame = CGRect(
 					x: input_x,
 					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
@@ -1560,84 +1559,6 @@ extension ExchangeSendFundsForm
 					height: tooltipSpawn_buttonView_h
 				).integral
 			}
-//			do {
-//				self.amount_label.frame = CGRect(
-//					x: label_x,
-//					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + interSectionSpacing,
-//					width: self.amount_label.frame.size.width,
-//					height: self.amount_label.frame.size.height
-//				).integral
-//				self.amount_fieldset.frame = CGRect(
-//					x: input_x,
-//					y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-//					width: textField_w, // full-size width
-//					height: UICommonComponents.Form.Amounts.InputFieldsetView.h
-//				).integral
-				
-//			}
-//			do {
-//				self.sendTo_label.frame = CGRect(
-//					x: label_x,
-//					y: self.networkFeeEstimate_label.frame.origin.y + self.networkFeeEstimate_label.frame.size.height + interSectionSpacing,
-//					width: 18,
-//					height: self.sendTo_label.frame.size.height
-//				).integral
-//				do {
-//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-//					self.sendTo_tooltipSpawn_buttonView.frame = CGRect(
-//						x: self.sendTo_label.frame.origin.x + self.sendTo_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
-//						y: self.sendTo_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.sendTo_label.frame.size.height)/2,
-//						width: tooltipSpawn_buttonView_w,
-//						height: tooltipSpawn_buttonView_h
-//					).integral
-//				}
-//				self.sendTo_inputView.frame = CGRect(
-//					x: input_x,
-//					y: self.sendTo_label.frame.origin.y + self.sendTo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-//					width: textField_w,
-//					height: self.sendTo_inputView.frame.size.height
-//				).integral
-//			}
-//			//
-//			if self.addPaymentID_buttonView.isHidden == false {
-//				assert(self.manualPaymentID_label.isHidden == true)
-//				let lastMostVisibleView = self.sendTo_inputView!
-//				self.addPaymentID_buttonView!.frame = CGRect(
-//					x: label_x,
-//					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
-//					width: self.addPaymentID_buttonView!.frame.size.width,
-//					height: self.addPaymentID_buttonView!.frame.size.height
-//				)
-//			}
-			//
-//			if self.manualPaymentID_label.isHidden == false {
-//				assert(self.addPaymentID_buttonView.isHidden == true)
-//				let lastMostVisibleView = self.sendTo_inputView! // why is the ! necessary?
-//				self.manualPaymentID_label.frame = CGRect(
-//					x: label_x,
-//					y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + interSectionSpacing,
-//					width: 0,
-//					height: self.manualPaymentID_label.frame.size.height
-//				).integral
-//				self.manualPaymentID_label.sizeToFit() // get exact width
-//				if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
-//					self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
-//				}
-//				self.generatePaymentID_linkButtonView.frame = CGRect(
-//					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
-//					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
-//					width: self.generatePaymentID_linkButtonView.frame.size.width,
-//					height: self.generatePaymentID_linkButtonView.frame.size.height
-//				).integral
-//				self.manualPaymentID_inputView.frame = CGRect(
-//					x: input_x,
-//					y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-//					width: textField_w,
-//					height: UICommonComponents.FormInputField.height
-//				).integral
-//			}
-			//
 			do {
 				self.inAmount_label.frame = CGRect(
 					x: label_x,
@@ -1646,12 +1567,7 @@ extension ExchangeSendFundsForm
 					height: self.inAmount_label.frame.size.height
 				).integral
 				self.inAmount_label.sizeToFit() // get exact width
-//				self.generatePaymentID_linkButtonView.frame = CGRect(
-//					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
-//					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
-//					width: self.generatePaymentID_linkButtonView.frame.size.width,
-//					height: self.generatePaymentID_linkButtonView.frame.size.height
-//				).integral
+
 				self.inAmount_inputView.frame = CGRect(
 					x: input_x,
 					y: self.inAmount_label.frame.origin.y + self.inAmount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -1667,12 +1583,7 @@ extension ExchangeSendFundsForm
 					height: self.inAmount_label.frame.size.height
 				).integral
 				self.outAmount_label.sizeToFit() // get exact width
-//				self.generatePaymentID_linkButtonView.frame = CGRect(
-//					x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
-//					y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
-//					width: self.generatePaymentID_linkButtonView.frame.size.width,
-//					height: self.generatePaymentID_linkButtonView.frame.size.height
-//				).integral
+
 				self.outAmount_inputView.frame = CGRect(
 					x: input_x,
 					y: self.outAmount_label.frame.origin.y + self.outAmount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
@@ -1696,56 +1607,61 @@ extension ExchangeSendFundsForm
 				).integral
 			}
 			do { // Order status validation l Label
+				
+				self.orderFormValidation_label.numberOfLines = 0
+				self.orderFormValidation_label.lineBreakMode = NSLineBreakMode.byWordWrapping
+				self.orderFormValidation_label.sizeToFit()
 				self.orderFormValidation_label.frame = CGRect(
 					x: label_x,
-					y: self.outAmount_inputView.frame.origin.y + self.outAmount_inputView.frame.size.height + interSectionSpacing,
+					y: self.btcAddress_inputView.frame.origin.y + self.btcAddress_inputView.frame.size.height + interSectionSpacing,
 					width: self.outAmount_inputView.frame.size.width,
 					height: self.outAmount_inputView.frame.size.height
 				).integral
 			}
+
 			
-			do {
-				let previousSectionBottomView: UIView
-				do {
-					if self.manualPaymentID_inputView.isHidden == false {
-						previousSectionBottomView = self.manualPaymentID_inputView
-					} else if self.addPaymentID_buttonView.isHidden == false {
-						previousSectionBottomView = self.addPaymentID_buttonView
-					} else {
-						previousSectionBottomView = self.sendTo_inputView
-					}
-				}
-				
-				self.priority_label.frame = CGRect(
-					//x: label_x,
-					x: CGFloat(-5000),
-					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + interSectionSpacing,
-					width: self.priority_label.frame.size.width,
-					height: self.priority_label.frame.size.height
-				).integral
-				do {
-					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
-					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
-					self.priority_tooltipSpawn_buttonView.frame = CGRect(
-						x: CGFloat(-5000),
-//						x: self.priority_label.frame.origin.x + self.priority_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+//			do {
+//				let previousSectionBottomView: UIView
+//				do {
+//					if self.manualPaymentID_inputView.isHidden == false {
+//						previousSectionBottomView = self.manualPaymentID_inputView
+//					} else if self.addPaymentID_buttonView.isHidden == false {
+//						previousSectionBottomView = self.addPaymentID_buttonView
+//					} else {
+//						previousSectionBottomView = self.sendTo_inputView
+//					}
+//				}
 //
-						y: self.priority_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.priority_label.frame.size.height)/2,
-						width: tooltipSpawn_buttonView_w,
-						height: tooltipSpawn_buttonView_h
-					).integral
-				}
-				
-				self.priority_inputView.frame = CGRect(
-					//x: input_x,
-					x: CGFloat(-5000),
-					y: self.priority_label.frame.origin.y + self.priority_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-					width: textField_w,
-					height: self.priority_inputView.fixedHeight
-				)
-			}
+//				self.priority_label.frame = CGRect(
+//					//x: label_x,
+//					x: CGFloat(-5000),
+//					y: previousSectionBottomView.frame.origin.y + previousSectionBottomView.frame.size.height + interSectionSpacing,
+//					width: self.priority_label.frame.size.width,
+//					height: self.priority_label.frame.size.height
+//				).integral
+//				do {
+//					let tooltipSpawn_buttonView_w: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_w
+//					let tooltipSpawn_buttonView_h: CGFloat = UICommonComponents.TooltipSpawningLinkButtonView.usabilityExpanded_h
+//					self.priority_tooltipSpawn_buttonView.frame = CGRect(
+//						x: CGFloat(-5000),
+////						x: self.priority_label.frame.origin.x + self.priority_label.frame.size.width - UICommonComponents.TooltipSpawningLinkButtonView.tooltipLabelSqueezingVisualMarginReductionConstant_x,
+////
+//						y: self.priority_label.frame.origin.y - (tooltipSpawn_buttonView_h - self.priority_label.frame.size.height)/2,
+//						width: tooltipSpawn_buttonView_w,
+//						height: tooltipSpawn_buttonView_h
+//					).integral
+//				}
+//
+//				self.priority_inputView.frame = CGRect(
+//					//x: input_x,
+//					x: CGFloat(-5000),
+//					y: self.priority_label.frame.origin.y + self.priority_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//					width: textField_w,
+//					height: self.priority_inputView.fixedHeight
+//				)
+//			}
 			//
-			let bottomMostView: UIView = self.priority_inputView
+			let bottomMostView: UIView = self.orderFormValidation_label
 			let bottomPadding: CGFloat = 18
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,
@@ -1874,6 +1790,12 @@ extension ExchangeSendFundsForm
 					switch result {
 						case .failure (let error):
 							self.orderFormValidation_label.text = "An error was encountered: \(error)"
+							self.orderFormValidation_label.sizeToFit()
+							let bottomPadding: CGFloat = 18
+							self.scrollableContentSizeDidChange(
+								withBottomView: self.orderFormValidation_label,
+								bottomPadding: bottomPadding
+							)
 							// TODO: KB: We carry on anyway for testing purposes right now -- remove following four lines
 							//var orderId: String
 							//orderId = "Failed"
