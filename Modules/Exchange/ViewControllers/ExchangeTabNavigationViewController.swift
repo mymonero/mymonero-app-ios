@@ -26,8 +26,8 @@ class ExchangeTabNavigationViewController: UICommonComponents.NavigationControll
 	{
 		self.tabBarItem = UITabBarItem(
 			title: nil,
-			image: UIImage(named: "icon_tabBar_sendFunds")!.withRenderingMode(.alwaysOriginal),
-			selectedImage: UIImage(named: "icon_tabBar_sendFunds__active")!.withRenderingMode(.alwaysOriginal)
+			image: UIImage(named: "XMRtoBTCInactive")!.withRenderingMode(.alwaysOriginal),
+			selectedImage: UIImage(named: "XMRtoBTCInactive")!.withRenderingMode(.alwaysOriginal)
 		)
 		self.viewControllers = [ self.exchangeSendFundsViewController ]
 	}
