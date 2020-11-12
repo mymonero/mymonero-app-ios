@@ -964,15 +964,15 @@ extension ExchangeSendFundsForm
 			}
 			return self.fromWallet_inputView.picker_inputField // wrap to start
 		}
-		override func new_wantsBGTapRecognizerToReceive_tapped(onView view: UIView) -> Bool
-		{
-			if view.isAnyAncestor(self.sendTo_inputView) {
-				// this is to prevent taps on the searchResults tableView from dismissing the input (which btw makes selection of search results rows impossible)
-				// but it's ok if this is the inputField itself
-				return false
-			}
-			return super.new_wantsBGTapRecognizerToReceive_tapped(onView: view)
-		}
+//		override func new_wantsBGTapRecognizerToReceive_tapped(onView view: UIView) -> Bool
+//		{
+//			if view.isAnyAncestor(self.sendTo_inputView) {
+//				// this is to prevent taps on the searchResults tableView from dismissing the input (which btw makes selection of search results rows impossible)
+//				// but it's ok if this is the inputField itself
+//				return false
+//			}
+//			return super.new_wantsBGTapRecognizerToReceive_tapped(onView: view)
+//		}
 		//
 		// Accessors
 		var sanitizedInputValue__fromWallet: Wallet {
