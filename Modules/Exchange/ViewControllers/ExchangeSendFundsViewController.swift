@@ -916,7 +916,7 @@ extension ExchangeSendFundsForm
 				return false
 			}
 			
-			if self.btcAddress.text?.isEmpty == true {
+			if self.btcAddress_inputView.text?.isEmpty == true {
 				return true
 			}
 //			if self.sendTo_inputView.isResolving {
