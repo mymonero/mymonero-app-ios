@@ -169,8 +169,11 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					debugPrint(error)
 				case .success(let value):
 					debugPrint(value["in_currency"])
-					// We only really care about the order state
+					// We should only really care about the order state, but we'll update all values here in case the first order status query fails
 					self.orderStatus_inputView.text = value["status"] as? String
+					self.uuid_inputView.text = value["provider_order_id"] as? String
+					self.currencyValuePayout_inputView.text = value["out_amount"] as? String
+					self.remainingCurrencyPayable_inputView.text = value["in_amount"] as? String
 					// Code here is to check if the state is concluded, and if so, terminate the timers
 					// if the order is completed successfully, it'll return PAID || PAID_UNCONFIRMED -- we only want to terminate on PAID
 					// if the order has timed out, it'll return TIMED_OUT
@@ -549,8 +552,9 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("Placeholder", comment: ""))
+			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("XMR.TO transaction id", comment: ""))
 			self.uuid_inputView = view
+			self.uuid_inputView.isEnabled = false
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -559,8 +563,9 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("timeremaining", comment: ""))
+			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("Time Remaining", comment: ""))
 			self.timeRemaining_inputView = view
+			self.timeRemaining_inputView.isEnabled = false
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -569,8 +574,9 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("xmrpayable", comment: ""))
+			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("XMR payable", comment: ""))
 			self.remainingCurrencyPayable_inputView = view
+			self.remainingCurrencyPayable_inputView.isEnabled = false
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -579,8 +585,9 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("btcout", comment: ""))
+			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("BTC to be received", comment: ""))
 			self.currencyValuePayout_inputView = view
+			self.currencyValuePayout_inputView.isEnabled = false
 			self.scrollView.addSubview(view)
 		}
 		do {
@@ -589,7 +596,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("orderstatusgoeshere", comment: ""))
+			let view = UICommonComponents.FormInputField(placeholder: NSLocalizedString("Order Status", comment: ""))
 			self.orderStatus_inputView = view
 			self.scrollView.addSubview(view)
 		}
@@ -1117,13 +1124,20 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				height: self.orderStatus_inputView.frame.size.height
 			).integral
 		}
+		do {
+			self.confirmSendFunds_buttonView.frame = CGRect(
+				x: input_x,
+				y: self.orderStatus_inputView.frame.origin.y + self.orderStatus_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
+				width: textField_w,
+				height: self.orderStatus_inputView.frame.size.height
+			).integral
+		}
 //		do {
-//			self.confirmSendFunds_buttonView
+//			self.send
 //
 //		}
-		
-		
-		
+
+			
 		do {
 			self.toWallet_label.frame = CGRect(
 				x: CGFloat(-5000),
