@@ -908,6 +908,17 @@ extension ExchangeSendFundsForm
 				return false
 			}
 			
+			if self.inAmount_inputView.text?.isEmpty == true {
+				return false
+			}
+			
+			if self.outAmount_inputView.text?.isEmpty == true {
+				return false
+			}
+			
+			if self.btcAddress.text?.isEmpty == true {
+				return true
+			}
 //			if self.sendTo_inputView.isResolving {
 //				return false
 //			}
@@ -1815,7 +1826,8 @@ extension ExchangeSendFundsForm
 //							self.navigationController!.present(modalViewController, animated: true, completion: nil)
 							
 							self.scrollView.addSubview(viewController.view)
-							self.navigationItem.rightBarButtonItem = nil
+							//self.navigationItem.rightBarButtonItem = nil
+
 					}
 				}
 			} else {
