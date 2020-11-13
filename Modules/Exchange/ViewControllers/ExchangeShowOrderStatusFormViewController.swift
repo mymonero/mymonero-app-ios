@@ -622,16 +622,16 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 //			target: self,
 //			action: #selector(tapped_rightBarButtonItem)
 //		)
-		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .back,
-			target: self,
-			action: #selector(tapped_barButtonItem_cancel)
-		)
-		super.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
-			type: .back,
-			target: self,
-			action: #selector(tapped_barButtonItem_cancel)
-		)
+//		self.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+//			type: .back,
+//			target: self,
+//			action: #selector(tapped_barButtonItem_cancel)
+//		)
+//		super.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+//			type: .back,
+//			target: self,
+//			action: #selector(tapped_barButtonItem_cancel)
+//		)
 		self.navigationController?.parent?.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
 			type: .payExchangeOrder,
 			target: self,

@@ -200,6 +200,7 @@ extension ExchangeSendFundsForm
 		//
 		var orderDetails: [String:Any] = [:]
 		var orderExists: Bool = false
+		var orderStatusViewController: ExchangeShowOrderStatusFormViewController?
 		
 		var amount_label: UICommonComponents.Form.FieldLabel!
 		var amount_fieldset: UICommonComponents.Form.Amounts.InputFieldsetView!
@@ -272,8 +273,7 @@ extension ExchangeSendFundsForm
 			*/
 
 		@objc func outAmount_Changed(_ textField: UITextField) {
-			debugPrint("outputamount change")
-			
+			orderFormValidation_label.text = ""
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
@@ -289,6 +289,7 @@ extension ExchangeSendFundsForm
 					orderFormValidation_label.text = responseStr
 					return
 				}
+				orderFormValidation_label.text = ""
 				self.getOffer(in_amount: textField.text, callingElement: "out")
 			} else {
 				// TODO: Add error handling
@@ -297,9 +298,7 @@ extension ExchangeSendFundsForm
 		}
 		
 		@objc func inAmount_Changed(_ textField: UITextField) {
-			print("inputAmountChanged")
-			debugPrint("outputamount change")
-			
+			orderFormValidation_label.text = ""
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
@@ -311,7 +310,7 @@ extension ExchangeSendFundsForm
 				}
 				if inputValue.floatValue > in_max {
 					debugPrint("Case 2")
-					let responseStr = "You cannot convert more than \(in_max) BTC per transaction"
+					let responseStr = "You cannot convert more than \(in_max) XMR per transaction"
 					orderFormValidation_label.text = responseStr
 					return
 				}
@@ -1249,6 +1248,11 @@ extension ExchangeSendFundsForm
 			self.btcAddress_inputView.isEnabled = false
 			self.inAmount_inputView.isEnabled = false
 			self.outAmount_inputView.isEnabled = false
+			if (self.orderExists) {
+				// We've created an order, so we want the top-right button to remain enabled so that we can navigate to the order again
+				self.navigationItem.rightBarButtonItem?.isEnabled = true
+				return
+			}
 			self.navigationItem.rightBarButtonItem?.isEnabled = false
 		}
 		
@@ -1752,11 +1756,7 @@ extension ExchangeSendFundsForm
 				debugPrint(self.orderExists)
 				debugPrint(self.orderDetails)
 				debugPrint(self.orderDetails["order_id"])
-				
-				//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: self.orderDetails["order_id"] as! String)
-				//let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-				//modalViewController.modalPresentationStyle = .formSheet
-				//self.navigationController!.present(modalViewController, animated: true, completion: nil)
+				self.navigationItem.rightBarButtonItem?.isEnabled = true
 			} else {
 				debugPrint("No order yet")
 			}
@@ -1855,46 +1855,57 @@ extension ExchangeSendFundsForm
 			self.navigationController!.present(modalViewController, animated: true, completion: nil)
 			*/
 			debugPrint("Clicked create order button")
-			if self.validOfferRetrieved {
-				self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
-					result in
-					debugPrint("Right button clicked to create order -- closure")
-					switch result {
-						case .failure (let error):
-							self.orderFormValidation_label.text = "An error was encountered: \(error)"
-							self.orderFormValidation_label.sizeToFit()
-							let bottomPadding: CGFloat = 18
-							self.scrollableContentSizeDidChange(
-								withBottomView: self.orderFormValidation_label,
-								bottomPadding: bottomPadding
-							)
-							self.reEnableForm()
-							// TODO: KB: We carry on anyway for testing purposes right now -- remove following four lines
-							//var orderId: String
-							//orderId = "Failed"
-							//var orderDetails: Dictionary = [:]
-							//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: [:], orderId: orderId)
-							//let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-							//modalViewController.modalPresentationStyle = .formSheet
-							//self.navigationController!.present(modalViewController, animated: true, completion: nil)
-							debugPrint(error)
-						case .success(let value):
-							debugPrint(value)
-							self.orderDetails = value
-							self.orderExists = true
-							// handle Unexpectedly found nil while unwrapping an Optional value
-							let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
-//							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-//							modalViewController.modalPresentationStyle = .formSheet
-//							self.navigationController!.present(modalViewController, animated: true, completion: nil)
-							
-							self.scrollView.addSubview(viewController.view)
-							//self.navigationItem.rightBarButtonItem = nil
-
-					}
-				}
+			if (self.orderExists) {
+				//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails, orderExists: true, orderId: self.orderDetails["orderId"] as! String)
+				self.navigationController!.pushViewController(self.orderStatusViewController!, animated: true)
+				
 			} else {
-				self.orderFormValidation_label.text = "Please enter a valid exchange amount"
+				
+				if self.validOfferRetrieved {
+					self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
+						result in
+						debugPrint("Right button clicked to create order -- closure")
+						switch result {
+							case .failure (let error):
+								self.orderFormValidation_label.text = "An error was encountered: \(error)"
+								self.orderFormValidation_label.sizeToFit()
+								let bottomPadding: CGFloat = 18
+								self.scrollableContentSizeDidChange(
+									withBottomView: self.orderFormValidation_label,
+									bottomPadding: bottomPadding
+								)
+								self.reEnableForm()
+								// TODO: KB: We carry on anyway for testing purposes right now -- remove following four lines
+								//var orderId: String
+								//orderId = "Failed"
+								//var orderDetails: Dictionary = [:]
+								//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: [:], orderId: orderId)
+								//let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+								//modalViewController.modalPresentationStyle = .formSheet
+								//self.navigationController!.present(modalViewController, animated: true, completion: nil)
+								debugPrint(error)
+							case .success(let value):
+								debugPrint(value)
+								self.orderDetails = value
+								self.orderExists = true
+								// handle Unexpectedly found nil while unwrapping an Optional value
+								let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
+								self.orderStatusViewController = viewController
+	//							let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+	//							modalViewController.modalPresentationStyle = .formSheet
+	//							self.navigationController!.present(modalViewController, animated: true, completion: nil)
+								
+								
+								self.navigationController!.pushViewController(viewController, animated: true)
+								
+								//self.scrollView.addSubview(viewController.view)
+								
+								//self.navigationItem.rightBarButtonItem = nil
+							}
+						}
+					} else {
+						self.orderFormValidation_label.text = "Please enter a valid exchange amount"
+					}
 			}
 		}
 		@objc func addPaymentID_tapped()
