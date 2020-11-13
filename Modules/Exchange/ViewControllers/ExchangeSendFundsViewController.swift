@@ -279,11 +279,14 @@ extension ExchangeSendFundsForm
 			if let inputValue = numberFormatter.number(from: textField.text!) {
 				if inputValue.floatValue < out_min {
 					debugPrint("Case 1")
+					let responseStr = "You must convert at least \(out_min) BTC per transaction"
+					orderFormValidation_label.text = responseStr
 					return
 				}
 				if inputValue.floatValue > out_max {
 					debugPrint("Case 2")
-					
+					let responseStr = "You cannot convert more than \(out_max) BTC per transaction"
+					orderFormValidation_label.text = responseStr
 					return
 				}
 				self.getOffer(in_amount: textField.text, callingElement: "out")
@@ -291,14 +294,32 @@ extension ExchangeSendFundsForm
 				// TODO: Add error handling
 				debugPrint("Case 3")
 			}
-			//let out_input: Float = textField.text.
-			//self.getOffer(in_amount: textField.text, callingElement: "in")
 		}
 		
 		@objc func inAmount_Changed(_ textField: UITextField) {
 			print("inputAmountChanged")
-			print("\(textField.text)")
-			self.getOffer(in_amount: textField.text, callingElement: "in")
+			debugPrint("outputamount change")
+			
+			let numberFormatter = NumberFormatter()
+			numberFormatter.numberStyle = NumberFormatter.Style.decimal
+			if let inputValue = numberFormatter.number(from: textField.text!) {
+				if inputValue.floatValue < in_min {
+					debugPrint("Case 1")
+					let responseStr = "You must convert at least \(in_min) XMR per transaction"
+					orderFormValidation_label.text = responseStr
+					return
+				}
+				if inputValue.floatValue > in_max {
+					debugPrint("Case 2")
+					let responseStr = "You cannot convert more than \(in_max) BTC per transaction"
+					orderFormValidation_label.text = responseStr
+					return
+				}
+				self.getOffer(in_amount: textField.text, callingElement: "in")
+			} else {
+				// TODO: Add error handling
+				debugPrint("Case 3")
+			}
 		}
 		
 		// Lifecycle - Init
