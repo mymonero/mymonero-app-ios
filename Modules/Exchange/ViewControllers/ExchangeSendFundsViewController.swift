@@ -53,6 +53,7 @@ extension ExchangeSendFundsForm
 			let method = "get_info"
 			let apiEndpoint = apiUrl + method
 			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
+				.validate()
 				.responseJSON {
 					response in
 					if let data = response.data {
@@ -87,9 +88,17 @@ extension ExchangeSendFundsForm
 		func getOffer(in_amount: String?, callingElement: String?) { https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
 			if validateStringIsValidFloat(input: in_amount!) {
 				self.orderFormValidation_label.text = ""
-				let params = ["in_amount": in_amount!, "in_currency": "XMR", "out_currency": "BTC"]
-				debugPrint("Fired getOffer")
-				debugPrint(in_amount!)
+				var params: [String:String] = ["in_currency": "XMR", "out_currency": "BTC"]
+				if callingElement! == "in" {
+					params["in_amount"] =  in_amount!
+				}
+					
+				else if callingElement! == "out" {
+					params["out_amount"] = in_amount!
+				}
+				debugPrint(callingElement!)
+				debugPrint("Params")
+				debugPrint(params)
 				let method = "get_offer"
 				let apiEndpoint = apiUrl + method
 				Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
@@ -103,8 +112,10 @@ extension ExchangeSendFundsForm
 								//self.in_min = json?[0]["in_min"].string
 								debugPrint(json["out_amount"])
 								debugPrint(json["in_amount"].stringValue)
-								debugPrint(self.in_min)
-								
+								debugPrint("Error here")
+								debugPrint(json["Error"])
+								self.orderFormValidation_label.text = json["Error"].stringValue
+								self.orderFormValidation_label.sizeToFit()
 								self.offerId = json["offer_id"].stringValue
 								self.in_amount = json["in_amount"].stringValue
 								self.out_amount = json["out_amount"].stringValue
@@ -160,6 +171,7 @@ extension ExchangeSendFundsForm
 		var in_min: Float = 0.00000000;
 		var out_max: Float = 0.00000000;
 		var out_min: Float = 0.00000000;
+		var ratesRetrieved: Bool = false
 		var exchangeFunctions = ExchangeFunctions();
 		// Floating point calculations get handled server-side, so we can use them as strings so as to not have to keep swapping type
 		var in_currency = "XMR"
@@ -223,11 +235,13 @@ extension ExchangeSendFundsForm
 		}
 		
 		@objc override func textFieldDidBeginEditing(_ textField: UITextField) {
+			self.shouldEnableFormSubmission()
 			debugPrint("ThisDidBeginEditting")
 			debugPrint("\(textField.text)")
 		}
 		@objc func inputAmount_Send(_ textField: UITextField) {
 			// Try get wallet send to work from here
+			self.shouldEnableFormSubmission()
 			debugPrint("inputAmountSend")
 			debugPrint(inAmount_inputView.text)
 		}
@@ -258,7 +272,27 @@ extension ExchangeSendFundsForm
 			*/
 
 		@objc func outAmount_Changed(_ textField: UITextField) {
-			self.getOffer(in_amount: textField.text, callingElement: "in")
+			debugPrint("outputamount change")
+			
+			let numberFormatter = NumberFormatter()
+			numberFormatter.numberStyle = NumberFormatter.Style.decimal
+			if let inputValue = numberFormatter.number(from: textField.text!) {
+				if inputValue.floatValue < out_min {
+					debugPrint("Case 1")
+					return
+				}
+				if inputValue.floatValue > out_max {
+					debugPrint("Case 2")
+					
+					return
+				}
+				self.getOffer(in_amount: textField.text, callingElement: "out")
+			} else {
+				// TODO: Add error handling
+				debugPrint("Case 3")
+			}
+			//let out_input: Float = textField.text.
+			//self.getOffer(in_amount: textField.text, callingElement: "in")
 		}
 		
 		@objc func inAmount_Changed(_ textField: UITextField) {
@@ -917,7 +951,7 @@ extension ExchangeSendFundsForm
 			}
 			
 			if self.btcAddress_inputView.text?.isEmpty == true {
-				return true
+				return false
 			}
 //			if self.sendTo_inputView.isResolving {
 //				return false
@@ -1054,22 +1088,22 @@ extension ExchangeSendFundsForm
 		// Imperatives - Field visibility
 		func set_manualPaymentIDField(isHidden: Bool)
 		{
-			var touched: Bool = false
-			if self.manualPaymentID_label.isHidden != isHidden {
-				touched = true
-				self.manualPaymentID_label.isHidden = isHidden
-			}
-			if self.manualPaymentID_inputView.isHidden != isHidden {
-				touched = true
-				self.manualPaymentID_inputView.isHidden = isHidden
-			}
-			if self.generatePaymentID_linkButtonView.isHidden != isHidden {
-				touched = true
-				self.generatePaymentID_linkButtonView.isHidden = isHidden
-			}
-			if touched {
-				self.view.setNeedsLayout()
-			}
+//			var touched: Bool = false
+//			if self.manualPaymentID_label.isHidden != isHidden {
+//				touched = true
+//				self.manualPaymentID_label.isHidden = isHidden
+//			}
+//			if self.manualPaymentID_inputView.isHidden != isHidden {
+//				touched = true
+//				self.manualPaymentID_inputView.isHidden = isHidden
+//			}
+//			if self.generatePaymentID_linkButtonView.isHidden != isHidden {
+//				touched = true
+//				self.generatePaymentID_linkButtonView.isHidden = isHidden
+//			}
+//			if touched {
+//				self.view.setNeedsLayout()
+//			}
 		}
 		func set_inAmountField(isHidden: Bool)
 		{
@@ -1194,8 +1228,20 @@ extension ExchangeSendFundsForm
 			self.btcAddress_inputView.isEnabled = false
 			self.inAmount_inputView.isEnabled = false
 			self.outAmount_inputView.isEnabled = false
-			
+			self.navigationItem.rightBarButtonItem?.isEnabled = false
 		}
+		
+		@objc func shouldEnableFormSubmission() {
+//			self.btcAddress_inputView.isEnabled = false
+//			self.inAmount_inputView.isEnabled = false
+//			self.outAmount_inputView.isEnabled = false
+			if self.btcAddress_inputView.text?.isEmpty == false && self.inAmount_inputView.text?.isEmpty == false && self.outAmount_inputView.text?.isEmpty == false {
+				self.navigationItem.rightBarButtonItem?.isEnabled = true
+			} else {
+				self.navigationItem.rightBarButtonItem?.isEnabled = false
+			}
+		}
+		
 		override func reEnableForm()
 		{
 			super.reEnableForm()
@@ -1480,14 +1526,6 @@ extension ExchangeSendFundsForm
 			self.clearValidationMessage()
 			//self.amount_fieldset.clear()
 			//self.sendTo_inputView.clearAndReset()
-			do {
-				self.hideAndClear_manualPaymentIDField()
-				self.set_addPaymentID_buttonView(isHidden: false)
-			}
-			self.priority_inputView.set( // reset to default .. this will cause configure_networkFeeEstimate_label and configure_amountInputTextGivenMaxToggledState to be called to reconfigure fee
-				selectedValue: MoneroTransferSimplifiedPriority.defaultPriority.humanReadableCapitalizedString,
-				skipSettingOnPickerView: false
-			)
 		}
 		//
 		// Delegation - Form submission success
@@ -1781,9 +1819,11 @@ extension ExchangeSendFundsForm
 		@objc func btcAddress_changed()
 		{
 			debugPrint("btcAddress_changed")
+			self.shouldEnableFormSubmission()
 		}
 		@objc func tapped_createOrderRightBarButtonItem()
 		{
+			self.disableForm()
 			/*
 			/
 			self.scrollView.resignCurrentFirstResponder()
@@ -1807,6 +1847,7 @@ extension ExchangeSendFundsForm
 								withBottomView: self.orderFormValidation_label,
 								bottomPadding: bottomPadding
 							)
+							self.reEnableForm()
 							// TODO: KB: We carry on anyway for testing purposes right now -- remove following four lines
 							//var orderId: String
 							//orderId = "Failed"
@@ -1817,6 +1858,7 @@ extension ExchangeSendFundsForm
 							//self.navigationController!.present(modalViewController, animated: true, completion: nil)
 							debugPrint(error)
 						case .success(let value):
+							debugPrint(value)
 							self.orderDetails = value
 							self.orderExists = true
 							// handle Unexpectedly found nil while unwrapping an Optional value
@@ -1854,7 +1896,7 @@ extension ExchangeSendFundsForm
 			self.clearValidationMessage() // in case there was a parsing err etc displaying
 //			self._clearForm() // specifically not clearing the form - b/c we want to allow priority and even amount to remain set ... dest addr/contact will always be set by a request URI/QR ..
 			//
-			self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
+			//self.sendTo_inputView.cancelAny_oaResolverRequestMaker()
 		}
 		func __shared_didPick(possibleRequestURIStringForAutofill possibleRequestURIString: String)
 		{
@@ -1893,126 +1935,126 @@ extension ExchangeSendFundsForm
 		}
 		func __shared_havingClearedForm_didPick(requestPayload: MoneroUtils.URIs.Requests.ParsedRequest)
 		{
-			var currencyToSelect: CcyConversionRates.Currency?
-			if let amountCurrencySymbol = requestPayload.amountCurrency,
-				amountCurrencySymbol != ""
-			{
-				let currency = CcyConversionRates.Currency(
-					rawValue: amountCurrencySymbol
-				)
-				if currency == nil {
-					self.set(
-						validationMessage: NSLocalizedString("Unrecognized currency on funds request", comment: ""),
-						wantsXButton: true
-					)
-					return
-				}
-				currencyToSelect = currency!
-			}
-			var didSetAmountFromRequest = false // to be finalized as follows…
-			// as long as currency was valid…
-			if let amountString = requestPayload.amount, amountString != "" {
-				didSetAmountFromRequest = true
-				self.amount_fieldset.inputField.text = amountString
-				self.amount_fieldset.configure_effectiveMoneroAmountLabel() // b/c we just manually changed the text - would be nice to have an abstraction to do all this :P
-			}
-			if currencyToSelect != nil {
-				if (self.amount_fieldset.inputField.text == nil || self.amount_fieldset.inputField.text == "")
-					|| didSetAmountFromRequest { // so either the ccy and amount were on the request OR there was a ccy but the amount field was left empty by the user, i.e. we can assume it's ok to modify the ccy since there was one on the request
-					self.amount_fieldset.currencyPickerButton.set(
-						selectedCurrency: currencyToSelect!, // permissable to fall back to XMR here if no ccy present on the request
-						skipSettingOnPickerView: false
-					)
-				}
-			} else {
-				// otherwise, just keep it as it is …… because if they set it to, e.g. CAD, and there's no ccy on the request, then they might accidentally send the same numerical value in XMR despite having wanted it to be in CAD
-			}
-			do {
-				let target_address = requestPayload.address
-				assert(target_address != "") // b/c it should have been caught as a validation err on New_ParsedRequest_FromURIString
-				let payment_id_orNil = requestPayload.paymentID
-				var foundContact: Contact?
-				do {
-					let records = ContactsListController.shared.records
-					for (_, record) in records.enumerated() {
-						let contact = record as! Contact
-						if contact.address == target_address || contact.cached_OAResolved_XMR_address == target_address {
-							// so this request's address corresponds with this contact…
-							// how does the payment id match up?
-							/*
-							* Commented until we figure out this payment ID situation.
-							* The problem is that the person who uses this request to send
-							* funds (i.e. the user here) may have the target of the request
-							* in their Address Book (the req creator) but the request recipient
-							* would have in their address book a /different/ payment_id for the target
-							* than the payment_id in the contact used by the creator to generate
-							* this request.
-							
-							* One proposed solution is to give contacts a "ReceiveFrom-With" and "SendTo-With"
-							* payment_id. Then when a receiver loads a request (which would have a payment_id of
-							* the creator's receiver contact's version of "ReceiveFrom-With"), we find the contact
-							* (by address/cachedaddr) and if it doesn't yet have a "SendTo-With" payment_id,
-							* we show it as 'detected', and set its value to that of ReceiveFrom-With from the request
-							* if they hit send. This way users won't have to send each other their pids.
-							
-							* Currently, this is made to work below by not looking at the contact itself for payment
-							* ID match, but just using the payment ID on the request itself, if any.
-							
-							if (payment_id_orNull) { // request has pid
-							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
-							if (contact.payment_id !== payment_id_orNull) {
-							console.log("contact has same address as request but different payment id!")
-							continue // TODO (?) keep this continue? or allow and somehow use the pid from the request?
-							} else {
-							// contact has same pid as request pid
-							console.log("contact has same pid as request pid")
-							}
-							} else { // contact has no pid
-							console.log("request pid exists but contact has no request pid")
-							}
-							} else { // request has no pid
-							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
-							console.log("contact has pid but request has no pid")
-							} else { // contact has no pid
-							console.log("neither request nor contact have pid")
-							// this is fine - we can use this contact
-							}
-							}
-							*/
-							foundContact = contact
-							break
-						}
-					}
-					if foundContact != nil {
-						self.sendTo_inputView.pick(
-							contact: foundContact!,
-							skipOAResolve: true, // special case
-							useContactPaymentID: false // but we're not going to show the PID stored on the contact!
-						)
-					} else { // we have an addr but no contact
-						if let _ = self.sendTo_inputView.selectedContact {
-							self.sendTo_inputView.unpickSelectedContact_andRedisplayInputField(
-								skipFocusingInputField: true // do NOT focus input
-							)
-						}
-						self.sendTo_inputView.setInputField(text: target_address) // we must use this method instead of just going _inputView.inputField.text = ... b/c that would not alone send the event .editingChanged and would cause e.g. .hasValidTextInput_moneroAddress to be stale
-					}
-				}
-				// and no matter what, display payment id from request, if present
-				if payment_id_orNil != nil { // but display it as a 'detected' pid which we can pick up on submit
-					self.hideAndClear_manualPaymentIDField()
-					self.set_addPaymentID_buttonView(isHidden: true) // hide
-					self.sendTo_inputView._display(resolved_paymentID: payment_id_orNil!) // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
-				} else {
-					self.sendTo_inputView._hide_resolved_paymentID() // jic // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
-					if self.manualPaymentID_inputView.text == nil || self.manualPaymentID_inputView.text!.count == 0 {
-						// if no pid already in the manual pid field, just be sure to reset the form to its proper state
-						self.hideAndClear_manualPaymentIDField()
-						self.set_addPaymentID_buttonView(isHidden: false) // show
-					}
-				}
-			}
-			self.set_isFormSubmittable_needsUpdate() // now that we've updated values
+//			var currencyToSelect: CcyConversionRates.Currency?
+//			if let amountCurrencySymbol = requestPayload.amountCurrency,
+//				amountCurrencySymbol != ""
+//			{
+//				let currency = CcyConversionRates.Currency(
+//					rawValue: amountCurrencySymbol
+//				)
+//				if currency == nil {
+//					self.set(
+//						validationMessage: NSLocalizedString("Unrecognized currency on funds request", comment: ""),
+//						wantsXButton: true
+//					)
+//					return
+//				}
+//				currencyToSelect = currency!
+//			}
+//			var didSetAmountFromRequest = false // to be finalized as follows…
+//			// as long as currency was valid…
+//			if let amountString = requestPayload.amount, amountString != "" {
+//				didSetAmountFromRequest = true
+//				self.amount_fieldset.inputField.text = amountString
+//				self.amount_fieldset.configure_effectiveMoneroAmountLabel() // b/c we just manually changed the text - would be nice to have an abstraction to do all this :P
+//			}
+//			if currencyToSelect != nil {
+//				if (self.amount_fieldset.inputField.text == nil || self.amount_fieldset.inputField.text == "")
+//					|| didSetAmountFromRequest { // so either the ccy and amount were on the request OR there was a ccy but the amount field was left empty by the user, i.e. we can assume it's ok to modify the ccy since there was one on the request
+//					self.amount_fieldset.currencyPickerButton.set(
+//						selectedCurrency: currencyToSelect!, // permissable to fall back to XMR here if no ccy present on the request
+//						skipSettingOnPickerView: false
+//					)
+//				}
+//			} else {
+//				// otherwise, just keep it as it is …… because if they set it to, e.g. CAD, and there's no ccy on the request, then they might accidentally send the same numerical value in XMR despite having wanted it to be in CAD
+//			}
+//			do {
+//				let target_address = requestPayload.address
+//				assert(target_address != "") // b/c it should have been caught as a validation err on New_ParsedRequest_FromURIString
+//				let payment_id_orNil = requestPayload.paymentID
+//				var foundContact: Contact?
+//				do {
+//					let records = ContactsListController.shared.records
+//					for (_, record) in records.enumerated() {
+//						let contact = record as! Contact
+//						if contact.address == target_address || contact.cached_OAResolved_XMR_address == target_address {
+//							// so this request's address corresponds with this contact…
+//							// how does the payment id match up?
+//							/*
+//							* Commented until we figure out this payment ID situation.
+//							* The problem is that the person who uses this request to send
+//							* funds (i.e. the user here) may have the target of the request
+//							* in their Address Book (the req creator) but the request recipient
+//							* would have in their address book a /different/ payment_id for the target
+//							* than the payment_id in the contact used by the creator to generate
+//							* this request.
+//
+//							* One proposed solution is to give contacts a "ReceiveFrom-With" and "SendTo-With"
+//							* payment_id. Then when a receiver loads a request (which would have a payment_id of
+//							* the creator's receiver contact's version of "ReceiveFrom-With"), we find the contact
+//							* (by address/cachedaddr) and if it doesn't yet have a "SendTo-With" payment_id,
+//							* we show it as 'detected', and set its value to that of ReceiveFrom-With from the request
+//							* if they hit send. This way users won't have to send each other their pids.
+//
+//							* Currently, this is made to work below by not looking at the contact itself for payment
+//							* ID match, but just using the payment ID on the request itself, if any.
+//
+//							if (payment_id_orNull) { // request has pid
+//							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
+//							if (contact.payment_id !== payment_id_orNull) {
+//							console.log("contact has same address as request but different payment id!")
+//							continue // TODO (?) keep this continue? or allow and somehow use the pid from the request?
+//							} else {
+//							// contact has same pid as request pid
+//							console.log("contact has same pid as request pid")
+//							}
+//							} else { // contact has no pid
+//							console.log("request pid exists but contact has no request pid")
+//							}
+//							} else { // request has no pid
+//							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
+//							console.log("contact has pid but request has no pid")
+//							} else { // contact has no pid
+//							console.log("neither request nor contact have pid")
+//							// this is fine - we can use this contact
+//							}
+//							}
+//							*/
+//							foundContact = contact
+//							break
+//						}
+//					}
+//					if foundContact != nil {
+//						self.sendTo_inputView.pick(
+//							contact: foundContact!,
+//							skipOAResolve: true, // special case
+//							useContactPaymentID: false // but we're not going to show the PID stored on the contact!
+//						)
+//					} else { // we have an addr but no contact
+//						if let _ = self.sendTo_inputView.selectedContact {
+//							self.sendTo_inputView.unpickSelectedContact_andRedisplayInputField(
+//								skipFocusingInputField: true // do NOT focus input
+//							)
+//						}
+//						self.sendTo_inputView.setInputField(text: target_address) // we must use this method instead of just going _inputView.inputField.text = ... b/c that would not alone send the event .editingChanged and would cause e.g. .hasValidTextInput_moneroAddress to be stale
+//					}
+//				}
+//				// and no matter what, display payment id from request, if present
+//				if payment_id_orNil != nil { // but display it as a 'detected' pid which we can pick up on submit
+//					self.hideAndClear_manualPaymentIDField()
+//					self.set_addPaymentID_buttonView(isHidden: true) // hide
+//					self.sendTo_inputView._display(resolved_paymentID: payment_id_orNil!) // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
+//				} else {
+//					self.sendTo_inputView._hide_resolved_paymentID() // jic // NOTE: kind of bad to use these private methods like this - TODO: establish a proper interface for doing this!
+//					if self.manualPaymentID_inputView.text == nil || self.manualPaymentID_inputView.text!.count == 0 {
+//						// if no pid already in the manual pid field, just be sure to reset the form to its proper state
+//						self.hideAndClear_manualPaymentIDField()
+//						self.set_addPaymentID_buttonView(isHidden: false) // show
+//					}
+//				}
+//			}
+//			self.set_isFormSubmittable_needsUpdate() // now that we've updated values
 		}
 		//
 		// Protocol - DeleteEverythingRegistrant
@@ -2021,7 +2063,7 @@ extension ExchangeSendFundsForm
 			DispatchQueue.main.async
 			{ [unowned self] in	
 				self._clearForm()
-				self.qrPicking_actionButtons.teardownAnyPickers()
+				//self.qrPicking_actionButtons.teardownAnyPickers()
 				// TODO/NOTE: This actually may be much better implemented as a property on the Settings controller as in the JS app
 //				do { // special:
 //					UserDefaults.standard.removeObject(
@@ -2039,12 +2081,13 @@ extension ExchangeSendFundsForm
 		@objc func PasswordController_willDeconstructBootedStateAndClearPassword()
 		{
 			self._clearForm()
-			self.qrPicking_actionButtons.teardownAnyPickers()
+			//self.qrPicking_actionButtons.teardownAnyPickers()
 			//
 			// should already have popped to root thanks to root tab bar vc
 		}
 		@objc func PasswordController_didDeconstructBootedStateAndClearPassword()
 		{
+			
 		}
 		@objc func URLOpening_saysTimeToHandleReceivedMoneroURL(_ notification: Notification)
 		{

@@ -138,8 +138,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	}
 	
 	@objc func handleRemainingTimeUpdateTimer() {
-			//self.timeRemaining_inputView.text =
-			// Time has expired
 			let now = Date()
 			
 			if (now > self.expiryDate!) {
@@ -241,6 +239,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			switch result {
 				case .failure (let error):
 					debugPrint(error)
+					// There's a chance we may not successfully retrieve the order details, in which case they'll get updated by the order status updater
 				case .success(let value):
 					self.uuid_inputView.text = value["provider_order_id"] as? String
 					self.orderStatus_inputView.text = value["status"] as? String
@@ -540,7 +539,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		// Declare exchange form view fields
 		do {
 			let disclaimer = """
-			Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact XMR.to with your UUID, as they will be able to assist.
+			Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact XMR.to with your transaction ID, as they will be able to assist.
 			"""
 			let view = UICommonComponents.Form.FieldLabel(title: disclaimer)
 			self.disclaimer_label = view
@@ -627,6 +626,16 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			type: .back,
 			target: self,
 			action: #selector(tapped_barButtonItem_cancel)
+		)
+		super.navigationItem.leftBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+			type: .back,
+			target: self,
+			action: #selector(tapped_barButtonItem_cancel)
+		)
+		self.navigationController?.parent?.navigationItem.rightBarButtonItem = UICommonComponents.NavigationBarButtonItem(
+			type: .payExchangeOrder,
+			target: self,
+			action: #selector(tapped_rightBarButtonItem)
 		)
 	}
 	//
@@ -1567,6 +1576,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	}
 	@objc func tapped_rightBarButtonItem()
 	{
+		debugPrint("tapped_rightBarButtonItem")
 		self.aFormSubmissionButtonWasPressed()
 	}
 	@objc func tapped_barButtonItem_cancel()
