@@ -67,7 +67,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	var currencyValuePayout_inputView: UICommonComponents.FormInputField!
 	var orderStatus_label: UICommonComponents.Form.FieldLabel!
 	var orderStatus_inputView: UICommonComponents.FormInputField!
-	var confirmSendFunds_buttonView: UICommonComponents.LinkButtonView!
+	var confirmSendFunds_buttonView: UICommonComponents.ActionButton!
 	var btcAddress: String!
 	weak var orderUpdateTimer: Timer?
 	weak var timeRemainingTimer: Timer?
@@ -600,8 +600,14 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("Send Funds", comment: ""))
+//			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("Send Funds", comment: ""))
+//			view.addTarget(self, action: #selector(tapped_sendFunds), for: .touchUpInside)
+//			self.confirmSendFunds_buttonView = view
+//			self.scrollView.addSubview(view)
+			let view = UICommonComponents.ActionButton(pushButtonType: .action, isLeftOfTwoButtons: false)
 			view.addTarget(self, action: #selector(tapped_sendFunds), for: .touchUpInside)
+			view.setTitle(NSLocalizedString("Send Funds", comment: ""), for: .normal)
+			view.accessibilityIdentifier = "button.sendFunds"
 			self.confirmSendFunds_buttonView = view
 			self.scrollView.addSubview(view)
 		}
@@ -758,18 +764,19 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		//
 		self.scrollView.isScrollEnabled = false
 		//
-		self.toWallet_inputView.set(isEnabled: false)
-		
-		self.amount_fieldset.inputField.isEnabled = false
-		self.amount_fieldset.currencyPickerButton.isEnabled = false
-		
-		self.memo_inputView.isEnabled = false
-		self.requestFrom_inputView.inputField.isEnabled = false
-		if let pillView = self.requestFrom_inputView.selectedContactPillView {
-			pillView.xButton.isEnabled = true
-		}
-		self.manualPaymentID_inputView.isEnabled = false
-		self.generatePaymentID_linkButtonView.isEnabled = false
+		self.confirmSendFunds_buttonView.isEnabled = false
+//		self.toWallet_inputView.set(isEnabled: false)
+//
+//		self.amount_fieldset.inputField.isEnabled = false
+//		self.amount_fieldset.currencyPickerButton.isEnabled = false
+//
+//		self.memo_inputView.isEnabled = false
+//		self.requestFrom_inputView.inputField.isEnabled = false
+//		if let pillView = self.requestFrom_inputView.selectedContactPillView {
+//			pillView.xButton.isEnabled = true
+//		}
+//		self.manualPaymentID_inputView.isEnabled = false
+//		self.generatePaymentID_linkButtonView.isEnabled = false
 	}
 	override func reEnableForm()
 	{
@@ -777,18 +784,19 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		//
 		self.scrollView.isScrollEnabled = true
 		//
-		self.toWallet_inputView.set(isEnabled: true)
-		
-		self.amount_fieldset.inputField.isEnabled = true
-		self.amount_fieldset.currencyPickerButton.isEnabled = true
-		
-		self.memo_inputView.isEnabled = true
-		self.requestFrom_inputView.inputField.isEnabled = true
-		if let pillView = self.requestFrom_inputView.selectedContactPillView {
-			pillView.xButton.isEnabled = true
-		}
-		self.manualPaymentID_inputView.isEnabled = true
-		self.generatePaymentID_linkButtonView.isEnabled = true
+		self.confirmSendFunds_buttonView.isEnabled = true
+//		self.toWallet_inputView.set(isEnabled: true)
+//
+//		self.amount_fieldset.inputField.isEnabled = true
+//		self.amount_fieldset.currencyPickerButton.isEnabled = true
+//
+//		self.memo_inputView.isEnabled = true
+//		self.requestFrom_inputView.inputField.isEnabled = true
+//		if let pillView = self.requestFrom_inputView.selectedContactPillView {
+//			pillView.xButton.isEnabled = true
+//		}
+//		self.manualPaymentID_inputView.isEnabled = true
+//		self.generatePaymentID_linkButtonView.isEnabled = true
 	}
 	var formSubmissionController: ExchangeSendFundsForm.SubmissionController? // TODO: maybe standardize into FormViewController
 	
@@ -911,14 +919,15 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				integratedAddressPIDForDisplay_orNil
 			) in
 				self.formSubmissionController = nil
+				
+				// must free as this is a terminal callback
+				self.scrollView.isScrollEnabled = true
 				self.set(
 					validationMessage: NSLocalizedString("Your Monero is on its way.", comment: ""),
 					wantsXButton: true // true because it's terminal
 				)
 				
-				// must free as this is a terminal callback
-				// will re-enable form shortly (after presentation)
-				//
+
 				
 //				do {
 //					let viewController = TransactionDetails.ViewController(
@@ -1136,7 +1145,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		do {
 			self.confirmSendFunds_buttonView.frame = CGRect(
 				x: input_x,
-				y: self.orderStatus_inputView.frame.origin.y + self.orderStatus_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
+				y: self.orderStatus_inputView.frame.origin.y + self.orderStatus_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
 				width: textField_w,
 				height: self.orderStatus_inputView.frame.size.height
 			).integral
@@ -1300,17 +1309,8 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		}
 		//
 		let bottomMostView: UIView
-		do {
-			if self.manualPaymentID_inputView.isHidden == false {
-				bottomMostView = self.manualPaymentID_inputView
-			} else if self.addPaymentID_buttonView.isHidden == false {
-				bottomMostView = self.addPaymentID_buttonView
-			} else if self.createNewContact_buttonView.isHidden == false {
-				bottomMostView = self.createNewContact_buttonView
-			} else {
-				bottomMostView = self.requestFrom_inputView
-			}
-		}
+		bottomMostView = self.confirmSendFunds_buttonView
+		
 		let bottomPadding: CGFloat = 18
 		self.scrollableContentSizeDidChange(
 			withBottomView: bottomMostView,
@@ -1358,220 +1358,8 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		debugPrint("Tapped sendfunds")
 		debugPrint(self.selectedWallet!)
 		debugPrint("Try send funds")
+		self.confirmSendFunds_buttonView.isEnabled = false
 		self.aFormSubmissionButtonWasPressed()
-		
-		// Once all is tested and working, invoke the following:
-		/*
-		wallet.SendFunds(
-			enteredAddressValue,
-			resolvedAddress,
-			manuallyEnteredPaymentID,
-			resolvedPaymentID,
-			hasPickedAContact,
-			resolvedAddress_fieldIsVisible,
-			manuallyEnteredPaymentID_fieldIsVisible,
-			resolvedPaymentID_fieldIsVisible,
-			contact_payment_id,
-			cached_OAResolved_address,
-			contact_hasOpenAliasAddress,
-			contact_address,
-			raw_amount_string,
-			sweeping,
-			simple_priority,
-			validation_status_fn,
-			cancelled_fn,
-			handle_response_fn
-		);*/
-		
-		/*
-			/*
-							* We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon.
-							* We pass them as the final argument to ExchangeUtils.sendFunds
-							* It performs the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
-							*/
-							function validation_status_fn(str)
-							{
-
-								let monerodUpdates = document.getElementById('monerod-updates')
-								monerodUpdates.innerText = str;
-							}
-							/*
-							* We perform the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
-							*/
-							function handle_response_fn(err, mockedTransaction)
-							{
-								let str;
-								let monerodUpdates = document.getElementById('monerod-updates');
-								if (err) {
-									str = typeof err === 'string' ? err : err.message;
-									monerodUpdates.innerText = str;
-									return
-								}
-								str = "Sent successfully.";
-								monerodUpdates.innerText = str;
-							}
-							let xmr_amount = document.getElementById('in_amount_remaining').innerHTML;
-							let xmr_send_address = document.getElementById('receiving_subaddress').innerHTML;
-							let xmr_amount_str = "" + xmr_amount;
-							
-							let selectedWallet = document.getElementById('selected-wallet');
-							let selectorOffset = selectedWallet.dataset.walletoffset;
-							let sweep_wallet = false; // TODO: Add sweeping functionality
-							ExchangeUtils.sendFunds(self.context.wallets[selectorOffset], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
-						});
-
-			
-			*/
-
-//		self.selectedWallet.sendFunds(
-//			enteredAddressValue: enteredAddressValue,
-//			resolvedAddress: resolvedAddress,
-//			manuallyEnteredPaymentID: manuallyEnteredPaymentID,
-//			resolvedPaymentID: resolvedPaymentID,
-//			hasPickedAContact: false,
-//			resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
-//			manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
-//			resolvedPaymentID_fieldIsVisible: resolvedPaymentID_fieldIsVisible,
-//			//
-//			contact_payment_id: selectedContact?.payment_id,
-//			cached_OAResolved_address: selectedContact?.cached_OAResolved_XMR_address,
-//			contact_hasOpenAliasAddress: selectedContact?.hasOpenAliasAddress,
-//			contact_address: selectedContact?.address,
-//			//
-//			raw_amount_string: raw_amount_string,
-//			isSweeping: isSweeping,
-//			simple_priority: simple_priority,
-//			//
-//			didUpdateProcessStep_fn: { [weak self] (msg) in
-//				guard let thisSelf = self else {
-//					return
-//				}
-//				thisSelf.preSuccess_nonTerminal_validationMessageUpdate_fn(msg)
-//			},
-//			success_fn: { [weak self] (sentTo_address, isXMRAddressIntegrated, integratedAddressPIDForDisplay_orNil, final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction) in
-//				guard let thisSelf = self else {
-//					return
-//				}
-//				// formulate a mocked/transient historical transaction for details view presentation, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-//				thisSelf._didSend(
-//					sentTo_address: sentTo_address,
-//					isXMRAddressIntegrated: isXMRAddressIntegrated,
-//					integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
-//					mockedTransaction: mockedTransaction
-//				)
-//			},
-//			canceled_fn: { [weak self] in
-//				guard let thisSelf = self else {
-//					return
-//				}
-//				thisSelf.canceled_fn()
-//			},
-//			failWithErr_fn: { [weak self] (err_str) in
-//				guard let thisSelf = self else {
-//					return
-//				}
-//				thisSelf.preSuccess_terminal_validationMessage_fn(err_str)
-//			}
-//		)
-		
-		
-		
-		/*
-			didUpdateProcessStep_fn: @escaping ((_ msg: String) -> Void),
-			success_fn: @escaping (
-				_ sentTo_address: MoneroAddress,
-				_ isXMRAddressIntegrated: Bool,
-				_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?,
-				_ final_sentAmountWithoutFee: MoneroAmount,
-				_ sentPaymentID_orNil: MoneroPaymentID?,
-				_ tx_hash: MoneroTransactionHash,
-				_ tx_fee: MoneroAmount,
-				_ tx_key: MoneroTransactionSecKey,
-				_ mockedTransaction: MoneroHistoricalTransactionRecord
-			) -> Void,
-			canceled_fn: @escaping () -> Void,
-			failWithErr_fn: @escaping (
-				_ err_str: String
-			) -> Void
-		*/
-		
-		
-		/*
-		didUpdateProcessStep_fn: { [weak self] (msg) in
-			guard let thisSelf = self else {
-				return
-			}
-			thisSelf.parameters.preSuccess_nonTerminal_validationMessageUpdate_fn(msg)
-		},
-		success_fn: { [weak self] (sentTo_address, isXMRAddressIntegrated, integratedAddressPIDForDisplay_orNil, final_sentAmount, sentPaymentID_orNil, tx_hash, tx_fee, tx_key, mockedTransaction) in
-			guard let thisSelf = self else {
-				return
-			}
-			// formulate a mocked/transient historical transaction for details view presentation, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-			thisSelf._didSend(
-				sentTo_address: sentTo_address,
-				isXMRAddressIntegrated: isXMRAddressIntegrated,
-				integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil,
-				mockedTransaction: mockedTransaction
-			)
-		},
-		canceled_fn: { [weak self] in
-			guard let thisSelf = self else {
-				return
-			}
-			thisSelf.parameters.canceled_fn()
-		},
-		failWithErr_fn: { [weak self] (err_str) in
-			guard let thisSelf = self else {
-				return
-			}
-			thisSelf.parameters.preSuccess_terminal_validationMessage_fn(err_str)
-		}
-		
-		**/
-		
-		
-//		var contact_payment_id: MoneroPaymentID?
-//		var cached_OAResolved_address
-//		var contact_hasOpenAliasAddress
-//		var contact_address
-//		var raw_amount_string = "0.000001"
-//		var sweeping: Bool = false
-//		var simple_priority
-		
-//		var resolvedPaymentID: Typehere = resolvedPaymentID "",
-//		var hasPickedAContact: Typehere = hasPickedAContact "",
-//		var resolvedAddress_fieldIsVisible: Typehere = resolvedAddress_fieldIsVisible "",
-//		var manuallyEnteredPaymentID_fieldIsVisible: Typehere = manuallyEnteredPaymentID_fieldIsVisible "",
-//		var resolvedPaymentID_fieldIsVisible: Typehere = resolvedPaymentID_fieldIsVisible "",
-//		var contact_payment_id: Typehere = contact_payment_id "",
-//		var cached_OAResolved_address: Typehere = cached_OAResolved_address "",
-				 
-		 //let enteredAddressValue = ""
-		
-	 //		var wallet = fromWallet_inputView.selectedWallet?.sendFunds(enteredAddressValue: <#T##MoneroAddress?#>, resolvedAddress: <#T##MoneroAddress?#>, manuallyEnteredPaymentID: <#T##MoneroPaymentID?#>, resolvedPaymentID: <#T##MoneroPaymentID?#>, hasPickedAContact: <#T##Bool#>, resolvedAddress_fieldIsVisible: <#T##Bool#>, manuallyEnteredPaymentID_fieldIsVisible: <#T##Bool#>, resolvedPaymentID_fieldIsVisible: <#T##Bool#>, contact_payment_id: <#T##MoneroPaymentID?#>, cached_OAResolved_address: <#T##String?#>, contact_hasOpenAliasAddress: <#T##Bool?#>, contact_address: <#T##String?#>, raw_amount_string: <#T##String?#>, isSweeping: <#T##Bool#>, simple_priority: <#T##MoneroTransferSimplifiedPriority#>, didUpdateProcessStep_fn: <#T##((String) -> Void)##((String) -> Void)##(String) -> Void#>, success_fn: <#T##(MoneroAddress, Bool, MoneroPaymentID?, MoneroAmount, MoneroPaymentID?, MoneroTransactionHash, MoneroAmount, MoneroTransactionSecKey, MoneroHistoricalTransactionRecord) -> Void#>, canceled_fn: <#T##() -> Void#>, failWithErr_fn: <#T##(String) -> Void#>);
-		//var wallet = fromWallet_inputView.selectedWallet?.sendFunds
-		
-//		var wallet = self.wallet.sendFunds(
-//			enteredAddressValue: ,
-//			resolvedAddress: ,
-//			manuallyEnteredPaymentID: ,
-//			resolvedPaymentID: ,
-//			hasPickedAContact: ,
-//			resolvedAddress_fieldIsVisible: ,
-//			manuallyEnteredPaymentID_fieldIsVisible: ,
-//			resolvedPaymentID_fieldIsVisible: ,
-//			contact_payment_id: ,
-//			cached_OAResolved_address: ,
-//			contact_hasOpenAliasAddress: ,
-//			contact_address: ,
-//			raw_amount_string: ,
-//			sweeping: ,
-//			simple_priority: ,
-//			validation_status_fn: ,
-//			cancelled_fn: ,
-//			handle_response_fn:
-//		);
 		
 	}
 	@objc func tapped_rightBarButtonItem()
