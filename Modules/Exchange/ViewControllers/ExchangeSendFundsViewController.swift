@@ -1113,7 +1113,8 @@ extension ExchangeSendFundsForm
 		func set_formVisiblility(isHidden: Bool) {
 			self.fromWallet_label.isHidden = isHidden
 			self.fromWallet_inputView.isHidden = isHidden
-			
+			self.fromWallet_tooltipSpawn_buttonView.isHidden = isHidden
+			self.networkFeeEstimate_label.isHidden = isHidden
 			self.inAmount_inputView.isHidden = isHidden
 			self.outAmount_inputView.isHidden = isHidden
 			self.btcAddress_inputView.isHidden = isHidden
@@ -1795,12 +1796,16 @@ extension ExchangeSendFundsForm
 		}
 		@objc func tapped_resetOrder() {
 			self.orderExists = false
-			self.resetOrder_buttonView.isHidden = false
+			self.inAmount_inputView.text = ""
+			self.outAmount_inputView.text = ""
+			self.btcAddress_inputView.text = ""
+			self.resetOrder_buttonView.isHidden = true
 			self.set_formVisiblility(isHidden: true)
 			self.orderStatusViewController?.stopRemainingTimeTimer()
 			self.orderStatusViewController?.stopOrderUpdateTimer()
 			self.set_formVisiblility(isHidden: false)
 			self.orderStatusViewController = nil
+			self.reEnableForm()
 		}
 		
 		@objc func tapped_createOrderRightBarButtonItem()
