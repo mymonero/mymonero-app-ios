@@ -141,7 +141,7 @@ extension UICommonComponents
 					sizeToFit = true
 					break
 				case .createExchangeOrder:
-					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Create Order", comment: ""), for: .normal)
+					view.setTitle(title_orNilForDefault ?? NSLocalizedString("Next", comment: ""), for: .normal)
 					sizeToFit = true
 					break
 				case .payExchangeOrder:
