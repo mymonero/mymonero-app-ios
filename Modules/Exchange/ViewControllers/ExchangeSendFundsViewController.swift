@@ -10,6 +10,7 @@ import ImageIO
 import Alamofire
 import Swift
 import SwiftyJSON
+import BigInt
 //
 struct ExchangeSendFundsForm
 {
@@ -53,15 +54,15 @@ extension ExchangeSendFundsForm
 				response in
 					debugPrint("Assigning result")
 					debugPrint(response)
-				debugPrint(response.in_min)
-					self.validRateInfoRetrieved = true;
+					//debugPrint(response!.in_min)
+					//self.validRateInfoRetrieved = true;
 					//self.in_min = json?[0]["in_min"].string
 //				self.in_min = result.in_min
 //					self.in_max = result["in_max"].floatValue
 //					self.out_max = result["out_max"].floatValue
 //					self.in_min = result["in_min"].floatValue
 //					debugPrint(self.in_min)
-			}
+//			}
 //			performGetRateInfo(completion: completion) {
 //				result in
 //				if let data = result.data {
@@ -73,7 +74,7 @@ extension ExchangeSendFundsForm
 //					self.in_min = json["in_min"].floatValue
 //					debugPrint(self.in_min)
 //				}
-//			}
+			}
 		}
 		
 		func performGetRateInfo(completion: @escaping (Alamofire.Result<[String: Any]>) -> Void) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
@@ -246,6 +247,7 @@ extension ExchangeSendFundsForm
 		var out_max: Float = 0.00000000;
 		var out_min: Float = 0.00000000;
 		var ratesRetrieved: Bool = false
+		var formIsVisible: Bool = true
 		var exchangeFunctions = ExchangeFunctions();
 		// Floating point calculations get handled server-side, so we can use them as strings so as to not have to keep swapping type
 		var in_currency = "XMR"
@@ -296,6 +298,7 @@ extension ExchangeSendFundsForm
 		var priority_inputView: UICommonComponents.Form.StringPicker.PickerButtonFieldView!
 		var priority_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
+		var resetOrder_buttonView: UICommonComponents.ActionButton!
 		var qrPicking_actionButtons: UICommonComponents.QRPickingActionButtons!
 		//
 		
@@ -320,49 +323,33 @@ extension ExchangeSendFundsForm
 			debugPrint("inputAmountSend")
 			debugPrint(inAmount_inputView.text)
 		}
-			/*
-			This is the JS equivalent for sendfunds
-		
-   wallet.SendFunds(
-	   enteredAddressValue,
-	   resolvedAddress,
-	   manuallyEnteredPaymentID,
-	   resolvedPaymentID,
-	   hasPickedAContact,
-	   resolvedAddress_fieldIsVisible,
-	   manuallyEnteredPaymentID_fieldIsVisible,
-	   resolvedPaymentID_fieldIsVisible,
-	   contact_payment_id,
-	   cached_OAResolved_address,
-	   contact_hasOpenAliasAddress,
-	   contact_address,
-	   raw_amount_string,
-	   sweeping,
-	   simple_priority,
-	   validation_status_fn,
-	   cancelled_fn,
-	   handle_response_fn
-   );
-
-			*/
 
 		@objc func outAmount_Changed(_ textField: UITextField) {
 			orderFormValidation_label.text = ""
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
-				if inputValue.floatValue < out_min {
-					debugPrint("Case 1")
-					let responseStr = "You must convert at least \(out_min) BTC per transaction"
-					orderFormValidation_label.text = responseStr
-					return
-				}
-				if inputValue.floatValue > out_max {
-					debugPrint("Case 2")
-					let responseStr = "You cannot convert more than \(out_max) BTC per transaction"
-					orderFormValidation_label.text = responseStr
-					return
-				}
+				// We need to compare this to a BigInt Monero amount so that we don't invoke getOffer when the input value is greater than our wallet balance
+//				let bigIntValue: BigInt = BigInt(inputValue.floatValue * 1000000000000)
+//				debugPrint("BigInt value")
+//				debugPrint(bigIntValue)
+//
+//				debugPrint("Wallet balance")
+//				debugPrint(self.fromWallet_inputView.selectedWallet?.balanceAmount)
+//
+//				if inputValue.floatValue < out_min {
+//					debugPrint("Case 1")
+//					let responseStr = "You must convert at least \(out_min) BTC per transaction"
+//					orderFormValidation_label.text = responseStr
+//					return
+//				}
+//
+//				if bigIntValue > self.fromWallet_inputView.selectedWallet!.balanceAmount {
+//					debugPrint("Case 2")
+//					let responseStr = "You cannot convert more than \(out_max) BTC per transaction"
+//					orderFormValidation_label.text = responseStr
+//					return
+//				}
 				orderFormValidation_label.text = ""
 				self.getOffer(in_amount: textField.text, callingElement: "out")
 			} else {
@@ -376,18 +363,23 @@ extension ExchangeSendFundsForm
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
-				if inputValue.floatValue < in_min {
-					debugPrint("Case 1")
-					let responseStr = "You must convert at least \(in_min) XMR per transaction"
-					orderFormValidation_label.text = responseStr
-					return
-				}
-				if inputValue.floatValue > in_max {
-					debugPrint("Case 2")
-					let responseStr = "You cannot convert more than \(in_max) XMR per transaction"
-					orderFormValidation_label.text = responseStr
-					return
-				}
+				//let bigIntValue: BigInt = BigInt(inputValue.doubleValue * 1000000000000)
+				// We won't be able to calculate this in advance in future, as new currency pairs become available
+//				if inputValue.floatValue < in_min {
+//					debugPrint("Case 1")
+//					let responseStr = "You must convert at least \(in_min) XMR per transaction"
+//					orderFormValidation_label.text = responseStr
+//					return
+//				}
+//
+//				if bigIntValue > self.fromWallet_inputView.selectedWallet!.balanceAmount {
+//					debugPrint("Case 2")
+//					debugPrint(bigIntValue)
+//					debugPrint(self.fromWallet_inputView.selectedWallet!.balanceAmount)
+//					let responseStr = "You cannot convert more XMR than you have"
+//					orderFormValidation_label.text = responseStr
+//					return
+//				}
 				self.getOffer(in_amount: textField.text, callingElement: "in")
 			} else {
 				// TODO: Add error handling
@@ -422,7 +414,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("", comment: ""),
 					sizeToFit: true
 				)
-				view.isHidden = true
+				
 				self.orderFormValidation_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -439,7 +431,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("FROM", comment: ""),
 					sizeToFit: true
 				)
-				view.isHidden = true
+				
 				self.fromWallet_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -449,7 +441,7 @@ extension ExchangeSendFundsForm
 				{ [unowned self] in
 					self.configure_amountInputTextGivenMaxToggledState()
 				}
-				view.isHidden = true
+				
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -473,7 +465,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("XMR AMOUNT", comment: ""),
 					sizeToFit: true
 				)
-				view.isHidden = true
+				
 				self.inAmount_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -481,7 +473,7 @@ extension ExchangeSendFundsForm
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("0.00", comment: "")
 				)
-				view.isHidden = true
+				
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
@@ -499,7 +491,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("BTC AMOUNT", comment: ""),
 					sizeToFit: true
 				)
-				view.isHidden = true
+				
 				self.outAmount_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -507,7 +499,7 @@ extension ExchangeSendFundsForm
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("0.00", comment: "")
 				)
-				view.isHidden = true
+				
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
@@ -522,7 +514,19 @@ extension ExchangeSendFundsForm
 			do {
 				//let view =
 			}
-			
+			do {
+	//			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("Send Funds", comment: ""))
+	//			view.addTarget(self, action: #selector(tapped_sendFunds), for: .touchUpInside)
+	//			self.confirmSendFunds_buttonView = view
+	//			self.scrollView.addSubview(view)
+				let view = UICommonComponents.ActionButton(pushButtonType: .action, isLeftOfTwoButtons: false)
+				view.addTarget(self, action: #selector(tapped_resetOrder), for: .touchUpInside)
+				view.setTitle(NSLocalizedString("Reset Order", comment: ""), for: .normal)
+				view.accessibilityIdentifier = "button.resetOrder"
+				//view.isHidden = true
+				self.resetOrder_buttonView = view
+				self.scrollView.addSubview(view)
+			}
 //			do {
 //				let view = UICommonComponents.Form.Amounts.InputFieldsetView(
 //					effectiveAmountLabelBehavior: .yieldingRawOrEffectiveMoneroOnlyAmount, // different from Funds Request form
@@ -566,7 +570,7 @@ extension ExchangeSendFundsForm
 					text: nil,
 					displayMode: .prominent // slightly brighter here per design; considered merging
 				)
-				view.isHidden = true
+				
 //				view.adjustsFontSizeToFitWidth = true
 //				view.minimumScaleFactor = 0.8
 				self.networkFeeEstimate_label = view
@@ -581,7 +585,7 @@ extension ExchangeSendFundsForm
 						)
 					)
 				)
-				view.isHidden = true
+				
 				view.willPresentTipView_fn =
 				{ [unowned self] in
 					self.view.resignCurrentFirstResponder() // if any
@@ -621,7 +625,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("BTC ADDRESS", comment: ""),
 					sizeToFit: true
 				)
-				view.isHidden = true
+				
 				self.btcAddress_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -629,7 +633,7 @@ extension ExchangeSendFundsForm
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("", comment: "")
 				)
-				view.isHidden = true
+				
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
@@ -654,21 +658,12 @@ extension ExchangeSendFundsForm
 							withBottomView: self.orderFormValidation_label,
 							bottomPadding: bottomPadding
 						)
-						self.set_formIsVisible(isHidden: false)
+						//self.set_formIsVisible(isHidden: false)
 						debugPrint(error)
 						// show retry button
 					case .success(let value):
 						debugPrint(value)
 						debugPrint("Successfully retrieved rates")
-						self.set_formIsVisible(isHidden: true)
-						// handle Unexpectedly found nil while unwrapping an Optional value
-//						let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
-//						self.orderStatusViewController = viewController
-//						self.navigationController!.pushViewController(viewController, animated: true)
-//
-						//self.scrollView.addSubview(viewController.view)
-						
-						//self.navigationItem.rightBarButtonItem = nil
 					}
 			}
 			//
@@ -1115,13 +1110,17 @@ extension ExchangeSendFundsForm
 			}
 		}
 		
-		func set_formIsVisible(isHidden: Bool) {
+		func set_formVisiblility(isHidden: Bool) {
+			self.fromWallet_label.isHidden = isHidden
+			self.fromWallet_inputView.isHidden = isHidden
+			
 			self.inAmount_inputView.isHidden = isHidden
 			self.outAmount_inputView.isHidden = isHidden
 			self.btcAddress_inputView.isHidden = isHidden
 			self.inAmount_label.isHidden = isHidden
 			self.outAmount_label.isHidden = isHidden
 			self.btcAddress_label.isHidden = isHidden
+			self.formIsVisible = isHidden
 		}
 		
 		func show_inAmount_inputView(withValue paymentID: String?)
@@ -1673,6 +1672,21 @@ extension ExchangeSendFundsForm
 				).integral
 			}
 
+			do {
+//				self.resetOrder_buttonView.frame = CGRect(
+//					x: input_x,
+//					y: self.orderFormValidation_label.frame.origin.y + self.orderFormValidation_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+//					width: textField_w,
+//					height: self.orderFormValidation_label.frame.size.height
+//				).integral
+				self.resetOrder_buttonView.frame = CGRect(
+					x: input_x,
+					y: self.inAmount_inputView.frame.origin.y,
+					width: textField_w,
+					height: self.orderFormValidation_label.frame.size.height
+				).integral
+				self.resetOrder_buttonView.isHidden = true
+			}
 			
 //			do {
 //				let previousSectionBottomView: UIView
@@ -1715,7 +1729,7 @@ extension ExchangeSendFundsForm
 //				)
 //			}
 			//
-			let bottomMostView: UIView = self.orderFormValidation_label
+			let bottomMostView: UIView = self.resetOrder_buttonView
 			let bottomPadding: CGFloat = 18
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,
@@ -1731,12 +1745,6 @@ extension ExchangeSendFundsForm
 			let isFirstAppearance = self.hasAppearedBefore == false
 			super.viewDidAppear(animated)
 			// this will be called every time the view appears, including when coming back from useridle -- as such, check orderdetails is set, and if so, redirect to orderdetails page
-			if (self.validOfferRetrieved) {
-				self.set_formIsVisible(isHidden: false)
-			} else {
-				// try get valid rates, display form on success
-				
-			}
 			
 			if (self.orderExists) {
 				debugPrint("Order exists")
@@ -1785,6 +1793,16 @@ extension ExchangeSendFundsForm
 			debugPrint("btcAddress_changed")
 			self.shouldEnableFormSubmission()
 		}
+		@objc func tapped_resetOrder() {
+			self.orderExists = false
+			self.resetOrder_buttonView.isHidden = false
+			self.set_formVisiblility(isHidden: true)
+			self.orderStatusViewController?.stopRemainingTimeTimer()
+			self.orderStatusViewController?.stopOrderUpdateTimer()
+			self.set_formVisiblility(isHidden: false)
+			self.orderStatusViewController = nil
+		}
+		
 		@objc func tapped_createOrderRightBarButtonItem()
 		{
 			self.disableForm()
@@ -1807,7 +1825,6 @@ extension ExchangeSendFundsForm
 				if self.validOfferRetrieved {
 					self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
 						result in
-						debugPrint("Right button clicked to create order -- closure")
 						switch result {
 							case .failure (let error):
 								self.orderFormValidation_label.text = "An error was encountered: \(error)"
@@ -1827,6 +1844,8 @@ extension ExchangeSendFundsForm
 								let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
 								self.orderStatusViewController = viewController
 								self.navigationController!.pushViewController(viewController, animated: true)
+								self.set_formVisiblility(isHidden: true)
+								self.resetOrder_buttonView.isHidden = false
 								
 								//self.scrollView.addSubview(viewController.view)
 								

@@ -1359,6 +1359,10 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		debugPrint(self.selectedWallet!)
 		debugPrint("Try send funds")
 		self.confirmSendFunds_buttonView.isEnabled = false
+		
+		let desiredOffset = CGPoint(x: 0, y: -self.scrollView.contentInset.top)
+		self.scrollView.setContentOffset(desiredOffset, animated: true)
+		
 		self.aFormSubmissionButtonWasPressed()
 		
 	}
