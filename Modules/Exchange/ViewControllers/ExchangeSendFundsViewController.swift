@@ -1113,7 +1113,7 @@ extension ExchangeSendFundsForm
 		func set_formVisiblility(isHidden: Bool) {
 			self.fromWallet_label.isHidden = isHidden
 			self.fromWallet_inputView.isHidden = isHidden
-			self.fromWallet_tooltipSpawn_buttonView.isHidden = isHidden
+			self.feeEstimate_tooltipSpawn_buttonView.isHidden = isHidden
 			self.networkFeeEstimate_label.isHidden = isHidden
 			self.inAmount_inputView.isHidden = isHidden
 			self.outAmount_inputView.isHidden = isHidden
