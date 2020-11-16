@@ -47,7 +47,36 @@ extension ExchangeSendFundsForm
 		var validOfferRetrieved: Bool = false;
 		//private let apiUrl = "https://stagenet-api.mymonero.rtfm.net/"
 		
-		func getInfo() { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
+		func getRateInfo(completionHandler: @escaping (Alamofire.Result<[String: Any]>) -> Void) {
+			debugPrint("In async init")
+			performGetRateInfo() {
+				response in
+					debugPrint("Assigning result")
+					debugPrint(response)
+				debugPrint(response.in_min)
+					self.validRateInfoRetrieved = true;
+					//self.in_min = json?[0]["in_min"].string
+//				self.in_min = result.in_min
+//					self.in_max = result["in_max"].floatValue
+//					self.out_max = result["out_max"].floatValue
+//					self.in_min = result["in_min"].floatValue
+//					debugPrint(self.in_min)
+			}
+//			performGetRateInfo(completion: completion) {
+//				result in
+//				if let data = result.data {
+//					self.validRateInfoRetrieved = true;
+//					//self.in_min = json?[0]["in_min"].string
+//					self.in_min = json["in_min"].floatValue
+//					self.in_max = json["in_max"].floatValue
+//					self.out_max = json["out_max"].floatValue
+//					self.in_min = json["in_min"].floatValue
+//					debugPrint(self.in_min)
+//				}
+//			}
+		}
+		
+		func performGetRateInfo(completion: @escaping (Alamofire.Result<[String: Any]>) -> Void) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
 			let params: [String: String] = ["in_currency": "XMR", "out_currency": "BTC"]
 			debugPrint("Fired getInfo")
 			let method = "get_info"
@@ -56,19 +85,64 @@ extension ExchangeSendFundsForm
 				.validate()
 				.responseJSON {
 					response in
-					if let data = response.data {
-						if let json = try? JSON(data: data) {
-							self.validRateInfoRetrieved = true;
-							//self.in_min = json?[0]["in_min"].string
-							self.in_min = json["in_min"].floatValue
-							self.in_max = json["in_max"].floatValue
-							self.out_max = json["out_max"].floatValue
-							self.in_min = json["in_min"].floatValue
-							debugPrint(self.in_min)
-						}
+					switch response.result {
+					case .success(let value as [String: Any]):
+						debugPrint("GRI here")
+						debugPrint(value)
+						completion(.success(value))
+
+					case .failure(let error):
+						completion(.failure(error))
+
+					default:
+						fatalError("received non-dictionary JSON response")
 					}
 				}
 		}
+		
+		// Pair of async functions for retrieving order
+		
+		func createOrder(offerId: String!, out_amount: String!, completionHandler: @escaping (Result<[String: Any]>) -> Void) {
+			performCreateOrder(offerId: offerId, out_amount: out_amount, completion: completionHandler)
+		}
+		
+		func performCreateOrder(offerId: String!, out_amount: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
+			self.orderFormValidation_label.text = ""
+			self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+	
+			let params: [String: String] = [
+				//"out_address": "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm",
+				"out_address": self.btcAddress_inputView.text!,
+				"refund_address": "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm",
+				"in_currency": "XMR",
+				"out_currency": "BTC",
+				"offer_id": offerId,
+				"out_amount": "0.00175630"
+			]
+			debugPrint(params)
+			debugPrint("Fired getOffer")
+			let method = "create_order"
+			let apiEndpoint = apiUrl + method
+			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
+				.validate()
+				.responseJSON {
+					response in
+					// add switch response.result here. Check for cases .success, .failure, default
+					debugPrint(response)
+					switch response.result {
+					case .success(let value as [String: Any]):
+						completion(.success(value))
+
+					case .failure(let error):
+						completion(.failure(error))
+
+					default:
+						fatalError("received non-dictionary JSON response")
+					}
+				}
+		}
+		
+		
 		
 		func validateStringIsValidFloat(input: String) -> Bool {
 			debugPrint("Validating float");
@@ -333,7 +407,8 @@ extension ExchangeSendFundsForm
 		override func setup_views()
 		{
 			super.setup_views()
-			self.getInfo() // KB: We need exception handling on the getinfo loop
+		
+			// KB: We need exception handling on the getinfo loop
 			do { // Explanation Label
 				let view = UICommonComponents.Form.Text(
 					title: NSLocalizedString("You can convert your XMR into BTC here", comment: ""),
@@ -347,6 +422,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("", comment: ""),
 					sizeToFit: true
 				)
+				view.isHidden = true
 				self.orderFormValidation_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -363,6 +439,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("FROM", comment: ""),
 					sizeToFit: true
 				)
+				view.isHidden = true
 				self.fromWallet_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -372,6 +449,7 @@ extension ExchangeSendFundsForm
 				{ [unowned self] in
 					self.configure_amountInputTextGivenMaxToggledState()
 				}
+				view.isHidden = true
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
@@ -395,6 +473,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("XMR AMOUNT", comment: ""),
 					sizeToFit: true
 				)
+				view.isHidden = true
 				self.inAmount_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -402,6 +481,7 @@ extension ExchangeSendFundsForm
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("0.00", comment: "")
 				)
+				view.isHidden = true
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
@@ -419,6 +499,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("BTC AMOUNT", comment: ""),
 					sizeToFit: true
 				)
+				view.isHidden = true
 				self.outAmount_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -426,6 +507,7 @@ extension ExchangeSendFundsForm
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("0.00", comment: "")
 				)
+				view.isHidden = true
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
@@ -484,6 +566,7 @@ extension ExchangeSendFundsForm
 					text: nil,
 					displayMode: .prominent // slightly brighter here per design; considered merging
 				)
+				view.isHidden = true
 //				view.adjustsFontSizeToFitWidth = true
 //				view.minimumScaleFactor = 0.8
 				self.networkFeeEstimate_label = view
@@ -498,6 +581,7 @@ extension ExchangeSendFundsForm
 						)
 					)
 				)
+				view.isHidden = true
 				view.willPresentTipView_fn =
 				{ [unowned self] in
 					self.view.resignCurrentFirstResponder() // if any
@@ -537,6 +621,7 @@ extension ExchangeSendFundsForm
 					title: NSLocalizedString("BTC ADDRESS", comment: ""),
 					sizeToFit: true
 				)
+				view.isHidden = true
 				self.btcAddress_label = view
 				self.scrollView.addSubview(view)
 			}
@@ -544,6 +629,7 @@ extension ExchangeSendFundsForm
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("", comment: "")
 				)
+				view.isHidden = true
 				let inputField = view
 				inputField.autocorrectionType = .no
 				inputField.autocapitalizationType = .none
@@ -551,156 +637,40 @@ extension ExchangeSendFundsForm
 				inputField.delegate = self
 				inputField.addTarget(self, action: #selector(btcAddress_changed), for: .editingChanged)
 				inputField.returnKeyType = .next
+			
 				self.btcAddress_inputView = view
 				self.scrollView.addSubview(view)
 			}
 			
-//			do {
-//				let view = UICommonComponents.Form.ContactAndAddressPickerView(
-//					inputMode: .contactsAndAddresses,
-//					displayMode: .paymentIds_andResolvedAddrs,
-//					parentScrollView: self.scrollView
-//				)
-//				view.inputField.set(
-//					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")
-//				)
-//				view.textFieldDidBeginEditing_fn =
-//				{ [unowned self] (textField) in
-//					self.view.setNeedsLayout() // to be certain we get the updated bottom padding
+			self.getRateInfo() {
+				result in
+				debugPrint("GRI() fired")
+				switch result {
+					case .failure (let error):
+						self.orderFormValidation_label.text = "An error was encountered: \(error)"
+						self.orderFormValidation_label.sizeToFit()
+						let bottomPadding: CGFloat = 18
+						self.scrollableContentSizeDidChange(
+							withBottomView: self.orderFormValidation_label,
+							bottomPadding: bottomPadding
+						)
+						self.set_formIsVisible(isHidden: false)
+						debugPrint(error)
+						// show retry button
+					case .success(let value):
+						debugPrint(value)
+						debugPrint("Successfully retrieved rates")
+						self.set_formIsVisible(isHidden: true)
+						// handle Unexpectedly found nil while unwrapping an Optional value
+//						let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails: value, orderId: value["order_id"] as! String)
+//						self.orderStatusViewController = viewController
+//						self.navigationController!.pushViewController(viewController, animated: true)
 //
-//					self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
-//					// ^- this does not actually do anything at present, given suppressed scroll
-//					self.isWaitingOnFieldBeginEditingScrollTo_sendTo = true // sort of janky
-//					DispatchQueue.main.asyncAfter(
-//						deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
-//					) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
-//					{ [unowned self] in
-//						self.isWaitingOnFieldBeginEditingScrollTo_sendTo = false // unset
-//						if view.inputField.isFirstResponder { // jic
-//							self.scrollToVisible_sendTo()
-//						}
-//					}
-//				}
-//				view.didUpdateHeight_fn =
-//				{ [unowned self] in
-//					self.view.setNeedsLayout() // to get following subviews' layouts to update
-//					//
-//					// scroll to field in case, e.g., results table updated
-//					DispatchQueue.main.asyncAfter(
-//						deadline: .now() + 0.1
-//					) { [unowned self] in
-//						if self.isWaitingOnFieldBeginEditingScrollTo_sendTo == true {
-//							return // semi-janky -- but is used to prevent potential double scroll oddness
-//						}
-//						if view.inputField.isFirstResponder {
-//							self.scrollToVisible_sendTo()
-//						}
-//					}
-//				}
-//				view.textFieldDidEndEditing_fn =
-//				{ (textField) in
-//					// nothing to do in this case
-//				}
-//				view.didPickContact_fn =
-//				{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
-//					self.set_addPaymentID_buttonView(isHidden: true) // hide if showing
-//					self.hideAndClear_manualPaymentIDField() // if there's a pid we'll show it as 'Detected' anyway
-//					//
-//					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
-//					//
-//					if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
-//						// contact picker will show its own resolving indicator while we look up the paymentID again
-//						self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
-//						return
-//					}
-//					//
-//					// contact picker will handle showing resolved addr / pid etc
-//				}
-//				view.changedTextContent_fn =
-//				{ [unowned self] in
-//					self.clearValidationMessage() // in case any from text resolve
-//				}
-//				view.clearedTextContent_fn =
-//				{ [unowned self] in
-//					if self.manualPaymentID_inputView.isHidden {
-//						self.set_addPaymentID_buttonView(isHidden: false) // show if hidden as we may have hidden it
-//					}
-//				}
-//				view.willValidateNonZeroTextInput_fn =
-//				{ [unowned self] in
-//					self.set_isFormSubmittable_needsUpdate()
-//				}
-//				view.finishedValidatingTextInput_foundValidMoneroAddress_fn =
-//				{ [unowned self] (detectedEmbedded_paymentID) in
-//					assert(Thread.isMainThread)
-//					self.set_isFormSubmittable_needsUpdate()
-//					if detectedEmbedded_paymentID != nil {
-//						self.set_addPaymentID_buttonView(isHidden: true) // i.e. integrated address supplying one - we show it as 'detected'
-//						self.hideAndClear_manualPaymentIDField()
-//					} else {
-//						if self.manualPaymentID_inputView.isHidden {
-//							self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid/partial addr or valid std xmr addr
-//						}
-//					}
-//				}
-//				view.finishedValidatingTextInput_foundInvalidMoneroAddress_fn =
-//				{ [unowned self] in
-//					if self.manualPaymentID_inputView.isHidden {
-//						self.set_addPaymentID_buttonView(isHidden: false) // ensure this gets reshown if the input changes from a valid integrated address to an invalid address
-//					}
-//				}
-//				view.willBeginResolvingPossibleOATextInput_fn =
-//				{ [unowned self] in
-//					assert(Thread.isMainThread)
-//					self.hideAndClear_manualPaymentIDField()
-//					self.set_addPaymentID_buttonView(isHidden: true)
-//					self.clearValidationMessage() // this is probably redundant here
-//				}
-//				view.oaResolve__preSuccess_terminal_validationMessage_fn =
-//				{ [unowned self] (localizedString) in
-//					assert(Thread.isMainThread)
-//					self.setValidationMessage(localizedString)
-//					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
-//				}
-//				view.oaResolve__success_fn =
-//				{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
-//					assert(Thread.isMainThread)
-//					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
-//					//
-//					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-//					//
-//					// the ContactPicker also already handles displaying the resolved addr and pids
-//					//
-//					do { // now since the contact picker's mode is handling resolving text inputs too:
-//						if view.hasValidTextInput_resolvedOAAddress {
-//							if payment_id != nil && payment_id != "" { // just to make sure we're not showing these,
-//								// we already hid the + and manual pid input views
-//							} else {
-//								if self.manualPaymentID_inputView.isHidden { // if manual payment field not showing
-//									self.set_addPaymentID_buttonView(isHidden: false) // then make sure we are at least showing the + payment ID btn
-//								} else {
-//									// it should be the case here that either add pymt id btn or manual payment field is visible
-//								}
-//							}
-//						} else {
-//							assert(view.selectedContact != nil) // or they'd better have selected a contact!!
-//						}
-//					}
-//				}
-//				view.didClearPickedContact_fn =
-//				{ [unowned self] (preExistingContact) in
-//					self.clearValidationMessage() // in case there was an OA addr resolve network err sitting on the screen
-//					//
-//					self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
-//					//
-//					self.set_addPaymentID_buttonView(isHidden: false) // show if hidden
-//					self.hideAndClear_manualPaymentIDField() // if showing
-//				}
-//				let inputField = view.inputField
-//				inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-//				self.sendTo_inputView = view
-//				self.scrollView.addSubview(view)
-//			}
+						//self.scrollView.addSubview(viewController.view)
+						
+						//self.navigationItem.rightBarButtonItem = nil
+					}
+			}
 			//
 //			do {
 //				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .hidden, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
@@ -1144,6 +1114,16 @@ extension ExchangeSendFundsForm
 				self.view.setNeedsLayout()
 			}
 		}
+		
+		func set_formIsVisible(isHidden: Bool) {
+			self.inAmount_inputView.isHidden = isHidden
+			self.outAmount_inputView.isHidden = isHidden
+			self.btcAddress_inputView.isHidden = isHidden
+			self.inAmount_label.isHidden = isHidden
+			self.outAmount_label.isHidden = isHidden
+			self.btcAddress_label.isHidden = isHidden
+		}
+		
 		func show_inAmount_inputView(withValue paymentID: String?)
 		{
 			self.inAmount_inputView.text = paymentID ?? "" // nil to empty field
@@ -1751,6 +1731,13 @@ extension ExchangeSendFundsForm
 			let isFirstAppearance = self.hasAppearedBefore == false
 			super.viewDidAppear(animated)
 			// this will be called every time the view appears, including when coming back from useridle -- as such, check orderdetails is set, and if so, redirect to orderdetails page
+			if (self.validOfferRetrieved) {
+				self.set_formIsVisible(isHidden: false)
+			} else {
+				// try get valid rates, display form on success
+				
+			}
+			
 			if (self.orderExists) {
 				debugPrint("Order exists")
 				debugPrint(self.orderExists)
@@ -1791,50 +1778,6 @@ extension ExchangeSendFundsForm
 			return true
 		}
 	
-		func createOrder(offerId: String!, out_amount: String!, completionHandler: @escaping (Result<[String: Any]>) -> Void) {
-			performCreateOrder(offerId: offerId, out_amount: out_amount, completion: completionHandler)
-		}
-		
-		func performCreateOrder(offerId: String!, out_amount: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
-			self.orderFormValidation_label.text = ""
-			self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
-	
-			let params: [String: String] = [
-				//"out_address": "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm",
-				"out_address": self.btcAddress_inputView.text!,
-				"refund_address": "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm",
-				"in_currency": "XMR",
-				"out_currency": "BTC",
-				"offer_id": offerId,
-				"out_amount": "0.00175630"
-			]
-			debugPrint(params)
-			debugPrint("Fired getOffer")
-			let method = "create_order"
-			let apiEndpoint = apiUrl + method
-			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
-				.validate()
-				.responseJSON {
-					response in
-					// add switch response.result here. Check for cases .success, .failure, default
-					debugPrint(response)
-					switch response.result {
-					case .success(let value as [String: Any]):
-						completion(.success(value))
-
-					case .failure(let error):
-						completion(.failure(error))
-
-					default:
-						fatalError("received non-dictionary JSON response")
-					}
-				}
-		}
-	// Function for retrieving order
-		
-		
-
-		
 		//
 		// Delegation - Interactions
 		@objc func btcAddress_changed()
