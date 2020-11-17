@@ -264,7 +264,8 @@ extension ExchangeSendFundsForm
 		var btcAddress_label: UICommonComponents.Form.FieldLabel!
 		var btcAddress_inputView: UICommonComponents.FormInputField!
 		//var offerPageErrors_label: UICommonComponents.Form.FieldLabel!
-		
+		// Variables for fixing wallet height growth
+		var fromWallet_initialOffset: CGFloat?
 		
 		var fromWallet_label: UICommonComponents.Form.FieldLabel!
 		var fromWallet_inputView: UICommonComponents.WalletPickerButtonFieldView!
@@ -832,12 +833,12 @@ extension ExchangeSendFundsForm
 			PasswordController.shared.addRegistrantForDeleteEverything(self)
 			//
 			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_saysTimeToHandleReceivedMoneroURL(_:)), name: URLOpening.NotificationNames.saysTimeToHandleReceivedMoneroURL.notificationName, object: nil)
-			NotificationCenter.default.addObserver(
-				self,
-				selector: #selector(WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_:)),
-				name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, // observe 'did' so we're guaranteed to already be on right tab
-				object: nil
-			)
+//			NotificationCenter.default.addObserver(
+//				self,
+//				selector: #selector(WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_:)),
+//				name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, // observe 'did' so we're guaranteed to already be on right tab
+//				object: nil
+//			)
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_:)),
@@ -868,12 +869,12 @@ extension ExchangeSendFundsForm
 				name: PasswordController.NotificationNames.didDeconstructBootedStateAndClearPassword.notificationName,
 				object: PasswordController.shared
 			)
-			NotificationCenter.default.addObserver(
-				self,
-				selector: #selector(CcyConversionRates_didUpdateAvailabilityOfRates),
-				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
-				object: nil
-			)
+//			NotificationCenter.default.addObserver(
+//				self,
+//				selector: #selector(CcyConversionRates_didUpdateAvailabilityOfRates),
+//				name: CcyConversionRates.Controller.NotificationNames.didUpdateAvailabilityOfRates.notificationName,
+//				object: nil
+//			)
 //			NotificationCenter.default.addObserver(
 //				self,
 //				selector: #selector(SettingsController__NotificationNames_Changed__displayCurrencySymbol),
@@ -1560,27 +1561,46 @@ extension ExchangeSendFundsForm
 			let interSectionSpacing = UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView
 			//
 			// KB Additions
-			let screenSize: CGRect = UIScreen.main.bounds
-					
-			let screenWidth = screenSize.width
-			let screenHeight = screenSize.height
 
+					
+//			let screenWidth = screenSize.width
+//			let screenHeight = screenSize.height
+			debugPrint("height")
+			//debugPrint(self.fromWallet_inputView.frame.size.height)
+			var debugHeight = self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton
+			debugPrint(debugHeight)
+			debugHeight = self.explanation_label.frame.origin.y + ceil(self.fromWallet_inputView.frame.size.height) + interSectionSpacing
+			debugPrint(debugHeight)
+			debugHeight = self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton
+			debugPrint(debugHeight)
+			debugHeight = self.explanation_label.frame.origin.y
+			debugPrint(debugHeight)
+			debugHeight = ceil(self.fromWallet_inputView.frame.size.height)
+			debugPrint(debugHeight)
+			debugHeight = interSectionSpacing
+			debugPrint(debugHeight)
+
+			
 			self.explanation_label.frame = CGRect(
 				x: label_x,
 				y: top_yOffset,
 				width: self.explanation_label.frame.size.width,
 				height: self.explanation_label.frame.size.height
 			).integral
+			// Fix for height growth
+			if fromWallet_initialOffset == nil {
+				self.fromWallet_initialOffset = self.explanation_label.frame.origin.y + ceil(self.fromWallet_inputView.frame.size.height) + interSectionSpacing
+			}
 			do { // Wallet Picker
 				self.fromWallet_label.frame = CGRect(
 					x: label_x,
-					y: self.explanation_label.frame.origin.y + self.fromWallet_inputView.frame.size.height + interSectionSpacing,
+					y: self.fromWallet_initialOffset!,
 					width: self.fromWallet_label.frame.size.width,
 					height: self.fromWallet_label.frame.size.height
 				).integral
 				self.fromWallet_inputView.frame = CGRect(
 					x: input_x,
-					y: self.fromWallet_label.frame.origin.y + self.fromWallet_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
+					y: self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
 					width: textField_w,
 					height: type(of: self.fromWallet_inputView).fixedHeight
 				).integral
@@ -1591,7 +1611,7 @@ extension ExchangeSendFundsForm
 				//
 				self.networkFeeEstimate_label.frame = CGRect(
 					x: label_x,
-					y: self.fromWallet_inputView.frame.origin.y + self.fromWallet_inputView.frame.size.height + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
+					y: self.fromWallet_inputView.frame.origin.y + ceil(self.fromWallet_inputView.frame.size.height) + UICommonComponents.FormFieldAccessoryMessageLabel.marginAboveLabelBelowTextInputView,
 					width: 0,
 					height: UICommonComponents.FormFieldAccessoryMessageLabel.heightIfFixed
 				).integral
@@ -1736,6 +1756,17 @@ extension ExchangeSendFundsForm
 				withBottomView: bottomMostView,
 				bottomPadding: bottomPadding
 			)
+			
+			debugHeight = self.explanation_label.frame.origin.y + ceil(self.fromWallet_inputView.frame.size.height) + interSectionSpacing
+			debugPrint(debugHeight)
+			debugHeight = self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton
+			debugPrint(debugHeight)
+			debugHeight = self.explanation_label.frame.origin.y
+			debugPrint(debugHeight)
+			debugHeight = ceil(self.fromWallet_inputView.frame.size.height)
+			debugPrint(debugHeight)
+			debugHeight = interSectionSpacing
+			debugPrint(debugHeight)
 			//
 			// non-scrolling:
 			let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin
@@ -1811,22 +1842,10 @@ extension ExchangeSendFundsForm
 		@objc func tapped_createOrderRightBarButtonItem()
 		{
 			self.disableForm()
-			/*
-			/
-			self.scrollView.resignCurrentFirstResponder()
-			
-			let viewController = AddContactFromContactsTabFormViewController()
-			let modalViewController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-			modalViewController.modalPresentationStyle = .formSheet
-			self.navigationController!.present(modalViewController, animated: true, completion: nil)
-			*/
 			debugPrint("Clicked create order button")
 			if (self.orderExists) {
-				//let viewController = ExchangeShowOrderStatusFormViewController(selectedWallet: self.fromWallet_inputView.selectedWallet, orderDetails, orderExists: true, orderId: self.orderDetails["orderId"] as! String)
 				self.navigationController!.pushViewController(self.orderStatusViewController!, animated: true)
-				
 			} else {
-				
 				if self.validOfferRetrieved {
 					self.createOrder(offerId: self.offerId, out_amount: self.out_amount) {
 						result in
