@@ -191,6 +191,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					// if the order has timed out, it'll return TIMED_OUT
 					if (self.orderStatus_inputView.text == "PAID"
 						|| self.orderStatus_inputView.text == "TIMED_OUT"
+						|| self.orderStatus_inputView.text == "DONE"
 						|| self.orderStatus_inputView.text == "FLAGGED_DESTINATION_ADDRESS"
 						|| self.orderStatus_inputView.text == "PAYMENT_FAILED"
 						|| self.orderStatus_inputView.text == "REJECTED")
