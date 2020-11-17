@@ -1769,7 +1769,7 @@ extension ExchangeSendFundsForm
 //			}
 			//
 			let bottomMostView: UIView = self.orderFormValidation_label
-			let bottomPadding: CGFloat = -18
+			let bottomPadding: CGFloat = 18
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,
 				bottomPadding: bottomPadding
