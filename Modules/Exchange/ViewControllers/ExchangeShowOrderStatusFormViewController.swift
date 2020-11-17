@@ -75,6 +75,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	private let apiUrl = "https://api.mymonero.com:8443/cx/"
 	//private let apiUrl = "https://stagenet-api.mymonero.rtfm.net/cx/"
 
+	/*
 	func updateOrderStatus(orderId: String!, completionHandler: @escaping (Result<[String: Any]>) -> Void) {
 		dispatchGetOrderUpdate(orderId: orderId, completion: completionHandler)
 	}
@@ -105,11 +106,19 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				}
 			}
 	}
+	*/
 	
+	/**
+	* Function to asynchronously invoke sending an HTTP request querying the order's status
+	*/
 	func getOrderStatus(orderId: String!, completionHandler: @escaping (Result<[String: Any]>) -> Void) {
+		// TODO: This function is likely redundant, remove
 		dispatchOrderStatusQuery(orderId: orderId, completion: completionHandler)
 	}
 	
+	/**
+	* Function to handle dispatching an HTTP request to the MyMonero server
+	*/
 	func dispatchOrderStatusQuery(orderId: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
 		debugPrint("Check the order id -- \(orderId)")
 		let params: [String: String] = [
@@ -137,11 +146,13 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			}
 	}
 	
+	/**
+	* Function to handle updating the "time remaining" field
+	*/
 	@objc func handleRemainingTimeUpdateTimer() {
 			let now = Date()
 			
 			if (now > self.expiryDate!) {
-				debugPrint("Time epxired")
 				self.stopRemainingTimeTimer()
 			}
 			
@@ -157,8 +168,11 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			debugPrint(difference)
 	}
 	
+	/**
+	* Function to facilitate the process of updating an order
+	*/
 	@objc func handleOrderUpdateTimer() {
-		self.updateOrderStatus(orderId: self.orderId) {
+		self.getOrderStatus(orderId: self.orderId) {
 			result in
 			debugPrint("Order update handler")
 			debugPrint(result)
@@ -175,7 +189,12 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					// Code here is to check if the state is concluded, and if so, terminate the timers
 					// if the order is completed successfully, it'll return PAID || PAID_UNCONFIRMED -- we only want to terminate on PAID
 					// if the order has timed out, it'll return TIMED_OUT
-					if (self.orderStatus_inputView.text == "PAID" || self.orderStatus_inputView.text == "TIMED_OUT" || self.orderStatus_inputView.text == "EXPIRED") {
+					if (self.orderStatus_inputView.text == "PAID"
+						|| self.orderStatus_inputView.text == "TIMED_OUT"
+						|| self.orderStatus_inputView.text == "FLAGGED_DESTINATION_ADDRESS"
+						|| self.orderStatus_inputView.text == "PAYMENT_FAILED"
+						|| self.orderStatus_inputView.text == "REJECTED")
+					{
 						self.stopRemainingTimeTimer()
 						self.stopOrderUpdateTimer()
 					}
@@ -186,26 +205,41 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		}
 	}
 	
+	/**
+	* Function to start the "remaining time" update timer
+	*/
 	@objc func startRemainingTimeTimer()
 	{
 		timeRemainingTimer?.invalidate()
 		timeRemainingTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(handleRemainingTimeUpdateTimer), userInfo: nil, repeats: true)
 	}
-
+	
+	/**
+	* Function to stop  the "remaining time" update timer
+	*/
 	@objc func stopRemainingTimeTimer() {
 		timeRemainingTimer?.invalidate()
 	}
 	
+	/**
+	* Function to start the "order status" update timer
+	*/
 	@objc func startOrderUpdateTimer()
 	{
 		orderUpdateTimer?.invalidate()
 		orderUpdateTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(handleOrderUpdateTimer), userInfo: nil, repeats: true)
 	}
 	
+	/**
+	* Function to stop the "order status" update timer
+	*/
 	@objc func stopOrderUpdateTimer() {
 		orderUpdateTimer?.invalidate()
 	}
 	
+	/**
+	* Standard iOS function that gets invoked when all instances of this view controller are dereferenced
+	*/
 	deinit {
 		stopRemainingTimeTimer()
 		stopOrderUpdateTimer()
@@ -213,6 +247,9 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	//
 	//
 	// Lifecycle - Init
+	/**
+	* Initiali
+	*/
 	required init(
 		selectedWallet: Wallet!,
 		orderDetails: [String:Any],
@@ -257,23 +294,18 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					if (!(expiryStr == nil)) {
 						self.expiryDate = dateFormatter.date(from: expiryStr!)
 						
-						// if not nil, we have a valid date, and we can go ahead and
-
-						
 						let calendar = Calendar.current
 						let now = Date()
 						let difference = calendar.dateComponents([.hour, .minute, .second], from: Date(), to: self.expiryDate!)
 						
 						if self.expiryDate != nil {
-							self.startRemainingTimeTimer()						}
+							self.startRemainingTimeTimer()
+						}
 						debugPrint(difference)
 					} else {
+						// We silently fail, because there may be instances where a server response is not returned correctly due to a number of external factors that aren't serious enough to report back to the user
 						debugPrint("Error with server response")
 					}
-					
-					//2020-11-05T10:46:15Z
-					// we need an error output area
-					
 			}
 		}
 	}
@@ -303,236 +335,236 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 //			self.toWallet_label = view
 //			self.scrollView.addSubview(view)
 //		}
-		do {
-			let view = UICommonComponents.WalletPickerButtonFieldView(selectedWallet: nil)
-			self.toWallet_inputView = view
-			self.scrollView.addSubview(view)
-		}
+//		do {
+//			let view = UICommonComponents.WalletPickerButtonFieldView(selectedWallet: nil)
+//			self.toWallet_inputView = view
+//			self.scrollView.addSubview(view)
+//		}
 		//
-		do {
-			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("AMOUNT", comment: "")
-			)
-			self.amount_label = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
-			self.amount_accessoryLabel = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.Form.Amounts.InputFieldsetView(
-				effectiveAmountLabelBehavior: .yieldingRawUserInputParsedDouble // different from SendFunds
-			)
-			// KB: Remove this and accompanying code
-			view.didUpdateValueAvailability_fn =
-			{ [weak self] in
-				// this will be called when the ccyConversion rate changes and when the selected currency changes
-				guard let thisSelf = self else {
-					return
-				}
-				thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
-				// TODO: do we need to update anything else here?
-			}
-			let inputField = view.inputField
-			inputField.delegate = self
-			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-			inputField.returnKeyType = .next
-			self.amount_fieldset = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("MEMO", comment: "")
-			)
-			self.memo_label = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
-			self.memo_accessoryLabel = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.FormInputField(
-				placeholder: NSLocalizedString("Note about the transaction", comment: "")
-			)
-			let inputField = view
-			inputField.autocorrectionType = AppProcess.isBeingRunByUIAutomation ? .no : .default // disabled under UI automation b/c it interferes with .typeText and the known fallback is too fragile
-			inputField.autocapitalizationType = .sentences
-			inputField.delegate = self
-			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-			inputField.returnKeyType = .next
-			self.memo_inputView = view
-			self.scrollView.addSubview(view)
-		}
-		//
-		do {
-			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("REQUEST MONERO FROM", comment: "")
-			)
-			self.requestFrom_label = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
-			self.requestFrom_accessoryLabel = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.Form.ContactAndAddressPickerView(
-				parentScrollView: self.scrollView
-			)
-			// TODO: initial contact selection? (from spawn)
-			view.textFieldDidBeginEditing_fn =
-			{ [unowned self] (textField) in
-				self.view.setNeedsLayout() // to be certain we get the updated bottom padding
-				//
-				self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
-				// ^- this does not actually do anything at present, given suppressed scroll
-				self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = true // sort of janky
-				DispatchQueue.main.asyncAfter(
-					deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
-				) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
-				{ [unowned self] in
-					self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = false // unset
-					if view.inputField.isFirstResponder { // jic
-						self.scrollToVisible_requestFrom()
-					}
-				}
-			}
-			view.didUpdateHeight_fn =
-			{ [unowned self] in
-				self.view.setNeedsLayout() // to get following subviews' layouts to update
-				//
-				// scroll to field in case, e.g., results table updated
-				DispatchQueue.main.asyncAfter(
-					deadline: .now() + 0.1
-				) { [unowned self] in
-					if self.isWaitingOnFieldBeginEditingScrollTo_requestFrom == true {
-						return // semi-janky -- but is used to prevent potential double scroll oddness
-					}
-					if view.inputField.isFirstResponder {
-						self.scrollToVisible_requestFrom()
-					}
-				}
-			}
-			view.textFieldDidEndEditing_fn =
-			{ (textField) in
-				// nothing to do in this case
-			}
-			view.didPickContact_fn =
-			{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
-				do { // configurations regardless
-					self.createNewContact_buttonView.isHidden = true
-				}
-				if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
-					self.addPaymentID_buttonView.isHidden = true // hide if showing
-					self.hideAndClear_manualPaymentIDField() // at least clear; hide for now
-					//
-					// contact picker will show its own resolving indicator while we look up the paymentID again
-					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
-					//
-					self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
-					//
-					return
-				}
-				// does NOT need to resolve an OA address; handle contact's non-OA payment id - if we already have one
-				if let paymentID = contact.payment_id {
-					self.addPaymentID_buttonView.isHidden = true // hide if showing
-					self.show_manualPaymentIDField(withValue: paymentID)
-					// NOTE: ^--- This may seem unusual not to show as a 'detected' payment ID
-					// here but unlike on the Send page, Requests (I think) must be able to be created
-					// with an empty / nil payment ID field even though the user picked a contact.
-				} else {
-					self.addPaymentID_buttonView.isHidden = false // show if hidden
-					self.hideAndClear_manualPaymentIDField() // hide if showing
-				}
-			}
-			view.oaResolve__preSuccess_terminal_validationMessage_fn =
-			{ [unowned self] (localizedString) in
-				self.setValidationMessage(localizedString)
-				self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
-			}
-			view.oaResolve__success_fn =
-			{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
-				self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
-				do { // memo field
-					self.memo_inputView.text = tx_description ?? "" // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.
-				}
-				do { // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-					if payment_id != "" {
-						self.addPaymentID_buttonView.isHidden = true // hide if showing
-						self.show_manualPaymentIDField(withValue: payment_id)
-					} else {
-						// we already hid it above… but just in case
-						self.addPaymentID_buttonView.isHidden = false // show if showing
-						self.hideAndClear_manualPaymentIDField()
-					}
-				}
-			}
-			view.didClearPickedContact_fn =
-			{ [unowned self] (preExistingContact) in
-				self.clearValidationMessage() // in case there was an OA addr resolve network err sitting on the screen
-				//
-				self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
-				//
-				self.addPaymentID_buttonView.isHidden = false // show if hidden
-				self.hideAndClear_manualPaymentIDField() // if showing
-				//
-				if preExistingContact.hasOpenAliasAddress {
-					self.memo_inputView.text = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
-				}
-				self.createNewContact_buttonView.isHidden = false // show if hidden
-			}
-			let inputField = view.inputField
-			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-			self.requestFrom_inputView = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("+ CREATE NEW CONTACT", comment: ""))
-			view.addTarget(self, action: #selector(createNewContact_tapped), for: .touchUpInside)
-			self.createNewContact_buttonView = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
-			view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
-			self.addPaymentID_buttonView = view
-			self.scrollView.addSubview(view)
-		}
-		
-		do {
-			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("ENTER PAYMENT ID OR", comment: "")
-			)
-			view.isHidden = true // initially
-			self.manualPaymentID_label = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("GENERATE ONE", comment: ""))
-			view.addTarget(self, action: #selector(tapped_generatePaymentID), for: .touchUpInside)
-			view.isHidden = true // initially
-			self.generatePaymentID_linkButtonView = view
-			self.scrollView.addSubview(view)
-		}
-		do {
-			let view = UICommonComponents.FormInputField(
-				placeholder: NSLocalizedString("A specific payment ID", comment: "")
-			)
-			view.isHidden = true // initially
-			let inputField = view
-			inputField.autocorrectionType = .no
-			inputField.autocapitalizationType = .none
-			inputField.delegate = self
-			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
-			inputField.returnKeyType = .go
-			self.manualPaymentID_inputView = view
-			self.scrollView.addSubview(view)
-		}
+//		do {
+//			let view = UICommonComponents.Form.FieldLabel(
+//				title: NSLocalizedString("AMOUNT", comment: "")
+//			)
+//			self.amount_label = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+//			self.amount_accessoryLabel = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.Form.Amounts.InputFieldsetView(
+//				effectiveAmountLabelBehavior: .yieldingRawUserInputParsedDouble // different from SendFunds
+//			)
+//			// KB: Remove this and accompanying code
+//			view.didUpdateValueAvailability_fn =
+//			{ [weak self] in
+//				// this will be called when the ccyConversion rate changes and when the selected currency changes
+//				guard let thisSelf = self else {
+//					return
+//				}
+//				thisSelf.set_isFormSubmittable_needsUpdate() // wait for ccyConversion rate to come in from what ever is supplying it
+//				// TODO: do we need to update anything else here?
+//			}
+//			let inputField = view.inputField
+//			inputField.delegate = self
+//			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//			inputField.returnKeyType = .next
+//			self.amount_fieldset = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.Form.FieldLabel(
+//				title: NSLocalizedString("MEMO", comment: "")
+//			)
+//			self.memo_label = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+//			self.memo_accessoryLabel = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.FormInputField(
+//				placeholder: NSLocalizedString("Note about the transaction", comment: "")
+//			)
+//			let inputField = view
+//			inputField.autocorrectionType = AppProcess.isBeingRunByUIAutomation ? .no : .default // disabled under UI automation b/c it interferes with .typeText and the known fallback is too fragile
+//			inputField.autocapitalizationType = .sentences
+//			inputField.delegate = self
+//			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//			inputField.returnKeyType = .next
+//			self.memo_inputView = view
+//			self.scrollView.addSubview(view)
+//		}
+//		//
+//		do {
+//			let view = UICommonComponents.Form.FieldLabel(
+//				title: NSLocalizedString("REQUEST MONERO FROM", comment: "")
+//			)
+//			self.requestFrom_label = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.Form.FieldLabelAccessoryLabel(title: NSLocalizedString("optional", comment: ""))
+//			self.requestFrom_accessoryLabel = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.Form.ContactAndAddressPickerView(
+//				parentScrollView: self.scrollView
+//			)
+//			// TODO: initial contact selection? (from spawn)
+//			view.textFieldDidBeginEditing_fn =
+//			{ [unowned self] (textField) in
+//				self.view.setNeedsLayout() // to be certain we get the updated bottom padding
+//				//
+//				self.aField_didBeginEditing(textField, butSuppressScroll: true) // suppress scroll and call manually
+//				// ^- this does not actually do anything at present, given suppressed scroll
+//				self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = true // sort of janky
+//				DispatchQueue.main.asyncAfter(
+//					deadline: .now() + UICommonComponents.FormViewController.fieldScrollDuration + 0.1
+//				) // slightly janky to use delay/duration, we need to wait (properly/considerably) for any layout changes that will occur here
+//				{ [unowned self] in
+//					self.isWaitingOnFieldBeginEditingScrollTo_requestFrom = false // unset
+//					if view.inputField.isFirstResponder { // jic
+//						self.scrollToVisible_requestFrom()
+//					}
+//				}
+//			}
+//			view.didUpdateHeight_fn =
+//			{ [unowned self] in
+//				self.view.setNeedsLayout() // to get following subviews' layouts to update
+//				//
+//				// scroll to field in case, e.g., results table updated
+//				DispatchQueue.main.asyncAfter(
+//					deadline: .now() + 0.1
+//				) { [unowned self] in
+//					if self.isWaitingOnFieldBeginEditingScrollTo_requestFrom == true {
+//						return // semi-janky -- but is used to prevent potential double scroll oddness
+//					}
+//					if view.inputField.isFirstResponder {
+//						self.scrollToVisible_requestFrom()
+//					}
+//				}
+//			}
+//			view.textFieldDidEndEditing_fn =
+//			{ (textField) in
+//				// nothing to do in this case
+//			}
+//			view.didPickContact_fn =
+//			{ [unowned self] (contact, doesNeedToResolveItsOAAddress) in
+//				do { // configurations regardless
+//					self.createNewContact_buttonView.isHidden = true
+//				}
+//				if doesNeedToResolveItsOAAddress == true { // so we still need to wait and check to see if they have a payment ID
+//					self.addPaymentID_buttonView.isHidden = true // hide if showing
+//					self.hideAndClear_manualPaymentIDField() // at least clear; hide for now
+//					//
+//					// contact picker will show its own resolving indicator while we look up the paymentID again
+//					self.set_isFormSubmittable_needsUpdate() // this will involve a check to whether the contact picker is resolving
+//					//
+//					self.clearValidationMessage() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
+//					//
+//					return
+//				}
+//				// does NOT need to resolve an OA address; handle contact's non-OA payment id - if we already have one
+//				if let paymentID = contact.payment_id {
+//					self.addPaymentID_buttonView.isHidden = true // hide if showing
+//					self.show_manualPaymentIDField(withValue: paymentID)
+//					// NOTE: ^--- This may seem unusual not to show as a 'detected' payment ID
+//					// here but unlike on the Send page, Requests (I think) must be able to be created
+//					// with an empty / nil payment ID field even though the user picked a contact.
+//				} else {
+//					self.addPaymentID_buttonView.isHidden = false // show if hidden
+//					self.hideAndClear_manualPaymentIDField() // hide if showing
+//				}
+//			}
+//			view.oaResolve__preSuccess_terminal_validationMessage_fn =
+//			{ [unowned self] (localizedString) in
+//				self.setValidationMessage(localizedString)
+//				self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
+//			}
+//			view.oaResolve__success_fn =
+//			{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+//				self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
+//				do { // memo field
+//					self.memo_inputView.text = tx_description ?? "" // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.
+//				}
+//				do { // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+//					if payment_id != "" {
+//						self.addPaymentID_buttonView.isHidden = true // hide if showing
+//						self.show_manualPaymentIDField(withValue: payment_id)
+//					} else {
+//						// we already hid it above… but just in case
+//						self.addPaymentID_buttonView.isHidden = false // show if showing
+//						self.hideAndClear_manualPaymentIDField()
+//					}
+//				}
+//			}
+//			view.didClearPickedContact_fn =
+//			{ [unowned self] (preExistingContact) in
+//				self.clearValidationMessage() // in case there was an OA addr resolve network err sitting on the screen
+//				//
+//				self.set_isFormSubmittable_needsUpdate() // as it will look at resolving
+//				//
+//				self.addPaymentID_buttonView.isHidden = false // show if hidden
+//				self.hideAndClear_manualPaymentIDField() // if showing
+//				//
+//				if preExistingContact.hasOpenAliasAddress {
+//					self.memo_inputView.text = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
+//				}
+//				self.createNewContact_buttonView.isHidden = false // show if hidden
+//			}
+//			let inputField = view.inputField
+//			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//			self.requestFrom_inputView = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("+ CREATE NEW CONTACT", comment: ""))
+//			view.addTarget(self, action: #selector(createNewContact_tapped), for: .touchUpInside)
+//			self.createNewContact_buttonView = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("+ ADD PAYMENT ID", comment: ""))
+//			view.addTarget(self, action: #selector(addPaymentID_tapped), for: .touchUpInside)
+//			self.addPaymentID_buttonView = view
+//			self.scrollView.addSubview(view)
+//		}
+//
+//		do {
+//			let view = UICommonComponents.Form.FieldLabel(
+//				title: NSLocalizedString("ENTER PAYMENT ID OR", comment: "")
+//			)
+//			view.isHidden = true // initially
+//			self.manualPaymentID_label = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("GENERATE ONE", comment: ""))
+//			view.addTarget(self, action: #selector(tapped_generatePaymentID), for: .touchUpInside)
+//			view.isHidden = true // initially
+//			self.generatePaymentID_linkButtonView = view
+//			self.scrollView.addSubview(view)
+//		}
+//		do {
+//			let view = UICommonComponents.FormInputField(
+//				placeholder: NSLocalizedString("A specific payment ID", comment: "")
+//			)
+//			view.isHidden = true // initially
+//			let inputField = view
+//			inputField.autocorrectionType = .no
+//			inputField.autocapitalizationType = .none
+//			inputField.delegate = self
+//			inputField.addTarget(self, action: #selector(aField_editingChanged), for: .editingChanged)
+//			inputField.returnKeyType = .go
+//			self.manualPaymentID_inputView = view
+//			self.scrollView.addSubview(view)
+//		}
 		//
 		//
 		//
@@ -651,14 +683,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		if self.formSubmissionController != nil {
 			return false
 		}
-		if self.requestFrom_inputView.isResolving {
-			return false
-		}
-		// NOTE: here we need to allow empty amounts
-		let hasInputButDoubleFormatIsNotSubmittable = self.amount_fieldset.inputField.hasInputButDoubleFormatIsNotSubmittable
-		if hasInputButDoubleFormatIsNotSubmittable {
-			return false // for ex if they just put in "."
-		}
 		return true
 	}
 	//
@@ -691,11 +715,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	}
 	override func new_wantsBGTapRecognizerToReceive_tapped(onView view: UIView) -> Bool
 	{
-		if view.isAnyAncestor(self.requestFrom_inputView) {
-			// this is to prevent taps on the searchResults tableView from dismissing the input (which btw makes selection of search results rows impossible)
-			// but it's ok if this is the inputField itself
-			return false
-		}
 		return super.new_wantsBGTapRecognizerToReceive_tapped(onView: view)
 	}
 	//
@@ -736,10 +755,10 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	}
 	//
 	// Imperatives - Contact picker, contact picking
-	func scrollToVisible_requestFrom()
-	{
-		self.scrollInputViewToVisible(self.requestFrom_inputView)
-	}
+//	func scrollToVisible_requestFrom()
+//	{
+//		self.scrollInputViewToVisible(self.requestFrom_inputView)
+//	}
 	public func reconfigureFormAtRuntime_havingElsewhereSelected(
 		requestFromContact contact: Contact?,
 		receiveToWallet wallet: Wallet?
@@ -803,23 +822,6 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	override func _tryToSubmitForm()
 	{
 		self.disableForm() // optimistic
-		/* Old Submit form validation logic */
-		//
-//		let selectedContact = self.sendTo_inputView.selectedContact
-//		let enteredAddressValue = self.sendTo_inputView.inputField.text
-//		//
-//		let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
-//		let resolvedAddress = resolvedAddress_fieldIsVisible ? self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text : nil
-//		//
-//		let manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentID_inputView.isHidden == false
-//		let manuallyEnteredPaymentID = manuallyEnteredPaymentID_fieldIsVisible ? self.manualPaymentID_inputView.text : nil
-//		//
-//		let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
-//		let resolvedPaymentID = resolvedPaymentID_fieldIsVisible ? self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? "" : nil
-//		//
-//		let priority = self.selected_priority
-//		//
-		// End of Submit form validation logic
 		
 		//
 		var enteredAddressValue: MoneroAddress? = self.orderDetails["in_address"] as? String
@@ -860,8 +862,8 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		//amount_submittableDouble = raw_amount_string.tofl
 		
 		// TODO: KB: Remove this testing code
-		amount_submittableDouble = 0.000001
-		enteredAddressValue = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
+		//amount_submittableDouble = 0.000001
+		//enteredAddressValue = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm"
 		// END OF TEST CODE
 		let parameters = ExchangeSendFundsForm.SubmissionController.Parameters(
 			fromWallet: self.selectedWallet,
@@ -1156,157 +1158,163 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 //		}
 
 			
-		do {
-			self.toWallet_label.frame = CGRect(
-				x: CGFloat(-5000),
-				y: self.disclaimer_label.frame.origin.y + self.toWallet_label.frame.size.height,
-				width: fullWidth_label_w,
-				height: self.toWallet_label.frame.size.height
-			).integral
-			self.toWallet_inputView.frame = CGRect(
-				x: CGFloat(-5000),
-				y: self.disclaimer_label.frame.origin.y + self.disclaimer_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
-				width: textField_w,
-				height: type(of: self.toWallet_inputView).fixedHeight
-			).integral
-		}
-		do {
-			self.amount_label.frame = CGRect(
-				//x: label_x,
-				x: CGFloat(-5000),
-				y: self.toWallet_inputView.frame.origin.y
-					+ ceil(self.toWallet_inputView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
-					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
-				width: fullWidth_label_w,
-				height: self.toWallet_label.frame.size.height
-				).integral
-			self.amount_accessoryLabel.frame = CGRect(
-				//x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
-				x: CGFloat(-5000),
-				y: self.amount_label.frame.origin.y,
-				width: fullWidth_label_w,
-				height: self.amount_accessoryLabel.frame.size.height
-				).integral
-			self.amount_fieldset.frame = CGRect(
-				//x: input_x,
-				x: CGFloat(-5000),
-				y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-				width: textField_w, // full-size width
-				height: UICommonComponents.Form.Amounts.InputFieldsetView.h
-				).integral
-		}
-		do {
-			self.memo_label.frame = CGRect(
-				//x: label_x,
-				x: CGFloat(-5000),
-				y: self.amount_fieldset.frame.origin.y
-					+ self.amount_fieldset.frame.size.height
-					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimated margin
-				width: fullWidth_label_w,
-				height: self.memo_label.frame.size.height
-				).integral
-			self.memo_accessoryLabel.frame = CGRect(
-				//x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
-				x: CGFloat(-5000),
-				y: self.memo_label.frame.origin.y,
-				width: fullWidth_label_w,
-				height: self.memo_accessoryLabel.frame.size.height
-				).integral
-			self.memo_inputView.frame = CGRect(
-				//x: input_x,
-				x: CGFloat(-5000),
-				y: self.memo_label.frame.origin.y + self.memo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-				width: textField_w,
-				height: self.memo_inputView.frame.size.height
-				).integral
-		}
-		do {
-			self.requestFrom_label.frame = CGRect(
-				//x: label_x,
-				x: CGFloat(-5000),
-				y: self.memo_inputView.frame.origin.y + self.memo_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
-				width: fullWidth_label_w,
-				height: self.requestFrom_label.frame.size.height
-			).integral
-			self.requestFrom_accessoryLabel.frame = CGRect(
-				x: CGFloat(-5000),
-				//x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
-				y: self.requestFrom_label.frame.origin.y,
-				width: fullWidth_label_w,
-				height: self.requestFrom_accessoryLabel.frame.size.height
-			).integral
-			self.requestFrom_inputView.frame = CGRect(
-				//x: input_x,
-				x: CGFloat(-5000),
-				y: self.requestFrom_label.frame.origin.y + self.requestFrom_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-				width: textField_w,
-				height: self.requestFrom_inputView.frame.size.height
-			).integral
-		}
-		if self.createNewContact_buttonView.isHidden == false {
-			self.createNewContact_buttonView!.frame = CGRect(
-				//x: label_x,
-				x: CGFloat(-5000),
-				y: self.requestFrom_inputView.frame.origin.y + self.requestFrom_inputView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
-				width: self.createNewContact_buttonView!.frame.size.width,
-				height: self.createNewContact_buttonView!.frame.size.height
-			)
-		}
-		if self.addPaymentID_buttonView.isHidden == false {
-			let lastMostVisibleView: UIView
-			do {
-				if self.createNewContact_buttonView.isHidden == false {
-					lastMostVisibleView = self.createNewContact_buttonView
-				} else {
-					lastMostVisibleView = self.requestFrom_inputView
-				}
-			}
-			self.addPaymentID_buttonView!.frame = CGRect(
-				//x: label_x,
-				x: CGFloat(-5000),
-				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
-				width: self.addPaymentID_buttonView!.frame.size.width,
-				height: self.addPaymentID_buttonView!.frame.size.height
-			)
-		}
+//		do {
+//			self.toWallet_label.frame = CGRect(
+//				x: CGFloat(-5000),
+//				y: self.disclaimer_label.frame.origin.y + self.toWallet_label.frame.size.height,
+//				width: fullWidth_label_w,
+//				height: self.toWallet_label.frame.size.height
+//			).integral
+//			self.toWallet_inputView.frame = CGRect(
+//				x: CGFloat(-5000),
+//				y: self.disclaimer_label.frame.origin.y + self.disclaimer_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton,
+//				width: textField_w,
+//				height: type(of: self.toWallet_inputView).fixedHeight
+//			).integral
+//		}
+		
+//		do {
+//			self.amount_label.frame = CGRect(
+//				//x: label_x,
+//				x: CGFloat(-5000),
+//				y: self.toWallet_inputView.frame.origin.y
+//					+ ceil(self.toWallet_inputView.frame.size.height)/*must ceil or we get a growing height due to .integral + demi-pixel separator thickness!*/
+//					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+//				width: fullWidth_label_w,
+//				height: self.toWallet_label.frame.size.height
+//				).integral
+//			self.amount_accessoryLabel.frame = CGRect(
+//				//x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
+//				x: CGFloat(-5000),
+//				y: self.amount_label.frame.origin.y,
+//				width: fullWidth_label_w,
+//				height: self.amount_accessoryLabel.frame.size.height
+//				).integral
+//			self.amount_fieldset.frame = CGRect(
+//				//x: input_x,
+//				x: CGFloat(-5000),
+//				y: self.amount_label.frame.origin.y + self.amount_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//				width: textField_w, // full-size width
+//				height: UICommonComponents.Form.Amounts.InputFieldsetView.h
+//				).integral
+//		}
+		
+//		do {
+//			self.memo_label.frame = CGRect(
+//				//x: label_x,
+//				x: CGFloat(-5000),
+//				y: self.amount_fieldset.frame.origin.y
+//					+ self.amount_fieldset.frame.size.height
+//					+ UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView, // estimated margin
+//				width: fullWidth_label_w,
+//				height: self.memo_label.frame.size.height
+//				).integral
+//			self.memo_accessoryLabel.frame = CGRect(
+//				//x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
+//				x: CGFloat(-5000),
+//				y: self.memo_label.frame.origin.y,
+//				width: fullWidth_label_w,
+//				height: self.memo_accessoryLabel.frame.size.height
+//				).integral
+//			self.memo_inputView.frame = CGRect(
+//				//x: input_x,
+//				x: CGFloat(-5000),
+//				y: self.memo_label.frame.origin.y + self.memo_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//				width: textField_w,
+//				height: self.memo_inputView.frame.size.height
+//				).integral
+//		}
+		
+//		do {
+//			self.requestFrom_label.frame = CGRect(
+//				//x: label_x,
+//				x: CGFloat(-5000),
+//				y: self.memo_inputView.frame.origin.y + self.memo_inputView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+//				width: fullWidth_label_w,
+//				height: self.requestFrom_label.frame.size.height
+//			).integral
+//			self.requestFrom_accessoryLabel.frame = CGRect(
+//				x: CGFloat(-5000),
+//				//x: subviewLayoutInsets.left + CGFloat.form_labelAccessoryLabel_margin_x,
+//				y: self.requestFrom_label.frame.origin.y,
+//				width: fullWidth_label_w,
+//				height: self.requestFrom_accessoryLabel.frame.size.height
+//			).integral
+//			self.requestFrom_inputView.frame = CGRect(
+//				//x: input_x,
+//				x: CGFloat(-5000),
+//				y: self.requestFrom_label.frame.origin.y + self.requestFrom_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//				width: textField_w,
+//				height: self.requestFrom_inputView.frame.size.height
+//			).integral
+//		}
+		
+//		if self.createNewContact_buttonView.isHidden == false {
+//			self.createNewContact_buttonView!.frame = CGRect(
+//				//x: label_x,
+//				x: CGFloat(-5000),
+//				y: self.requestFrom_inputView.frame.origin.y + self.requestFrom_inputView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
+//				width: self.createNewContact_buttonView!.frame.size.width,
+//				height: self.createNewContact_buttonView!.frame.size.height
+//			)
+//		}
+		
+//		if self.addPaymentID_buttonView.isHidden == false {
+//			let lastMostVisibleView: UIView
+//			do {
+//				if self.createNewContact_buttonView.isHidden == false {
+//					lastMostVisibleView = self.createNewContact_buttonView
+//				} else {
+//					lastMostVisibleView = self.requestFrom_inputView
+//				}
+//			}
+//			self.addPaymentID_buttonView!.frame = CGRect(
+//				//x: label_x,
+//				x: CGFloat(-5000),
+//				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.LinkButtonView.visuallySqueezed_marginAboveLabelForUnderneathField_textInputView,
+//				width: self.addPaymentID_buttonView!.frame.size.width,
+//				height: self.addPaymentID_buttonView!.frame.size.height
+//			)
+//		}
 		//
-		if self.manualPaymentID_label.isHidden == false {
-			assert(self.addPaymentID_buttonView.isHidden == true)
-			//
-			let lastMostVisibleView: UIView
-			do {
-				if self.createNewContact_buttonView.isHidden == false {
-					lastMostVisibleView = self.createNewContact_buttonView
-				} else {
-					lastMostVisibleView = self.requestFrom_inputView
-				}
-			}
-			self.manualPaymentID_label.frame = CGRect(
-				//x: label_x,
-				x: CGFloat(-5000),
-				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
-				width: 0,
-				height: self.manualPaymentID_label.frame.size.height
-			).integral
-			self.manualPaymentID_label.sizeToFit() // get exact width
-			if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
-				self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
-			}
-			self.generatePaymentID_linkButtonView.frame = CGRect(
-				//x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
-				x: CGFloat(-5000),
-				y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
-				width: self.generatePaymentID_linkButtonView.frame.size.width,
-				height: self.generatePaymentID_linkButtonView.frame.size.height
-				).integral
-			self.manualPaymentID_inputView.frame = CGRect(
-				//x: input_x,
-				x: CGFloat(-5000),
-				y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
-				width: textField_w,
-				height: self.manualPaymentID_inputView.frame.size.height
-			).integral
-		}
+		
+//		if self.manualPaymentID_label.isHidden == false {
+//			assert(self.addPaymentID_buttonView.isHidden == true)
+//			//
+//			let lastMostVisibleView: UIView
+//			do {
+//				if self.createNewContact_buttonView.isHidden == false {
+//					lastMostVisibleView = self.createNewContact_buttonView
+//				} else {
+//					lastMostVisibleView = self.requestFrom_inputView
+//				}
+//			}
+//			self.manualPaymentID_label.frame = CGRect(
+//				//x: label_x,
+//				x: CGFloat(-5000),
+//				y: lastMostVisibleView.frame.origin.y + lastMostVisibleView.frame.size.height + UICommonComponents.Form.FieldLabel.marginAboveLabelForUnderneathField_textInputView,
+//				width: 0,
+//				height: self.manualPaymentID_label.frame.size.height
+//			).integral
+//			self.manualPaymentID_label.sizeToFit() // get exact width
+//			if self.generatePaymentID_linkButtonView.frame.size.width != 0 {
+//				self.generatePaymentID_linkButtonView.sizeToFit() // only needs to be done once
+//			}
+//			self.generatePaymentID_linkButtonView.frame = CGRect(
+//				//x: self.manualPaymentID_label.frame.origin.x + self.manualPaymentID_label.frame.size.width + 8,
+//				x: CGFloat(-5000),
+//				y: self.manualPaymentID_label.frame.origin.y - abs(self.generatePaymentID_linkButtonView.frame.size.height - self.manualPaymentID_label.frame.size.height)/2,
+//				width: self.generatePaymentID_linkButtonView.frame.size.width,
+//				height: self.generatePaymentID_linkButtonView.frame.size.height
+//				).integral
+//			self.manualPaymentID_inputView.frame = CGRect(
+//				//x: input_x,
+//				x: CGFloat(-5000),
+//				y: self.manualPaymentID_label.frame.origin.y + self.manualPaymentID_label.frame.size.height + UICommonComponents.Form.FieldLabel.marginBelowLabelAboveTextInputView,
+//				width: textField_w,
+//				height: self.manualPaymentID_inputView.frame.size.height
+//			).integral
+//		}
 		//
 		let bottomMostView: UIView
 		bottomMostView = self.confirmSendFunds_buttonView

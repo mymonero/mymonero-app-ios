@@ -109,16 +109,18 @@ extension ExchangeSendFundsForm
 		
 		func performCreateOrder(offerId: String!, out_amount: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
 			self.orderFormValidation_label.text = ""
-			self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
-	
+			let refundAddress = self.fromWallet_inputView.selectedWallet!.public_address as String
+			debugPrint(refundAddress)
+			//self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+			
 			let params: [String: String] = [
 				//"out_address": "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm",
 				"out_address": self.btcAddress_inputView.text!,
-				"refund_address": "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm",
+				"refund_address": refundAddress,
 				"in_currency": "XMR",
 				"out_currency": "BTC",
 				"offer_id": offerId,
-				"out_amount": "0.00175630"
+				"out_amount": self.outAmount_inputView.text!
 			]
 			debugPrint(params)
 			debugPrint("Fired getOffer")
@@ -454,14 +456,6 @@ extension ExchangeSendFundsForm
 				self.orderFormValidation_label = view
 				self.scrollView.addSubview(view)
 			}
-//			do { // This validation string should go in the modal -- Order status validation label -- KB -- We may need to put this in a different view controller
-//				let view = UICommonComponents.Form.FieldLabel(
-//					title: NSLocalizedString("ValidationOS", comment: ""),
-//					sizeToFit: true
-//				)
-//				self.orderStatusValidation_label = view
-//				self.scrollView.addSubview(view)
-//			}
 			do { // Label
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("FROM", comment: ""),
@@ -481,21 +475,7 @@ extension ExchangeSendFundsForm
 				self.fromWallet_inputView = view
 				self.scrollView.addSubview(view)
 			}
-//			do { // Tooltip
-//				let view = UICommonComponents.TooltipSpawningLinkButtonView(
-//					tooltipText: NSLocalizedString(
-//						"Monero makes transactions\nwith your \"available outputs\",\nso part of your balance will\nbe briefly locked and then\nreturned as change.",
-//						comment: ""
-//					)
-//				)
-//				view.tooltipDirectionFromOrigin = .right // since it's at the top of the page (it tries to go up on its own)
-//				view.willPresentTipView_fn =
-//				{ [unowned self] in
-//					self.view.resignCurrentFirstResponder() // if any
-//				}
-//				self.fromWallet_tooltipSpawn_buttonView = view
-//				self.scrollView.addSubview(view)
-//			}
+
 			do { // inAmount label
 				let view = UICommonComponents.Form.FieldLabel(
 					title: NSLocalizedString("XMR AMOUNT", comment: ""),
