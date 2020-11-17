@@ -175,7 +175,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					// Code here is to check if the state is concluded, and if so, terminate the timers
 					// if the order is completed successfully, it'll return PAID || PAID_UNCONFIRMED -- we only want to terminate on PAID
 					// if the order has timed out, it'll return TIMED_OUT
-					if (self.orderStatus_inputView.text == "PAID" || self.orderStatus_inputView.text == "TIMED_OUT") {
+					if (self.orderStatus_inputView.text == "PAID" || self.orderStatus_inputView.text == "TIMED_OUT" || self.orderStatus_inputView.text == "EXPIRED") {
 						self.stopRemainingTimeTimer()
 						self.stopOrderUpdateTimer()
 					}
