@@ -211,7 +211,7 @@ extension ExchangeSendFundsForm
 								self.orderFormValidation_label.text = json["Error"].stringValue
 								self.orderFormValidation_label.numberOfLines = 0
 								self.orderFormValidation_label.lineBreakMode = NSLineBreakMode.byCharWrapping
-								self.orderFormValidation_label.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
+								self.orderFormValidation_label.widthAnchor.constraint(equalToConstant: self.new__textField_w).isActive = true
 								self.orderFormValidation_label.sizeToFit()
 								
 								self.offerId = json["offer_id"].stringValue
