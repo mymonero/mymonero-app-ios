@@ -209,7 +209,11 @@ extension ExchangeSendFundsForm
 								debugPrint("Error here")
 								debugPrint(json["Error"])
 								self.orderFormValidation_label.text = json["Error"].stringValue
+								self.orderFormValidation_label.numberOfLines = 0
+								self.orderFormValidation_label.lineBreakMode = NSLineBreakMode.byCharWrapping
+								self.orderFormValidation_label.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
 								self.orderFormValidation_label.sizeToFit()
+								
 								self.offerId = json["offer_id"].stringValue
 								self.in_amount = json["in_amount"].stringValue
 								self.out_amount = json["out_amount"].stringValue
@@ -667,8 +671,9 @@ extension ExchangeSendFundsForm
 				debugPrint("GRI() fired")
 				switch result {
 					case .failure (let error):
-						self.orderFormValidation_label.text = "An error was encountered: \(error)"
+						self.orderFormValidation_label.text = "Error: \(error)"
 						self.orderFormValidation_label.sizeToFit()
+
 						let bottomPadding: CGFloat = 18
 						self.scrollableContentSizeDidChange(
 							withBottomView: self.orderFormValidation_label,
@@ -1697,15 +1702,13 @@ extension ExchangeSendFundsForm
 			}
 			do { // Order status validation l Label
 				
-				self.orderFormValidation_label.numberOfLines = 0
-				self.orderFormValidation_label.lineBreakMode = NSLineBreakMode.byWordWrapping
-				self.orderFormValidation_label.sizeToFit()
 				self.orderFormValidation_label.frame = CGRect(
 					x: label_x,
 					y: self.btcAddress_inputView.frame.origin.y + self.btcAddress_inputView.frame.size.height + interSectionSpacing,
 					width: self.outAmount_inputView.frame.size.width,
-					height: self.outAmount_inputView.frame.size.height
+					height: 60
 				).integral
+				
 			}
 
 			do {
@@ -1766,7 +1769,7 @@ extension ExchangeSendFundsForm
 //			}
 			//
 			let bottomMostView: UIView = self.orderFormValidation_label
-			let bottomPadding: CGFloat = 18
+			let bottomPadding: CGFloat = -18
 			self.scrollableContentSizeDidChange(
 				withBottomView: bottomMostView,
 				bottomPadding: bottomPadding
@@ -1866,8 +1869,9 @@ extension ExchangeSendFundsForm
 						result in
 						switch result {
 							case .failure (let error):
-								self.orderFormValidation_label.text = "An error was encountered: \(error)"
+								self.orderFormValidation_label.text = "Error: \(error)"
 								self.orderFormValidation_label.sizeToFit()
+								debugPrint(result)
 								let bottomPadding: CGFloat = 18
 								self.scrollableContentSizeDidChange(
 									withBottomView: self.orderFormValidation_label,
