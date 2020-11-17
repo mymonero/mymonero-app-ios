@@ -160,16 +160,33 @@ extension ExchangeSendFundsForm
 			
 		}
 		
-		func getOffer(in_amount: String?, callingElement: String?) { https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
+		func getOffer(in_amount: String, callingElement: String) {
+			offerUpdateTimer?.invalidate()
+			debugPrint("Get offer was invoked")
+			let params: [String:String] = ["in_amount": in_amount, "callingElement": callingElement]
+			offerUpdateTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(handleGetOffer), userInfo: params, repeats: false)
+		}
+		
+		@objc func handleGetOffer(val : Timer) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
+			debugPrint("We got called!!!!!")
+			debugPrint(val.userInfo)
+			//debugPrint(val.userInfo?[0])
+			let params = val.userInfo as! Dictionary<String, String>
+			let in_amount = params["in_amount"]
+			let callingElement = params["callingElement"]
+			debugPrint(in_amount)
+			debugPrint(callingElement)
 			if validateStringIsValidFloat(input: in_amount!) {
 				self.orderFormValidation_label.text = ""
 				var params: [String:String] = ["in_currency": "XMR", "out_currency": "BTC"]
 				if callingElement! == "in" {
 					params["in_amount"] =  in_amount!
+
 				}
-					
+
 				else if callingElement! == "out" {
 					params["out_amount"] = in_amount!
+
 				}
 				debugPrint(callingElement!)
 				debugPrint("Params")
@@ -194,7 +211,7 @@ extension ExchangeSendFundsForm
 								self.offerId = json["offer_id"].stringValue
 								self.in_amount = json["in_amount"].stringValue
 								self.out_amount = json["out_amount"].stringValue
-								
+
 								debugPrint(json["in_amount"])
 								if callingElement == "out" {
 									self.inAmount_inputView.text = json["in_amount"].stringValue
@@ -210,7 +227,7 @@ extension ExchangeSendFundsForm
 			} else {
 				self.orderFormValidation_label.text = "Please enter a valid amount"
 				debugPrint("Not a valid float")
-				
+
 			}
 		}
 //			Alamofire.request(apiUrl, method: .post, parameters: params, encoding: JSONEncoding.default)
@@ -302,9 +319,25 @@ extension ExchangeSendFundsForm
 		var resetOrder_buttonView: UICommonComponents.ActionButton!
 		var qrPicking_actionButtons: UICommonComponents.QRPickingActionButtons!
 		//
-		
+		weak var offerUpdateTimer: Timer?
 //		override func textFieldDidBeginEditing(_ textField: UITextField) {
 //			print("ThisDidBeginEditting")
+//		}
+		
+		/**
+		* Function to start the "remaining time" update timer
+		*/
+//		@objc func startOfferUpdateTimer()
+//		{
+//			offerUpdateTimer?.invalidate()
+//			offerUpdateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(getOffer), userInfo: nil, repeats: true)
+//		}
+		
+		/**
+		* Function to stop  the "remaining time" update timer
+		*/
+//		@objc func stopOfferUpdateTimer() {
+//			offerUpdateTimer?.invalidate()
 //		}
 		
 		func setOutAmount(outCurrencyAmount: Float) {
@@ -327,6 +360,7 @@ extension ExchangeSendFundsForm
 
 		@objc func outAmount_Changed(_ textField: UITextField) {
 			orderFormValidation_label.text = ""
+			self.inAmount_inputView.text = "Loading..."
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
@@ -352,7 +386,7 @@ extension ExchangeSendFundsForm
 //					return
 //				}
 				orderFormValidation_label.text = ""
-				self.getOffer(in_amount: textField.text, callingElement: "out")
+				self.getOffer(in_amount: textField.text! as String, callingElement: "out")
 			} else {
 				// TODO: Add error handling
 				debugPrint("Case 3")
@@ -361,6 +395,7 @@ extension ExchangeSendFundsForm
 		
 		@objc func inAmount_Changed(_ textField: UITextField) {
 			orderFormValidation_label.text = ""
+			self.outAmount_inputView.text = "Loading..."
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
@@ -381,7 +416,7 @@ extension ExchangeSendFundsForm
 //					orderFormValidation_label.text = responseStr
 //					return
 //				}
-				self.getOffer(in_amount: textField.text, callingElement: "in")
+				self.getOffer(in_amount: textField.text ?? "", callingElement: "in")
 			} else {
 				// TODO: Add error handling
 				debugPrint("Case 3")
