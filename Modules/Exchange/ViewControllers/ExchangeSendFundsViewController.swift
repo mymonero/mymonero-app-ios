@@ -1802,6 +1802,8 @@ extension ExchangeSendFundsForm
 				debugPrint(self.orderDetails)
 				debugPrint(self.orderDetails["order_id"])
 				self.navigationItem.rightBarButtonItem?.isEnabled = true
+				self.resetOrder_buttonView.isHidden = false
+				self.navigationController!.pushViewController(self.orderStatusViewController!, animated: false)
 			} else {
 				debugPrint("No order yet")
 			}
