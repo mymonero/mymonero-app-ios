@@ -154,13 +154,14 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 			
 			if (now > self.expiryDate!) {
 				self.stopRemainingTimeTimer()
+				self.confirmSendFunds_buttonView.isEnabled = false
 			}
 			
 			let difference = self.orderCalendar.dateComponents([.hour, .minute, .second], from: Date(), to: self.expiryDate!)
 			
 			if (difference.hour! > 0) {
 				self.timeRemaining_inputView.text = "\(difference.hour!) hour(s) \(difference.minute!) min \(difference.second) seconds"
-			} else	if (difference.minute! > 0) {
+			} else if (difference.minute! > 0) {
 					self.timeRemaining_inputView.text = "\(difference.minute!) min \(difference.second!) seconds"
 			} else {
 				self.timeRemaining_inputView.text = "\(difference.second!) seconds"
