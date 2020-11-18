@@ -170,7 +170,6 @@ extension ExchangeSendFundsForm
 		}
 		
 		@objc func handleGetOffer(val : Timer) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
-			debugPrint("We got called!!!!!")
 			debugPrint(val.userInfo)
 			//debugPrint(val.userInfo?[0])
 			let params = val.userInfo as! Dictionary<String, String>
@@ -270,6 +269,7 @@ extension ExchangeSendFundsForm
 		var out_max: Float = 0.00000000;
 		var out_min: Float = 0.00000000;
 		var ratesRetrieved: Bool = false
+		var isIdle: Bool = false
 		var formIsVisible: Bool = true
 		var exchangeFunctions = ExchangeFunctions();
 		// Floating point calculations get handled server-side, so we can use them as strings so as to not have to keep swapping type
@@ -834,6 +834,7 @@ extension ExchangeSendFundsForm
 		}
 		
 		@objc func handleUserDidBecomeIdle() {
+			self.isIdle = true
 			debugPrint("we fired when the state became idle")
 			debugPrint(self.offerId)
 			debugPrint(self.in_amount)
@@ -1803,7 +1804,10 @@ extension ExchangeSendFundsForm
 				debugPrint(self.orderDetails["order_id"])
 				self.navigationItem.rightBarButtonItem?.isEnabled = true
 				self.resetOrder_buttonView.isHidden = false
-				self.navigationController!.pushViewController(self.orderStatusViewController!, animated: false)
+				if (self.isIdle == true) {
+					self.isIdle = false
+					self.navigationController!.pushViewController(self.orderStatusViewController!, animated: false)
+				}
 			} else {
 				debugPrint("No order yet")
 			}
