@@ -49,11 +49,9 @@ extension ExchangeSendFundsForm
 		//private let apiUrl = "https://stagenet-api.mymonero.rtfm.net/"
 		
 		func getRateInfo(completionHandler: @escaping (Alamofire.Result<[String: Any]>) -> Void) {
-			debugPrint("In async init")
 			performGetRateInfo() {
 				response in
-					debugPrint("Assigning result")
-					debugPrint(response)
+
 					//debugPrint(response!.in_min)
 					//self.validRateInfoRetrieved = true;
 					//self.in_min = json?[0]["in_min"].string
@@ -88,8 +86,6 @@ extension ExchangeSendFundsForm
 					response in
 					switch response.result {
 					case .success(let value as [String: Any]):
-						debugPrint("GRI here")
-						debugPrint(value)
 						completion(.success(value))
 
 					case .failure(let error):
@@ -110,7 +106,7 @@ extension ExchangeSendFundsForm
 		func performCreateOrder(offerId: String!, out_amount: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
 			self.orderFormValidation_label.text = ""
 			let refundAddress = self.fromWallet_inputView.selectedWallet!.public_address as String
-			debugPrint(refundAddress)
+
 			//self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
 			
 			let params: [String: String] = [
@@ -122,8 +118,7 @@ extension ExchangeSendFundsForm
 				"offer_id": offerId,
 				"out_amount": self.outAmount_inputView.text!
 			]
-			debugPrint(params)
-			debugPrint("Fired getOffer")
+
 			let method = "create_order"
 			let apiEndpoint = apiUrl + method
 			Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
@@ -150,12 +145,9 @@ extension ExchangeSendFundsForm
 		func validateStringIsValidFloat(input: String) -> Bool {
 			debugPrint("Validating float");
 			if (input.isFloat == true) {
-				debugPrint("True")
-				debugPrint(input)
+
 				return true
 			} else {
-				debugPrint(input);
-				debugPrint("NaN")
 				
 				return false
 			}
@@ -164,19 +156,16 @@ extension ExchangeSendFundsForm
 		
 		func getOffer(in_amount: String, callingElement: String) {
 			offerUpdateTimer?.invalidate()
-			debugPrint("Get offer was invoked")
 			let params: [String:String] = ["in_amount": in_amount, "callingElement": callingElement]
 			offerUpdateTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(handleGetOffer), userInfo: params, repeats: false)
 		}
 		
 		@objc func handleGetOffer(val : Timer) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
-			debugPrint(val.userInfo)
 			//debugPrint(val.userInfo?[0])
 			let params = val.userInfo as! Dictionary<String, String>
 			let in_amount = params["in_amount"]
 			let callingElement = params["callingElement"]
-			debugPrint(in_amount)
-			debugPrint(callingElement)
+
 			if validateStringIsValidFloat(input: in_amount!) {
 				self.orderFormValidation_label.text = ""
 				var params: [String:String] = ["in_currency": "XMR", "out_currency": "BTC"]
@@ -189,9 +178,6 @@ extension ExchangeSendFundsForm
 					params["out_amount"] = in_amount!
 
 				}
-				debugPrint(callingElement!)
-				debugPrint("Params")
-				debugPrint(params)
 				let method = "get_offer"
 				let apiEndpoint = apiUrl + method
 				Alamofire.request(apiEndpoint, method: .post, parameters: params, encoding: JSONEncoding.default)
@@ -200,13 +186,7 @@ extension ExchangeSendFundsForm
 						if let data = response.data {
 							if let json = try? JSON(data: data) {
 								self.validOfferRetrieved = true
-								debugPrint(json)
-								debugPrint(callingElement)
-								//self.in_min = json?[0]["in_min"].string
-								debugPrint(json["out_amount"])
-								debugPrint(json["in_amount"].stringValue)
-								debugPrint("Error here")
-								debugPrint(json["Error"])
+
 								self.orderFormValidation_label.text = json["Error"].stringValue
 								self.orderFormValidation_label.numberOfLines = 0
 								self.orderFormValidation_label.lineBreakMode = NSLineBreakMode.byCharWrapping
@@ -217,12 +197,10 @@ extension ExchangeSendFundsForm
 								self.in_amount = json["in_amount"].stringValue
 								self.out_amount = json["out_amount"].stringValue
 
-								debugPrint(json["in_amount"])
 								if callingElement == "out" {
 									self.inAmount_inputView.text = json["in_amount"].stringValue
 								} else if callingElement == "in" {
 									let out_amount = String(json["out_amount"].stringValue)
-									debugPrint(in_amount)
 									self.outAmount_inputView.text = json["out_amount"].stringValue
 									//self.outAmount_inputView.text = in_amount
 								}
@@ -231,7 +209,7 @@ extension ExchangeSendFundsForm
 					}
 			} else {
 				self.orderFormValidation_label.text = "Please enter a valid amount"
-				debugPrint("Not a valid float")
+				//debugPrint("Not a valid float")
 
 			}
 		}
@@ -348,20 +326,15 @@ extension ExchangeSendFundsForm
 		
 		func setOutAmount(outCurrencyAmount: Float) {
 			let outString = NSString(format: "%.8f", outCurrencyAmount)
-			debugPrint(outString)
 			self.inAmount_inputView.set(placeholder: outString as String)
 		}
 		
 		@objc override func textFieldDidBeginEditing(_ textField: UITextField) {
 			self.shouldEnableFormSubmission()
-			debugPrint("ThisDidBeginEditting")
-			debugPrint("\(textField.text)")
 		}
 		@objc func inputAmount_Send(_ textField: UITextField) {
 			// Try get wallet send to work from here
 			self.shouldEnableFormSubmission()
-			debugPrint("inputAmountSend")
-			debugPrint(inAmount_inputView.text)
 		}
 
 		@objc func outAmount_Changed(_ textField: UITextField) {
@@ -370,31 +343,10 @@ extension ExchangeSendFundsForm
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
-				// We need to compare this to a BigInt Monero amount so that we don't invoke getOffer when the input value is greater than our wallet balance
-//				let bigIntValue: BigInt = BigInt(inputValue.floatValue * 1000000000000)
-//				debugPrint("BigInt value")
-//				debugPrint(bigIntValue)
-//
-//				debugPrint("Wallet balance")
-//				debugPrint(self.fromWallet_inputView.selectedWallet?.balanceAmount)
-//
-//				if inputValue.floatValue < out_min {
-//					debugPrint("Case 1")
-//					let responseStr = "You must convert at least \(out_min) BTC per transaction"
-//					orderFormValidation_label.text = responseStr
-//					return
-//				}
-//
-//				if bigIntValue > self.fromWallet_inputView.selectedWallet!.balanceAmount {
-//					debugPrint("Case 2")
-//					let responseStr = "You cannot convert more than \(out_max) BTC per transaction"
-//					orderFormValidation_label.text = responseStr
-//					return
-//				}
-				orderFormValidation_label.text = ""
+				// Valid number, can retrieve offer
 				self.getOffer(in_amount: textField.text! as String, callingElement: "out")
 			} else {
-				// TODO: Add error handling
+				// TODO: Possibly add error handling -- currently we silently fail
 				debugPrint("Case 3")
 			}
 		}
@@ -405,26 +357,10 @@ extension ExchangeSendFundsForm
 			let numberFormatter = NumberFormatter()
 			numberFormatter.numberStyle = NumberFormatter.Style.decimal
 			if let inputValue = numberFormatter.number(from: textField.text!) {
-				//let bigIntValue: BigInt = BigInt(inputValue.doubleValue * 1000000000000)
-				// We won't be able to calculate this in advance in future, as new currency pairs become available
-//				if inputValue.floatValue < in_min {
-//					debugPrint("Case 1")
-//					let responseStr = "You must convert at least \(in_min) XMR per transaction"
-//					orderFormValidation_label.text = responseStr
-//					return
-//				}
-//
-//				if bigIntValue > self.fromWallet_inputView.selectedWallet!.balanceAmount {
-//					debugPrint("Case 2")
-//					debugPrint(bigIntValue)
-//					debugPrint(self.fromWallet_inputView.selectedWallet!.balanceAmount)
-//					let responseStr = "You cannot convert more XMR than you have"
-//					orderFormValidation_label.text = responseStr
-//					return
-//				}
+				// Valid number, can retrieve offer
 				self.getOffer(in_amount: textField.text ?? "", callingElement: "in")
 			} else {
-				// TODO: Add error handling
+				// TODO: Possibly add error handling -- currently we silently fail
 				debugPrint("Case 3")
 			}
 		}
@@ -535,10 +471,6 @@ extension ExchangeSendFundsForm
 				//let view =
 			}
 			do {
-	//			let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .normal, title: NSLocalizedString("Send Funds", comment: ""))
-	//			view.addTarget(self, action: #selector(tapped_sendFunds), for: .touchUpInside)
-	//			self.confirmSendFunds_buttonView = view
-	//			self.scrollView.addSubview(view)
 				let view = UICommonComponents.ActionButton(pushButtonType: .action, isLeftOfTwoButtons: false)
 				view.addTarget(self, action: #selector(tapped_resetOrder), for: .touchUpInside)
 				view.setTitle(NSLocalizedString("Reset Order", comment: ""), for: .normal)
@@ -613,7 +545,7 @@ extension ExchangeSendFundsForm
 				self.feeEstimate_tooltipSpawn_buttonView = view
 				self.scrollView.addSubview(view)
 			}
-			//
+			// We leave a number of SendFund form fields we've copied in, as we intend to expand functionality to include multi-currency support soon
 //			do {
 //				let view = UICommonComponents.Form.FieldLabel(
 //					title: NSLocalizedString("TO", comment: ""),
@@ -835,17 +767,10 @@ extension ExchangeSendFundsForm
 		
 		@objc func handleUserDidBecomeIdle() {
 			self.isIdle = true
-			debugPrint("we fired when the state became idle")
-			debugPrint(self.offerId)
-			debugPrint(self.in_amount)
-			debugPrint(self.out_amount)
 		}
 		
 		@objc func handleUserDidComeBack() {
-			debugPrint("we fired when the state came back from idle")
-			debugPrint(self.offerId)
-			debugPrint(self.in_amount)
-			debugPrint(self.out_amount)
+			// Not presently needed -- possibly recheck order here if sufficient time has pass
 		}
 		
 		override func startObserving()
@@ -854,12 +779,7 @@ extension ExchangeSendFundsForm
 			PasswordController.shared.addRegistrantForDeleteEverything(self)
 			//
 			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_saysTimeToHandleReceivedMoneroURL(_:)), name: URLOpening.NotificationNames.saysTimeToHandleReceivedMoneroURL.notificationName, object: nil)
-//			NotificationCenter.default.addObserver(
-//				self,
-//				selector: #selector(WalletAppContactActionsCoordinator_didTrigger_sendFundsToContact(_:)),
-//				name: WalletAppContactActionsCoordinator.NotificationNames.didTrigger_sendFundsToContact.notificationName, // observe 'did' so we're guaranteed to already be on right tab
-//				object: nil
-//			)
+
 			NotificationCenter.default.addObserver(
 				self,
 				selector: #selector(WalletAppWalletActionsCoordinator_didTrigger_sendFundsFromWallet(_:)),
@@ -911,7 +831,7 @@ extension ExchangeSendFundsForm
 		override func stopObserving()
 		{
 			super.stopObserving()
-			debugPrint("Stop observing parent stuff")
+			
 			// KB TODO: Fix up the stop observing stuff to clean properly -- we can clean everything except the order details
 //			PasswordController.shared.removeRegistrantForDeleteEverything(self)
 //			//
@@ -960,27 +880,7 @@ extension ExchangeSendFundsForm
 			if self.btcAddress_inputView.text?.isEmpty == true {
 				return false
 			}
-//			if self.sendTo_inputView.isResolving {
-//				return false
-//			}
-//			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
-//				return false
-//			}
-//			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
-//				selectedCurrency: self.amount_fieldset.currencyPickerButton.selectedCurrency
-//			)
-//			if submittableMoneroAmountDouble_orNil == nil {
-//				let isSweeping = self.amount_fieldset.maxButtonView!.isToggledOn
-//				if isSweeping == false { // amount is required unless sweeping
-//					return false
-//				}
-//			}
-			// KB: handle form submittable here
-//			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
-//				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
-//				&& self.sendTo_inputView.selectedContact == nil {
-//				return false
-//			}
+
 			return true
 		}
 		override func new_contentInset() -> UIEdgeInsets
@@ -1583,25 +1483,6 @@ extension ExchangeSendFundsForm
 			//
 			// KB Additions
 
-					
-//			let screenWidth = screenSize.width
-//			let screenHeight = screenSize.height
-			debugPrint("height")
-			//debugPrint(self.fromWallet_inputView.frame.size.height)
-			var debugHeight = self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton
-			debugPrint(debugHeight)
-			debugHeight = self.explanation_label.frame.origin.y + ceil(self.fromWallet_inputView.frame.size.height) + interSectionSpacing
-			debugPrint(debugHeight)
-			debugHeight = self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton
-			debugPrint(debugHeight)
-			debugHeight = self.explanation_label.frame.origin.y
-			debugPrint(debugHeight)
-			debugHeight = ceil(self.fromWallet_inputView.frame.size.height)
-			debugPrint(debugHeight)
-			debugHeight = interSectionSpacing
-			debugPrint(debugHeight)
-
-			
 			self.explanation_label.frame = CGRect(
 				x: label_x,
 				y: top_yOffset,
@@ -1775,17 +1656,7 @@ extension ExchangeSendFundsForm
 				withBottomView: bottomMostView,
 				bottomPadding: bottomPadding
 			)
-			
-			debugHeight = self.explanation_label.frame.origin.y + ceil(self.fromWallet_inputView.frame.size.height) + interSectionSpacing
-			debugPrint(debugHeight)
-			debugHeight = self.fromWallet_label.frame.origin.y + ceil(self.fromWallet_label.frame.size.height) + UICommonComponents.Form.FieldLabel.marginBelowLabelAbovePushButton
-			debugPrint(debugHeight)
-			debugHeight = self.explanation_label.frame.origin.y
-			debugPrint(debugHeight)
-			debugHeight = ceil(self.fromWallet_inputView.frame.size.height)
-			debugPrint(debugHeight)
-			debugHeight = interSectionSpacing
-			debugPrint(debugHeight)
+		
 			//
 			// non-scrolling:
 			let buttons_y = self.view.bounds.size.height - UICommonComponents.ActionButton.wholeButtonsContainerHeight_withoutTopMargin
@@ -1798,10 +1669,7 @@ extension ExchangeSendFundsForm
 			// this will be called every time the view appears, including when coming back from useridle -- as such, check orderdetails is set, and if so, redirect to orderdetails page
 			
 			if (self.orderExists) {
-				debugPrint("Order exists")
-				debugPrint(self.orderExists)
-				debugPrint(self.orderDetails)
-				debugPrint(self.orderDetails["order_id"])
+				// order exists -- open on order
 				self.navigationItem.rightBarButtonItem?.isEnabled = true
 				self.resetOrder_buttonView.isHidden = false
 				if (self.isIdle == true) {
@@ -1809,7 +1677,7 @@ extension ExchangeSendFundsForm
 					self.navigationController!.pushViewController(self.orderStatusViewController!, animated: false)
 				}
 			} else {
-				debugPrint("No order yet")
+				//debugPrint("No order yet")
 			}
 		}
 		override func viewWillDisappear(_ animated: Bool)
@@ -1832,7 +1700,6 @@ extension ExchangeSendFundsForm
 					replacementString: string
 				)
 			} else {
-				debugPrint("pass through")
 				return self.amount_fieldset.inputField.textField(
 					textField,
 					shouldChangeCharactersIn: range,
@@ -1846,7 +1713,6 @@ extension ExchangeSendFundsForm
 		// Delegation - Interactions
 		@objc func btcAddress_changed()
 		{
-			debugPrint("btcAddress_changed")
 			self.shouldEnableFormSubmission()
 		}
 		@objc func tapped_resetOrder() {
@@ -1866,7 +1732,6 @@ extension ExchangeSendFundsForm
 		@objc func tapped_createOrderRightBarButtonItem()
 		{
 			self.disableForm()
-			debugPrint("Clicked create order button")
 			if (self.orderExists) {
 				self.navigationController!.pushViewController(self.orderStatusViewController!, animated: true)
 			} else {
@@ -1877,16 +1742,13 @@ extension ExchangeSendFundsForm
 							case .failure (let error):
 								self.orderFormValidation_label.text = "Error: \(error)"
 								self.orderFormValidation_label.sizeToFit()
-								debugPrint(result)
 								let bottomPadding: CGFloat = 18
 								self.scrollableContentSizeDidChange(
 									withBottomView: self.orderFormValidation_label,
 									bottomPadding: bottomPadding
 								)
 								self.reEnableForm()
-								debugPrint(error)
 							case .success(let value):
-								debugPrint(value)
 								self.orderDetails = value
 								self.orderExists = true
 								// handle Unexpectedly found nil while unwrapping an Optional value
