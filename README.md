@@ -86,7 +86,13 @@ Proceeds from donations are used to fund development on the MyMonero back-end se
 
 We try to credit each contributor in App Store release notes.
 
-* ⛰ `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Maintainer; Lead developer
+* 🍕 `Tekkzbadger` ([Devin Pearson](https://github.com/devinpearson)) Lead maintainer; core developer
+
+* 💱 `j_karlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
+
+* 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
+
+* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Former core maintainer; MyMonero core contributor
 
 * 🔥 `mds` ([Matt Smith](http://mds.is)) Mobile app variant designer
 
