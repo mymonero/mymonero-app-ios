@@ -433,11 +433,6 @@ extension WalletDetails
 						lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
 						if lazy_cell == nil {
 							lazy_cell = cellType.init()
-							debugPrint("lazy_cell")
-							debugPrint(lazy_cell)
-							debugPrint(indexPath.section)
-							debugPrint(SectionName.actionButtons)
-							debugPrint(SectionName.actionButtons.indexInTable)
 							if indexPath.section == SectionName.actionButtons.indexInTable {
 								self.actionButtonsIndexPath = indexPath
 							}
