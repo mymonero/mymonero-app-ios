@@ -104,6 +104,8 @@ extension WalletDetails
 					atY: buttons_y,
 					withMarginH: UICommonComponents.ActionButton.wholeButtonsContainer_margin_h
 				)
+				debugPrint("ButtonsY")
+				debugPrint(buttons_y)
 			}
 			//
 			// Imperatives - Overrides - Configuration

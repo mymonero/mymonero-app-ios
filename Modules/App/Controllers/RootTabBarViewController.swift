@@ -126,9 +126,9 @@ class RootTabBarViewController: UITabBarController
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_sendFundsToContact.notificationName, object: nil)
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_requestFundsFromContact.notificationName, object: nil)
 		}
-//		do { // ExchangeAppExchangeActionsController
-//			NotificationCenter.default.addObserver(self, selector: #selector(ExchangeAppExchangeActionsCoordinator_willTrigger_sendFundsToWallet), name: WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_sendFundsFromWallet.notificationName, object: nil)
-//		}
+		do { // ExchangeAppExchangeActionsController
+			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppWalletActionsCoordinator_willTrigger_sendFundsFromWallet), name: WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_sendFundsFromWallet.notificationName, object: nil)
+		}
 		do { // urlOpeningController
 			NotificationCenter.default.addObserver(self, selector: #selector(URLOpening_saysTimeToHandleReceivedMoneroURL(_:)), name: URLOpening.NotificationNames.saysTimeToHandleReceivedMoneroURL.notificationName, object: nil)
 		}

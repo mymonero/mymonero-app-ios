@@ -76,6 +76,8 @@ extension WalletDetails
 		var wallet: Wallet // keeping this strong b/c self will be torn down; similarly, ∴, no need to observe .willBeDeinitialized
 		var infoDisclosingCellView: WalletDetails.InfoDisclosing.Cell // manual init - holding a reference to keep state and query for height
 		var transactionsSectionHeaderView: WalletDetails.TransactionsSectionHeaderView?
+		var actionButtonsIndexPath: IndexPath?
+		var resetOrder_buttonView: UICommonComponents.ActionButton!
 		//
 		var tableView: UITableView {
 			return self.scrollView as! UITableView
@@ -431,12 +433,21 @@ extension WalletDetails
 						lazy_cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) as? UICommonComponents.Tables.ReusableTableViewCell
 						if lazy_cell == nil {
 							lazy_cell = cellType.init()
+							debugPrint("lazy_cell")
+							debugPrint(lazy_cell)
+							debugPrint(indexPath.section)
+							debugPrint(SectionName.actionButtons)
+							debugPrint(SectionName.actionButtons.indexInTable)
+							if indexPath.section == SectionName.actionButtons.indexInTable {
+								self.actionButtonsIndexPath = indexPath
+							}
 							if indexPath.section == SectionName.actionButtons.indexInTable {
 								(lazy_cell as! WalletDetails.ActionButtons.Cell).set_requestButton_tapped(
 									{ [weak self] in
 										guard let thisSelf = self else {
 											return
 										}
+										
 										var requestForWallet: FundsRequest?
 										for (_, o) in FundsRequestsListController.shared.records.enumerated() {
 											let r = o as! FundsRequest
@@ -688,6 +699,51 @@ extension WalletDetails
 				}
 			}
 			self._ifNecessary_autoPresent_importTxsModal(afterS: 1)
+			
+			
+			// Quick fix for issue where Receive and Send buttons are unclickable (caused due to updated iOS version)
+			let subviewCgRect = self.tableView.rectForRow(at: self.actionButtonsIndexPath!)
+			
+			let leftRectView = UIButton()
+			let rightRectView = UIButton()
+			
+			let midPoint = floor(subviewCgRect.width / 2)
+			leftRectView.frame = CGRect(
+				x: subviewCgRect.origin.x,
+				y: subviewCgRect.origin.y,
+				width: midPoint,
+				height: subviewCgRect.height
+			)
+			rightRectView.frame = CGRect(
+				x: (midPoint + 1),
+				y: subviewCgRect.origin.y,
+				width: midPoint,
+				height: subviewCgRect.height
+			)
+			leftRectView.addTarget(self, action: #selector(tapped_receiveButton), for: .touchUpInside)
+			rightRectView.addTarget(self, action: #selector(tapped_sendButton), for: .touchUpInside)
+			self.scrollView.addSubview(leftRectView)
+			self.scrollView.addSubview(rightRectView)
+		}
+		@objc func tapped_receiveButton() {
+		
+			var requestForWallet: FundsRequest?
+			for (_, o) in FundsRequestsListController.shared.records.enumerated() {
+				let r = o as! FundsRequest
+				if r.is_displaying_local_wallet == true && r.to_address == self.wallet.public_address {
+					requestForWallet = r
+					break
+				}
+			}
+			if requestForWallet == nil {
+				fatalError("Expected requestForWallet to be non nil")
+			}
+			let viewController = FundsRequestQRDisplayViewController(fundsRequest: requestForWallet!, presentedAsModal: true/* for Done button */)
+			let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+			self.navigationController!.present(navigationController, animated: true, completion: nil)
+		}
+		@objc func tapped_sendButton() {
+			WalletAppWalletActionsCoordinator.Trigger_sendFunds(fromWallet: self.wallet)
 		}
 		override func viewWillDisappear(_ animated: Bool)
 		{
