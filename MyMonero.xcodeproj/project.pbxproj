@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		657641762548113E00DE76A8 /* ExchangeTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641752548113E00DE76A8 /* ExchangeTabNavigationViewController.swift */; };
+		657641792548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641782548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift */; };
+		6576417B2548275A00DE76A8 /* ExchangeSendFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576417A2548275A00DE76A8 /* ExchangeSendFundsViewController.swift */; };
+		6576417F25485CB000DE76A8 /* ExchangeAmountInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576417E25485CB000DE76A8 /* ExchangeAmountInput.swift */; };
+		657641812548659300DE76A8 /* ExchangeFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641802548659300DE76A8 /* ExchangeFields.swift */; };
+		6576418325486C9900DE76A8 /* ExchangeCurrencyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */; };
+		6576418A2549A82800DE76A8 /* ExchangeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657641892549A82800DE76A8 /* ExchangeFunctions.swift */; };
+		6576418C254C123200DE76A8 /* ExchangeOrderFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418B254C123100DE76A8 /* ExchangeOrderFormViewController.swift */; };
+		6576418E254C151200DE76A8 /* OrderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418D254C151200DE76A8 /* OrderDetails.swift */; };
+		6576419025513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */; };
+		6576419225515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */; };
+		65912EEF2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */; };
+		65F0FD67255D2CCD00ABAFCC /* XMRtoBTCInactive@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */; };
+		65F0FD68255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */; };
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
 		9F0022BB1F3654DC0089400D /* PasswordEntryPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */; };
 		9F00B8E11EC276C30040F52A /* MoneroUtils_RequestURIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */; };
@@ -331,6 +345,20 @@
 /* Begin PBXFileReference section */
 		23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyMonero.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B74196A259183D102DC72F7 /* Pods-MyMonero.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.profiling.xcconfig"; sourceTree = "<group>"; };
+		657641752548113E00DE76A8 /* ExchangeTabNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeTabNavigationViewController.swift; sourceTree = "<group>"; };
+		657641782548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeAppExchangeActionsCoordinator.swift; sourceTree = "<group>"; };
+		6576417A2548275A00DE76A8 /* ExchangeSendFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeSendFundsViewController.swift; sourceTree = "<group>"; };
+		6576417E25485CB000DE76A8 /* ExchangeAmountInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeAmountInput.swift; sourceTree = "<group>"; };
+		657641802548659300DE76A8 /* ExchangeFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeFields.swift; sourceTree = "<group>"; };
+		6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeCurrencyPicker.swift; sourceTree = "<group>"; };
+		657641892549A82800DE76A8 /* ExchangeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeFunctions.swift; sourceTree = "<group>"; };
+		6576418B254C123100DE76A8 /* ExchangeOrderFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeOrderFormViewController.swift; sourceTree = "<group>"; };
+		6576418D254C151200DE76A8 /* OrderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetails.swift; sourceTree = "<group>"; };
+		6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeShowOrderStatusFormViewController.swift; sourceTree = "<group>"; };
+		6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeOrderStatusViewController.swift; sourceTree = "<group>"; };
+		65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeSendFundsFormSubmissionHandler.swift; sourceTree = "<group>"; };
+		65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "XMRtoBTCInactive@3x.png"; sourceTree = "<group>"; };
+		65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "XMRtoBTCActive@3x.png"; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
 		9F0022BA1F3654DB0089400D /* PasswordEntryPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryPresentationController.swift; sourceTree = "<group>"; };
 		9F00B8DA1EC276C30040F52A /* MoneroUtils_RequestURIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoneroUtils_RequestURIs.swift; sourceTree = "<group>"; };
@@ -857,6 +885,72 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		65764171254810B200DE76A8 /* Exchange */ = {
+			isa = PBXGroup;
+			children = (
+				657641882549A80D00DE76A8 /* XHR */,
+				6576417D25485C9600DE76A8 /* FormElements */,
+				657641772548146400DE76A8 /* ModelControllers */,
+				6576417C2548431200DE76A8 /* Resources */,
+				65764173254810E400DE76A8 /* ViewControllers */,
+				65764174254810FF00DE76A8 /* Views */,
+			);
+			path = Exchange;
+			sourceTree = "<group>";
+		};
+		65764173254810E400DE76A8 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				657641752548113E00DE76A8 /* ExchangeTabNavigationViewController.swift */,
+				6576417A2548275A00DE76A8 /* ExchangeSendFundsViewController.swift */,
+				6576418B254C123100DE76A8 /* ExchangeOrderFormViewController.swift */,
+				6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */,
+				6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		65764174254810FF00DE76A8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		657641772548146400DE76A8 /* ModelControllers */ = {
+			isa = PBXGroup;
+			children = (
+				657641782548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift */,
+				65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */,
+			);
+			path = ModelControllers;
+			sourceTree = "<group>";
+		};
+		6576417C2548431200DE76A8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */,
+				65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		6576417D25485C9600DE76A8 /* FormElements */ = {
+			isa = PBXGroup;
+			children = (
+				6576417E25485CB000DE76A8 /* ExchangeAmountInput.swift */,
+			);
+			path = FormElements;
+			sourceTree = "<group>";
+		};
+		657641882549A80D00DE76A8 /* XHR */ = {
+			isa = PBXGroup;
+			children = (
+				657641892549A82800DE76A8 /* ExchangeFunctions.swift */,
+			);
+			path = XHR;
+			sourceTree = "<group>";
+		};
 		9F00B8D81EC276C30040F52A /* Swift */ = {
 			isa = PBXGroup;
 			children = (
@@ -878,35 +972,37 @@
 		9F1D002C1EE345D600A4B3A5 /* UICommonComponents */ = {
 			isa = PBXGroup;
 			children = (
-				9F8E2F6B1EE849E100F89A1D /* Resources */,
-				9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */,
-				9F05068620BC8E2A00638851 /* NavigationControllers.swift */,
-				9F9C59F01F0C45AD003B9266 /* ScrollableInfo.swift */,
-				9F1D002D1EE345DF00A4B3A5 /* Forms.swift */,
-				9F1D002F1EE345E500A4B3A5 /* Details.swift */,
-				9FD70E081F1988FB000FE675 /* Tables.swift */,
-				9FCEB21C209B9C5D0018EABE /* InlineButtons.swift */,
-				9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */,
-				9F2BFE731EEEDEE3006B2F7D /* HighlightableCells.swift */,
-				9F8E30131EED6F2600F89A1D /* PushButton.swift */,
-				9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */,
 				9F8E30151EED6FC200F89A1D /* ActionButtons.swift */,
-				9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */,
-				9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */,
-				9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */,
-				9F9C59FC1F0D89BE003B9266 /* WalletPicker.swift */,
-				9F22B79E1EFF44B60036B02F /* InlineMessages.swift */,
-				9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */,
-				9F22B7A91F01BAD20036B02F /* SmallUtilityValueButtons.swift */,
 				9FAA18A41F0881FE001F1D4D /* ActivityIndicators.swift */,
-				9F740D501F10549E0017A20E /* ContactPicker.swift */,
-				9FC8AE901F241D2600AA553D /* IconAndMessage.swift */,
-				9F8441551F39405C00BED8E3 /* Tooltips.swift */,
-				9F9D776A1F958F6B0005CFFD /* Switches.swift */,
 				9F749FC31F98142B00B562D0 /* Amounts.swift */,
+				9F740D501F10549E0017A20E /* ContactPicker.swift */,
 				9FEFDD691F991B83001C3CFD /* CurrencyPicker.swift */,
-				9F065FC71F9FF98E0074A6B4 /* StringPicker.swift */,
+				6576418225486C9900DE76A8 /* ExchangeCurrencyPicker.swift */,
+				9F1D002F1EE345E500A4B3A5 /* Details.swift */,
+				9F8E30171EED6FD100F89A1D /* EmptyScreens.swift */,
+				657641802548659300DE76A8 /* ExchangeFields.swift */,
+				9F1D002D1EE345DF00A4B3A5 /* Forms.swift */,
+				9F2BFE731EEEDEE3006B2F7D /* HighlightableCells.swift */,
+				9FC8AE901F241D2600AA553D /* IconAndMessage.swift */,
+				9FCEB21C209B9C5D0018EABE /* InlineButtons.swift */,
+				9F22B79E1EFF44B60036B02F /* InlineMessages.swift */,
+				9F1D00311EE3466300A4B3A5 /* LinkButtonView.swift */,
+				9F1D00331EE349CB00A4B3A5 /* NavigationBarButtons.swift */,
+				9F05068620BC8E2A00638851 /* NavigationControllers.swift */,
+				9F8E30131EED6F2600F89A1D /* PushButton.swift */,
 				9F6DB7602095485400ED7286 /* QRPickingActionButtons.swift */,
+				9F22B7A41F0063760036B02F /* ReadableInfoLabels.swift */,
+				9F8E2F6B1EE849E100F89A1D /* Resources */,
+				9F9C59F01F0C45AD003B9266 /* ScrollableInfo.swift */,
+				9F22B7A91F01BAD20036B02F /* SmallUtilityValueButtons.swift */,
+				9F065FC71F9FF98E0074A6B4 /* StringPicker.swift */,
+				9F9D776A1F958F6B0005CFFD /* Switches.swift */,
+				9FD70E081F1988FB000FE675 /* Tables.swift */,
+				9F8441551F39405C00BED8E3 /* Tooltips.swift */,
+				9F8E30191EED6FFF00F89A1D /* UICommonComponents.swift */,
+				9F18CB521EFA10DF00DD6D83 /* WalletColorPicker.swift */,
+				9F2BFE711EEED95E006B2F7D /* WalletIcons.swift */,
+				9F9C59FC1F0D89BE003B9266 /* WalletPicker.swift */,
 			);
 			path = UICommonComponents;
 			sourceTree = "<group>";
@@ -989,6 +1085,7 @@
 			isa = PBXGroup;
 			children = (
 				9F2BFECF1EF34FA3006B2F7D /* FundsRequest.swift */,
+				6576418D254C151200DE76A8 /* OrderDetails.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1521,27 +1618,28 @@
 			isa = PBXGroup;
 			children = (
 				9F7ADAA61EBD2B420073C2BB /* App */,
+				9FAF95211FB4F4FD00ECE0A6 /* CcyConversionRates */,
+				9FB603041F4F6B6B00951175 /* ConnectivityMessage */,
+				9F8E2F861EE8807500F89A1D /* Contacts */,
+				9F3826641F56789600800CA0 /* DNSLookup */,
+				9FA7342B1F077C6800C674D6 /* Emoji */,
+				65764171254810B200DE76A8 /* Exchange */,
+				9F8E2F881EE8807500F89A1D /* FundsRequests */,
+				9F7E516D1EC61550001EAB3F /* HostedMonero */,
+				9FEC04EC1ECFD8C4009256BD /* Lists */,
 				9FA7341F1F07610E00C674D6 /* Logging */,
 				9F7ADAAF1EBD2B420073C2BB /* MyMoneroCore */,
-				9F7E516D1EC61550001EAB3F /* HostedMonero */,
-				9FEC04F61ECFD8D3009256BD /* Persistence */,
+				9FCD9D5A1F4948A7004C0349 /* OpenAlias */,
 				9F8E301D1EED7D7800F89A1D /* Passwords */,
-				9FEC04EC1ECFD8C4009256BD /* Lists */,
+				9FEC04F61ECFD8D3009256BD /* Persistence */,
+				9F2A21DB1F2BD442005117DB /* QRCodes */,
+				9F8E2FE11EE978B700F89A1D /* SendFundsTab */,
+				9F8E2F8C1EE8807500F89A1D /* Settings */,
 				9F8E2F4B1EE3AA4700F89A1D /* Theme */,
-				9FA734211F07610E00C674D6 /* UIKitExtensions */,
 				9F1D002C1EE345D600A4B3A5 /* UICommonComponents */,
+				9FA734211F07610E00C674D6 /* UIKitExtensions */,
 				9FC366DC1ECF9F90006CE743 /* Wallets */,
 				9F2BFEED1EF7373E006B2F7D /* WalletWizard */,
-				9F8E2FE11EE978B700F89A1D /* SendFundsTab */,
-				9F2A21DB1F2BD442005117DB /* QRCodes */,
-				9F8E2F881EE8807500F89A1D /* FundsRequests */,
-				9F8E2F861EE8807500F89A1D /* Contacts */,
-				9FA7342B1F077C6800C674D6 /* Emoji */,
-				9FCD9D5A1F4948A7004C0349 /* OpenAlias */,
-				9F3826641F56789600800CA0 /* DNSLookup */,
-				9F8E2F8C1EE8807500F89A1D /* Settings */,
-				9FB603041F4F6B6B00951175 /* ConnectivityMessage */,
-				9FAF95211FB4F4FD00ECE0A6 /* CcyConversionRates */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -1637,10 +1735,12 @@
 		9F8E2F6B1EE849E100F89A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9FAF0EBE2088F52500473D97 /* switch_toggle_off@3x.png */,
-				9FAF0EBF2088F52500473D97 /* switch_toggle@3x.png */,
-				9F1F16E11FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png */,
+				9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */,
+				9F8E302D1EEDAB9400F89A1D /* backButtonIcon@3x.png */,
+				9F8E302E1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png */,
+				9F8E302F1EEDAB9400F89A1D /* detectedCheckmark@3x.png */,
 				9F9C59FE1F0D8C11003B9266 /* dropdown-arrow-down@3x.png */,
+				9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */,
 				9F9C59D01F0C316C003B9266 /* groupedHighlightableCellBG_disabled_bottom@3x.png */,
 				9F9C59D11F0C316C003B9266 /* groupedHighlightableCellBG_disabled_middle@3x.png */,
 				9F9C59D21F0C316C003B9266 /* groupedHighlightableCellBG_disabled_standalone@3x.png */,
@@ -1656,13 +1756,9 @@
 				9F9C59DC1F0C316C003B9266 /* highlightableCellBG_disabled@3x.png */,
 				9F9C59DD1F0C316C003B9266 /* highlightableCellBG_highlighted@3x.png */,
 				9F9C59DE1F0C316C003B9266 /* highlightableCellBG@3x.png */,
-				9FAA18AA1F08B8EC001F1D4D /* graphicActivityIndicator_decoration@3x.png */,
+				9F8E30301EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png */,
+				9F8E30311EEDAB9400F89A1D /* list_rightside_chevron@3x.png */,
 				9FCE96C51F031A5600A5837D /* mnemonicWordView_selected_bg_stretchable@3x.png */,
-				9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */,
-				9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */,
-				9F2BFE751EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png */,
-				9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */,
-				9F2BFE761EF08ABA006B2F7D /* highlightableCellBG@3x.png */,
 				9F2BFE781EF08ABA006B2F7D /* pushButtonBG_action_highlighted@3x.png */,
 				9F2BFE791EF08ABA006B2F7D /* pushButtonBG_action@3x.png */,
 				9F2BFE7A1EF08ABA006B2F7D /* pushButtonBG_destructive_highlighted@3x.png */,
@@ -1670,16 +1766,13 @@
 				9F2BFE7C1EF08ABA006B2F7D /* pushButtonBG_disabled@3x.png */,
 				9F2BFE7D1EF08ABA006B2F7D /* pushButtonBG_utility_highlighted@3x.png */,
 				9F2BFE7E1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png */,
+				9F1F16E11FBCE6EE0039998B /* smallSelect_disclosureArrow@3x.png */,
+				9FAF0EBE2088F52500473D97 /* switch_toggle_off@3x.png */,
+				9FAF0EBF2088F52500473D97 /* switch_toggle@3x.png */,
+				9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */,
 				9FD354151F4CA86B0043D769 /* textField_bg_immutable_error_stretchable@3x.png */,
 				9FD354161F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png */,
-				9F2BFF161EF8A9FB006B2F7D /* textField_bg_error_stretchable@3x.png */,
 				9F2BFF171EF8A9FB006B2F7D /* textField_bg_noErr_stretchable@3x.png */,
-				9F8E302C1EEDAB9400F89A1D /* addButtonIcon_10@3x.png */,
-				9F8E302D1EEDAB9400F89A1D /* backButtonIcon@3x.png */,
-				9F8E302E1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png */,
-				9F8E302F1EEDAB9400F89A1D /* detectedCheckmark@3x.png */,
-				9F8E30301EEDAB9400F89A1D /* inlineMessageDialog_closeBtn@3x.png */,
-				9F8E30311EEDAB9400F89A1D /* list_rightside_chevron@3x.png */,
 				9F8E30321EEDAB9400F89A1D /* wallet-00C6FF@3x.png */,
 				9F8E30331EEDAB9400F89A1D /* wallet-00F4CD@3x.png */,
 				9F8E30341EEDAB9400F89A1D /* wallet-6B696B@3x.png */,
@@ -1688,6 +1781,11 @@
 				9F8E30371EEDAB9400F89A1D /* wallet-EACF12@3x.png */,
 				9F8E30381EEDAB9400F89A1D /* wallet-EB8316@3x.png */,
 				9F8E30391EEDAB9400F89A1D /* wallet-F97777@3x.png */,
+				9F22B79C1EFB5B6E0036B02F /* walletColorPicker_selectionIndicator_disabled_stretchable@3x.png */,
+				9F22B7981EFAD1D50036B02F /* walletColorPicker_selectionIndicator_stretchable@3x.png */,
+				9F2BFE751EF08ABA006B2F7D /* highlightableCellBG_highlighted@3x.png */,
+				9F22B79A1EFB37E00036B02F /* highlightableCellBG_disabled@3x.png */,
+				9F2BFE761EF08ABA006B2F7D /* highlightableCellBG@3x.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -2300,6 +2398,7 @@
 				9F33E6F31F1AE33A00610662 /* disclosureArrow_icon@3x.png in Resources */,
 				9F2BFE8A1EF08ABA006B2F7D /* pushButtonBG_utility@3x.png in Resources */,
 				9FD354181F4CA86B0043D769 /* textField_bg_immutable_noErr_stretchable@3x.png in Resources */,
+				65F0FD68255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png in Resources */,
 				9F8E2F9A1EE8837300F89A1D /* icon_tabBar_wallets__active@3x.png in Resources */,
 				9F7298CD1F3415F000CD59E1 /* logo_solid_light@3x.png in Resources */,
 				9F2BFE851EF08ABA006B2F7D /* pushButtonBG_action@3x.png in Resources */,
@@ -2327,6 +2426,7 @@
 				9F2BFE891EF08ABA006B2F7D /* pushButtonBG_utility_highlighted@3x.png in Resources */,
 				9F9C59E41F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_middle@3x.png in Resources */,
 				9F8E2F5E1EE4B3FB00F89A1D /* Native-Bold.otf in Resources */,
+				65F0FD67255D2CCD00ABAFCC /* XMRtoBTCInactive@3x.png in Resources */,
 				9F33E6E81F1A9F9C00610662 /* balanceDisplayBG_stretchable_lightGrey@3x.png in Resources */,
 				9FCE96CE1F04131600A5837D /* actionButton_iconImage__tryAgain@3x.png in Resources */,
 			);
@@ -2376,6 +2476,7 @@
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -2388,6 +2489,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2406,6 +2508,7 @@
 				9F2C331D2208F76000AA9C5A /* base58.cpp in Sources */,
 				9F2BFEDE1EF37E58006B2F7D /* FundsRequestListEmptyView.swift in Sources */,
 				9F9C59FD1F0D89BE003B9266 /* WalletPicker.swift in Sources */,
+				6576417F25485CB000DE76A8 /* ExchangeAmountInput.swift in Sources */,
 				9F2C33122208F76000AA9C5A /* multiexp.cc in Sources */,
 				9F1D00301EE345E500A4B3A5 /* Details.swift in Sources */,
 				9FCD9D611F4948A7004C0349 /* OpenAlias.swift in Sources */,
@@ -2419,6 +2522,7 @@
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
+				6576418325486C9900DE76A8 /* ExchangeCurrencyPicker.swift in Sources */,
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
 				9F2C332E2208F76000AA9C5A /* monero_key_image_utils.cpp in Sources */,
 				9F96C3041F43DDB10016CEFC /* WalletAppWalletActionsCoordinator.swift in Sources */,
@@ -2435,6 +2539,7 @@
 				9F2C32F52208F76000AA9C5A /* hash-extra-groestl.c in Sources */,
 				9F1D002E1EE345DF00A4B3A5 /* Forms.swift in Sources */,
 				9F7298BD1F329EE800CD59E1 /* main.swift in Sources */,
+				6576417B2548275A00DE76A8 /* ExchangeSendFundsViewController.swift in Sources */,
 				9F7298BB1F329EB900CD59E1 /* MMApplication.swift in Sources */,
 				9F33E6FB1F2004DD00610662 /* EditFormSubmissionController.swift in Sources */,
 				9F7ADAFA1EBD2C1C0073C2BB /* RootViewController.swift in Sources */,
@@ -2497,6 +2602,7 @@
 				9F7ADB041EBD30710073C2BB /* WindowController.swift in Sources */,
 				9F33E7091F2195DC00610662 /* ImportTransactionsModalFormSubmissionController.swift in Sources */,
 				9F9C59EF1F0C41FD003B9266 /* ContactDetailsViewController.swift in Sources */,
+				6576419225515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift in Sources */,
 				9F7298BF1F33C0EE00CD59E1 /* ScreenSleep.swift in Sources */,
 				9FA734061F05AF4E00C674D6 /* WalletsListController.swift in Sources */,
 				9F2BFE721EEED95E006B2F7D /* WalletIcons.swift in Sources */,
@@ -2510,6 +2616,8 @@
 				9F8E302B1EED7D7800F89A1D /* PasswordEntryScreenBaseViewController.swift in Sources */,
 				9F8E301A1EED6FFF00F89A1D /* UICommonComponents.swift in Sources */,
 				9F2119271F5E0EC300B8FA0E /* CreateWallet_MetaInfo_ViewController.swift in Sources */,
+				6576418C254C123200DE76A8 /* ExchangeOrderFormViewController.swift in Sources */,
+				6576419025513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift in Sources */,
 				9F2C33162208F76000AA9C5A /* multisig.cpp in Sources */,
 				9F2C33142208F76000AA9C5A /* bulletproofs.cc in Sources */,
 				9F00B8E31EC276C30040F52A /* MyMoneroCore.swift in Sources */,
@@ -2527,11 +2635,13 @@
 				9FEFDD6A1F991B83001C3CFD /* CurrencyPicker.swift in Sources */,
 				9FA734251F07610E00C674D6 /* UIColor+Random.swift in Sources */,
 				9F043BF02097677F00F6ADFD /* AddContactFromSendFundsTabFormViewController.swift in Sources */,
+				6576418A2549A82800DE76A8 /* ExchangeFunctions.swift in Sources */,
 				9FA7342A1F076DB700C674D6 /* EditContactFormViewController.swift in Sources */,
 				9F22B79F1EFF44B60036B02F /* InlineMessages.swift in Sources */,
 				9F2C331B2208F76000AA9C5A /* account.cpp in Sources */,
 				9F18CB531EFA10DF00DD6D83 /* WalletColorPicker.swift in Sources */,
 				9FB603081F4F6B6B00951175 /* ConnectivityMessagePresentationController.swift in Sources */,
+				6576418E254C151200DE76A8 /* OrderDetails.swift in Sources */,
 				9FA7341E1F05D94600C674D6 /* AddContactFromContactsTabFormViewController.swift in Sources */,
 				9F2C33132208F76000AA9C5A /* rctSigs.cpp in Sources */,
 				9F2C33232208F76000AA9C5A /* device.cpp in Sources */,
@@ -2541,7 +2651,9 @@
 				9F740D511F10549E0017A20E /* ContactPicker.swift in Sources */,
 				9F96C3021F439D650016CEFC /* WalletDetailsActionButtonsCell.swift in Sources */,
 				9F22B7AA1F01BAD20036B02F /* SmallUtilityValueButtons.swift in Sources */,
+				65912EEF2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift in Sources */,
 				9F8E2F811EE87FD600F89A1D /* ListViewController.swift in Sources */,
+				657641792548149E00DE76A8 /* ExchangeAppExchangeActionsCoordinator.swift in Sources */,
 				9F1D001C1EE301C100A4B3A5 /* RootTabBarViewController.swift in Sources */,
 				9F2119281F5E0EC300B8FA0E /* PickCreateOrUseExisting_Landing_ViewController.swift in Sources */,
 				9FA7340F1F05AF8800C674D6 /* FundsRequestsListViewController.swift in Sources */,
@@ -2564,6 +2676,7 @@
 				9F453FAA1F267A65004590DC /* SendFundsFormViewController.swift in Sources */,
 				9F2C332B2208F76000AA9C5A /* monero_paymentID_utils.cpp in Sources */,
 				9F740D571F16EDA20017A20E /* AddContactFromOtherTabFormViewController.swift in Sources */,
+				657641762548113E00DE76A8 /* ExchangeTabNavigationViewController.swift in Sources */,
 				9F2BFECA1EF0AA15006B2F7D /* WalletsListEmptyView.swift in Sources */,
 				9F2C33302208F76000AA9C5A /* monero_transfer_utils.cpp in Sources */,
 				9FEFBEF4215980C400CCAB6C /* MoneroUtils_KeyImageCache.swift in Sources */,
@@ -2573,6 +2686,7 @@
 				9F9C59FB1F0D8972003B9266 /* AddFundsRequestFormSubmissionController.swift in Sources */,
 				9FFC5FA420BA409100D29D51 /* MyMoneroCore_ObjCppBridge.swift in Sources */,
 				9F7ADAF91EBD2C1C0073C2BB /* AppDelegate.swift in Sources */,
+				657641812548659300DE76A8 /* ExchangeFields.swift in Sources */,
 				9F2C33192208F76000AA9C5A /* cryptonote_format_utils.cpp in Sources */,
 				9F2C32252208F72200AA9C5A /* OpenAlias.cpp in Sources */,
 				9F2C33072208F76000AA9C5A /* logger.cpp in Sources */,
@@ -2753,7 +2867,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -2807,7 +2921,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -2947,7 +3061,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3041,7 +3155,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3141,7 +3255,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;

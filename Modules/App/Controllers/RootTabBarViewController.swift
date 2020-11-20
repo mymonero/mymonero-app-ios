@@ -43,6 +43,7 @@ class RootTabBarViewController: UITabBarController
 	var fundsRequestsTabViewController = FundsRequestsTabNavigationViewController()
 	var contactsTabViewController = ContactsTabNavigationViewController()
 	var settingsTabViewController = SettingsTabNavigationViewController()
+	var exchangeTabViewController = ExchangeTabNavigationViewController()
 	//
 	// Lifecycle - Init
 	required init?(coder aDecoder: NSCoder)
@@ -51,6 +52,8 @@ class RootTabBarViewController: UITabBarController
 	}
 	init()
 	{
+		NSLog("We NSLOG ran here")
+		DDLog.Warn("App", "DDLog we ran here")
 		super.init(nibName: nil, bundle: nil)
 		//
 		self.setup()
@@ -69,8 +72,10 @@ class RootTabBarViewController: UITabBarController
 			self.walletsTabViewController,
 			self.sendFundsTabViewController,
 			self.fundsRequestsTabViewController,
+			self.exchangeTabViewController,
 			self.contactsTabViewController,
-			self.settingsTabViewController
+			self.settingsTabViewController,
+			
 		]
 		//
 		// vertically center tab bar item images
@@ -117,7 +122,11 @@ class RootTabBarViewController: UITabBarController
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_sendFundsToContact.notificationName, object: nil)
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_requestFundsFromContact.notificationName, object: nil)
 		}
-		do {
+		do { // walletAppContactActionsCoordinator
+			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_sendFundsToContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_sendFundsToContact.notificationName, object: nil)
+			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppContactActionsCoordinator_willTrigger_requestFundsFromContact), name: WalletAppContactActionsCoordinator.NotificationNames.willTrigger_requestFundsFromContact.notificationName, object: nil)
+		}
+		do { // ExchangeAppExchangeActionsController
 			NotificationCenter.default.addObserver(self, selector: #selector(WalletAppWalletActionsCoordinator_willTrigger_sendFundsFromWallet), name: WalletAppWalletActionsCoordinator.NotificationNames.willTrigger_sendFundsFromWallet.notificationName, object: nil)
 		}
 		do { // urlOpeningController
@@ -142,6 +151,7 @@ class RootTabBarViewController: UITabBarController
 	// Runtime - Imperatives
 	func setTabBarItems(isEnabled: Bool)
 	{
+		NSLog("We ran here nslog")
 		for (_, viewController) in self.viewControllers!.enumerated() {
 			viewController.tabBarItem.isEnabled = isEnabled
 		}
@@ -173,14 +183,17 @@ class RootTabBarViewController: UITabBarController
 		let shouldDisable_wallets = shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
 		let shouldDisable_sendFunds = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_fundsRequests = shouldDisable_nonWalletAndSettingsTabs
+		let shouldDisable_exchange = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_contacts = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_settings = shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
 		//
 		self.walletsTabViewController.tabBarItem.isEnabled = !shouldDisable_wallets
 		self.sendFundsTabViewController.tabBarItem.isEnabled = !shouldDisable_sendFunds
+		self.exchangeTabViewController.tabBarItem.isEnabled = !shouldDisable_exchange
 		self.fundsRequestsTabViewController.tabBarItem.isEnabled = !shouldDisable_fundsRequests
 		self.contactsTabViewController.tabBarItem.isEnabled = !shouldDisable_contacts
 		self.settingsTabViewController.tabBarItem.isEnabled = !shouldDisable_settings
+
 	}
 	//
 	func resetAllTabContentViewsToRootState(animated: Bool)
@@ -196,6 +209,7 @@ class RootTabBarViewController: UITabBarController
 	//
 	func programmatically_set(selectedIndex index: Int)
 	{
+		print(index)
 		let viewController = self.viewControllers![index]
 		if viewController.tabBarItem.isEnabled == false {
 			DDLog.Warn("App", "Asked to \(#function) selectedIndex to \(index) but its tabBarItem was disabled.")
@@ -216,14 +230,19 @@ class RootTabBarViewController: UITabBarController
 	{
 		self.programmatically_set(selectedIndex: 2)
 	}
-	func selectTab_contacts()
+	func selectTab_exchange()
 	{
 		self.programmatically_set(selectedIndex: 3)
+	}
+	func selectTab_contacts()
+	{
+		self.programmatically_set(selectedIndex: 5)
 	}
 	func selectTab_settings()
 	{
 		self.programmatically_set(selectedIndex: 4)
 	}
+
 	//
 	// Delegation - Notifications
 	@objc func PasswordController_didDeconstructBootedStateAndClearPassword()

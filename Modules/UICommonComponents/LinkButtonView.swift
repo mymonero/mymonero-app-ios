@@ -57,6 +57,11 @@ extension UICommonComponents
 		{
 			case larger
 			case normal
+			case hidden
+			
+			var isHidden: Bool {
+				return (self == .hidden)
+			}
 		}
 		//
 		// Init
@@ -71,9 +76,10 @@ extension UICommonComponents
 				height: LinkButtonView.h // increased height for touchability
 			)
 			super.init(frame: frame)
+			
 			self.mode = mode
 			self.size = size
-			self.setTitleText(to: title)
+			self.setTitleText(to: title, size: self.size)
 		}
 		required init?(coder aDecoder: NSCoder)
 		{
@@ -119,10 +125,66 @@ extension UICommonComponents
 			self.setAttributedTitle(disabled_attributedTitle, for: .disabled)
 			//
 			// now that we have title and font…
-			self.sizeToFit()
+
 			var frame = self.frame
 			frame.size.height = LinkButtonView.h
 			self.frame = frame
+			
+		}
+		func setTitleText(to title: String, size: Size)
+		{ // use this instead of setTitle
+			let color_normal = self.mode == .mono_destructive
+				? UIColor.standaloneValidationTextOrDestructiveLinkContentColor
+				: UIColor.utilityOrConstructiveLinkColor
+			let font = self.size == .larger ? UIFont.middlingBoldMonospace : UIFont.smallRegularMonospace
+			let normal_attributedTitle = NSAttributedString(
+				string: title,
+				attributes:
+				[
+					NSAttributedString.Key.foregroundColor: color_normal,
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.underlineStyle: 0
+				]
+			)
+			let selected_attributedTitle = NSAttributedString(
+				string: title,
+				attributes:
+				[
+					NSAttributedString.Key.foregroundColor: color_normal,
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+				]
+			)
+			let disabled_attributedTitle = NSAttributedString(
+				string: title,
+				attributes:
+				[
+					NSAttributedString.Key.foregroundColor: UIColor.disabledLinkColor,
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.underlineStyle: 0
+				]
+			)
+			self.setAttributedTitle(normal_attributedTitle, for: .normal)
+			self.setAttributedTitle(selected_attributedTitle, for: .highlighted)
+			self.setAttributedTitle(selected_attributedTitle, for: .selected)
+			self.setAttributedTitle(disabled_attributedTitle, for: .disabled)
+			//
+			// now that we have title and font…
+			if (size.isHidden == true) {
+				debugPrint("hidden");
+				self.frame = CGRect(
+					x: -5000,
+					y: 0,
+					width: 0,
+					height: 0 // increased height for touchability
+				)
+			} else {
+				self.sizeToFit()
+				var frame = self.frame
+				frame.size.height = LinkButtonView.h
+				self.frame = frame
+			}
+			
 			
 		}
 	}
