@@ -106,8 +106,7 @@ extension ExchangeSendFundsForm
 
 			let method = "get_exchange_configuration"
 			let apiEndpoint = apiUrl + method
-			debugPrint(apiEndpoint)
-			let request = Alamofire.request(apiEndpoint, method: .get, encoding: JSONEncoding.default)
+			Alamofire.request(apiEndpoint, method: .get, encoding: JSONEncoding.default)
 				.validate(statusCode: 200..<300)
 				.validate(contentType: ["application/json"])
 				.responseData { response in
