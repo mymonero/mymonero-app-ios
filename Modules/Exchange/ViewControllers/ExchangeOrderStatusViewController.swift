@@ -67,7 +67,7 @@ class ExchangeOrderStatusView: UICommonComponents.FormViewController
 		super.setup_views()
 		do {
 			let view = UICommonComponents.Form.FieldLabel(
-				title: NSLocalizedString("RECEIVE MOasfasNERO AT", comment: "")
+				title: NSLocalizedString("RECEIVE MONERO AT", comment: "")
 			)
 			self.toWallet_label = view
 			self.scrollView.addSubview(view)
