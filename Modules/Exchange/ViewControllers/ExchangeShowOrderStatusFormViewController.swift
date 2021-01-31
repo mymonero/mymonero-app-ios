@@ -69,6 +69,7 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 	var orderStatus_inputView: UICommonComponents.FormInputField!
 	var confirmSendFunds_buttonView: UICommonComponents.ActionButton!
 	var btcAddress: String!
+	var hasSetProvider: Bool = false;
 	weak var orderUpdateTimer: Timer?
 	weak var timeRemainingTimer: Timer?
 	var orderCalendar: Calendar
@@ -181,7 +182,20 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 				case .failure (let error):
 					debugPrint(error)
 				case .success(let value):
-					debugPrint(value["in_currency"])
+//					debugPrint(value["in_currency"])
+//					debugPrint(value);
+//					debugPrint(type(of: value));
+					// Value is a dictionary, so we can use the .exists method
+					// Perform check to see if we've set the provider properly.
+					if (self.hasSetProvider == false) {
+						if (value["provider_name"] != nil) {
+							debugPrint("Provider name is set")
+							let providerStr: String = value["provider_name"] as! String
+							self.uuid_label.text = providerStr + " UUID"
+							self.disclaimer_label.text = "Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact " +  providerStr + " with your transaction ID, as they will be able to assist."
+							self.hasSetProvider = true
+						}
+					}
 					// We should only really care about the order state, but we'll update all values here in case the first order status query fails
 					self.orderStatus_inputView.text = value["status"] as? String
 					self.uuid_inputView.text = value["provider_order_id"] as? String
@@ -285,6 +299,17 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 					self.currencyValuePayout_inputView.text = value["out_amount"] as? String
 					self.remainingCurrencyPayable_inputView.text = value["in_amount"] as? String
 					
+					
+					// We attempt to set the provider at this stage, but just in case we receive a response without a provider id, we attempt to set the provider a second time in the handle function for the timer
+					if (self.hasSetProvider == false) {
+						if (value["provider_name"] != nil) {
+							debugPrint("Provider name is set")
+							let providerStr: String = value["provider_name"] as! String
+							self.uuid_label.text = providerStr + " UUID"
+							self.disclaimer_label.text = "Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact " +  providerStr + " with your transaction ID, as they will be able to assist."
+							self.hasSetProvider = true
+						}
+					}
 					var expiryStr: String?
 					expiryStr = value["expires_at"] as? String
 
@@ -573,14 +598,14 @@ class ExchangeShowOrderStatusFormViewController: UICommonComponents.FormViewCont
 		// Declare exchange form view fields
 		do {
 			let disclaimer = """
-			Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact XMR.to with your transaction ID, as they will be able to assist.
+			Please note that MyMonero cannot provide support for any exchanges. Please contact the exchange with your support queries. Busy loading your order's details.
 			"""
 			let view = UICommonComponents.Form.FieldLabel(title: disclaimer)
 			self.disclaimer_label = view
 			self.scrollView.addSubview(view)
 		}
 		do {
-			let view = UICommonComponents.Form.FieldLabel(title: "XMR.TO transaction id")
+			let view = UICommonComponents.Form.FieldLabel(title: "Transaction id")
 			self.uuid_label = view
 			self.scrollView.addSubview(view)
 		}
