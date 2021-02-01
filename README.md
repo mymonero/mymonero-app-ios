@@ -51,7 +51,7 @@ All app source code and assets copyright © 2014-2019 by MyMonero. All rights re
 
 2. Select the desired target device.
 
-2. Build & run.
+3. Build & run.
 
 
 
