@@ -2962,7 +2962,7 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
-				MARKETING_VERSION = 1.1.16;
+				MARKETING_VERSION = 1.1.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
@@ -3005,7 +3005,7 @@
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
-				MARKETING_VERSION = 1.1.16;
+				MARKETING_VERSION = 1.1.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -3100,7 +3100,7 @@
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
-				MARKETING_VERSION = 1.1.16;
+				MARKETING_VERSION = 1.1.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-internal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
@@ -3194,7 +3194,7 @@
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
-				MARKETING_VERSION = 1.1.16;
+				MARKETING_VERSION = 1.1.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-profiling";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
@@ -3297,7 +3297,7 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
-				MARKETING_VERSION = 1.1.16;
+				MARKETING_VERSION = 1.1.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-testing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
