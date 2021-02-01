@@ -40,7 +40,7 @@ All app source code and assets copyright © 2014-2019 by MyMonero. All rights re
 
 3. **For development/bleeding edge**: Run `git checkout develop`.
 
-3. **Important:** Run `./bin/setup`. 
+4. **Important:** Run `./bin/setup`. 
 	* This will set up `./Modules/MyMoneroCore`, download the required submodules, and do a `pod install`.
 
 	* NOTE: If you ever need to pull the latest submodule commits, you can run `bin/update_submodules`.
@@ -51,7 +51,7 @@ All app source code and assets copyright © 2014-2019 by MyMonero. All rights re
 
 2. Select the desired target device.
 
-2. Build & run.
+3. Build & run.
 
 
 

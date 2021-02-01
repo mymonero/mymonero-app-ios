@@ -35,6 +35,8 @@ extension ExchangeSendFundsForm
 		//
 		// Properties/Protocols - DeleteEverythingRegistrant
 		var instanceUUID = UUID()
+		var localmoneroReferrerCode = "h2t1"
+		var localmoneroEnabled = true
 		func identifier() -> String { // satisfy DeleteEverythingRegistrant for isEqual
 			return self.instanceUUID.uuidString
 		}
@@ -73,6 +75,9 @@ extension ExchangeSendFundsForm
 //					debugPrint(self.in_min)
 //				}
 			}
+			performGetExchangeInfo() {
+				response in
+			}
 		}
 		
 		func performGetRateInfo(completion: @escaping (Alamofire.Result<[String: Any]>) -> Void) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
@@ -94,6 +99,33 @@ extension ExchangeSendFundsForm
 					default:
 						fatalError("received non-dictionary JSON response")
 					}
+				}
+		}
+		
+		func performGetExchangeInfo(completion: @escaping (Alamofire.Result<[String: Any]>) -> Void) { // https://stackoverflow.com/questions/29024703/error-handling-in-alamofire
+
+			let method = "get_exchange_configuration"
+			let apiEndpoint = apiUrl + method
+			Alamofire.request(apiEndpoint, method: .get, encoding: JSONEncoding.default)
+				.validate(statusCode: 200..<300)
+				.validate(contentType: ["application/json"])
+				.responseData { response in
+					switch response.result {
+						case .success(let value):
+							let json = JSON(value)
+
+							let referrer_code = json["referrer_info"]["localmonero"]["referrer_id"].stringValue
+							let enabled = json["referrer_info"]["localmonero"]["enabled"].stringValue
+							self.localmoneroReferrerCode = referrer_code
+							
+							if (enabled.uppercased() == "FALSE") {
+								self.buyLocalmonero_buttonView.isHidden = true
+								debugPrint("Turn it off")
+							}
+							
+						case let .failure(error):
+							debugPrint("Server not available - default to enabled")
+						}
 				}
 		}
 		
@@ -294,6 +326,7 @@ extension ExchangeSendFundsForm
 		//
 		var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
 		var generatePaymentID_linkButtonView: UICommonComponents.LinkButtonView!
+		var buyLocalmonero_buttonView: UICommonComponents.LinkButtonView!
 		var manualPaymentID_inputView: UICommonComponents.FormInputField!
 		//
 		var priority_label: UICommonComponents.Form.FieldLabel!
@@ -581,6 +614,16 @@ extension ExchangeSendFundsForm
 				self.btcAddress_label = view
 				self.scrollView.addSubview(view)
 			}
+			
+			do {
+				let view = UICommonComponents.LinkButtonView(mode: .mono_default, size: .hidden, title: NSLocalizedString("BUY MONERO USING LOCALMONERO", comment: ""))
+				view.addTarget(self, action: #selector(buyLocalmonero_tapped), for: .touchUpInside)
+				self.buyLocalmonero_buttonView = view
+
+				self.scrollView.addSubview(view)
+			}
+
+			
 			do { // Out Amount
 				let view = UICommonComponents.FormInputField(
 					placeholder: NSLocalizedString("", comment: "")
@@ -1582,6 +1625,17 @@ extension ExchangeSendFundsForm
 					height: UICommonComponents.FormInputField.height
 				).integral
 			}
+			
+			do {
+				self.buyLocalmonero_buttonView.frame = CGRect(
+					x: label_x,
+					y: self.btcAddress_inputView.frame.origin.y + self.btcAddress_inputView.frame.size.height + interSectionSpacing,
+					width: self.btcAddress_inputView.frame.size.width,
+					height: self.btcAddress_inputView.frame.size.height
+				).integral
+				self.buyLocalmonero_buttonView.sizeToFit() // get exact width
+			}
+			
 			do { // Order status validation l Label
 				
 				self.orderFormValidation_label.frame = CGRect(
@@ -1709,6 +1763,12 @@ extension ExchangeSendFundsForm
 			return true
 		}
 	
+		@objc func buyLocalmonero_tapped()
+		{
+			let urlStr = "https://localmonero.co/?rc=" + self.localmoneroReferrerCode
+			guard let url = URL(string: urlStr) else { return }
+			UIApplication.shared.open(url)
+		}
 		//
 		// Delegation - Interactions
 		@objc func btcAddress_changed()
