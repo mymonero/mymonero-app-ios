@@ -12,6 +12,7 @@ def common_pods
 	pod 'AMPopTip', '3.5.0'
 	pod 'Popover', '1.2.0'
 	pod 'ofxiOSBoost', '1.60.0'
+	pod 'SwiftyJSON', '~> 4.0'
 end
 
 target 'MyMonero' do

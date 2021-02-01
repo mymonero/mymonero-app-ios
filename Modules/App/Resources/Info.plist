@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.11</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -32,15 +32,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>29</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s camera to scan physical Monero Payment Request QR codes.</string>
+	<string>The MyMonero app uses your device's camera to scan physical Monero Payment Request QR codes.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>The MyMonero app lets you use Face ID and Touch ID to authenticate for actions after unlocking the app, such as sending money.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
+	<string>The MyMonero app uses your device's photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The MyMonero app uses your device&apos;s photos album to save and to open Monero Payment Request QR code image files.</string>
+	<string>The MyMonero app uses your device's photos album to save and to open Monero Payment Request QR code image files.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Native-Bold.otf</string>
@@ -49,8 +51,6 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>The MyMonero app lets you use Face ID and Touch ID to authenticate for actions after unlocking the app, such as sending money.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

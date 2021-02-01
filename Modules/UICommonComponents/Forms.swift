@@ -473,6 +473,49 @@ extension UICommonComponents
 			}
 		}
 		//
+		class Text: UILabel
+		{
+			//
+			// Properties - Static
+			static let fixedFont = UIFont.smallBoldMonospace
+			static let fixedHeight: CGFloat = FieldLabel.fixedFont.lineHeight
+			//
+			static let visual_marginBelow: CGFloat = UIFont.shouldStepDownLargerFontSizes ? 9 : 10
+			static let marginBelowLabelAboveTextInputView: CGFloat = Form.FieldLabel.visual_marginBelow - FormInputCells.imagePadding_y
+			static let marginBelowLabelAbovePushButton: CGFloat = Form.FieldLabel.visual_marginBelow - PushButtonCells.imagePaddingForShadow_v
+			//
+			static let visual_marginAboveLabelForUnderneathField: CGFloat = 22
+			static let marginAboveLabelForUnderneathField_textInputView: CGFloat = Form.FieldLabel.visual_marginAboveLabelForUnderneathField - FormInputCells.imagePadding_y + (UIFont.shouldStepDownLargerFontSizes ? 0 : 12)
+			//
+			// Lifecycle - Init
+			init(title: String, sizeToFit: Bool? = false)
+			{
+				let frame = CGRect(
+					x: CGFloat(0),
+					y: CGFloat(0),
+					width: CGFloat(0),
+					height: Form.FieldLabel.fixedHeight
+				)
+				super.init(frame: frame)
+				self.text = title
+				self.setup()
+				if sizeToFit == true { // after receiving style
+					self.sizeToFit()
+				}
+			}
+			required init?(coder aDecoder: NSCoder) {
+				fatalError("init(coder:) has not been implemented")
+			}
+			func setup()
+			{
+				
+				self.font = FieldLabel.fixedFont
+				self.isUserInteractionEnabled = false // do not intercept touches destined for the form background tap recognizer
+				self.textColor = UIColor(rgb: 0xFFFFFF)
+				self.numberOfLines = 1
+			}
+		}
+		//
 		class FieldLabelAccessoryLabel: UILabel
 		{
 			//
