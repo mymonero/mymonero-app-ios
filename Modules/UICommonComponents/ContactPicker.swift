@@ -132,6 +132,7 @@ extension UICommonComponents.Form
 		}
 		func setup()
 		{
+			debugPrint("Setup for ContactPicker invoked")
 			do {
 				let view = self.inputField
 				view.delegate = self
@@ -696,6 +697,7 @@ extension UICommonComponents.Form
 		// Imperatives - Internal - Manually input addresses
 		func validateTextInputAsPossibleAddress()
 		{
+			debugPrint("validateTextInputAsPossibleAddress invoked")
 			assert(self.inputMode == .contactsAndAddresses)
 			let possibleAddress = self.inputField.text ?? ""
 			let hasEnteredNoAddressContent = possibleAddress == ""
@@ -722,6 +724,7 @@ extension UICommonComponents.Form
 				fn()
 			}
 			//
+			debugPrint("Could be OA address?")
 			let couldBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
 			if couldBeOAAddress == false {
 				let (err_str, decodedAddressComponents) = MyMoneroCore.shared_objCppBridge.decoded(address: possibleAddress)
@@ -749,6 +752,11 @@ extension UICommonComponents.Form
 				}
 				return
 			}
+			debugPrint("Did we fall through to here?")
+			// This could still be a Yat address -- let's check
+			debugPrint(type(of: possibleAddress))
+			let Yat = YatLookup()
+			debugPrint(Yat.isValidYatHandle(possibleAddress: "string"))
 			// then this could be an OA address…
 			self.set(resolvingIndicatorIsVisible: true)
 			if let fn = self.willBeginResolvingPossibleOATextInput_fn {
@@ -815,6 +823,7 @@ extension UICommonComponents.Form
 //		}
 		func textFieldDidBeginEditing(_ textField: UITextField)
 		{
+			debugPrint("textFieldDidBeginEditing")
 			self._searchForAndDisplaySearchResults()
 			if let fn = self.textFieldDidBeginEditing_fn {
 				fn(textField)
@@ -848,6 +857,7 @@ extension UICommonComponents.Form
 			// v--- only provide this in special cases:
 			withTypingDelayOverride typingDelay: TimeInterval = ContactAndAddressPickerView.actualUsage_typingDelay
 		) {
+			debugPrint("__inputField_editingChanged")
 			do { // zeroing text input state
 				self.hasValidTextInput_moneroAddress = false
 				self.hasValidTextInput_resolvedOAAddress = false
@@ -1379,6 +1389,7 @@ extension UICommonComponents.Form
 		}
 	}
 	//
+	
 	//
 	class ContactPickerOpenAliasResolverRequestMaker: OpenAliasResolverRequestMaker
 	{

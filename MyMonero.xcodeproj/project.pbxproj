@@ -21,6 +21,7 @@
 		65912EEF2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */; };
 		65C1395B25F77BF700CF4768 /* YatTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C1395A25F77BF700CF4768 /* YatTabNavigationViewController.swift */; };
 		65C1395F25F77D7500CF4768 /* YatLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C1395E25F77D7500CF4768 /* YatLogo.png */; };
+		65C13963260DE5B100CF4768 /* YatLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C13962260DE5B100CF4768 /* YatLookup.swift */; };
 		65F0FD67255D2CCD00ABAFCC /* XMRtoBTCInactive@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */; };
 		65F0FD68255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */; };
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
@@ -362,6 +363,7 @@
 		65C1395A25F77BF700CF4768 /* YatTabNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YatTabNavigationViewController.swift; sourceTree = "<group>"; };
 		65C1395E25F77D7500CF4768 /* YatLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = YatLogo.png; sourceTree = "<group>"; };
 		65C1396025F8F5C700CF4768 /* MyMonero.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyMonero.entitlements; sourceTree = "<group>"; };
+		65C13962260DE5B100CF4768 /* YatLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YatLookup.swift; sourceTree = "<group>"; };
 		65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "XMRtoBTCInactive@3x.png"; sourceTree = "<group>"; };
 		65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "XMRtoBTCActive@3x.png"; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
@@ -961,6 +963,7 @@
 			children = (
 				65C1395D25F77D2C00CF4768 /* ViewControllers */,
 				65C1395C25F77D1600CF4768 /* Resources */,
+				65C13962260DE5B100CF4768 /* YatLookup.swift */,
 			);
 			path = Yat;
 			sourceTree = "<group>";
@@ -2554,6 +2557,7 @@
 				9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */,
+				65C13963260DE5B100CF4768 /* YatLookup.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				6576418325486C9900DE76A8 /* ExchangeCurrencyPicker.swift in Sources */,
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
