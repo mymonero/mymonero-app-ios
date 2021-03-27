@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import Alamofire
 
 enum YatLookupError: Error {
-	case addressContainsInvalidEmojis
+	case addressContainsInvalidEmojis(reason: String)
 	case yatNotFound
 	case yatLengthInvalid(reason: String)
 	case yatTagsNotSet(reason: String)
@@ -126,10 +127,20 @@ class YatLookup {
 //		debugPrint("Initted YatResolver with parameters")
 //		self.parameters = parameters
 //	}
+	var apiUrl: String
 	
 	init() {
 		debugPrint("Initted YatLookup without parameters")
 		//self.parameters = parameters
+		self.apiUrl = "https://a.y.at"
+	}
+	
+	init(debugMode: Bool) {
+		if (debugMode) {
+			self.apiUrl = "https://api-dev.yat.rocks"
+		} else {
+			self.apiUrl = "https://a.y.at"
+		}
 	}
 	
 	func containsEmojis(possibleAddress: String) -> Bool {
@@ -149,31 +160,50 @@ class YatLookup {
 		return false
 	}
 	
-	func getSupportedEmojis() {
+	func getSupportedEmojis() -> Array<String> {
 		debugPrint("getSupportedEmojis")
+		return self.yatEmojis
 	}
+	
 	func isValidYatCharacter() -> Bool {
 		debugPrint("isValidYatCharacter")
 		return false
 	}
-	func lookupMoneroAddresses() {
+	func lookupMoneroAddresses(yatHandle: String) {
 		debugPrint("lookupMoneroAddresses")
+		debugPrint("Ok, cool, let's look this thing up")
+		
 	}
+	
+	func performLookup(yatHandle: String!, completion: @escaping (Result<[String: Any]>) -> Void) {
+		
+		let url: String = self.apiUrl + "/emoji_id/" + yatHandle + "?tags=0x1001,0x1002"
+		//self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
+		debugPrint("Let us look up \(yatHandle): url is \(url)")
+		let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed)
+		
+		Alamofire.request(encodedUrl!, method: .get).responseJSON {
+				response in
+				// add switch response.result here. Check for cases .success, .failure, default
+				debugPrint(response)
+				switch response.result {
+				case .success(let value as [String: Any]):
+					completion(.success(value))
+
+				case .failure(let error):
+					completion(.failure(error))
+
+				default:
+					fatalError("received non-dictionary JSON response")
+				}
+			}
+	}
+	
 	func testEmojisAgainstUnicodePropertyEscape() {
 		debugPrint("testEmojisAgainstUnicodePropertyEscape")
 	}
 	func isValidYatHandle(possibleAddress: String) throws -> Bool {
-		debugPrint("isValidYatHandle invoked")
-		debugPrint(possibleAddress)
-		debugPrint("Contains only emoji?")
-		debugPrint(possibleAddress.containsOnlyEmoji);
-		debugPrint("How many chars?")
-		debugPrint(possibleAddress.characters.count)
-		debugPrint("How many chars?")
-		debugPrint(possibleAddress.count)
-		debugPrint(possibleAddress.emojis)
-		// Logic
-		
+
 		// Check string contains only emojis
 		if (possibleAddress.containsOnlyEmoji == false) {
 			throw YatLookupError.addressContainsNonEmojiCharacters
@@ -199,7 +229,7 @@ class YatLookup {
 			debugPrint("Valid Yat Emoji?")
 			debugPrint(self.yatEmojis.contains(emoji))
 			if (self.yatEmojis.contains(emoji) == false) {
-				throw YatLookupError.addressContainsInvalidEmojis
+				throw YatLookupError.addressContainsInvalidEmojis(reason: "\(emoji) is not a valid Yat emoji")
 			}
 		}
 		

@@ -735,20 +735,30 @@ extension UICommonComponents.Form
 			// This could still be a Yat address -- let's check
 			debugPrint(type(of: possibleAddress))
 			let Yat = YatLookup()
+			let isValidYat = false
 			
 			if Yat.containsEmojis(possibleAddress: possibleAddress) {
 				debugPrint("Possible Yat")
 				do {
-					//try debugPrint(Yat.isValidYatHandle(possibleAddress: possibleAddress))
 					let isValidYat = try Yat.isValidYatHandle(possibleAddress: possibleAddress)
-					debugPrint(isValidYat)
+					if (!isValidYat) {
+						return
+					}
+					let yatResponse = Yat.performLookup(yatHandle: possibleAddress, completion: {response in
+						debugPrint("Completion function")
+						debugPrint(response)
+					})
+					
 				} catch YatLookupError.addressContainsNonEmojiCharacters {
-					//handleLookupError(YatLookupError: error)
-					debugPrint("Non-emoji")
 					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 						fn("It looks like you're trying to pay a Yat, but Yat addresses don't support non-emoji characters")
 					}
 					return
+				} catch YatLookupError.addressContainsInvalidEmojis(let error) {
+					debugPrint(error)
+					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+						fn(error)
+					}
 				} catch let error as YatLookupError {
 					//handleLookupError(YatLookupError: error)
 					debugPrint("Caught an error")
@@ -759,6 +769,10 @@ extension UICommonComponents.Form
 				}
 			}
 
+			// Do stuff with lookup response
+			debugPrint("\(possibleAddress) is a valid Yat Handle")
+			//YatLookup.lookupMoneroAddresses(yatHandle: possibleAddress)
+			
 			
 			if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
 				debugPrint("Inside fn2")
