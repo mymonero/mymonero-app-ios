@@ -330,9 +330,21 @@ extension SendFundsForm
 					self.set_addPaymentID_buttonView(isHidden: true)
 					self.clearValidationMessage() // this is probably redundant here
 				}
+				view.yatResolve__preSuccess_terminal_validationMessage_fn =
+				{ [unowned self] (localizedString) in
+					assert(Thread.isMainThread)
+					debugPrint(view)
+					debugPrint(self)
+					debugPrint("Yat: For some reason, we're setting the errors here")
+					self.setValidationMessage(localizedString)
+					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
+				}
 				view.oaResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
 					assert(Thread.isMainThread)
+					debugPrint("For some reason, we're setting the errors here")
+					debugPrint(view)
+					debugPrint(self)
 					self.setValidationMessage(localizedString)
 					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
 				}

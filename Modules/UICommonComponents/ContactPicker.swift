@@ -745,9 +745,8 @@ extension UICommonComponents.Form
 				} catch YatLookupError.addressContainsNonEmojiCharacters {
 					//handleLookupError(YatLookupError: error)
 					debugPrint("Non-emoji")
-					if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
-						debugPrint("Inside fn2")
-						fn()
+					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+						fn("It looks like you're trying to pay a Yat, but Yat addresses don't support non-emoji characters")
 					}
 					return
 				} catch let error as YatLookupError {
