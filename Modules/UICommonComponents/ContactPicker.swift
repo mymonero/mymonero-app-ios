@@ -97,6 +97,7 @@ extension UICommonComponents.Form
 		var finishedValidatingTextInput_foundValidMoneroAddress_fn: ((_ detectedEmbedded_paymentID: MoneroPaymentID?) -> Void)?
 		var willBeginResolvingPossibleOATextInput_fn: (() -> Void)?
 		//
+		var yatResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
 		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
 		var oaResolve__success_fn: ((
 			_ resolved_xmr_address: MoneroAddress,
@@ -693,6 +694,11 @@ extension UICommonComponents.Form
 			super.layoutSubviews()
 			self.sizeAndLayOutSubviews()
 		}
+		
+		func handleLookupError(error: String) {
+			debugPrint("Handle the error");
+		}
+		
 		//
 		// Imperatives - Internal - Manually input addresses
 		func validateTextInputAsPossibleAddress()
@@ -723,7 +729,43 @@ extension UICommonComponents.Form
 			if let fn = willValidateNonZeroTextInput_fn {
 				fn()
 			}
-			//
+			// Yat checking
+			
+			debugPrint("Do Yat checking")
+			// This could still be a Yat address -- let's check
+			debugPrint(type(of: possibleAddress))
+			let Yat = YatLookup()
+			
+			if Yat.containsEmojis(possibleAddress: possibleAddress) {
+				debugPrint("Possible Yat")
+				do {
+					//try debugPrint(Yat.isValidYatHandle(possibleAddress: possibleAddress))
+					let isValidYat = try Yat.isValidYatHandle(possibleAddress: possibleAddress)
+					debugPrint(isValidYat)
+				} catch YatLookupError.addressContainsNonEmojiCharacters {
+					//handleLookupError(YatLookupError: error)
+					debugPrint("Non-emoji")
+					if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+						debugPrint("Inside fn2")
+						fn()
+					}
+					return
+				} catch let error as YatLookupError {
+					//handleLookupError(YatLookupError: error)
+					debugPrint("Caught an error")
+					debugPrint(error)
+					
+				} catch {
+					debugPrint("We should never see this text")
+				}
+			}
+
+			
+			if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+				debugPrint("Inside fn2")
+				fn()
+			}
+				//
 			debugPrint("Could be OA address?")
 			let couldBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
 			if couldBeOAAddress == false {
@@ -732,6 +774,7 @@ extension UICommonComponents.Form
 					DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode as a Monero address.")
 					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
 					if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
+						debugPrint("Inside fn")
 						fn()
 					}
 					return // just return silently
@@ -752,11 +795,7 @@ extension UICommonComponents.Form
 				}
 				return
 			}
-			debugPrint("Did we fall through to here?")
-			// This could still be a Yat address -- let's check
-			debugPrint(type(of: possibleAddress))
-			let Yat = YatLookup()
-			debugPrint(Yat.isValidYatHandle(possibleAddress: "string"))
+
 			// then this could be an OA address…
 			self.set(resolvingIndicatorIsVisible: true)
 			if let fn = self.willBeginResolvingPossibleOATextInput_fn {
