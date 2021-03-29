@@ -339,6 +339,34 @@ extension SendFundsForm
 					self.setValidationMessage(localizedString)
 					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
 				}
+				view.yatResolve__success_fn =
+				{ [unowned self] (resolved_xmr_address) in
+					assert(Thread.isMainThread)
+					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
+					
+					debugPrint("Inside YatResolve success function")
+					
+					//
+					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+					//
+					// the ContactPicker also already handles displaying the resolved addr and pids
+					//
+//					do { // now since the contact picker's mode is handling resolving text inputs too:
+//						if view.hasValidTextInput_resolvedOAAddress {
+//							if payment_id != nil && payment_id != "" { // just to make sure we're not showing these,
+//								// we already hid the + and manual pid input views
+//							} else {
+//								if self.manualPaymentID_inputView.isHidden { // if manual payment field not showing
+//									self.set_addPaymentID_buttonView(isHidden: false) // then make sure we are at least showing the + payment ID btn
+//								} else {
+//									// it should be the case here that either add pymt id btn or manual payment field is visible
+//								}
+//							}
+//						} else {
+//							assert(view.selectedContact != nil) // or they'd better have selected a contact!!
+//						}
+//					}
+				}
 				view.oaResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
 					assert(Thread.isMainThread)

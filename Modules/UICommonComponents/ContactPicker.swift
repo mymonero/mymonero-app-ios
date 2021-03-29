@@ -98,6 +98,10 @@ extension UICommonComponents.Form
 		var willBeginResolvingPossibleOATextInput_fn: (() -> Void)?
 		//
 		var yatResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
+		var yatResolve__success_fn: ((
+			_ resolved_xmr_address: String
+		) -> Void)?
+		
 		var oaResolve__preSuccess_terminal_validationMessage_fn: ((_ localizedString: String) -> Void)?
 		var oaResolve__success_fn: ((
 			_ resolved_xmr_address: MoneroAddress,
@@ -353,6 +357,7 @@ extension UICommonComponents.Form
 			useContactPaymentID: Bool = true
 		) { // This function must also be able to handle being called while a contact is already selected
 			//
+			
 			if self.selectedContact != nil {
 				if self.selectedContact! == contact {
 					// nothing to do - same contact already selected
@@ -730,11 +735,36 @@ extension UICommonComponents.Form
 				fn()
 			}
 			// Yat checking
-			
+			/*						oaResolve__success_fn:
+			{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
+						 self.set(resolvingIndicatorIsVisible: false)
+						 self.oaResolverRequestMaker = nil // must free, and before call-back
+						 do {
+							 if self.displayMode == .paymentIds_andResolvedAddrs {
+								 let generator = UINotificationFeedbackGenerator()
+								 generator.prepare()
+								 generator.notificationOccurred(.success)
+								 //
+								 self._display(resolved_XMRAddress: resolved_xmr_address)
+								 if useContactPaymentID {
+									 if payment_id != nil && payment_id != "" {
+										 self._display(resolved_paymentID: payment_id!)
+									 } else {
+										 self._hide_resolved_paymentID()
+									 }
+								 } else {
+									 self._hide_resolved_paymentID()
+								 }
+							 }
+						 }
+						 if let fn = self.oaResolve__success_fn {
+							 fn(resolved_xmr_address, payment_id, tx_description)
+						 }
+					 }*/
 			debugPrint("Do Yat checking")
 			// This could still be a Yat address -- let's check
 			debugPrint(type(of: possibleAddress))
-			let Yat = YatLookup()
+			let Yat = YatLookup(debugMode: true)
 			let isValidYat = false
 			
 			if Yat.containsEmojis(possibleAddress: possibleAddress) {
@@ -747,6 +777,57 @@ extension UICommonComponents.Form
 					let yatResponse = Yat.performLookup(yatHandle: possibleAddress, completion: {response in
 						debugPrint("Completion function")
 						debugPrint(response)
+						debugPrint(type(of: response))
+						let responseDict = response.value
+						debugPrint(responseDict?.count)
+						debugPrint(responseDict?["0x1001"])
+						if let recordCount = responseDict?.count {
+							switch (recordCount) {
+								case 0:
+									print("0")
+									if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+										fn("The Yat handle \(possibleAddress) does not have any Monero addresses associated with it")
+									}
+								case 1:
+									print("1")
+								case 2:
+									self._display(resolved_XMRAddress: (responseDict?["0x1001"]!)!)
+									if let fn = self.yatResolve__success_fn {
+										fn("Yat success YAY!!!!!!!!!!!!!!")
+									}
+									print("2")
+									// Use
+								default:
+									print("Shouldn't ever see this")
+							}
+						
+						//debugPrint(responseDict?.count == 0)
+						// No Monero address or subaddress
+						//debugPrint(responseDict?.count == 2)
+						// Both a Monero address and a subaddress
+						} else {
+							// is this even possible?
+							debugPrint("Didn't get a count value")
+						}
+						// So, we've got a valid response object at this point.
+						//debugPrint(responseArr)
+						//debugPrint(response["result"] as? String)
+//						if (self.hasSetProvider == false) {
+//							if (value["provider_name"] != nil) {
+//								debugPrint("Provider name is set")
+//								let providerStr: String = value["provider_name"] as! String
+//								self.uuid_label.text = providerStr + " UUID"
+//								self.disclaimer_label.text = "Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact " +  providerStr + " with your transaction ID, as they will be able to assist."
+//								self.hasSetProvider = true
+//							}
+//						}
+//						// We should only really care about the order state, but we'll update all values here in case the first order status query fails
+//						self.orderStatus_inputView.text = value["status"] as? String
+//						self.uuid_inputView.text = value["provider_order_id"] as? String
+//						self.currencyValuePayout_inputView.text = value["out_amount"] as? String
+//						self.remainingCurrencyPayable_inputView.text = value["in_amount"] as? String
+//						//debugPrint(type(of: response.result))
+						//let resultArr = response.result
 					})
 					
 				} catch YatLookupError.addressContainsNonEmojiCharacters {
