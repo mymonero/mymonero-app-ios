@@ -70,6 +70,7 @@ extension SendFundsForm
 				_ isXMRAddressIntegrated: Bool, // regarding sentTo_address
 				_ integratedAddressPIDForDisplay_orNil: MoneroPaymentID?
 			) -> Void
+			var resolvedYatHandle: Bool?
 		}
 		var parameters: Parameters
 		init(parameters: Parameters)
@@ -99,6 +100,8 @@ extension SendFundsForm
 			let amount_string = self.parameters.amount_submittableDouble != nil // human-understandable number, e.g. input 0.5 for 0.5 XMR
 				? MoneyAmount.newMoneroAmountString(withAmountDouble: self.parameters.amount_submittableDouble!)
 				: nil
+			debugPrint("Ok, cool, this should invoke SendFunds")
+			debugPrint(parameters)
 			self.parameters.fromWallet.sendFunds(
 				enteredAddressValue: self.parameters.enteredAddressValue,
 				resolvedAddress: self.parameters.resolvedAddress,

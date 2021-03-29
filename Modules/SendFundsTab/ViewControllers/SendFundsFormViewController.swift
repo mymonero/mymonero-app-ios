@@ -77,6 +77,7 @@ extension SendFundsForm
 		var sendTo_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
+		var resolvedYatHandle = false
 		//
 		var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
 		var generatePaymentID_linkButtonView: UICommonComponents.LinkButtonView!
@@ -336,12 +337,15 @@ extension SendFundsForm
 					debugPrint(view)
 					debugPrint(self)
 					debugPrint("Yat: For some reason, we're setting the errors here")
+					self.resolvedYatHandle = false
 					self.setValidationMessage(localizedString)
 					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
 				}
 				view.yatResolve__success_fn =
 				{ [unowned self] (resolved_xmr_address) in
 					assert(Thread.isMainThread)
+					self.resolvedYatHandle = true
+					self.sendTo_inputView.hasValidTextInput_moneroAddress = true
 					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
 					
 					debugPrint("Inside YatResolve success function")
@@ -937,7 +941,7 @@ extension SendFundsForm
 				self.disableForm() // optimistic
 				//
 				let selectedContact = self.sendTo_inputView.selectedContact
-				let enteredAddressValue = self.sendTo_inputView.inputField.text
+				var enteredAddressValue = self.sendTo_inputView.inputField.text
 				//
 				let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
 				let resolvedAddress = resolvedAddress_fieldIsVisible ? self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text : nil
@@ -947,6 +951,11 @@ extension SendFundsForm
 				//
 				let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
 				let resolvedPaymentID = resolvedPaymentID_fieldIsVisible ? self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? "" : nil
+				// Handle Yat
+				if (self.resolvedYatHandle == true) {
+					// This is a workaround for now until the WASM is amended to have a flag for a resolved Yat
+					enteredAddressValue = resolvedAddress
+				}
 				//
 				let priority = self.selected_priority
 				//

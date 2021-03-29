@@ -762,12 +762,14 @@ extension UICommonComponents.Form
 						 }
 					 }*/
 			debugPrint("Do Yat checking")
+			
 			// This could still be a Yat address -- let's check
 			debugPrint(type(of: possibleAddress))
 			let Yat = YatLookup(debugMode: true)
 			let isValidYat = false
 			
 			if Yat.containsEmojis(possibleAddress: possibleAddress) {
+				self.set(resolvingIndicatorIsVisible: true)
 				debugPrint("Possible Yat")
 				do {
 					let isValidYat = try Yat.isValidYatHandle(possibleAddress: possibleAddress)
@@ -812,33 +814,10 @@ extension UICommonComponents.Form
 									print("Shouldn't ever see this")
 							}
 						
-						//debugPrint(responseDict?.count == 0)
-						// No Monero address or subaddress
-						//debugPrint(responseDict?.count == 2)
-						// Both a Monero address and a subaddress
 						} else {
 							// is this even possible?
 							debugPrint("Didn't get a count value")
 						}
-						// So, we've got a valid response object at this point.
-						//debugPrint(responseArr)
-						//debugPrint(response["result"] as? String)
-//						if (self.hasSetProvider == false) {
-//							if (value["provider_name"] != nil) {
-//								debugPrint("Provider name is set")
-//								let providerStr: String = value["provider_name"] as! String
-//								self.uuid_label.text = providerStr + " UUID"
-//								self.disclaimer_label.text = "Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact " +  providerStr + " with your transaction ID, as they will be able to assist."
-//								self.hasSetProvider = true
-//							}
-//						}
-//						// We should only really care about the order state, but we'll update all values here in case the first order status query fails
-//						self.orderStatus_inputView.text = value["status"] as? String
-//						self.uuid_inputView.text = value["provider_order_id"] as? String
-//						self.currencyValuePayout_inputView.text = value["out_amount"] as? String
-//						self.remainingCurrencyPayable_inputView.text = value["in_amount"] as? String
-//						//debugPrint(type(of: response.result))
-						//let resultArr = response.result
 					})
 					
 				} catch YatLookupError.addressContainsNonEmojiCharacters {
@@ -891,7 +870,6 @@ extension UICommonComponents.Form
 					DDLog.Warn("UICommonComponents.ContactPicker", "Couldn't decode as a Monero address.")
 					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
 					if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
-						debugPrint("Inside fn")
 						fn()
 					}
 					return // just return silently
