@@ -197,28 +197,34 @@ class YatLookup {
 				case .success(let value as [String: Any]):
 					// This might return successful in spite of a 404 error -- manually check
 					//if (response.result.err)
-					debugPrint(response.response?.statusCode)
-					debugPrint(type(of: response.response?.statusCode))
-					debugPrint("@@@@@@@@@@@@@@@@@@@@@")
-					debugPrint(response.result)
-					debugPrint(type(of: response.result))
-					let json = JSON(response.result.value)
-					debugPrint(json)
-					debugPrint(json["result"])
-					debugPrint(json["result"].count)
-					debugPrint(json["result"][0])
-					debugPrint(json["result"][0]["data"])
-					var returnValueDict: [String: String] = [:]
-					for (index,subJson):(String, JSON) in json["result"] {
-						// Do something you want
-						debugPrint(index)
-						debugPrint(subJson)
-						returnValueDict[subJson["tag"].stringValue] = subJson["data"].stringValue
+					let notFound: Int = 404
+					if (response.response?.statusCode == 404) {
+						completion(.failure(YatLookupError.yatNotFound))
+						return
 					}
-					debugPrint(returnValueDict)
-					completion(.success(returnValueDict))
+//					debugPrint(response.response?.statusCode)
+//					debugPrint(type(of: response.response?.statusCode))
+//					debugPrint("@@@@@@@@@@@@@@@@@@@@@")
+//					debugPrint(response.result)
+//					debugPrint(type(of: response.result))
+//					let json = JSON(response.result.value)
+//					debugPrint(json)
+//					debugPrint(json["result"])
+//					debugPrint(json["result"].count)
+//					debugPrint(json["result"][0])
+//					debugPrint(json["result"][0]["data"])
+//					var returnValueDict: [String: String] = [:]
+//					for (index,subJson):(String, JSON) in json["result"] {
+//						// Do something you want
+//						debugPrint(index)
+//						debugPrint(subJson)
+//						returnValueDict[subJson["tag"].stringValue] = subJson["data"].stringValue
+//					}
+//					debugPrint(returnValueDict)
+//					completion(.success(returnValueDict))
 
 				case .failure(let error):
+					// Could be user's internet is down, or Yat's servers unreachable
 					completion(.failure(error))
 
 				default:

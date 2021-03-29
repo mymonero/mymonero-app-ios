@@ -774,28 +774,39 @@ extension UICommonComponents.Form
 					if (!isValidYat) {
 						return
 					}
-					let yatResponse = Yat.performLookup(yatHandle: possibleAddress, completion: {response in
-						debugPrint("Completion function")
+					let yatResponse = try Yat.performLookup(yatHandle: possibleAddress, completion: {response in
+
+						debugPrint("UPTO 1")
+						if (response.isFailure == true) {
+							if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+								fn("The Yat handle \"\(possibleAddress)\" is not owned by anyone")
+							}
+						}
+
+						debugPrint("UPTO 2")
 						debugPrint(response)
-						debugPrint(type(of: response))
 						let responseDict = response.value
-						debugPrint(responseDict?.count)
-						debugPrint(responseDict?["0x1001"])
+						debugPrint(responseDict)
 						if let recordCount = responseDict?.count {
 							switch (recordCount) {
 								case 0:
-									print("0")
+									debugPrint("UPTO CASE 0")
 									if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 										fn("The Yat handle \(possibleAddress) does not have any Monero addresses associated with it")
 									}
 								case 1:
-									print("1")
+									debugPrint("UPTO CASE 1")
+									let address = responseDict?.first?.value
+									self._display(resolved_XMRAddress: address!)
+									if let fn = self.yatResolve__success_fn {
+										fn("Yat success YAY!!!!!!!!!!!!!!")
+									}
 								case 2:
+									debugPrint("UPTO CASE 2")
 									self._display(resolved_XMRAddress: (responseDict?["0x1001"]!)!)
 									if let fn = self.yatResolve__success_fn {
 										fn("Yat success YAY!!!!!!!!!!!!!!")
 									}
-									print("2")
 									// Use
 								default:
 									print("Shouldn't ever see this")
@@ -840,10 +851,22 @@ extension UICommonComponents.Form
 					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 						fn(error)
 					}
+				} catch YatLookupError.yatLengthInvalid {
+					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+						fn("A Yat can only be a maximum of five emojis")
+					}
+				} catch YatLookupError.yatNotFound {
+					debugPrint("YAT NOT OWNED")
+					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+						fn("The Yat \"\(possibleAddress)\" is not owned by anyone")
+					}
 				} catch let error as YatLookupError {
-					//handleLookupError(YatLookupError: error)
 					debugPrint("Caught an error")
 					debugPrint(error)
+					
+					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+						fn("Unexpected error occurred: \(error). Please report this to the MyMonero team via our website's support functionality")
+					}
 					
 				} catch {
 					debugPrint("We should never see this text")
