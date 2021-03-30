@@ -90,6 +90,7 @@ extension UICommonComponents.Form
 		var changedTextContent_fn: (() -> Void)?
 		var clearedTextContent_fn: (() -> Void)?
 		var isValidatingOrResolvingNonZeroTextInput: Bool = false // internally managed; do not set
+		var hasResolvedYat: Bool = false
 		var hasValidTextInput_moneroAddress = false // internally managed; do not set
 		var hasValidTextInput_resolvedOAAddress = false // internally managed; do not set
 		var willValidateNonZeroTextInput_fn: (() -> Void)?
@@ -766,29 +767,32 @@ extension UICommonComponents.Form
 			// This could still be a Yat address -- let's check
 			debugPrint(type(of: possibleAddress))
 			let Yat = YatLookup(debugMode: true)
-			let isValidYat = false
+			var possibleAddressContainsEmojis = false
 			
 			if Yat.containsEmojis(possibleAddress: possibleAddress) {
+				possibleAddressContainsEmojis = true
 				self.set(resolvingIndicatorIsVisible: true)
 				debugPrint("Possible Yat")
 				do {
+					defer {
+						self.set(resolvingIndicatorIsVisible: false)
+						self.isValidatingOrResolvingNonZeroTextInput = false
+					}
 					let isValidYat = try Yat.isValidYatHandle(possibleAddress: possibleAddress)
 					if (!isValidYat) {
 						return
 					}
-					let yatResponse = try Yat.performLookup(yatHandle: possibleAddress, completion: {response in
-
-						debugPrint("UPTO 1")
+					try Yat.performLookup(yatHandle: possibleAddress, completion: { response in
+						
+						// This code handles us receiving a FAILURE response in instances where a Yat handle is not owned by anyone
 						if (response.isFailure == true) {
 							if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 								fn("The Yat handle \"\(possibleAddress)\" is not owned by anyone")
 							}
 						}
-
-						debugPrint("UPTO 2")
-						debugPrint(response)
+						
 						let responseDict = response.value
-						debugPrint(responseDict)
+						
 						if let recordCount = responseDict?.count {
 							switch (recordCount) {
 								case 0:
@@ -797,17 +801,20 @@ extension UICommonComponents.Form
 										fn("The Yat handle \(possibleAddress) does not have any Monero addresses associated with it")
 									}
 								case 1:
+									self.hasResolvedYat = true
 									debugPrint("UPTO CASE 1")
 									let address = responseDict?.first?.value
 									self._display(resolved_XMRAddress: address!)
 									if let fn = self.yatResolve__success_fn {
-										fn("Yat success YAY!!!!!!!!!!!!!!")
+										fn("Yat resolved successfully")
 									}
 								case 2:
 									debugPrint("UPTO CASE 2")
+									self.hasResolvedYat = true
+									// For simplicity's sake, when we resolve a subaddress and a traditional address, we pay the traditional Monero address
 									self._display(resolved_XMRAddress: (responseDict?["0x1001"]!)!)
 									if let fn = self.yatResolve__success_fn {
-										fn("Yat success YAY!!!!!!!!!!!!!!")
+										fn("Yat resolved successfully")
 									}
 									// Use
 								default:
@@ -821,6 +828,16 @@ extension UICommonComponents.Form
 					})
 					
 				} catch YatLookupError.addressContainsNonEmojiCharacters {
+					self.set(resolvingIndicatorIsVisible: false)
+					self.oaResolverRequestMaker = nil // must free, and before call-back
+					//
+					self._hide_resolved_XMRAddress()
+					self._hide_resolved_paymentID()
+					//
+					self.isValidatingOrResolvingNonZeroTextInput = false // un-set due to imminent exit
+					// but set no success flags
+					//
+					
 					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 						fn("It looks like you're trying to pay a Yat, but Yat addresses don't support non-emoji characters")
 					}
@@ -850,6 +867,10 @@ extension UICommonComponents.Form
 				} catch {
 					debugPrint("We should never see this text")
 				}
+			}
+			
+			if (possibleAddressContainsEmojis == true) {
+				return
 			}
 
 			// Do stuff with lookup response

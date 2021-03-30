@@ -339,6 +339,7 @@ extension SendFundsForm
 					debugPrint("Yat: For some reason, we're setting the errors here")
 					self.resolvedYatHandle = false
 					self.setValidationMessage(localizedString)
+					self.view.setNeedsLayout()
 					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
 				}
 				view.yatResolve__success_fn =
@@ -647,12 +648,15 @@ extension SendFundsForm
 		override func new_isFormSubmittable() -> Bool
 		{
 			if self.formSubmissionController != nil {
+				debugPrint("self.formSubmissionController != nil")
 				return false
 			}
 			if self.sendTo_inputView.isResolving {
+				debugPrint("self.sendTo_inputView.isResolving")
 				return false
 			}
 			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
+				debugPrint("self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput")
 				return false
 			}
 			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
@@ -664,9 +668,16 @@ extension SendFundsForm
 					return false
 				}
 			}
-			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
+			if ((self.sendTo_inputView.hasValidTextInput_moneroAddress == false
 				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
-				&& self.sendTo_inputView.selectedContact == nil {
+				&& self.sendTo_inputView.selectedContact == nil)
+				|| self.sendTo_inputView.hasResolvedYat == false) {
+				debugPrint("Fourway")
+				debugPrint(self.sendTo_inputView.hasValidTextInput_moneroAddress == false)
+				debugPrint(self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false)
+				debugPrint(self.sendTo_inputView.hasResolvedYat == false)
+				debugPrint(self.sendTo_inputView.selectedContact == nil)
+				
 				return false
 			}
 			return true
