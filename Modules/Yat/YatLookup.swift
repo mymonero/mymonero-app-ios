@@ -131,7 +131,7 @@ class YatLookup {
 	}
 	
 	init(debugMode: Bool) {
-		if (debugMode) {
+		if (debugMode == true) {
 			self.apiUrl = "https://api-dev.yat.rocks"
 		} else {
 			self.apiUrl = "https://a.y.at"

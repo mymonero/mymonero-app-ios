@@ -394,8 +394,8 @@ extension UICommonComponents.Form
 			self._display(pickedContact: contact)
 			//
 			// Check if yat
-			let Yat = YatLookup(debugMode: true)
-			
+			let Yat = YatLookup()
+
 			
 			if Yat.containsEmojis(possibleAddress: contact.address) {
 				//debugPrint("It's a Yat")
@@ -759,7 +759,7 @@ extension UICommonComponents.Form
 				fn()
 			}
 			// This could still be a Yat address -- let's check
-			let Yat = YatLookup(debugMode: true)
+			let Yat = YatLookup()
 			var possibleAddressContainsEmojis = false
 			
 			if Yat.containsEmojis(possibleAddress: possibleAddress) {

@@ -334,9 +334,6 @@ extension SendFundsForm
 				view.yatResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
 					assert(Thread.isMainThread)
-					debugPrint(view)
-					debugPrint(self)
-					debugPrint("Yat: For some reason, we're setting the errors here")
 					self.resolvedYatHandle = false
 					self.setValidationMessage(localizedString)
 					self.view.setNeedsLayout()
@@ -349,7 +346,6 @@ extension SendFundsForm
 					self.sendTo_inputView.hasValidTextInput_moneroAddress = true
 					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
 					
-					debugPrint("Inside YatResolve success function")
 					
 					//
 					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
@@ -375,9 +371,6 @@ extension SendFundsForm
 				view.oaResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
 					assert(Thread.isMainThread)
-					debugPrint("For some reason, we're setting the errors here")
-					debugPrint(view)
-					debugPrint(self)
 					self.setValidationMessage(localizedString)
 					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
 				}
@@ -648,15 +641,12 @@ extension SendFundsForm
 		override func new_isFormSubmittable() -> Bool
 		{
 			if self.formSubmissionController != nil {
-				debugPrint("self.formSubmissionController != nil")
 				return false
 			}
 			if self.sendTo_inputView.isResolving {
-				debugPrint("self.sendTo_inputView.isResolving")
 				return false
 			}
 			if self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput {
-				debugPrint("self.sendTo_inputView.isValidatingOrResolvingNonZeroTextInput")
 				return false
 			}
 			let submittableMoneroAmountDouble_orNil = self.amount_fieldset.inputField.submittableMoneroAmountDouble_orNil(
@@ -672,11 +662,6 @@ extension SendFundsForm
 				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
 				&& self.sendTo_inputView.selectedContact == nil)
 				|| self.sendTo_inputView.hasResolvedYat == false) {
-				debugPrint("Fourway")
-				debugPrint(self.sendTo_inputView.hasValidTextInput_moneroAddress == false)
-				debugPrint(self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false)
-				debugPrint(self.sendTo_inputView.hasResolvedYat == false)
-				debugPrint(self.sendTo_inputView.selectedContact == nil)
 				
 				return false
 			}
