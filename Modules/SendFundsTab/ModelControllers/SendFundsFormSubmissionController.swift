@@ -46,6 +46,7 @@ extension SendFundsForm
 			var amount_submittableDouble: Double?
 			var isSweeping: Bool
 			var priority: MoneroTransferSimplifiedPriority
+			var isYatHandle: Bool
 			//
 			let selectedContact: Contact?
 			let enteredAddressValue: String?
@@ -100,8 +101,7 @@ extension SendFundsForm
 			let amount_string = self.parameters.amount_submittableDouble != nil // human-understandable number, e.g. input 0.5 for 0.5 XMR
 				? MoneyAmount.newMoneroAmountString(withAmountDouble: self.parameters.amount_submittableDouble!)
 				: nil
-			debugPrint("Ok, cool, this should invoke SendFunds")
-			debugPrint(parameters)
+			
 			self.parameters.fromWallet.sendFunds(
 				enteredAddressValue: self.parameters.enteredAddressValue,
 				resolvedAddress: self.parameters.resolvedAddress,

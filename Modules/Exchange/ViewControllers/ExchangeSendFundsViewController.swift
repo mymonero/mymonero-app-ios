@@ -1295,6 +1295,7 @@ extension ExchangeSendFundsForm
 					amount_submittableDouble: amount_submittableDouble,
 					isSweeping: false,
 					priority: priority,
+					isYatHandle: false,
 					//
 					selectedContact: selectedContact,
 					enteredAddressValue: enteredAddressValue,

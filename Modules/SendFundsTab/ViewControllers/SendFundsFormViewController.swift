@@ -952,6 +952,7 @@ extension SendFundsForm
 				self.disableForm() // optimistic
 				//
 				let selectedContact = self.sendTo_inputView.selectedContact
+				let isYatHandle = self.sendTo_inputView.hasResolvedYat
 				var enteredAddressValue = self.sendTo_inputView.inputField.text
 				//
 				let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
@@ -976,6 +977,7 @@ extension SendFundsForm
 					amount_submittableDouble: amount_submittableDouble,
 					isSweeping: isSweeping,
 					priority: priority,
+					isYatHandle: isYatHandle,
 					//
 					selectedContact: selectedContact,
 					enteredAddressValue: enteredAddressValue,
@@ -1039,26 +1041,28 @@ extension SendFundsForm
 								animated: true
 							)
 						}
-						do { // and after a delay, present AddContactFromSendTabView
-							if selectedContact == nil { // so they went with a text input address
-								DispatchQueue.main.asyncAfter(
-									deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
-									execute:
-									{ [unowned self] in
-										let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
-											enteredAddressValue: enteredAddressValue!,
-											integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
-											resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
-											sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress 
-										)
-										let viewController = AddContactFromSendFundsTabFormViewController(
-											parameters: parameters
-										)
-										let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-										navigationController.modalPresentationStyle = .formSheet
-										self.navigationController!.present(navigationController, animated: true, completion: nil)
-									}
-								)
+						if (self.resolvedYatHandle != true) {
+							do { // and after a delay, present AddContactFromSendTabView
+								if selectedContact == nil { // so they went with a text input address
+									DispatchQueue.main.asyncAfter(
+										deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+										execute:
+										{ [unowned self] in
+											let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
+												enteredAddressValue: enteredAddressValue!,
+												integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
+												resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
+												sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress
+											)
+											let viewController = AddContactFromSendFundsTabFormViewController(
+												parameters: parameters
+											)
+											let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+											navigationController.modalPresentationStyle = .formSheet
+											self.navigationController!.present(navigationController, animated: true, completion: nil)
+										}
+									)
+								}
 							}
 						}
 						do { // finally, clean up form
