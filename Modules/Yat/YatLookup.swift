@@ -122,17 +122,11 @@ class YatLookup {
 //	}
 	// 🦈❤️🍒❗😈
 	var yatEmojis: Array<String> = ["🐶","🍼","💃","🏦","🔫","📷","🔦","📡","🔔","🍷","💼","🎛️","🤧","✍️","🥒","💥","🤡","💺","🔋","💯","🐬","🕉️","📺","💾","🗽","🍦","🌴","🦂","☦️","🐭","📦","👘","🍈","😍","🎾","🎂","🗿","🍐","👃","♒","📻","☪️","✨","⚾","🥃","🔮","🐽","🌙","😢","🍤","👕","🐯","🍡","🏎️","⛄","🐱","🎐","🗺️","🍪","🤘","⚛️","🏐","🤐","🎹","🗾","🎏","🎨","🤔","😵","👶","🥝","🥗","♉","🏖️","🗞️","🍾","🎃","🆘","🎋","🐙","🎈","💨","🕸️","🚪","☄️","✉️","🐾","🍗","💡","🎤","🍿","♣️","🐛","🛵","🍳","🖨️","🎢","🧀","🏕️","🚦","🌭","🔒","🦍","💍","⚙️","📌","🤝","👽","🆚","🎠","🛍️","🏀","🏏","🐀","🐧","👎","👗","🖖","💩","🗡️","🤖","🐵","🛒","🍭","🔪","📖","🍔","🚚","✡️","🐉","🤠","🏸","❗","😱","🐌","🤑","💪","👏","☀️","🍑","🎀","🆕","😷","🆒","☢️","👻","🦉","⛵","🦀","🎳","📏","🆔","🎸","👣","🍉","✊","🏈","🏹","🦋","☁️","🌈","✂️","🌕","📟","🥛","🏮","🏓","🍽️","💵","🎭","🍱","🕹️","🗄️","🚜","🎻","💊","⌚","🦄","🛋️","🌊","🐊","🥄","🐣","🎰","🚒","👁️","🐮","🕯️","🃏","🐋","🍶","🖍️","🚽","👌","🍇","🎉","😇","🍍","⭐","🙃","🦅","💦","🍕","🏺","🍥","🏆","🚓","📈","💐","🌪️","🍩","🌻","🎥","🀄","🎮","🛢️","👍","🚢","🛡️","🦃","💄","🎷","✏️","🕌","👟","♊","🥁","✌️","⚖️","🗼","❤️","👀","🥞","✈️","🤕","🏁","♟️","🎧","♏","👾","🐗","🎼","🐪","📱","🐜","🐐","🚧","🌮","🐼","🍣","🌯","🦈","🔥","🆓","🐑","🎖️","🥊","⛳","💈","🥙","🤳","🐰","⚜️","🏟️","🎒","🥑","🍺","🎿","🐚","🎎","👛","🚰","💱","🦎","🎁","👒","🎽","👂","🥚","😘","♎","👑","🍀","🍓","🎵","⛪","🏒","😶","🍋","👞","🎣","💅","⚰️","🎩","🍄","🍌","👉","🏰","🍁","❄️","🍬","🚂","🏧","🐨","🚿","🕎","🥜","🔬","🥅","🚭","⚽","💻","🗑️","⏰","♓","😂","🎲","🦁","🤓","♠️","🐝","🥕","🦏","⚠️","💋","🏥","♻️","🛶","👙","😜","🎡","♌","🚠","💰","🐸","🔱","⛰️","📐","🍆","☯️","🚀","🐺","🍜","👠","🎯","🍵","🏯","🦇","🤢","🍊","🌵","💳","🌶️","🍫","✝️","♋","♐","💔","♑","📿","🦆","🥐","🍝","🌰","🍟","🎱","🌽","🏛️","🙏","🍯","🥔","🚫","🖼️","🏭","🍸","🎺","🙌","🔌","⛸️","💣","⚓","☠️","🙈","🐷","☕","☸️","🔑","♈","🍒","🍎","📜","🦊","🚁","🍞","🐃","🎬","⌛","🍘","🐘","🌸","👖","😎","🏠","♍","🕳️","🚗","🍚","💉","🚬","🔧","🌹","🔩","🚑","🥓","⚡","🐞","🎓","📎","🎟️","🐢","📓","🕍","🏍️","👋","🥋","❓","🔭","👢","🕷️","😈","🎪","🚨","🌲","⛓️","🆙","🐍","🚲","🐴","🦌","🐔","💎","➕","🐻","❤"];
-//	var parameters: Parameters
-//
-//	init(parameters: Parameters) {
-//		debugPrint("Initted YatResolver with parameters")
-//		self.parameters = parameters
-//	}
+
 	var apiUrl: String
 	
 	init() {
 		debugPrint("Initted YatLookup without parameters")
-		//self.parameters = parameters
 		self.apiUrl = "https://a.y.at"
 	}
 	
@@ -166,33 +160,29 @@ class YatLookup {
 		return self.yatEmojis
 	}
 	
+	// Not necessary to implement this feature -- we're going to assume any emoji to be correct until we have an exhaustive list to check
 	func isValidYatCharacter() -> Bool {
-		debugPrint("isValidYatCharacter")
+		debugPrint("isValidYatCharacter unimplemented at present")
 		return false
 	}
+	
+	// TODO: consider removing this stub
 	func lookupMoneroAddresses(yatHandle: String) {
 		debugPrint("lookupMoneroAddresses")
 		debugPrint("Ok, cool, let's look this thing up")
-		
 	}
+	
 	
 	func performLookup(yatHandle: String!, completion: @escaping (Result<[String: String]>) -> Void) {
 		
 		let url: String = self.apiUrl + "/emoji_id/" + yatHandle + "?tags=0x1001,0x1002"
-		//self.btcAddress_inputView.text = "3E6iM3nAY2sAyTqx5gF6nnCvqAUtMyRGEm"
 		debugPrint("Let us look up \(yatHandle): url is \(url)")
 		let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed)
 		
 		Alamofire.request(encodedUrl!, method: .get).responseJSON {
 				response in
 				// add switch response.result here. Check for cases .success, .failure, default
-				debugPrint(response)
-				debugPrint("!!!!!!!!!!")
-				debugPrint(response.response?.statusCode)
-				debugPrint(type(of: response.response?.statusCode))
-				//debugPrint(.success)
-			//debugPrint(type(of: .success))
-			debugPrint(response.result);
+
 				switch response.result {
 				case .success(let value as [String: Any]):
 					// This might return successful in spite of a 404 error -- manually check
@@ -202,25 +192,12 @@ class YatLookup {
 						completion(.failure(YatLookupError.yatNotFound))
 						return
 					}
-					debugPrint(response.response?.statusCode)
-					debugPrint(type(of: response.response?.statusCode))
-					debugPrint("@@@@@@@@@@@@@@@@@@@@@")
-					debugPrint(response.result)
-					debugPrint(type(of: response.result))
 					let json = JSON(response.result.value)
-					debugPrint(json)
-					debugPrint(json["result"])
-					debugPrint(json["result"].count)
-					debugPrint(json["result"][0])
-					debugPrint(json["result"][0]["data"])
 					var returnValueDict: [String: String] = [:]
 					for (index,subJson):(String, JSON) in json["result"] {
-						// Do something you want
-						debugPrint(index)
-						debugPrint(subJson)
 						returnValueDict[subJson["tag"].stringValue] = subJson["data"].stringValue
 					}
-					debugPrint(returnValueDict)
+
 					completion(.success(returnValueDict))
 
 				case .failure(let error):
@@ -234,7 +211,7 @@ class YatLookup {
 	}
 	
 	func testEmojisAgainstUnicodePropertyEscape() {
-		debugPrint("testEmojisAgainstUnicodePropertyEscape")
+		debugPrint("testEmojisAgainstUnicodePropertyEscape is a stubbed method -- use it in future for unit tests")
 	}
 	func isValidYatHandle(possibleAddress: String) throws -> Bool {
 
@@ -251,21 +228,17 @@ class YatLookup {
 			throw YatLookupError.yatLengthInvalid(reason: "A Yat must have a minimum of one character")
 		}
 		
-		let emojiArr = possibleAddress.emojis
-//		emojiArr.forEach {
-//			//debugPrint("\($0.value)")
-//
-//		}
 		
-		for (index, emoji) in emojiArr.enumerated() {
-			debugPrint("Emoji arr enumeration");
-			print("\(index + 1). \(emoji)")
-			debugPrint("Valid Yat Emoji?")
-			debugPrint(self.yatEmojis.contains(emoji))
-			if (self.yatEmojis.contains(emoji) == false) {
-				//throw YatLookupError.addressContainsInvalidEmojis(reason: "\(emoji) is not a valid Yat emoji")
-			}
-		}
+		// TODO: Once we import the proprietary Rust library, we'll be able to exhaustively check emojis against what Yat supports
+		// For now, we don't throw an error because the entered emoji may be valid based on Yat's mapping, which could cause valid lookups to fail
+		// Uncomment this once we have an exhaustive list
+		
+//		let emojiArr = possibleAddress.emojis
+//		for (index, emoji) in emojiArr.enumerated() {
+//			if (self.yatEmojis.contains(emoji) == false) {
+//				//throw YatLookupError.addressContainsInvalidEmojis(reason: "\(emoji) is not a valid Yat emoji")
+//			}
+//		}
 		
 		return true
 	}
