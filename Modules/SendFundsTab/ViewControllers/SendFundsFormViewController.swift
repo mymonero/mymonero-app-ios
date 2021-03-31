@@ -237,7 +237,7 @@ extension SendFundsForm
 					parentScrollView: self.scrollView
 				)
 				view.inputField.set(
-					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")
+					placeholder: NSLocalizedString("Contact / OpenAlias address / Yat ID", comment: "")
 				)
 				view.textFieldDidBeginEditing_fn =
 				{ [unowned self] (textField) in
