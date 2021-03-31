@@ -344,21 +344,23 @@ extension UICommonComponents.Form
 		}
 		//
 		var oaResolverRequestMaker: OpenAliasResolverRequestMaker?
-		func pick(contact: Contact)
-		{
-			self.pick(
-				contact: contact,
-				skipOAResolve: false,
-				useContactPaymentID: true
-			)
-		}
+		
+		// Why on earth are we using this when we have sane defaults in the other pick parameters?
+//		func pick(contact: Contact)
+//		{
+//			self.pick(
+//				contact: contact,
+//				skipOAResolve: false,
+//				useContactPaymentID: true
+//			)
+//		}
 		func pick(
 			contact: Contact,
 			skipOAResolve: Bool = false,
 			useContactPaymentID: Bool = true
 		) { // This function must also be able to handle being called while a contact is already selected
 			//
-			
+			debugPrint("Self.pick w/ 3 params invoked")
 			if self.selectedContact != nil {
 				if self.selectedContact! == contact {
 					// nothing to do - same contact already selected
@@ -366,7 +368,21 @@ extension UICommonComponents.Form
 				}
 			}
 			//
-			let doesNeedToResolve = contact.hasOpenAliasAddress
+			debugPrint(contact)
+			/*
+			enum DictKey: String
+			{ // (For persistence)
+				case fullname = "fullname"
+				case address = "address"
+				case payment_id = "payment_id"
+				case emoji = "emoji"
+				case cached_OAResolved_XMR_address = "cached_OAResolved_XMR_address"
+			}
+			
+			**/
+			
+			
+			var doesNeedToResolve = contact.hasOpenAliasAddress
 			self.oaResolverRequestMaker = nil // deinit any existing; should cancel the existing request
 			// only not setting resolvingIndicatorIsVisible here b/c we always do it just below
 			//
@@ -377,6 +393,17 @@ extension UICommonComponents.Form
 			self.selectedContact = contact
 			self._display(pickedContact: contact)
 			//
+			// Check if yat
+			let Yat = YatLookup(debugMode: true)
+			
+			
+			if Yat.containsEmojis(possibleAddress: contact.address) {
+				//debugPrint("It's a Yat")
+				self.hasResolvedYat = true
+				doesNeedToResolve = false
+				contact.isYatHandle = true
+			}
+			
 			self.set(resolvingIndicatorIsVisible: !skipOAResolve && doesNeedToResolve)
 			if doesNeedToResolve {
 				if skipOAResolve != true {
@@ -701,15 +728,11 @@ extension UICommonComponents.Form
 			self.sizeAndLayOutSubviews()
 		}
 		
-		func handleLookupError(error: String) {
-			debugPrint("Handle the error");
-		}
-		
 		//
 		// Imperatives - Internal - Manually input addresses
 		func validateTextInputAsPossibleAddress()
 		{
-			debugPrint("validateTextInputAsPossibleAddress invoked")
+			
 			assert(self.inputMode == .contactsAndAddresses)
 			let possibleAddress = self.inputField.text ?? ""
 			let hasEnteredNoAddressContent = possibleAddress == ""
@@ -735,53 +758,30 @@ extension UICommonComponents.Form
 			if let fn = willValidateNonZeroTextInput_fn {
 				fn()
 			}
-			// Yat checking
-			/*						oaResolve__success_fn:
-			{ [unowned self] (resolved_xmr_address, payment_id, tx_description) in
-						 self.set(resolvingIndicatorIsVisible: false)
-						 self.oaResolverRequestMaker = nil // must free, and before call-back
-						 do {
-							 if self.displayMode == .paymentIds_andResolvedAddrs {
-								 let generator = UINotificationFeedbackGenerator()
-								 generator.prepare()
-								 generator.notificationOccurred(.success)
-								 //
-								 self._display(resolved_XMRAddress: resolved_xmr_address)
-								 if useContactPaymentID {
-									 if payment_id != nil && payment_id != "" {
-										 self._display(resolved_paymentID: payment_id!)
-									 } else {
-										 self._hide_resolved_paymentID()
-									 }
-								 } else {
-									 self._hide_resolved_paymentID()
-								 }
-							 }
-						 }
-						 if let fn = self.oaResolve__success_fn {
-							 fn(resolved_xmr_address, payment_id, tx_description)
-						 }
-					 }*/
-			debugPrint("Do Yat checking")
-			
 			// This could still be a Yat address -- let's check
-			debugPrint(type(of: possibleAddress))
 			let Yat = YatLookup(debugMode: true)
 			var possibleAddressContainsEmojis = false
 			
 			if Yat.containsEmojis(possibleAddress: possibleAddress) {
+				// Since we know the address contains emojis, it could be a Yat. Let's run it through our validation function
 				possibleAddressContainsEmojis = true
+				// Since this will be an async lookup, let's set the resolving indicator here, and then ensure it gets set to false by using defer in our "do" statement
 				self.set(resolvingIndicatorIsVisible: true)
-				debugPrint("Possible Yat")
+				
 				do {
 					defer {
+						// Ensure the resolvingIndicator is hidden once this do statement terminates
 						self.set(resolvingIndicatorIsVisible: false)
 						self.isValidatingOrResolvingNonZeroTextInput = false
 					}
 					let isValidYat = try Yat.isValidYatHandle(possibleAddress: possibleAddress)
+					
+					// Exit do statement since this isn't a valid Yat
 					if (!isValidYat) {
 						return
 					}
+					
+					// The errors that get thrown and handled by this try loop are thrown in Yat/YatLookup.Swift
 					try Yat.performLookup(yatHandle: possibleAddress, completion: { response in
 						
 						// This code handles us receiving a FAILURE response in instances where a Yat handle is not owned by anyone
@@ -791,16 +791,19 @@ extension UICommonComponents.Form
 							}
 						}
 						
+						// In success, performLookup returns a Dictionary with EmojiID tag -> value pairs
 						let responseDict = response.value
 						
+						// We don't explicitly check to ensure that any data retrieved from Yat is a valid address -- steps on their side should ensure that Monero address and subaddress tags can't accept invalid Monero addresses
 						if let recordCount = responseDict?.count {
 							switch (recordCount) {
 								case 0:
-									debugPrint("UPTO CASE 0")
+									// The Yat exists, but we don't have any Monero addresses returned
 									if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 										fn("The Yat handle \(possibleAddress) does not have any Monero addresses associated with it")
 									}
 								case 1:
+									// The Yat exists, and has a single Monero address/subaddress set
 									self.hasResolvedYat = true
 									debugPrint("UPTO CASE 1")
 									let address = responseDict?.first?.value
@@ -809,20 +812,20 @@ extension UICommonComponents.Form
 										fn("Yat resolved successfully")
 									}
 								case 2:
-									debugPrint("UPTO CASE 2")
-									self.hasResolvedYat = true
+									// The yat exists, and has both a Monero address and a Monero subaddress
 									// For simplicity's sake, when we resolve a subaddress and a traditional address, we pay the traditional Monero address
+									self.hasResolvedYat = true
 									self._display(resolved_XMRAddress: (responseDict?["0x1001"]!)!)
 									if let fn = self.yatResolve__success_fn {
 										fn("Yat resolved successfully")
 									}
 									// Use
 								default:
+									// Because of how performLookup works, we would never receive a value that is not in the range 0-2
 									print("Shouldn't ever see this")
 							}
-						
 						} else {
-							// is this even possible?
+							
 							debugPrint("Didn't get a count value")
 						}
 					})
@@ -852,37 +855,30 @@ extension UICommonComponents.Form
 						fn("A Yat can only be a maximum of five emojis")
 					}
 				} catch YatLookupError.yatNotFound {
-					debugPrint("YAT NOT OWNED")
+					// Nobody has bought this Yat yet
 					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 						fn("The Yat \"\(possibleAddress)\" is not owned by anyone")
 					}
 				} catch let error as YatLookupError {
+					// TODO: We should extend our error handlers to handle network errors and Yat service falling over
+					// Encountered an error we don't explicitly handle -- ask client to forward this to us
 					debugPrint("Caught an error")
 					debugPrint(error)
 					
 					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
 						fn("Unexpected error occurred: \(error). Please report this to the MyMonero team via our website's support functionality")
 					}
-					
-				} catch {
-					debugPrint("We should never see this text")
+				} catch let error {
+					// We have to have an exhaustive catch when using try syntax
+					if let fn = self.yatResolve__preSuccess_terminal_validationMessage_fn {
+						fn("Unexpected error occurred: \(error). Please report this to the MyMonero team via our website's support functionality")
+					}
 				}
 			}
-			
 			if (possibleAddressContainsEmojis == true) {
 				return
 			}
 
-			// Do stuff with lookup response
-			debugPrint("\(possibleAddress) is a valid Yat Handle")
-			//YatLookup.lookupMoneroAddresses(yatHandle: possibleAddress)
-			
-			
-			if let fn = self.finishedValidatingTextInput_foundInvalidMoneroAddress_fn {
-				debugPrint("Inside fn2")
-				fn()
-			}
-				//
 			debugPrint("Could be OA address?")
 			let couldBeOAAddress = OpenAlias.containsPeriod_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(possibleAddress)
 			if couldBeOAAddress == false {
@@ -1127,6 +1123,7 @@ extension UICommonComponents.Form
 		func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
 		{
 			let contact = self.searchResults![indexPath.row]
+			debugPrint("collectionView invoked picking a contact?")
 			self.pick(contact: contact)
 		}
 		//
