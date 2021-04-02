@@ -214,7 +214,6 @@ class RootTabBarViewController: UITabBarController
 	{
 		
 		print(index)
-		DDLog.Warn("App", "What the actual fuck?")
 		let yatIndex: Int = 6;
 		let indexInt = Int(index);
 		//if indexInt !== yatIndex {
