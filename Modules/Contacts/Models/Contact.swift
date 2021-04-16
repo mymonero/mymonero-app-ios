@@ -60,12 +60,13 @@ class Contact: PersistableObject
 	var address: String! // String because it could be an OA address
 	var payment_id: MoneroPaymentID?
 	var emoji: Emoji.EmojiCharacter!
-	//
+
 	// Properties - Transient
 	var cached_OAResolved_XMR_address: MoneroAddress?
 	var cached_derived_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid: MoneroIntegratedAddress?
 	var qrCode_cgImage: CGImage!
 	var cached__qrCode_image_small: UIImage!
+	var isYatHandle: Bool?
 	//
 	func new__cached_derived_integratedXMRAddress_orNil() -> MoneroIntegratedAddress?
 	{

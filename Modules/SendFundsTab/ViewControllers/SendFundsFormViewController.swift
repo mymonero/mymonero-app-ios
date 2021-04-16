@@ -77,6 +77,7 @@ extension SendFundsForm
 		var sendTo_tooltipSpawn_buttonView: UICommonComponents.TooltipSpawningLinkButtonView!
 		//
 		var addPaymentID_buttonView: UICommonComponents.LinkButtonView!
+		var resolvedYatHandle = false
 		//
 		var manualPaymentID_label: UICommonComponents.Form.FieldLabel!
 		var generatePaymentID_linkButtonView: UICommonComponents.LinkButtonView!
@@ -236,7 +237,7 @@ extension SendFundsForm
 					parentScrollView: self.scrollView
 				)
 				view.inputField.set(
-					placeholder: NSLocalizedString("Contact name or address/domain", comment: "")
+					placeholder: NSLocalizedString("Contact / OpenAlias address / Yat ID", comment: "")
 				)
 				view.textFieldDidBeginEditing_fn =
 				{ [unowned self] (textField) in
@@ -329,6 +330,43 @@ extension SendFundsForm
 					self.hideAndClear_manualPaymentIDField()
 					self.set_addPaymentID_buttonView(isHidden: true)
 					self.clearValidationMessage() // this is probably redundant here
+				}
+				view.yatResolve__preSuccess_terminal_validationMessage_fn =
+				{ [unowned self] (localizedString) in
+					assert(Thread.isMainThread)
+					self.resolvedYatHandle = false
+					self.setValidationMessage(localizedString)
+					self.view.setNeedsLayout()
+					self.set_isFormSubmittable_needsUpdate() // as it will check whether we are resolving
+				}
+				view.yatResolve__success_fn =
+				{ [unowned self] (resolved_xmr_address) in
+					assert(Thread.isMainThread)
+					self.resolvedYatHandle = true
+					self.sendTo_inputView.hasValidTextInput_moneroAddress = true
+					self.set_isFormSubmittable_needsUpdate() // will check if picker is resolving
+					
+					
+					//
+					// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+					//
+					// the ContactPicker also already handles displaying the resolved addr and pids
+					//
+//					do { // now since the contact picker's mode is handling resolving text inputs too:
+//						if view.hasValidTextInput_resolvedOAAddress {
+//							if payment_id != nil && payment_id != "" { // just to make sure we're not showing these,
+//								// we already hid the + and manual pid input views
+//							} else {
+//								if self.manualPaymentID_inputView.isHidden { // if manual payment field not showing
+//									self.set_addPaymentID_buttonView(isHidden: false) // then make sure we are at least showing the + payment ID btn
+//								} else {
+//									// it should be the case here that either add pymt id btn or manual payment field is visible
+//								}
+//							}
+//						} else {
+//							assert(view.selectedContact != nil) // or they'd better have selected a contact!!
+//						}
+//					}
 				}
 				view.oaResolve__preSuccess_terminal_validationMessage_fn =
 				{ [unowned self] (localizedString) in
@@ -620,9 +658,11 @@ extension SendFundsForm
 					return false
 				}
 			}
-			if self.sendTo_inputView.hasValidTextInput_moneroAddress == false
+			if ((self.sendTo_inputView.hasValidTextInput_moneroAddress == false
 				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
-				&& self.sendTo_inputView.selectedContact == nil {
+				&& self.sendTo_inputView.selectedContact == nil)
+				|| self.sendTo_inputView.hasResolvedYat == false) {
+				
 				return false
 			}
 			return true
@@ -897,7 +937,8 @@ extension SendFundsForm
 				self.disableForm() // optimistic
 				//
 				let selectedContact = self.sendTo_inputView.selectedContact
-				let enteredAddressValue = self.sendTo_inputView.inputField.text
+				let isYatHandle = self.sendTo_inputView.hasResolvedYat
+				var enteredAddressValue = self.sendTo_inputView.inputField.text
 				//
 				let resolvedAddress_fieldIsVisible = self.sendTo_inputView.resolvedXMRAddr_inputView != nil && self.sendTo_inputView.resolvedXMRAddr_inputView?.isHidden == false
 				let resolvedAddress = resolvedAddress_fieldIsVisible ? self.sendTo_inputView.resolvedXMRAddr_inputView?.textView.text : nil
@@ -907,6 +948,11 @@ extension SendFundsForm
 				//
 				let resolvedPaymentID_fieldIsVisible = self.sendTo_inputView.resolvedPaymentID_inputView != nil && self.sendTo_inputView.resolvedPaymentID_inputView?.isHidden == false
 				let resolvedPaymentID = resolvedPaymentID_fieldIsVisible ? self.sendTo_inputView.resolvedPaymentID_inputView?.textView.text ?? "" : nil
+				// Handle Yat
+				if (self.resolvedYatHandle == true) {
+					// This is a workaround for now until the WASM is amended to have a flag for a resolved Yat
+					enteredAddressValue = resolvedAddress
+				}
 				//
 				let priority = self.selected_priority
 				//
@@ -916,6 +962,7 @@ extension SendFundsForm
 					amount_submittableDouble: amount_submittableDouble,
 					isSweeping: isSweeping,
 					priority: priority,
+					isYatHandle: isYatHandle,
 					//
 					selectedContact: selectedContact,
 					enteredAddressValue: enteredAddressValue,
@@ -979,26 +1026,28 @@ extension SendFundsForm
 								animated: true
 							)
 						}
-						do { // and after a delay, present AddContactFromSendTabView
-							if selectedContact == nil { // so they went with a text input address
-								DispatchQueue.main.asyncAfter(
-									deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
-									execute:
-									{ [unowned self] in
-										let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
-											enteredAddressValue: enteredAddressValue!,
-											integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
-											resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
-											sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress 
-										)
-										let viewController = AddContactFromSendFundsTabFormViewController(
-											parameters: parameters
-										)
-										let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
-										navigationController.modalPresentationStyle = .formSheet
-										self.navigationController!.present(navigationController, animated: true, completion: nil)
-									}
-								)
+						if (self.resolvedYatHandle != true) {
+							do { // and after a delay, present AddContactFromSendTabView
+								if selectedContact == nil { // so they went with a text input address
+									DispatchQueue.main.asyncAfter(
+										deadline: .now() + 0.75 + 0.3, // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+										execute:
+										{ [unowned self] in
+											let parameters = AddContactFromSendFundsTabFormViewController.InitializationParameters(
+												enteredAddressValue: enteredAddressValue!,
+												integratedAddressPIDForDisplay_orNil: integratedAddressPIDForDisplay_orNil, // NOTE: this will be non-nil if a short pid is supplied with a standard address - rather than an integrated addr alone being used
+												resolvedAddress: resolvedAddress_fieldIsVisible ? resolvedAddress : nil,
+												sentWith_paymentID: mockedTransaction.paymentId // will not be nil for integrated enteredAddress
+											)
+											let viewController = AddContactFromSendFundsTabFormViewController(
+												parameters: parameters
+											)
+											let navigationController = UICommonComponents.NavigationControllers.SwipeableNavigationController(rootViewController: viewController)
+											navigationController.modalPresentationStyle = .formSheet
+											self.navigationController!.present(navigationController, animated: true, completion: nil)
+										}
+									)
+								}
 							}
 						}
 						do { // finally, clean up form
