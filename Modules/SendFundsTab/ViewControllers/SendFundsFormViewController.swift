@@ -661,7 +661,7 @@ extension SendFundsForm
 			if ((self.sendTo_inputView.hasValidTextInput_moneroAddress == false
 				&& self.sendTo_inputView.hasValidTextInput_resolvedOAAddress == false
 				&& self.sendTo_inputView.selectedContact == nil)
-				|| self.sendTo_inputView.hasResolvedYat == false) {
+				&& self.sendTo_inputView.hasResolvedYat == false) {
 				
 				return false
 			}
