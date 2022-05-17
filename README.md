@@ -1,4 +1,4 @@
-This repo is being archived in favour of our new [mymonero-mobile](https://github.com/mymonero/mymonero-mobile) repo. Any support, downloads or updates will be available there.
+## This repo is being archived in favour of our new [mymonero-mobile](https://github.com/mymonero/mymonero-mobile) repo. Any support, downloads or updates will be available there.
 # MyMonero for iOS
 
 ## License and Copyrights
