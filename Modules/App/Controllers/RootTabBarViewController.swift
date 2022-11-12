@@ -44,6 +44,7 @@ class RootTabBarViewController: UITabBarController
 	var contactsTabViewController = ContactsTabNavigationViewController()
 	var settingsTabViewController = SettingsTabNavigationViewController()
 	var exchangeTabViewController = ExchangeTabNavigationViewController()
+	//var yatTabViewController = YatTabNavigationViewController()
 	//
 	// Lifecycle - Init
 	required init?(coder aDecoder: NSCoder)
@@ -75,7 +76,7 @@ class RootTabBarViewController: UITabBarController
 			self.exchangeTabViewController,
 			self.contactsTabViewController,
 			self.settingsTabViewController,
-			
+			//self.yatTabViewController
 		]
 		//
 		// vertically center tab bar item images
@@ -151,7 +152,6 @@ class RootTabBarViewController: UITabBarController
 	// Runtime - Imperatives
 	func setTabBarItems(isEnabled: Bool)
 	{
-		NSLog("We ran here nslog")
 		for (_, viewController) in self.viewControllers!.enumerated() {
 			viewController.tabBarItem.isEnabled = isEnabled
 		}
@@ -186,6 +186,7 @@ class RootTabBarViewController: UITabBarController
 		let shouldDisable_exchange = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_contacts = shouldDisable_nonWalletAndSettingsTabs
 		let shouldDisable_settings = shouldDisable_tabsWhichDontRequireAppWithExistingPasswordToBeUnlocked // enable regardless of whether wallets exist
+		//let shouldDisable_yat = shouldDisable_nonWalletAndSettingsTabs
 		//
 		self.walletsTabViewController.tabBarItem.isEnabled = !shouldDisable_wallets
 		self.sendFundsTabViewController.tabBarItem.isEnabled = !shouldDisable_sendFunds
@@ -193,6 +194,7 @@ class RootTabBarViewController: UITabBarController
 		self.fundsRequestsTabViewController.tabBarItem.isEnabled = !shouldDisable_fundsRequests
 		self.contactsTabViewController.tabBarItem.isEnabled = !shouldDisable_contacts
 		self.settingsTabViewController.tabBarItem.isEnabled = !shouldDisable_settings
+		//self.yatTabViewController.tabBarItem.isEnabled = !shouldDisable_yat
 
 	}
 	//
@@ -209,12 +211,19 @@ class RootTabBarViewController: UITabBarController
 	//
 	func programmatically_set(selectedIndex index: Int)
 	{
+		
 		print(index)
-		let viewController = self.viewControllers![index]
-		if viewController.tabBarItem.isEnabled == false {
-			DDLog.Warn("App", "Asked to \(#function) selectedIndex to \(index) but its tabBarItem was disabled.")
-			return
-		}
+		let yatIndex: Int = 6;
+		let indexInt = Int(index);
+		//if indexInt !== yatIndex {
+			let viewController = self.viewControllers![index]
+			if viewController.tabBarItem.isEnabled == false {
+				DDLog.Warn("App", "Asked to \(#function) selectedIndex to \(index) but its tabBarItem was disabled.")
+				return
+			}
+//		} else {
+//			print("We won");
+//		}
 		self.selectedIndex = index
 	}
 	//
@@ -243,6 +252,14 @@ class RootTabBarViewController: UITabBarController
 		self.programmatically_set(selectedIndex: 4)
 	}
 
+//	func selectTab_yat()
+//	{
+//		let urlStr = "https://y.at"
+//		guard let url = URL(string: urlStr) else { return }
+//		UIApplication.shared.open(url)
+//		self.programmatically_set(selectedIndex: 6)
+//	}
+	
 	//
 	// Delegation - Notifications
 	@objc func PasswordController_didDeconstructBootedStateAndClearPassword()

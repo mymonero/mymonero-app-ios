@@ -19,6 +19,9 @@
 		6576419025513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */; };
 		6576419225515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */; };
 		65912EEF2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */; };
+		65C1395B25F77BF700CF4768 /* YatTabNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C1395A25F77BF700CF4768 /* YatTabNavigationViewController.swift */; };
+		65C1395F25F77D7500CF4768 /* YatLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C1395E25F77D7500CF4768 /* YatLogo.png */; };
+		65C13963260DE5B100CF4768 /* YatLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C13962260DE5B100CF4768 /* YatLookup.swift */; };
 		65F0FD67255D2CCD00ABAFCC /* XMRtoBTCInactive@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */; };
 		65F0FD68255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */; };
 		6FCFC3C000CEEB8A1E23DB8F /* Pods_MyMonero.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FFD28B95E856EC54635727 /* Pods_MyMonero.framework */; };
@@ -357,6 +360,10 @@
 		6576418F25513BDA00DE76A8 /* ExchangeShowOrderStatusFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeShowOrderStatusFormViewController.swift; sourceTree = "<group>"; };
 		6576419125515B3E00DE76A8 /* ExchangeOrderStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeOrderStatusViewController.swift; sourceTree = "<group>"; };
 		65912EEE2559335D008ECB31 /* ExchangeSendFundsFormSubmissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeSendFundsFormSubmissionHandler.swift; sourceTree = "<group>"; };
+		65C1395A25F77BF700CF4768 /* YatTabNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YatTabNavigationViewController.swift; sourceTree = "<group>"; };
+		65C1395E25F77D7500CF4768 /* YatLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = YatLogo.png; sourceTree = "<group>"; };
+		65C1396025F8F5C700CF4768 /* MyMonero.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyMonero.entitlements; sourceTree = "<group>"; };
+		65C13962260DE5B100CF4768 /* YatLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YatLookup.swift; sourceTree = "<group>"; };
 		65F0FD65255D2CCC00ABAFCC /* XMRtoBTCInactive@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "XMRtoBTCInactive@3x.png"; sourceTree = "<group>"; };
 		65F0FD66255D2CCD00ABAFCC /* XMRtoBTCActive@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "XMRtoBTCActive@3x.png"; sourceTree = "<group>"; };
 		78858D4A99C81FB2BE0B0552 /* Pods-MyMonero.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMonero.release.xcconfig"; path = "Pods/Target Support Files/Pods-MyMonero/Pods-MyMonero.release.xcconfig"; sourceTree = "<group>"; };
@@ -951,6 +958,32 @@
 			path = XHR;
 			sourceTree = "<group>";
 		};
+		65C1395925F77B5300CF4768 /* Yat */ = {
+			isa = PBXGroup;
+			children = (
+				65C1395D25F77D2C00CF4768 /* ViewControllers */,
+				65C1395C25F77D1600CF4768 /* Resources */,
+				65C13962260DE5B100CF4768 /* YatLookup.swift */,
+			);
+			path = Yat;
+			sourceTree = "<group>";
+		};
+		65C1395C25F77D1600CF4768 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				65C1395E25F77D7500CF4768 /* YatLogo.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		65C1395D25F77D2C00CF4768 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				65C1395A25F77BF700CF4768 /* YatTabNavigationViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
 		9F00B8D81EC276C30040F52A /* Swift */ = {
 			isa = PBXGroup;
 			children = (
@@ -1038,6 +1071,7 @@
 		9F24AE101EBA7D3A00841BCB = {
 			isa = PBXGroup;
 			children = (
+				65C1396025F8F5C700CF4768 /* MyMonero.entitlements */,
 				9F7ADAA51EBD2B420073C2BB /* Modules */,
 				9FF6C9A51F7C919B00B20D40 /* MyMoneroScreenshotsUITests */,
 				9F24AE1A1EBA7D3A00841BCB /* Products */,
@@ -1617,6 +1651,7 @@
 		9F7ADAA51EBD2B420073C2BB /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				65C1395925F77B5300CF4768 /* Yat */,
 				9F7ADAA61EBD2B420073C2BB /* App */,
 				9FAF95211FB4F4FD00ECE0A6 /* CcyConversionRates */,
 				9FB603041F4F6B6B00951175 /* ConnectivityMessage */,
@@ -2363,6 +2398,7 @@
 				9F8E303C1EEDAB9400F89A1D /* contactPicker_xBtnIcn@3x.png in Resources */,
 				9F9C59E31F0C316C003B9266 /* groupedHighlightableCellBG_highlighted_bottom@3x.png in Resources */,
 				9FFC7F911FE37BBF009033BD /* emoji-20171214.json in Resources */,
+				65C1395F25F77D7500CF4768 /* YatLogo.png in Resources */,
 				9F2516CB21D728240045205E /* LaunchScreen.storyboard in Resources */,
 				9FA734371F077EA100C674D6 /* popoverBG@3x.png in Resources */,
 				9FCE96CD1F04131600A5837D /* actionButton_iconImage__startOver@3x.png in Resources */,
@@ -2521,6 +2557,7 @@
 				9F46F1D11F58E1A60046348C /* MoneroTypes.swift in Sources */,
 				9FAA18A51F0881FE001F1D4D /* ActivityIndicators.swift in Sources */,
 				9FCB92751F3FCCD5005852BA /* SettingsAppTimeoutAfterSecondsSlider.swift in Sources */,
+				65C13963260DE5B100CF4768 /* YatLookup.swift in Sources */,
 				9FEC04F31ECFD8C4009256BD /* PersistedObjectListController.swift in Sources */,
 				6576418325486C9900DE76A8 /* ExchangeCurrencyPicker.swift in Sources */,
 				9F2A21DE1F2BD45A005117DB /* QRCodeScanningCameraViewController.swift in Sources */,
@@ -2671,6 +2708,7 @@
 				9F2BFEDC1EF37E48006B2F7D /* ContactsListEmptyView.swift in Sources */,
 				9F740D531F12CC330017A20E /* UIView+Hierarchy.swift in Sources */,
 				9FA7FA1E20E94C1500210486 /* LocalDataMigrations.swift in Sources */,
+				65C1395B25F77BF700CF4768 /* YatTabNavigationViewController.swift in Sources */,
 				9FA7341C1F05D92700C674D6 /* AddContactBaseFormViewController.swift in Sources */,
 				9F7298CF1F341DD700CD59E1 /* HostedSource.swift in Sources */,
 				9F453FAA1F267A65004590DC /* SendFundsFormViewController.swift in Sources */,
@@ -2937,7 +2975,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 32;
+				CODE_SIGN_ENTITLEMENTS = MyMonero.entitlements;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -2962,7 +3001,7 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
-				MARKETING_VERSION = 1.1.19;
+				MARKETING_VERSION = 1.1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";
@@ -2982,7 +3021,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 32;
+				CODE_SIGN_ENTITLEMENTS = MyMonero.entitlements;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -3005,7 +3045,7 @@
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
-				MARKETING_VERSION = 1.1.19;
+				MARKETING_VERSION = 1.1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -3077,7 +3117,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 32;
+				CODE_SIGN_ENTITLEMENTS = MyMonero.entitlements;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -3100,7 +3141,7 @@
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
-				MARKETING_VERSION = 1.1.19;
+				MARKETING_VERSION = 1.1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-internal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
@@ -3171,7 +3212,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 32;
+				CODE_SIGN_ENTITLEMENTS = MyMonero.entitlements;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -3194,7 +3236,7 @@
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
 				LLVM_LTO = YES_THIN;
-				MARKETING_VERSION = 1.1.19;
+				MARKETING_VERSION = 1.1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-profiling";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "./Modules/App/Headers/Bridging-Header.hh";
@@ -3272,7 +3314,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 32;
+				CODE_SIGN_ENTITLEMENTS = MyMonero.entitlements;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = NLN5D623Y3;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -3297,7 +3340,7 @@
 					"$(inherited)",
 					"\"${PODS_ROOT}/ofxiOSBoost/libs/boost/ios\"",
 				);
-				MARKETING_VERSION = 1.1.19;
+				MARKETING_VERSION = 1.1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mymonero.mymonero-app-testing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG __DISABLED_MOCK_SUCCESSOFTXSUBMISSION";

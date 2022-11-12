@@ -34,6 +34,7 @@
 //
 import UIKit
 import WebKit
+import UserNotifications
 
 //@UIApplicationMain // intentionally commented - see main.swift
 
@@ -81,7 +82,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 //				}
 //			}
 //		}
-		//
+		// Push notification registration invocation
+		registerForPushNotifications()
 		return true
 	}
 	func application(
@@ -99,6 +101,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 	) -> Bool {
 		return URLOpening.shared.appReceived(url: url)
 	}
+	
+	// Handle push notification instantiation
+	func application(
+	  _ application: UIApplication,
+	  didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+	) {
+	  let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
+	  let token = tokenParts.joined()
+	  print("Device Token: \(token)")
+	}
+	
+	func application(
+	  _ application: UIApplication,
+	  didFailToRegisterForRemoteNotificationsWithError error: Error
+	) {
+	  print("Failed to register: \(error)")
+	}
+	
 	func applicationWillResignActive(_ application: UIApplication)
 	{
 		// goal is to lock down app before OS takes app screenshot for multitasker but we cannot use this method to do so b/c it gets called for a variety of temporary interruptions, such as asking for photos permissions
@@ -146,6 +166,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 
 	func applicationWillTerminate(_ application: UIApplication) {
 		// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+	}
+	
+	// New push message notification functionality for new project
+	func getNotificationSettings() {
+	  UNUserNotificationCenter.current().getNotificationSettings { settings in
+		print("Notification settings: \(settings)")
+		guard settings.authorizationStatus == .authorized else { return }
+		DispatchQueue.main.async {
+		  UIApplication.shared.registerForRemoteNotifications()
+		}
+	  }
+	}
+	
+	func registerForPushNotifications() {
+	  //1
+		UNUserNotificationCenter.current()
+		  .requestAuthorization(
+			options: [.alert, .sound, .badge]) { [weak self] granted, _ in
+			print("Permission granted: \(granted)")
+			guard granted else { return }
+			self?.getNotificationSettings()
+		  }
 	}
 }
 
